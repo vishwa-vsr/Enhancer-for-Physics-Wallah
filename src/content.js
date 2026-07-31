@@ -159,6 +159,10 @@
     keySlowDown = result.keySlowDown || 'j';
     keyReset = result.keyReset || 'l';
 
+    if (activeVideo) {
+      activeVideo.autoPictureInPicture = enablePiP;
+    }
+
     if (result.snapPoints && Array.isArray(result.snapPoints) && result.snapPoints.length === 4) {
       snapPoints = result.snapPoints.map(v => parseFloat(v));
     }
@@ -193,6 +197,9 @@
             }
             if (changes.hasOwnProperty('enablePiP')) {
               enablePiP = changes.enablePiP.newValue !== false;
+              if (activeVideo) {
+                activeVideo.autoPictureInPicture = enablePiP;
+              }
               changed = true;
             }
             if (changes.hasOwnProperty('enableHotkeys')) {
@@ -1157,6 +1164,13 @@
     activeVideo.addEventListener('play', onVideoPlay);
     activeVideo.addEventListener('enterpictureinpicture', onEnterPiP);
     activeVideo.addEventListener('leavepictureinpicture', onLeavePiP);
+
+    // Apply auto Picture-in-Picture natively
+    if (enablePiP) {
+      video.autoPictureInPicture = true;
+    } else {
+      video.autoPictureInPicture = false;
+    }
   }
 
   // Update speed UI when speed changes (syncs with native controls)
@@ -1589,6 +1603,20 @@
     }, true);
   }
 
+  // Remove all injected instances of PiP buttons across light and shadow DOMs
+  function removeAllPiPButtons() {
+    const mainBtn = document.getElementById('pwc-pip-btn');
+    if (mainBtn) mainBtn.remove();
+
+    const all = document.querySelectorAll('*');
+    all.forEach(el => {
+      if (el.shadowRoot) {
+        const shadowBtn = el.shadowRoot.getElementById('pwc-pip-btn') || el.shadowRoot.querySelector('#pwc-pip-btn');
+        if (shadowBtn) shadowBtn.remove();
+      }
+    });
+  }
+
   // Inject and manage the Picture-in-Picture button inside the controls bar
   function injectPiPButton() {
     const video = getActiveVideo();
@@ -1596,13 +1624,9 @@
 
     if (typeof video.requestPictureInPicture !== 'function') return;
 
-    const exactBtn = document.getElementById('pwc-pip-btn');
-
-    // If disabled, remove the button if it exists
+    // If disabled, remove all instances of the button if they exist
     if (!extensionEnabled || !enablePiP) {
-      if (exactBtn) {
-        exactBtn.remove();
-      }
+      removeAllPiPButtons();
       return;
     }
 
@@ -1624,8 +1648,11 @@
     const parent = controlBar || fallbackControlBar || footerRight;
     if (!parent) return;
 
-    // Target the light DOM container so getElementById can find the button in subsequent runs!
+    // Target the light DOM container or shadow container
     const targetContainer = footerRight || parent;
+
+    // Search targetContainer/parent for our button to support shadow roots!
+    const exactBtn = targetContainer.querySelector('#pwc-pip-btn');
 
     // Create and inject the button if it doesn't exist
     if (!exactBtn) {
@@ -1643,10 +1670,9 @@
         targetContainer.appendChild(btn);
       }
 
-      
       setupPiPButtonListeners(btn);
       // Initial UI draw
-      updatePiPButtonUI(document.pictureInPictureElement === video);
+      updatePiPButtonUI(document.pictureInPictureElement === video, btn);
     } else {
       stylePiPButton(exactBtn);
       // Ensure it is in the correct position if the toolbar rebuilt
@@ -1660,12 +1686,29 @@
       }
       setupPiPButtonListeners(exactBtn);
       // Update UI state based on current PiP state
-      updatePiPButtonUI(document.pictureInPictureElement === video);
+      updatePiPButtonUI(document.pictureInPictureElement === video, exactBtn);
     }
   }
 
-  function updatePiPButtonUI(isInPiP) {
-    const btn = document.getElementById('pwc-pip-btn');
+  function updatePiPButtonUI(isInPiP, btnElement = null) {
+    let btn = btnElement;
+    if (!btn) {
+      const footerRight = document.getElementById('footer-right-section');
+      const controlBar = footerRight ? footerRight.parentElement : null;
+      let fallbackControlBar = null;
+      if (!controlBar) {
+        const settingsBtn = findSettingsButton();
+        const fullscreenBtn = findFullscreenButton();
+        const refBtn = settingsBtn || fullscreenBtn;
+        if (refBtn) {
+          fallbackControlBar = getToolbarContainer(refBtn);
+        }
+      }
+      const parent = controlBar || fallbackControlBar || footerRight;
+      if (parent) {
+        btn = parent.querySelector('#pwc-pip-btn');
+      }
+    }
     if (!btn) return;
 
     btn.textContent = '';
