@@ -90,26 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const loadingOverlay = document.getElementById('loading-overlay');
   const editorContainer = document.getElementById('hotkeys-editor-container');
 
-  // Skip Silence element mappings
-  const skipSilenceToggles = {
-    enableSkipSilence: document.getElementById('enable-skipsilence-toggle')
-  };
 
-  const skipSilenceInputs = {
-    silenceSpeed: document.getElementById('silence-speed'),
-    silenceThreshold: document.getElementById('silence-threshold'),
-    silenceDuration: document.getElementById('silence-duration'),
-    skipIntroTime: document.getElementById('skip-intro')
-  };
-
-  const skipSilenceLabels = {
-    silenceSpeed: document.getElementById('silence-speed-val'),
-    silenceThreshold: document.getElementById('silence-threshold-val'),
-    silenceDuration: document.getElementById('silence-duration-val'),
-    skipIntroTime: document.getElementById('skip-intro-val')
-  };
-
-  const skipSilenceConfigContainer = document.getElementById('skipsilence-config-container');
 
   const tabButtons = document.querySelectorAll('.tab-btn');
   const tabPanels = document.querySelectorAll('.tab-panel');
@@ -238,18 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function toggleSkipSilenceConfig(isDisabled) {
-    if (skipSilenceConfigContainer) {
-      if (isDisabled) {
-        skipSilenceConfigContainer.classList.add('disabled');
-      } else {
-        skipSilenceConfigContainer.classList.remove('disabled');
-      }
-    }
-  }
+
 
   safeStorageGet(
-    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'enableSkipSilence', 'silenceSpeed', 'silenceThreshold', 'silenceDuration', 'skipIntroTime'],
+    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP'],
     (result) => {
       applyTheme(result.themeMode === 'light');
       // Load focus toggles
@@ -302,44 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const speed = result.preferredSpeed ? parseFloat(result.preferredSpeed) : 1.0;
       updateSpeedUI(speed);
 
-      // Load Skip Silence settings
-      if (skipSilenceToggles.enableSkipSilence) {
-        const skipEnabled = !!result.enableSkipSilence;
-        skipSilenceToggles.enableSkipSilence.checked = skipEnabled;
-        toggleSkipSilenceConfig(!skipEnabled);
-      }
-      
-      const sSpeed = result.silenceSpeed !== undefined ? parseFloat(result.silenceSpeed) : 5.0;
-      if (skipSilenceInputs.silenceSpeed) {
-        skipSilenceInputs.silenceSpeed.value = sSpeed;
-        if (skipSilenceLabels.silenceSpeed) {
-          skipSilenceLabels.silenceSpeed.textContent = sSpeed.toFixed(1) + "x";
-        }
-      }
 
-      const sThreshold = result.silenceThreshold !== undefined ? parseInt(result.silenceThreshold) : -50;
-      if (skipSilenceInputs.silenceThreshold) {
-        skipSilenceInputs.silenceThreshold.value = sThreshold;
-        if (skipSilenceLabels.silenceThreshold) {
-          skipSilenceLabels.silenceThreshold.textContent = sThreshold + " dB";
-        }
-      }
-
-      const sDuration = result.silenceDuration !== undefined ? parseFloat(result.silenceDuration) : 0.5;
-      if (skipSilenceInputs.silenceDuration) {
-        skipSilenceInputs.silenceDuration.value = sDuration;
-        if (skipSilenceLabels.silenceDuration) {
-          skipSilenceLabels.silenceDuration.textContent = sDuration.toFixed(1) + "s";
-        }
-      }
-
-      const sIntro = result.skipIntroTime !== undefined ? parseInt(result.skipIntroTime) : 0;
-      if (skipSilenceInputs.skipIntroTime) {
-        skipSilenceInputs.skipIntroTime.value = sIntro;
-        if (skipSilenceLabels.skipIntroTime) {
-          skipSilenceLabels.skipIntroTime.textContent = sIntro === 0 ? "Off" : sIntro + "s";
-        }
-      }
 
       // Remove loading overlay
       dismissLoadingOverlay();
@@ -386,54 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Bind Skip Silence toggle and inputs
-  if (skipSilenceToggles.enableSkipSilence) {
-    skipSilenceToggles.enableSkipSilence.addEventListener('change', (e) => {
-      const isChecked = e.target.checked;
-      toggleSkipSilenceConfig(!isChecked);
-      safeStorageSet({ enableSkipSilence: isChecked });
-    });
-  }
 
-  if (skipSilenceInputs.silenceSpeed) {
-    skipSilenceInputs.silenceSpeed.addEventListener('input', (e) => {
-      const val = parseFloat(e.target.value);
-      if (skipSilenceLabels.silenceSpeed) {
-        skipSilenceLabels.silenceSpeed.textContent = val.toFixed(1) + "x";
-      }
-      safeStorageSet({ silenceSpeed: val });
-    });
-  }
-
-  if (skipSilenceInputs.silenceThreshold) {
-    skipSilenceInputs.silenceThreshold.addEventListener('input', (e) => {
-      const val = parseInt(e.target.value);
-      if (skipSilenceLabels.silenceThreshold) {
-        skipSilenceLabels.silenceThreshold.textContent = val + " dB";
-      }
-      safeStorageSet({ silenceThreshold: val });
-    });
-  }
-
-  if (skipSilenceInputs.silenceDuration) {
-    skipSilenceInputs.silenceDuration.addEventListener('input', (e) => {
-      const val = parseFloat(e.target.value);
-      if (skipSilenceLabels.silenceDuration) {
-        skipSilenceLabels.silenceDuration.textContent = val.toFixed(1) + "s";
-      }
-      safeStorageSet({ silenceDuration: val });
-    });
-  }
-
-  if (skipSilenceInputs.skipIntroTime) {
-    skipSilenceInputs.skipIntroTime.addEventListener('input', (e) => {
-      const val = parseInt(e.target.value);
-      if (skipSilenceLabels.skipIntroTime) {
-        skipSilenceLabels.skipIntroTime.textContent = val === 0 ? "Off" : val + "s";
-      }
-      safeStorageSet({ skipIntroTime: val });
-    });
-  }
 
   // Bind interactive snap point input changes
   snapInputs.forEach((input, index) => {
@@ -581,80 +470,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Live Visualizer Integration ---
-  const visualizerBarFill = document.getElementById('visualizer-bar-fill');
-  const visualizerThresholdMarker = document.getElementById('visualizer-threshold-marker');
-  const visualizerDbVal = document.getElementById('visualizer-db-val');
 
-  function dbToPercent(db) {
-    if (db <= -80) return 0;
-    if (db >= 0) return 100;
-    return ((db + 80) / 80) * 100;
-  }
-
-  let visualizerPort = null;
-
-  function connectVisualizer() {
-    if (typeof chrome === 'undefined' || !chrome.tabs || !chrome.tabs.query) return;
-
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (!tabs || !tabs[0] || !tabs[0].id) return;
-      
-      try {
-        visualizerPort = chrome.tabs.connect(tabs[0].id, { name: "popup-connection" });
-        
-        visualizerPort.onMessage.addListener((msg) => {
-          if (!msg) return;
-
-          const { volumeDb, thresholdDb, isSilent, isScanning } = msg;
-
-          // Update threshold marker position
-          if (visualizerThresholdMarker) {
-            const markerPct = dbToPercent(thresholdDb);
-            visualizerThresholdMarker.style.left = `${markerPct}%`;
-          }
-
-          // Update visualizer fill bar
-          if (visualizerBarFill) {
-            if (isScanning) {
-              const volumePct = dbToPercent(volumeDb);
-              visualizerBarFill.style.width = `${volumePct}%`;
-              
-              if (isSilent) {
-                visualizerBarFill.classList.add('silent');
-              } else {
-                visualizerBarFill.classList.remove('silent');
-              }
-            } else {
-              visualizerBarFill.style.width = '0%';
-              visualizerBarFill.classList.add('silent');
-            }
-          }
-
-          // Update text label
-          if (visualizerDbVal) {
-            if (isScanning) {
-              visualizerDbVal.textContent = isSilent 
-                ? `SILENT (${Math.round(volumeDb)} dB)` 
-                : `${Math.round(volumeDb)} dB`;
-              visualizerDbVal.style.color = isSilent ? '#64748b' : '#10b981';
-            } else {
-              visualizerDbVal.textContent = 'PAUSED';
-              visualizerDbVal.style.color = '#64748b';
-            }
-          }
-        });
-
-        visualizerPort.onDisconnect.addListener(() => {
-          visualizerPort = null;
-          setTimeout(connectVisualizer, 1000);
-        });
-      } catch (err) {
-        // Suppress connection errors
-      }
-    });
-  }
-
-  // Initial connection
-  connectVisualizer();
 });

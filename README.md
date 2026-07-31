@@ -55,7 +55,6 @@ If you want to run the latest development code locally:
 * **Instant Snap Presets**: Define 4 custom favorite speeds and switch to them instantly.
 * **Hold Space to Speed Up**: Press and hold <kbd>Spacebar</kbd> to temporarily play at your configured speedup rate (default: `2.0x`).
 * **Mouse Wheel Adjust**: Simply hover your cursor over the speed slider widget and scroll to step the speed up or down.
-* **Smart Skip Silence**: Automatically increases playback speed (up to 8.0x) during long silent gaps in lectures using the Web Audio API.
 
 ### 🎯 Focus & Decluttering Toggles
 Quickly toggle off interface distractions:
@@ -133,9 +132,8 @@ Contributions are welcome! Please follow these guidelines:
 
 ## 📢 Recent Updates (v1.0.4)
 
-Here are the latest updates and bug fixes in version `1.0.4`:
-* **Skip Intro Fix**: Resolved an issue in single-page navigation where the intro wouldn't skip when clicking on a new video. We now track the video URL source rather than the HTML element.
-* **Memory Leak Prevention**: The sound scanner now stops immediately when a video is closed or deleted, preventing silent polling in the background.
+Here are the latest updates and changes in version `1.0.4`:
+* **Feature Cleanup**: Completely removed the Skip Silence and Skip Intro features to make the extension lighter, simpler, and zero-overhead.
 * **Dashboard Crash Safety**: Added a safe wrapper around storage calls inside the settings menu to prevent visual freezes if local storage fails to load.
 * **Cleaned Codebase**: Deleted unused experimental audio files to keep the build light and clean.
 
@@ -144,4 +142,3 @@ Here are the latest updates and bug fixes in version `1.0.4`:
 ## 📄 License & Credits
 
 * **License**: This project is licensed under the MIT License. See [LICENSE](LICENSE) for more details.
-* **Acknowledgements**: Silence skipping utilizes logic adapted from [skip-silence](https://github.com/vantezzen/skip-silence) by vantezzen.
