@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - **Picture-in-Picture (PiP) Mode**: Added a dedicated Picture-in-Picture button on the player control bar next to the fullscreen button. Clicking it lets users watch lectures in a floating, always-on-top window.
 - **PiP Popup Setting Toggle**: Added a toggle switch in the extension popup dashboard to enable or disable the Picture-in-Picture button.
-- **Beta Badges**: Appended a decorative "Beta" pill next to the Picture-in-Picture Button in the settings popup dashboard.
+
 
 ### Fixed
 - **Shadow DOM Icon Styling**: Applied inline styles directly to the Picture-in-Picture button and its SVG elements, resolving an issue where the icon failed to render or appeared blank when inserted inside the video player's Shadow DOM.
