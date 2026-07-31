@@ -957,45 +957,4 @@ input:checked + .switch-slider:before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* === Skip Silence Visualizer Styles === */
-.visualizer-bar-wrapper {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  flex-grow: 1;
-}
 
-.visualizer-bar-track {
-  position: relative;
-  height: 8px;
-  background-color: var(--color-slate-800);
-  border-radius: var(--radius-sm);
-  flex-grow: 1;
-  overflow: hidden;
-  border: 1px solid var(--color-slate-700);
-}
-
-.visualizer-bar-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #10b981, var(--color-cyan-500));
-  border-radius: var(--radius-sm);
-  transition: width 0.05s ease, background-color 0.15s ease;
-}
-
-.visualizer-bar-fill.silent {
-  background: #64748b; /* Slate gray when silent */
-}
-
-.visualizer-threshold-marker {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background-color: #ef4444; /* Bright red vertical line */
-  z-index: 2;
-  transition: left 0.15s ease;
-}

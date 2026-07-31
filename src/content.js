@@ -33,22 +33,7 @@
   let isHoldingSpace = false;
   let speedBeforeHold = 1.0;
 
-  // Skip Silence and Skip Intro configuration states
-  let enableSkipSilence = false;
-  let silenceSpeed = 5.0;
-  let silenceThreshold = -50;
-  let silenceDuration = 0.5;
-  let skipIntroTime = 0;
 
-  // Skip Silence: Shared global AudioContext and per-element audio graph cache
-  let sharedAudioCtx = null;
-  const audioGraphCache = new WeakMap();
-  let isSilentStateActive = false;
-  let silenceMsCount = 0;
-  let lastSkippedSrc = '';
-  let silenceCheckInterval = null;
-  let activeSilenceVideo = null;
-  let currentVolumeDb = -100; // Live volume tracking for popup visualizer
 
   // Helper to step speed up or down by 0.1, clamped to 0.5–4.0
   function stepSpeed(direction) {
@@ -111,7 +96,7 @@
     }
     try {
       chrome.storage.local.get(
-        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP', 'enableSkipSilence', 'silenceSpeed', 'silenceThreshold', 'silenceDuration', 'skipIntroTime'], 
+        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP'], 
         function (result) {
           try {
             if (chrome.runtime && chrome.runtime.id) {
@@ -174,25 +159,12 @@
     keySlowDown = result.keySlowDown || 'j';
     keyReset = result.keyReset || 'l';
 
-    enableSkipSilence = !!result.enableSkipSilence;
-    silenceSpeed = result.silenceSpeed !== undefined ? parseFloat(result.silenceSpeed) : 5.0;
-    silenceThreshold = result.silenceThreshold !== undefined ? parseInt(result.silenceThreshold) : -50;
-    silenceDuration = result.silenceDuration !== undefined ? parseFloat(result.silenceDuration) : 0.5;
-    skipIntroTime = result.skipIntroTime !== undefined ? parseInt(result.skipIntroTime) : 0;
-
     if (result.snapPoints && Array.isArray(result.snapPoints) && result.snapPoints.length === 4) {
       snapPoints = result.snapPoints.map(v => parseFloat(v));
     }
 
     applySettingsHTML(hideSettings);
     applyDistractorsState();
-
-    if (activeVideo) {
-      setupAudioAnalysis(activeVideo);
-      if (enableSkipSilence) {
-        handleSkipIntro(activeVideo);
-      }
-    }
   });
 
   // Listen for storage changes from the settings popup
@@ -245,36 +217,7 @@
               keyReset = changes.keyReset.newValue;
             }
 
-            if (changes.hasOwnProperty('enableSkipSilence')) {
-              enableSkipSilence = !!changes.enableSkipSilence.newValue;
-              if (activeVideo) {
-                setupAudioAnalysis(activeVideo);
-                if (enableSkipSilence) {
-                  handleSkipIntro(activeVideo);
-                }
-              }
-            }
-            if (changes.hasOwnProperty('silenceSpeed')) {
-              silenceSpeed = parseFloat(changes.silenceSpeed.newValue);
-              if (activeVideo && enableSkipSilence) {
-                setupAudioAnalysis(activeVideo);
-              }
-            }
-            if (changes.hasOwnProperty('silenceThreshold')) {
-              silenceThreshold = parseInt(changes.silenceThreshold.newValue);
-            }
-            if (changes.hasOwnProperty('silenceDuration')) {
-              silenceDuration = parseFloat(changes.silenceDuration.newValue);
-              if (activeVideo && enableSkipSilence) {
-                setupAudioAnalysis(activeVideo);
-              }
-            }
-            if (changes.hasOwnProperty('skipIntroTime')) {
-              skipIntroTime = parseInt(changes.skipIntroTime.newValue);
-              if (activeVideo) {
-                handleSkipIntro(activeVideo);
-              }
-            }
+
 
             // Sync custom snap points in real-time
             if (changes.hasOwnProperty('snapPoints')) {
@@ -1196,8 +1139,6 @@
       try {
         activeVideo.removeEventListener('ratechange', onRateChange);
         activeVideo.removeEventListener('play', onVideoPlay);
-        activeVideo.removeEventListener('playing', onVideoPlaying);
-        activeVideo.removeEventListener('loadedmetadata', onVideoLoadedMetadata);
         activeVideo.removeEventListener('enterpictureinpicture', onEnterPiP);
         activeVideo.removeEventListener('leavepictureinpicture', onLeavePiP);
       } catch (e) {}
@@ -1214,21 +1155,13 @@
 
     activeVideo.addEventListener('ratechange', onRateChange);
     activeVideo.addEventListener('play', onVideoPlay);
-    activeVideo.addEventListener('playing', onVideoPlaying);
-    activeVideo.addEventListener('loadedmetadata', onVideoLoadedMetadata);
     activeVideo.addEventListener('enterpictureinpicture', onEnterPiP);
     activeVideo.addEventListener('leavepictureinpicture', onLeavePiP);
-
-    if (activeVideo.readyState >= 1) {
-      handleSkipIntro(activeVideo);
-    }
-    setupAudioAnalysis(activeVideo);
   }
 
   // Update speed UI when speed changes (syncs with native controls)
   function onRateChange() {
     if (isSettingRate || !activeVideo) return;
-    if (isSilentStateActive || activeVideo.playbackRate === silenceSpeed) return; // Ignore speed changes while skipping silence
     currentSpeed = activeVideo.playbackRate;
     updateUI();
     showSpeedToast(currentSpeed);
@@ -1239,16 +1172,6 @@
     setTimeout(() => {
       applySpeedToActiveVideo();
     }, 200);
-    setupAudioAnalysis(activeVideo);
-  }
-
-  function onVideoPlaying() {
-    setupAudioAnalysis(activeVideo);
-  }
-
-  function onVideoLoadedMetadata() {
-    handleSkipIntro(activeVideo);
-    setupAudioAnalysis(activeVideo);
   }
 
   function onEnterPiP() {
@@ -1829,189 +1752,7 @@
     }
   }
 
-  // ── Skip Silence Scanner ──────────────────────────────────────────────
-  // Uses a shared global AudioContext + AnalyserNode (no external files needed).
-  // No crossorigin attribute (blob: URLs don't support CORS).
-  // Audio graph cached per video element in a WeakMap.
 
-  function getSharedAudioCtx() {
-    if (!sharedAudioCtx) {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      sharedAudioCtx = new AudioContextClass();
-    }
-    return sharedAudioCtx;
-  }
-
-  function resumeAudioCtx(ctx) {
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-      const handler = () => ctx.resume();
-      document.addEventListener('pointerdown', handler, { once: true, capture: true });
-      document.addEventListener('keydown', handler, { once: true, capture: true });
-    }
-  }
-
-  function getAudioGraph(video) {
-    let cached = audioGraphCache.get(video);
-    if (cached) {
-      // Reconnect the analyser to destination if disconnected
-      try {
-        const ctx = getSharedAudioCtx();
-        cached.analyser.connect(ctx.destination);
-      } catch (e) {}
-      return cached;
-    }
-
-    const ctx = getSharedAudioCtx();
-    const source   = ctx.createMediaElementSource(video);
-    const analyser = ctx.createAnalyser();
-    analyser.fftSize = 256;
-
-    // source -> analyser -> destination (keeps audio playing through speakers)
-    source.connect(analyser);
-    analyser.connect(ctx.destination);
-
-    const graph = { analyser };
-    audioGraphCache.set(video, graph);
-    return graph;
-  }
-
-  function setupAudioAnalysis(video) {
-    if (!video) return;
-    if (!enableSkipSilence) {
-      cleanupAudioAnalysis();
-      return;
-    }
-
-    // Don't re-setup for the same video
-    if (activeSilenceVideo === video && silenceCheckInterval) return;
-
-    try {
-      const ctx = getSharedAudioCtx();
-      resumeAudioCtx(ctx);
-
-      const graph = getAudioGraph(video);
-      activeSilenceVideo = video;
-
-      // Start the polling loop
-      startSilenceCheckLoop(video, graph);
-    } catch (e) {
-      console.warn('PW Control: Skip Silence setup failed:', e);
-    }
-  }
-
-  function cleanupAudioAnalysis() {
-    if (silenceCheckInterval) {
-      clearInterval(silenceCheckInterval);
-      silenceCheckInterval = null;
-    }
-
-    if (isSilentStateActive) {
-      isSilentStateActive = false;
-      const video = activeSilenceVideo || getActiveVideo();
-      if (video) {
-        isSettingRate = true;
-        video.playbackRate = currentSpeed;
-        setTimeout(() => {
-          isSettingRate = false;
-        }, 150);
-      }
-    }
-
-    // Disconnect the analyser to stop audio graph processing and allow GC
-    if (activeSilenceVideo) {
-      const graph = audioGraphCache.get(activeSilenceVideo);
-      if (graph && graph.analyser) {
-        try {
-          graph.analyser.disconnect();
-        } catch (e) {}
-      }
-    }
-
-    activeSilenceVideo = null;
-    silenceMsCount = 0;
-    currentVolumeDb = -100;
-  }
-
-  function startSilenceCheckLoop(video, graph) {
-    if (silenceCheckInterval) {
-      clearInterval(silenceCheckInterval);
-    }
-
-    const analyser = graph.analyser;
-    const bufferLength = analyser.fftSize;
-    const dataArray = new Uint8Array(bufferLength);
-    const checkIntervalMs = 100;
-
-    silenceCheckInterval = setInterval(() => {
-      // Stop checking if video element was removed/disconnected from DOM
-      if (!video || !video.isConnected) {
-        cleanupAudioAnalysis();
-        return;
-      }
-
-      if (!enableSkipSilence || video.paused || video.ended || video.readyState < 2) {
-        return;
-      }
-
-      const ctx = getSharedAudioCtx();
-      if (ctx.state !== 'running') {
-        resumeAudioCtx(ctx);
-        return;
-      }
-
-      // Read time-domain waveform and compute RMS
-      analyser.getByteTimeDomainData(dataArray);
-
-      let sumSquares = 0;
-      for (let i = 0; i < bufferLength; i++) {
-        const sample = (dataArray[i] - 128) / 128;
-        sumSquares += sample * sample;
-      }
-      const rms = Math.sqrt(sumSquares / bufferLength);
-      currentVolumeDb = rms > 0 ? 20 * Math.log10(rms) : -100;
-
-      // Silence detection logic
-      const isCurrentlySilent = currentVolumeDb < silenceThreshold;
-
-      if (isCurrentlySilent) {
-        silenceMsCount += checkIntervalMs;
-        const requiredSilenceMs = silenceDuration * 1000;
-
-        if (silenceMsCount >= requiredSilenceMs && !isSilentStateActive) {
-          isSilentStateActive = true;
-          isSettingRate = true;
-          video.playbackRate = silenceSpeed;
-          setTimeout(() => {
-            isSettingRate = false;
-          }, 150);
-        }
-      } else {
-        silenceMsCount = 0;
-        if (isSilentStateActive) {
-          isSilentStateActive = false;
-          isSettingRate = true;
-          video.playbackRate = currentSpeed;
-          setTimeout(() => {
-            isSettingRate = false;
-          }, 150);
-        }
-      }
-    }, checkIntervalMs);
-  }
-
-  // Skip Intro Logic
-  function handleSkipIntro(video) {
-    if (!enableSkipSilence || skipIntroTime <= 0 || !video.currentSrc || lastSkippedSrc === video.currentSrc) {
-      return;
-    }
-    
-    if (video.currentTime < skipIntroTime) {
-      video.currentTime = skipIntroTime;
-      showInfoToast("Skipped intro (" + skipIntroTime + "s)");
-    }
-    lastSkippedSrc = video.currentSrc;
-  }
 
   // Main monitoring function
   function monitor() {
@@ -2047,24 +1788,5 @@
   monitor();
   manageMonitorInterval();
 
-  // Listen for popup connections to send real-time visualizer stats
-  if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onConnect) {
-    chrome.runtime.onConnect.addListener((port) => {
-      if (port.name !== "popup-connection") return;
 
-      const interval = setInterval(() => {
-        const isScanning = !!(enableSkipSilence && sharedAudioCtx && sharedAudioCtx.state === 'running' && activeSilenceVideo && !activeSilenceVideo.paused);
-        port.postMessage({
-          volumeDb: currentVolumeDb,
-          thresholdDb: silenceThreshold,
-          isSilent: isSilentStateActive,
-          isScanning: isScanning
-        });
-      }, 50);
-
-      port.onDisconnect.addListener(() => {
-        clearInterval(interval);
-      });
-    });
-  }
 })();

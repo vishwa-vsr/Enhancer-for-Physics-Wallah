@@ -211,62 +211,6 @@
               </label>
             </div>
 
-            <!-- Option 11: Skip Silence / Skip Intro -->
-            <div class="feature-card">
-              <div class="feature-info">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <label for="enable-skipsilence-toggle" class="feature-title">Skip Silence / Skip Intro</label>
-                  <span class="beta-badge">Beta</span>
-                </div>
-              </div>
-              <label class="switch" aria-label="Toggle Skip Silence / Skip Intro">
-                <input type="checkbox" id="enable-skipsilence-toggle">
-                <span class="switch-slider"></span>
-              </label>
-            </div>
-
-            <!-- Skip Silence / Skip Intro Configuration Panel -->
-            <div class="feature-config-panel disabled" id="skipsilence-config-container">
-              <div class="config-item">
-                <span class="config-label">Silence Speed</span>
-                <div class="config-slider-group">
-                  <input type="range" id="silence-speed" min="1.5" max="8.0" step="0.5" value="5.0">
-                  <span class="config-val" id="silence-speed-val">5.0x</span>
-                </div>
-              </div>
-              <div class="config-item">
-                <span class="config-label">Volume Threshold</span>
-                <div class="config-slider-group">
-                  <input type="range" id="silence-threshold" min="-70" max="-30" step="1" value="-50">
-                  <span class="config-val" id="silence-threshold-val">-50 dB</span>
-                </div>
-              </div>
-              <!-- Real-time Volume Visualizer -->
-              <div class="config-item" id="silence-visualizer-container">
-                <span class="config-label">Live Volume</span>
-                <div class="visualizer-bar-wrapper">
-                  <div class="visualizer-bar-track">
-                    <div id="visualizer-bar-fill" class="visualizer-bar-fill"></div>
-                    <div id="visualizer-threshold-marker" class="visualizer-threshold-marker"></div>
-                  </div>
-                  <span class="config-val" id="visualizer-db-val">OFF</span>
-                </div>
-              </div>
-              <div class="config-item">
-                <span class="config-label">Silence Duration</span>
-                <div class="config-slider-group">
-                  <input type="range" id="silence-duration" min="0.1" max="2.0" step="0.1" value="0.5">
-                  <span class="config-val" id="silence-duration-val">0.5s</span>
-                </div>
-              </div>
-              <div class="config-item">
-                <span class="config-label">Skip Intro Time</span>
-                <div class="config-slider-group">
-                  <input type="range" id="skip-intro" min="0" max="180" step="5" value="0">
-                  <span class="config-val" id="skip-intro-val">Off</span>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
       </div>
