@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const speedSlider = document.getElementById('speed-slider');
   const speedDisplay = document.getElementById('speed-display');
-  const presetBtns = document.querySelectorAll('.preset-btn');
   const loadingOverlay = document.getElementById('loading-overlay');
   const editorContainer = document.getElementById('hotkeys-editor-container');
 
@@ -158,18 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ticksRow.appendChild(span);
       });
     }
-
-    // Update data-speed values on preset buttons
-    presetBtns.forEach((btn, index) => {
-      if (points[index] !== undefined) {
-        const pt = points[index];
-        btn.setAttribute('data-speed', pt.toFixed(1));
-        btn.textContent = `${pt.toFixed(1)}x`;
-      }
-    });
   }
 
-  // Sync speed values to text labels and preset button classes
+  // Sync speed values to text labels and slider
   function updateSpeedUI(speed) {
     const formattedSpeed = parseFloat(speed).toFixed(1);
     if (speedDisplay) {
@@ -181,16 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const percent = ((parseFloat(formattedSpeed) - 0.5) / 3.5) * 100;
       speedSlider.style.setProperty('--percent', `${percent}%`);
     }
-    
-    // Highlight the active preset chip
-    presetBtns.forEach(btn => {
-      const btnSpeed = parseFloat(btn.getAttribute('data-speed'));
-      if (Math.abs(btnSpeed - speed) < 0.05) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
   }
 
   // Save playback rate setting to extension storage
@@ -310,6 +290,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Bind interactive hold space custom speed rate changes
+  const holdSpaceMinusBtn = document.getElementById('hold-space-minus');
+  const holdSpacePlusBtn = document.getElementById('hold-space-plus');
+
+  function updateHoldSpaceRate(delta) {
+    if (!holdSpaceSpeedInput) return;
+    let val = parseFloat(holdSpaceSpeedInput.value);
+    if (isNaN(val)) val = 2.0;
+    val = Math.round((val + delta) * 10) / 10;
+    if (val < 1.1) val = 1.1;
+    if (val > 4.0) val = 4.0;
+    holdSpaceSpeedInput.value = val.toFixed(1);
+    safeStorageSet({ holdSpaceSpeed: val });
+  }
+
+  if (holdSpaceMinusBtn) {
+    holdSpaceMinusBtn.addEventListener('click', () => updateHoldSpaceRate(-0.1));
+  }
+  if (holdSpacePlusBtn) {
+    holdSpacePlusBtn.addEventListener('click', () => updateHoldSpaceRate(0.1));
+  }
+
   if (holdSpaceSpeedInput) {
     holdSpaceSpeedInput.addEventListener('change', () => {
       let val = parseFloat(holdSpaceSpeedInput.value);
@@ -398,26 +399,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Bind preset button click events
-  presetBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const speed = parseFloat(btn.getAttribute('data-speed'));
-      updateSpeedUI(speed);
-      saveSpeed(speed);
-    });
-  });
-
-  // Bind settings gear panel expand/collapse events
+  // Bind settings gear panel expand/collapse events with 2-way CSS Grid smooth animations
   const settingsToggleBtn = document.getElementById('settings-toggle-btn');
   const presetsEditorContainer = document.getElementById('presets-editor-container');
 
   if (settingsToggleBtn && presetsEditorContainer) {
+    let collapseTimeout = null;
+
     settingsToggleBtn.addEventListener('click', () => {
+      if (collapseTimeout) {
+        clearTimeout(collapseTimeout);
+        collapseTimeout = null;
+      }
+
       const isExpanded = presetsEditorContainer.classList.contains('expanded');
+
       if (isExpanded) {
         presetsEditorContainer.classList.remove('expanded');
+        presetsEditorContainer.classList.add('collapsing');
         settingsToggleBtn.setAttribute('aria-expanded', 'false');
+
+        collapseTimeout = setTimeout(() => {
+          presetsEditorContainer.classList.remove('collapsing');
+          collapseTimeout = null;
+        }, 220);
       } else {
+        presetsEditorContainer.classList.remove('collapsing');
         presetsEditorContainer.classList.add('expanded');
         settingsToggleBtn.setAttribute('aria-expanded', 'true');
       }

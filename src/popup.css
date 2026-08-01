@@ -237,26 +237,30 @@ body::-webkit-scrollbar-thumb:hover {
   line-height: 1.2;
 }
 
-/* Tab Navigation Selector */
+/* shadcn / Radix-Style Modern Tab Navigation */
 .tab-navigation {
   position: relative;
   display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--tab-nav-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-1);
-  gap: var(--space-1);
+  border-radius: var(--radius-lg);
+  padding: 3px;
+  gap: 3px;
+  user-select: none;
 }
 
 .tab-indicator {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 4px;
-  width: calc(50% - 6px);
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 4.5px);
   background: var(--tab-indicator-bg);
   border: 1px solid var(--tab-indicator-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  box-shadow: none !important;
   transition: transform var(--transition-normal);
   z-index: 1;
   pointer-events: none;
@@ -264,7 +268,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 /* Sliding active tab pill indicator */
 .tab-navigation:has(.tab-btn[data-tab="focus-tab"].active) .tab-indicator {
-  transform: translateX(calc(100% + 4px));
+  transform: translateX(calc(100% + 3px));
 }
 
 .tab-btn {
@@ -277,8 +281,8 @@ body::-webkit-scrollbar-thumb:hover {
   font-family: inherit;
   font-size: var(--font-size-base);
   font-weight: 600;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -296,15 +300,21 @@ body::-webkit-scrollbar-thumb:hover {
   color: var(--tab-btn-fg-active);
 }
 
+.tab-btn .tab-icon {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.2px;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.tab-btn.active .tab-icon {
+  color: var(--accent-primary);
+  transform: scale(1.08);
+}
+
 .tab-btn:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 1px;
-}
-
-.tab-icon {
-  width: 14px;
-  height: 14px;
-  stroke-width: 2.2px;
 }
 
 /* Tab Panels */
@@ -343,14 +353,14 @@ body::-webkit-scrollbar-thumb:hover {
   background: var(--bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  padding: 10px 12px 6px 12px;
 }
 
 .hud-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-3);
+  margin-bottom: 6px;
 }
 
 .hud-title {
@@ -379,19 +389,28 @@ body::-webkit-scrollbar-thumb:hover {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  padding: var(--space-1);
-  border-radius: var(--radius-sm);
+  padding: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
   outline: none;
 }
 
 .settings-toggle-btn:hover {
   color: var(--text-primary);
-  background: var(--color-slate-800);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.light-theme .settings-toggle-btn:hover {
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.settings-toggle-btn:active {
+  transform: scale(0.92);
 }
 
 .settings-toggle-btn:focus-visible {
@@ -401,12 +420,12 @@ body::-webkit-scrollbar-thumb:hover {
 .settings-icon {
   width: 16px;
   height: 16px;
-  transition: transform var(--transition-normal);
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), color 200ms ease;
 }
 
 .settings-toggle-btn[aria-expanded="true"] .settings-icon {
-  transform: rotate(45deg);
-  color: var(--accent-hover);
+  transform: rotate(90deg);
+  color: var(--accent-primary);
 }
 
 /* Symmetrical Header Theme Toggle Option */
@@ -501,36 +520,91 @@ body::-webkit-scrollbar-thumb:hover {
   outline-offset: 4px;
 }
 
-/* Slider Custom Tick Mark Labels */
+/* Slider Custom Tick Mark Labels (Mathematically Aligned with Slider Thumb Center) */
 .ticks-row {
   position: relative;
-  width: 100%;
+  width: calc(100% - 14px);
+  margin-left: 7px;
+  margin-right: 7px;
   height: 14px;
-  margin-top: var(--space-2);
+  margin-top: 4px;
 }
 
 .ticks-row .tick-label {
   position: absolute;
+  top: 0;
   transform: translateX(-50%);
   font-family: 'Outfit', sans-serif;
   font-size: var(--font-size-xs);
   font-weight: 600;
-  color: var(--text-muted);
-  pointer-events: none;
+}
+
+/* Integrated Speed Widget Toggle Row inside Video Speed HUD Card */
+.hud-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+}
+
+.hud-footer-title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
 }
 
 /* Custom Snap Points Collapsible Editor */
+.presets-editor-container:not(.expanded):not(.collapsing) {
+  display: none !important;
+}
+
 .presets-editor-container {
-  display: none;
-  opacity: 0;
-  margin-top: 0;
+  display: block;
+  overflow: hidden;
+  transform-origin: top center;
+}
+
+@keyframes slideDownExpand {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    max-height: 120px;
+    margin-top: var(--space-3);
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpCollapse {
+  0% {
+    opacity: 1;
+    max-height: 120px;
+    margin-top: var(--space-3);
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+    transform: translateY(-8px);
+  }
 }
 
 .presets-editor-container.expanded {
   display: block;
-  opacity: 1;
-  margin-top: var(--space-3);
-  animation: fadeIn var(--transition-fast) ease-out forwards;
+  animation: slideDownExpand 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.presets-editor-container.collapsing {
+  display: block;
+  animation: slideUpCollapse 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .presets-editor-section {
@@ -573,30 +647,58 @@ body::-webkit-scrollbar-thumb:hover {
   letter-spacing: 0.02em;
 }
 
-.preset-edit-input {
+/* Custom Snap Point Badge Container */
+.snap-input-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: var(--bg-main);
   border: 1px solid var(--color-border);
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  text-align: center;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  padding: 4px 6px;
   width: 100%;
-  padding: 4px 0;
-  outline: none;
-  transition: border-color var(--transition-fast), background-color var(--transition-fast);
   box-sizing: border-box;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.preset-edit-input:hover {
+.snap-input-wrapper:hover {
   border-color: var(--color-border-hover);
   background: var(--bg-card-hover);
 }
 
-.preset-edit-input:focus {
+.snap-input-wrapper:focus-within {
   border-color: var(--accent-primary);
   background: var(--bg-card-hover);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+.snap-edit-input {
+  width: 26px;
+  background: transparent;
+  border: none;
+  color: var(--accent-primary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-align: right;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.snap-edit-input::-webkit-outer-spin-button,
+.snap-edit-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.snap-unit {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: 1px;
+  user-select: none;
 }
 
 /* Shortcut Configuration & Hotkey Binder */
@@ -671,6 +773,126 @@ body::-webkit-scrollbar-thumb:hover {
 
 
 
+/* Feature Option Card - Combined Variant (Hold Space + Speed Rate in 1 Card) */
+.feature-card.feature-card-combined {
+  flex-direction: column;
+  padding: 0;
+  gap: 0;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.feature-card-main-row {
+  padding: 8px var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.feature-card-combined .feature-config-row {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  border-radius: 0;
+  margin-top: 0;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 6px var(--space-4);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+body.light-theme .feature-card-combined .feature-config-row {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* Sleek Tactile Stepper Pill Control */
+.stepper-box {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-main);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1px 3px;
+  height: 28px;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.stepper-box:hover {
+  border-color: var(--color-border-hover);
+}
+
+.stepper-btn {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color var(--transition-fast), background-color var(--transition-fast), transform 0.1s ease;
+  user-select: none;
+}
+
+.stepper-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.light-theme .stepper-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.stepper-btn:active {
+  transform: scale(0.9);
+}
+
+.stepper-value-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.stepper-input {
+  width: 28px;
+  background: transparent;
+  border: none;
+  color: var(--accent-primary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-align: right;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.stepper-input::-webkit-outer-spin-button,
+.stepper-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepper-unit {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: 1px;
+  user-select: none;
+}
+
 /* Configuration Row */
 .feature-config-row {
   display: flex;
@@ -741,15 +963,18 @@ body::-webkit-scrollbar-thumb:hover {
   color: var(--text-muted);
 }
 
-/* iOS-Style Toggle Switch (Completely Matte, No Glow) */
+/* shadcn / Radix UI Modern Toggle Switch */
 .switch {
   position: relative;
-  display: inline-block;
-  width: 34px;
-  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
   flex-shrink: 0;
   border-radius: var(--radius-full);
   cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .switch input {
@@ -763,7 +988,7 @@ body::-webkit-scrollbar-thumb:hover {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: var(--switch-bg-off);
-  transition: background-color var(--transition-fast);
+  transition: background-color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
 }
@@ -771,46 +996,52 @@ body::-webkit-scrollbar-thumb:hover {
 .switch-slider:before {
   position: absolute;
   content: "";
-  height: 12px;
-  width: 12px;
+  height: 18px;
+  width: 18px;
   left: 2px;
-  bottom: 2px;
+  top: 2px;
   background-color: var(--switch-thumb-bg);
-  transition: transform var(--transition-fast);
-  border-radius: var(--radius-full);
+  transition: transform var(--transition-normal), background-color var(--transition-normal);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Checked Switch Color Transitions */
-#speed-tab input:checked + .switch-slider {
-  background-color: var(--switch-bg-on);
-  border-color: var(--switch-bg-on);
+.switch:hover .switch-slider {
+  border-color: var(--color-border-hover);
+  filter: brightness(1.06);
 }
 
-#focus-tab input:checked + .switch-slider {
+/* Checked (State=Checked) Radix/shadcn Switch Style */
+input:checked + .switch-slider {
   background-color: var(--switch-bg-on);
   border-color: var(--switch-bg-on);
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.35);
 }
 
 input:checked + .switch-slider:before {
-  transform: translateX(16px);
+  transform: translateX(20px);
 }
 
 .switch input:focus-visible + .switch-slider {
-  outline: 2px solid var(--text-primary);
-  outline-offset: 3px;
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--accent-dim);
 }
 
-/* Collapsible Keyboard Hotkeys Binder Section (Horizontal Layout with Symmetrical Grid) */
+/* Collapsible Keyboard Hotkeys Binder Section (Embedded in Single Card) */
 .hotkeys-editor {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-2);
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  margin-top: -4px; /* visually pulls under hotkeys card */
-  transition: opacity var(--transition-fast), filter var(--transition-fast);
+  background: rgba(0, 0, 0, 0.15);
+  border-top: 1px solid var(--color-border);
+  padding: 8px var(--space-4);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+body.light-theme .hotkeys-editor {
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .hotkeys-editor.disabled {

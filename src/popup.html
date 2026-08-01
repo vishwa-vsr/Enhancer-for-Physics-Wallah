@@ -89,6 +89,17 @@
 
 
 
+          <!-- Integrated Hide Speed Widget Footer Row -->
+          <div class="hud-footer-row">
+            <div class="feature-info">
+              <label for="hide-speed-toggle" class="hud-footer-title">Hide Speed Widget</label>
+            </div>
+            <label class="switch" aria-label="Toggle Hide Speed Widget">
+              <input type="checkbox" id="hide-speed-toggle">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
           <!-- Snap Points Editor (Collapsible) -->
           <div id="presets-editor-container" class="presets-editor-container">
             <div class="presets-editor-section">
@@ -96,19 +107,31 @@
               <div class="presets-editor-grid">
                 <div class="preset-edit-box">
                   <span class="preset-label">Pt 1</span>
-                  <input type="number" id="snap-pt1" class="preset-edit-input" min="0.5" max="4.0" step="0.1" value="1.0">
+                  <div class="snap-input-wrapper">
+                    <input type="number" id="snap-pt1" class="snap-edit-input" min="0.5" max="4.0" step="0.1" value="1.0">
+                    <span class="snap-unit">x</span>
+                  </div>
                 </div>
                 <div class="preset-edit-box">
                   <span class="preset-label">Pt 2</span>
-                  <input type="number" id="snap-pt2" class="preset-edit-input" min="0.5" max="4.0" step="0.1" value="2.0">
+                  <div class="snap-input-wrapper">
+                    <input type="number" id="snap-pt2" class="snap-edit-input" min="0.5" max="4.0" step="0.1" value="2.0">
+                    <span class="snap-unit">x</span>
+                  </div>
                 </div>
                 <div class="preset-edit-box">
                   <span class="preset-label">Pt 3</span>
-                  <input type="number" id="snap-pt3" class="preset-edit-input" min="0.5" max="4.0" step="0.1" value="3.0">
+                  <div class="snap-input-wrapper">
+                    <input type="number" id="snap-pt3" class="snap-edit-input" min="0.5" max="4.0" step="0.1" value="3.0">
+                    <span class="snap-unit">x</span>
+                  </div>
                 </div>
                 <div class="preset-edit-box">
                   <span class="preset-label">Pt 4</span>
-                  <input type="number" id="snap-pt4" class="preset-edit-input" min="0.5" max="4.0" step="0.1" value="4.0">
+                  <div class="snap-input-wrapper">
+                    <input type="number" id="snap-pt4" class="snap-edit-input" min="0.5" max="4.0" step="0.1" value="4.0">
+                    <span class="snap-unit">x</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -120,30 +143,32 @@
           <h2 class="section-title">Shortcut & Mouse Wheel Settings</h2>
           
           <div class="toggles-list">
-            <!-- Toggle 1: Enable Keyboard Shortcuts -->
-            <div class="feature-card">
-              <div class="feature-info">
-                <label for="enable-hotkeys-toggle" class="feature-title">Enable Keyboard Hotkeys</label>
+            <!-- Toggle 1: Enable Keyboard Shortcuts (Combined Single Card) -->
+            <div class="feature-card feature-card-combined">
+              <div class="feature-card-main-row">
+                <div class="feature-info">
+                  <label for="enable-hotkeys-toggle" class="feature-title">Enable Keyboard Hotkeys</label>
+                </div>
+                <label class="switch" aria-label="Toggle Keyboard Hotkeys">
+                  <input type="checkbox" id="enable-hotkeys-toggle">
+                  <span class="switch-slider"></span>
+                </label>
               </div>
-              <label class="switch" aria-label="Toggle Keyboard Hotkeys">
-                <input type="checkbox" id="enable-hotkeys-toggle">
-                <span class="switch-slider"></span>
-              </label>
-            </div>
 
-            <!-- Collapsible Hotkeys Editor -->
-            <div class="hotkeys-editor" id="hotkeys-editor-container">
-              <div class="input-row">
-                <span class="input-label">Speed Up Key</span>
-                <input type="text" id="key-speedup" class="hotkey-input" readonly value="">
-              </div>
-              <div class="input-row">
-                <span class="input-label">Slow Down Key</span>
-                <input type="text" id="key-slowdown" class="hotkey-input" readonly value="">
-              </div>
-              <div class="input-row">
-                <span class="input-label">Reset Speed Key</span>
-                <input type="text" id="key-reset" class="hotkey-input" readonly value="">
+              <!-- Collapsible Hotkeys Sub-Row inside Single Card -->
+              <div class="hotkeys-editor" id="hotkeys-editor-container">
+                <div class="input-row">
+                  <span class="input-label">Speed Up Key</span>
+                  <input type="text" id="key-speedup" class="hotkey-input" readonly value="">
+                </div>
+                <div class="input-row">
+                  <span class="input-label">Slow Down Key</span>
+                  <input type="text" id="key-slowdown" class="hotkey-input" readonly value="">
+                </div>
+                <div class="input-row">
+                  <span class="input-label">Reset Speed Key</span>
+                  <input type="text" id="key-reset" class="hotkey-input" readonly value="">
+                </div>
               </div>
             </div>
 
@@ -158,33 +183,33 @@
               </label>
             </div>
 
-            <!-- Toggle 3: Hold Space to Speed Up -->
-            <div class="feature-card">
-              <div class="feature-info">
-                <label for="hold-space-toggle" class="feature-title">Hold Space to Speed Up</label>
+            <!-- Toggle 3: Hold Space to Speed Up (Combined Card) -->
+            <div class="feature-card feature-card-combined">
+              <div class="feature-card-main-row">
+                <div class="feature-info">
+                  <label for="hold-space-toggle" class="feature-title">Hold Space to Speed Up</label>
+                </div>
+                <label class="switch" aria-label="Toggle Hold Space to Speed Up">
+                  <input type="checkbox" id="hold-space-toggle">
+                  <span class="switch-slider"></span>
+                </label>
               </div>
-              <label class="switch" aria-label="Toggle Hold Space to Speed Up">
-                <input type="checkbox" id="hold-space-toggle">
-                <span class="switch-slider"></span>
-              </label>
+
+              <!-- Hold Space Speed Configuration Sub-Row -->
+              <div class="feature-config-row" id="hold-space-config-row">
+                <span class="config-label">Speed Up Rate</span>
+                <div class="stepper-box">
+                  <button type="button" class="stepper-btn" id="hold-space-minus" aria-label="Decrease Speed Rate">−</button>
+                  <div class="stepper-value-wrapper">
+                    <input type="number" id="hold-space-speed" class="stepper-input" min="1.1" max="4.0" step="0.1" value="2.0">
+                    <span class="stepper-unit">x</span>
+                  </div>
+                  <button type="button" class="stepper-btn" id="hold-space-plus" aria-label="Increase Speed Rate">+</button>
+                </div>
+              </div>
             </div>
 
-            <!-- Hold Space Speed Configuration -->
-            <div class="feature-config-row" id="hold-space-config-row">
-              <span class="config-label">Speed Up Rate</span>
-              <input type="number" id="hold-space-speed" class="preset-edit-input" min="1.1" max="4.0" step="0.1" value="2.0">
-            </div>
 
-            <!-- Option 5: Speed Control Widget -->
-            <div class="feature-card">
-              <div class="feature-info">
-                <label for="hide-speed-toggle" class="feature-title">Hide Speed Widget</label>
-              </div>
-              <label class="switch" aria-label="Toggle Hide Speed Widget">
-                <input type="checkbox" id="hide-speed-toggle">
-                <span class="switch-slider"></span>
-              </label>
-            </div>
 
             <!-- Option 9: Instant Hide Controls Button -->
             <div class="feature-card">

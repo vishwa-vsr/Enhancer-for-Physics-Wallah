@@ -5,14 +5,27 @@ All notable changes to the **PW Control** extension project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
-## [1.0.4] - 2026-07-18
+## [1.0.4] - 2026-08-01
 
-### Added
+### Added & Redesigned
 - **Picture-in-Picture (PiP) Mode**: Added a dedicated Picture-in-Picture button on the player control bar next to the fullscreen button. Clicking it lets users watch lectures in a floating, always-on-top window.
-- **PiP Popup Setting Toggle**: Added a toggle switch in the extension popup dashboard to enable or disable the Picture-in-Picture button.
-
+- **Redesigned Pure White 28px Sharp Edge PiP Icon**: Redesigned Picture-in-Picture icon with pure `#ffffff` color, `28px` x `28px` bounds matching native PW toolbar icons (Chat, Q&A, Notes, Gear, Fullscreen), and 100% sharp 90-degree rectangular line geometry (`rx="0"`, `stroke-linejoin="miter"`).
+- **shadcn/ui Switch Redesign**: Redesigned all popup toggle switches to match shadcn / Radix UI switch specifications (`44px` x `24px` pill, `18px` white thumb, Electric Cyan active state with subtle glow).
+- **shadcn/ui Tab Navigation Redesign**: Redesigned top navigation tabs with `3px` padding, rounded pill triggers, and active icon accents. Removed drop shadow from active tab indicator for a flat, modern aesthetic.
+- **Combined Hold-Space & Stepper Pill Control**: Merged "Hold Space to Speed Up" and "Speed Up Rate" into a single unified card featuring tactile `[ − ]  2.0x  [ + ]` stepper controls with hidden spin arrows.
+- **Electric Cyan Snap Points Badges**: Redesigned custom snap point inputs into speed badges with integrated `x` unit badges.
+- **Integrated Hide Speed Widget Footer Row**: Moved "Hide Speed Widget" toggle directly into the `VIDEO SPEED` card footer, eliminating all unused vertical empty space.
+- **Unmounted Collapsed Settings Panel**: Unmounted collapsed **Edit Snap Points** panel with `display: none !important`, completely erasing lingering empty space under the card.
+- **Silky 60 FPS Keyframe Dropdown Animation**: Implemented 2-way `@keyframes slideDownExpand` and `slideUpCollapse` transitions (`220ms`) for buttery smooth gear settings expand/collapse.
+- **100% Solid Bright White Speed Slider Track Line**: Forced the on-player speed slider track line to a solid bright white (`#ffffff`) across the entire bar.
+- **Dead-Center Timeline Tick Dots**: Placed 5px node dots dead-center right on top of the white speed slider line for `1x`, `2x`, `3x`, `4x`.
+- **Unified Enable Keyboard Hotkeys Card**: Combined "Enable Keyboard Hotkeys" toggle switch and keycap binder controls (`H`, `J`, `L`) into a single unified card container (`.feature-card-combined`).
+- **Dead & Useless Code Cleanup**: Removed obsolete `.preset-btn` DOM queries and iteration loops from `popup.js`, and eliminated 30 lines of duplicate static CSS rules from `content.css`, shrinking production bundle sizes.
 
 ### Fixed
+- **PiP Button Center Click Fix**: Applied `pointer-events: none` to inner SVG child shapes and set `z-index: 999999` so center clicks hit the PiP button container directly on the first click.
+- **On-Player Slider Tick Alignment**: Mathematically aligned `.pwc-slider-ticks` with thumb radius offsets (`left: 5.5px`, `width: calc(100% - 11px)`), positioning `1x`, `2x`, `3x`, and `4x` dead-center under the slider thumb.
+- **Settings Gear Dark Hover Box**: Replaced dark background overlay with subtle theme-adaptive hover and smooth 90° gear icon rotation.
 - **Shadow DOM Icon Styling**: Applied inline styles directly to the Picture-in-Picture button and its SVG elements, resolving an issue where the icon failed to render or appeared blank when inserted inside the video player's Shadow DOM.
 
 ## [1.0.3] - 2026-07-13
