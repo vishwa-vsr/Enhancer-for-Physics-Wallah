@@ -266,9 +266,28 @@
     });
   }
 
-  // Helper to find video elements in the document
+  // Helper to find video elements in the document and all shadow roots recursively
   function findVideos(root = document) {
-    return Array.from(root.querySelectorAll('video'));
+    let videos = [];
+    if (!root) return videos;
+    try {
+      if (root.querySelectorAll) {
+        videos = Array.from(root.querySelectorAll('video'));
+        const all = root.querySelectorAll('*');
+        for (let i = 0; i < all.length; i++) {
+          const el = all[i];
+          if (el.shadowRoot) {
+            videos = videos.concat(findVideos(el.shadowRoot));
+          }
+          try {
+            if (el.contentDocument) {
+              videos = videos.concat(findVideos(el.contentDocument));
+            }
+          } catch (e) {}
+        }
+      }
+    } catch (e) {}
+    return videos;
   }
 
   // Helper to find the active video element (selects the video with largest display area)
@@ -284,6 +303,15 @@
       cachedVideo = null;
       return null;
     }
+
+    // Force unlock Picture-in-Picture on all videos found
+    videos.forEach(v => {
+      if (v.hasAttribute('disablepictureinpicture')) {
+        v.removeAttribute('disablepictureinpicture');
+      }
+      v.disablePictureInPicture = false;
+    });
+
     if (videos.length === 1) {
       cachedVideo = videos[0];
       return videos[0];
@@ -292,10 +320,11 @@
     let mainVideo = videos[0];
     let maxArea = -1;
     for (const v of videos) {
-      const isVisible = v.offsetWidth > 0 && v.offsetHeight > 0;
+      const rect = v.getBoundingClientRect ? v.getBoundingClientRect() : { width: v.offsetWidth, height: v.offsetHeight };
+      const isVisible = (rect && (rect.width > 0 || rect.height > 0)) || v.offsetWidth > 0 || v.offsetHeight > 0;
       if (!isVisible) continue;
 
-      const area = (v.videoWidth || v.clientWidth || 0) * (v.videoHeight || v.clientHeight || 0);
+      const area = (rect.width || v.videoWidth || v.clientWidth || 0) * (rect.height || v.videoHeight || v.clientHeight || 0);
       if (area > maxArea) {
         maxArea = area;
         mainVideo = v;
@@ -1188,12 +1217,58 @@
     }, 200);
   }
 
+  let pwcTextTrack = null;
+  let captionIntervalId = null;
+
+  function syncCaptionsToPiP() {
+    if (!document.pictureInPictureElement || !activeVideo) return;
+
+    const root = (activeVideo.getRootNode && activeVideo.getRootNode()) || document;
+    const captionEl = root.querySelector ? (
+      root.querySelector('.vjs-text-track-display') ||
+      root.querySelector('.caption-window') ||
+      root.querySelector('.player-timedtext') ||
+      root.querySelector('.shaka-text-container') ||
+      root.querySelector('[class*="caption"]') ||
+      root.querySelector('[class*="subtitle"]')
+    ) : null;
+
+    if (!captionEl) return;
+
+    const text = (captionEl.textContent || "").trim();
+    if (!pwcTextTrack && typeof activeVideo.addTextTrack === 'function') {
+      try {
+        pwcTextTrack = activeVideo.addTextTrack('captions', 'PWC_captions', 'en');
+        pwcTextTrack.mode = 'showing';
+      } catch (e) {}
+    }
+
+    if (pwcTextTrack && typeof VTTCue !== 'undefined') {
+      try {
+        if (pwcTextTrack.cues) {
+          Array.from(pwcTextTrack.cues).forEach(cue => pwcTextTrack.removeCue(cue));
+        }
+        if (text) {
+          const cue = new VTTCue(activeVideo.currentTime, activeVideo.currentTime + 10, text);
+          pwcTextTrack.addCue(cue);
+        }
+      } catch (e) {}
+    }
+  }
+
   function onEnterPiP() {
     updatePiPButtonUI(true);
+    if (!captionIntervalId) {
+      captionIntervalId = setInterval(syncCaptionsToPiP, 500);
+    }
   }
 
   function onLeavePiP() {
     updatePiPButtonUI(false);
+    if (captionIntervalId) {
+      clearInterval(captionIntervalId);
+      captionIntervalId = null;
+    }
   }
 
   // Save the speed setting and apply it to the video
@@ -1210,10 +1285,8 @@
 
   // Update the progress track background of the range input dynamically
   function updateSliderBackground(slider, val) {
-    const min = parseFloat(slider.min);
-    const max = parseFloat(slider.max);
-    const pct = ((val - min) / (max - min)) * 100;
-    slider.style.background = `linear-gradient(to right, #ffffff 0%, #ffffff ${pct}%, rgba(255, 255, 255, 0.25) ${pct}%, rgba(255, 255, 255, 0.25) 100%)`;
+    if (!slider) return;
+    slider.style.setProperty('background', '#ffffff', 'important');
   }
 
   // Bind mouse drag and scroll wheel events to a speed control container
@@ -1225,8 +1298,8 @@
     slider.addEventListener('input', (e) => {
       let val = parseFloat(e.target.value);
       
-      // Magnetic snapping effect (snaps within 0.18 threshold to custom snap points)
-      const threshold = 0.18;
+      // Magnetic attraction snapping effect (snaps within 0.22 threshold to snap point dots)
+      const threshold = 0.22;
       for (const snap of snapPoints) {
         if (Math.abs(val - snap) <= threshold) {
           val = snap;
@@ -1543,15 +1616,17 @@
   }
 
   function stylePiPButton(btn) {
+    btn.style.setProperty('position', 'relative', 'important');
+    btn.style.setProperty('z-index', '999999', 'important');
+    btn.style.setProperty('pointer-events', 'auto', 'important');
     btn.style.setProperty('height', '100%', 'important');
     btn.style.setProperty('width', '36px', 'important');
     btn.style.setProperty('display', 'inline-flex', 'important');
     btn.style.setProperty('align-items', 'center', 'important');
     btn.style.setProperty('justify-content', 'center', 'important');
-    btn.style.setProperty('z-index', '1000', 'important');
     btn.style.setProperty('background', 'transparent', 'important');
     btn.style.setProperty('border', 'none', 'important');
-    btn.style.setProperty('color', 'rgba(255, 255, 255, 0.75)', 'important');
+    btn.style.setProperty('color', '#ffffff', 'important');
     btn.style.setProperty('cursor', 'pointer', 'important');
     btn.style.setProperty('padding', '0', 'important');
     btn.style.setProperty('margin', '0 6px', 'important');
@@ -1561,12 +1636,48 @@
       btn.pwcHasHoverListeners = true;
       btn.addEventListener('mouseenter', () => {
         btn.style.setProperty('color', '#ffffff', 'important');
-        btn.style.setProperty('transform', 'scale(1.15)', 'important');
+        btn.style.setProperty('transform', 'scale(1.12)', 'important');
       });
       btn.addEventListener('mouseleave', () => {
-        btn.style.setProperty('color', 'rgba(255, 255, 255, 0.75)', 'important');
+        btn.style.setProperty('color', '#ffffff', 'important');
         btn.style.setProperty('transform', 'scale(1)', 'important');
       });
+    }
+  }
+
+  // Robust PiP toggler with immediate synchronous execution to preserve User Gesture activation
+  function togglePiP(video) {
+    if (!video) return;
+
+    // Force-enable Picture-in-Picture on video
+    video.disablePictureInPicture = false;
+    if (video.hasAttribute('disablepictureinpicture')) {
+      video.removeAttribute('disablepictureinpicture');
+    }
+
+    if (document.pictureInPictureElement) {
+      if (document.exitPictureInPicture) {
+        document.exitPictureInPicture().catch(() => {});
+      }
+    } else {
+      let promise = null;
+      if (typeof video.requestPictureInPicture === 'function') {
+        try { promise = video.requestPictureInPicture(); } catch (e) {}
+      }
+      if (!promise && HTMLVideoElement.prototype.requestPictureInPicture) {
+        try { promise = HTMLVideoElement.prototype.requestPictureInPicture.call(video); } catch (e) {}
+      }
+
+      if (promise && typeof promise.catch === 'function') {
+        promise.catch(err => {
+          console.warn("PW Control: Primary PiP request failed, trying prototype call fallback:", err);
+          if (HTMLVideoElement.prototype.requestPictureInPicture) {
+            HTMLVideoElement.prototype.requestPictureInPicture.call(video).catch(() => {
+              showInfoToast("Failed to enter Picture-in-Picture.");
+            });
+          }
+        });
+      }
     }
   }
 
@@ -1574,33 +1685,35 @@
     if (btn.pwcHasClickEventListener) return;
     btn.pwcHasClickEventListener = true;
 
-    btn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      // Do NOT call e.preventDefault() here! In some Chromium browsers, preventDefault() on user
-      // gestures flags the activation as consumed/cancelled, blocking video.requestPictureInPicture().
-
+    btn.addEventListener('click', () => {
       const video = getActiveVideo();
-      if (!video) return;
-
-      // Force-enable Picture-in-Picture in case the player script locked it
-      video.disablePictureInPicture = false;
-
-      if (video.readyState === 0) {
-        showInfoToast("Video still loading... Try again.");
-        return;
+      if (video) {
+        togglePiP(video);
       }
+    });
+  }
 
-      try {
-        if (document.pictureInPictureElement) {
-          await document.exitPictureInPicture();
-        } else {
-          await video.requestPictureInPicture();
+  // Find native or player-provided PiP buttons on the page so we can attach working handlers to them
+  function findNativePiPButtons() {
+    const video = getActiveVideo();
+    if (!video) return [];
+
+    const root = (video.getRootNode && video.getRootNode()) || document;
+    const buttons = Array.from(root.querySelectorAll ? root.querySelectorAll(
+      '[class*="pip" i], [id*="pip" i], [title*="picture" i], [aria-label*="picture" i]'
+    ) || [] : []);
+
+    const fsBtn = findFullscreenButton();
+    if (fsBtn) {
+      const fsWrapper = fsBtn.closest('.flex-col') || fsBtn.closest('button') || fsBtn.parentElement;
+      if (fsWrapper && fsWrapper.nextElementSibling) {
+        const nextBtn = getControlButton(fsWrapper.nextElementSibling) || fsWrapper.nextElementSibling;
+        if (nextBtn && !buttons.includes(nextBtn) && nextBtn.id !== 'pwc-pip-btn') {
+          buttons.push(nextBtn);
         }
-      } catch (err) {
-        console.error("PW Control: Failed to toggle Picture-in-Picture:", err);
-        showInfoToast("Failed to enter Picture-in-Picture.");
       }
-    }, true);
+    }
+    return buttons;
   }
 
   // Remove all injected instances of PiP buttons across light and shadow DOMs
@@ -1622,9 +1735,20 @@
     const video = getActiveVideo();
     if (!video) return;
 
-    if (typeof video.requestPictureInPicture !== 'function') return;
+    // Attach working listener to any native PiP button in PW player toolbar
+    const nativeBtns = findNativePiPButtons();
+    nativeBtns.forEach(nBtn => {
+      if (nBtn && nBtn.id !== 'pwc-pip-btn' && !nBtn.pwcHasNativePiPListener) {
+        nBtn.pwcHasNativePiPListener = true;
+        nBtn.addEventListener('click', () => {
+          const v = getActiveVideo();
+          if (v) {
+            togglePiP(v);
+          }
+        });
+      }
+    });
 
-    // If disabled, remove all instances of the button if they exist
     if (!extensionEnabled || !enablePiP) {
       removeAllPiPButtons();
       return;
@@ -1645,7 +1769,7 @@
       }
     }
 
-    const parent = controlBar || fallbackControlBar || footerRight;
+    const parent = controlBar || fallbackControlBar || footerRight || (video.parentElement || video.parentNode);
     if (!parent) return;
 
     // Target the light DOM container or shadow container
@@ -1720,50 +1844,64 @@
     svg.setAttribute('fill', 'none');
     svg.setAttribute('stroke', 'currentColor');
     svg.setAttribute('stroke-width', '2.3');
-    svg.setAttribute('stroke-linecap', 'round');
-    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('stroke-linecap', 'square');
+    svg.setAttribute('stroke-linejoin', 'miter');
 
-    // Inline style for SVG to make sure it renders even inside Shadow DOM
-    svg.style.setProperty('width', '22px', 'important');
-    svg.style.setProperty('height', '22px', 'important');
+    // Inline style for SVG to make sure it renders even inside Shadow DOM and passes clicks to the parent button
+    svg.style.setProperty('width', '28px', 'important');
+    svg.style.setProperty('height', '28px', 'important');
     svg.style.setProperty('stroke', 'currentColor', 'important');
-    svg.style.setProperty('stroke-width', '2.3', 'important');
+    svg.style.setProperty('stroke-width', '2.4', 'important');
     svg.style.setProperty('fill', 'none', 'important');
     svg.style.setProperty('transition', 'transform 0.2s ease', 'important');
+    svg.style.setProperty('pointer-events', 'none', 'important');
 
     if (isInPiP) {
-      // Exit PiP Icon
+      // Exit PiP Icon: Sharp outer screen frame + exit diagonal arrow
       const rect = document.createElementNS(svgNS, 'rect');
       rect.setAttribute('x', '2');
       rect.setAttribute('y', '4');
       rect.setAttribute('width', '20');
-      rect.setAttribute('height', '16');
-      rect.setAttribute('rx', '2');
-      rect.setAttribute('ry', '2');
+      rect.setAttribute('height', '14');
+      rect.setAttribute('rx', '0');
+      rect.setAttribute('ry', '0');
+      rect.setAttribute('fill', 'none');
+      rect.style.setProperty('fill', 'none', 'important');
+      rect.style.setProperty('pointer-events', 'none', 'important');
       svg.appendChild(rect);
 
       const path = document.createElementNS(svgNS, 'path');
       path.setAttribute('d', 'M10 10l-4-4m0 0h3m-3 0v3');
+      path.style.setProperty('pointer-events', 'none', 'important');
       svg.appendChild(path);
     } else {
-      // Enter PiP Icon
+      // Enter PiP Icon: Sharp rectangular line geometry
       const rect1 = document.createElementNS(svgNS, 'rect');
       rect1.setAttribute('x', '2');
       rect1.setAttribute('y', '4');
       rect1.setAttribute('width', '20');
-      rect1.setAttribute('height', '16');
-      rect1.setAttribute('rx', '2');
-      rect1.setAttribute('ry', '2');
+      rect1.setAttribute('height', '14');
+      rect1.setAttribute('rx', '0');
+      rect1.setAttribute('ry', '0');
+      rect1.setAttribute('fill', 'none');
+      rect1.style.setProperty('fill', 'none', 'important');
+      rect1.style.setProperty('pointer-events', 'none', 'important');
       svg.appendChild(rect1);
 
+      // Inner Floating PiP Window (sharp 90-degree rectangular outline)
       const rect2 = document.createElementNS(svgNS, 'rect');
-      rect2.setAttribute('x', '13');
-      rect2.setAttribute('y', '12');
-      rect2.setAttribute('width', '7');
+      rect2.setAttribute('x', '11');
+      rect2.setAttribute('y', '10');
+      rect2.setAttribute('width', '8');
       rect2.setAttribute('height', '6');
-      rect2.setAttribute('rx', '1');
-      rect2.setAttribute('fill', 'currentColor');
-      rect2.style.setProperty('fill', 'currentColor', 'important');
+      rect2.setAttribute('rx', '0');
+      rect2.setAttribute('ry', '0');
+      rect2.setAttribute('fill', 'none');
+      rect2.setAttribute('stroke', 'currentColor');
+      rect2.style.setProperty('fill', 'none', 'important');
+      rect2.style.setProperty('stroke', 'currentColor', 'important');
+      rect2.style.setProperty('stroke-width', '2.2', 'important');
+      rect2.style.setProperty('pointer-events', 'none', 'important');
       svg.appendChild(rect2);
     }
     btn.appendChild(svg);

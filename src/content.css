@@ -91,7 +91,7 @@
   appearance: none;
   width: 100%;
   height: 3px;
-  background: rgba(255, 255, 255, 0.25);
+  background: #ffffff !important;
   border-radius: 1.5px;
   outline: none;
   cursor: pointer;
@@ -131,33 +131,62 @@
   transform: scale(1.2);
 }
 
-/* Ticks container */
+/* Ticks container (Mathematically aligned with 11px slider thumb center) */
 .pwc-slider-ticks {
   position: absolute;
-  bottom: -9px;
-  left: 0;
-  width: 100%;
-  height: 10px;
+  top: 0;
+  bottom: 0;
+  left: 5.5px;
+  width: calc(100% - 11px);
+  height: 100%;
   pointer-events: none;
   z-index: 1;
+  box-sizing: border-box;
 }
 
 /* Tick label style */
 .pwc-tick-label {
   position: absolute;
+  top: 0;
+  bottom: 0;
   transform: translateX(-50%);
-  font-size: 10.5px;
+  font-size: 12.5px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
+  color: #ffffff;
   transition: color 0.15s ease;
   line-height: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  text-shadow: none !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 17px;
+  pointer-events: none;
 }
 
-/* Active snap point tick highlight */
+/* Timeline Node Dots DEAD CENTER ON THE WHITE SPEED LINE */
+.pwc-tick-label::before {
+  content: "";
+  position: absolute;
+  top: 9.5px;
+  width: 5px;
+  height: 5px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+  transition: transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.18s ease, box-shadow 0.18s ease;
+  z-index: 1;
+}
+
+/* Active snap point tick highlight & MAGNETIC ATTRACTION PULSE */
 .pwc-tick-label.pwc-active-tick {
-  color: #5a4bda;
-  text-shadow: 0 0 4px rgba(90, 75, 218, 0.6);
+  color: #a78bfa;
+  text-shadow: none !important;
+}
+
+.pwc-tick-label.pwc-active-tick::before {
+  background-color: #a78bfa;
+  transform: scale(1.6);
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.9);
 }
 
 /* Premium Visual Speed Toast Overlay Notification */
@@ -321,36 +350,7 @@ html.pwc-collapsed-state * {
   cursor: none !important;
 }
 
-/* Picture-in-Picture Button */
-.pwc-pip-btn {
-  height: 100% !important;
-  width: 36px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 1000 !important;
-  background: transparent !important;
-  border: none !important;
-  color: rgba(255, 255, 255, 0.75) !important;
-  cursor: pointer !important;
-  transition: color 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease !important;
-  padding: 0 !important;
-  margin: 0 6px !important;
-}
 
-.pwc-pip-btn:hover {
-  color: #ffffff !important;
-  transform: scale(1.15) !important;
-}
-
-.pwc-pip-btn svg {
-  width: 22px !important;
-  height: 22px !important;
-  stroke: currentColor !important;
-  stroke-width: 2.3 !important;
-  fill: none !important;
-  transition: transform 0.2s ease !important;
-}
 
 
 
