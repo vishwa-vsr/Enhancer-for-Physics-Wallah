@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="src/icons/icon128.png" width="96" height="96" alt="PW Control Logo" />
+  <img src="src/icons/icon128.png" width="96" height="96" alt="Enhancer for Physics Wallah Logo" />
   
-  #  PW Control
+  #  Enhancer for Physics Wallah
   ### Playback Speed & Focus Extension for Physics Wallah (`pw.live`)
 
   [![Version: 1.0.4](https://img.shields.io/badge/version-1.0.4-blue.svg)](#)
@@ -10,7 +10,7 @@
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-orange?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/pw-control/)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--on-green?logo=microsoft-edge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan)
 
-  **PW Control** is a simple, lightweight browser extension that gives you complete control over your video playback on the `pw.live` student portal. It adds a custom speed slider (from `0.5x` up to `4.0x`) and toggles to hide distracting screen elements (like chats, notes, and doubt boxes) directly inside the video player.
+  **Enhancer for Physics Wallah** is a simple, lightweight browser extension that gives you complete control over your video playback on the `pw.live` student portal. It adds a custom speed slider (from `0.5x` up to `4.0x`), Picture-in-Picture mode, and toggles to hide distracting screen elements (like chats, notes, and doubt boxes) directly inside the video player.
 
   [Direct Download](#-direct-store-downloads) • [Key Features](#-key-features) • [Project Structure](#-project-structure) • [How to Build](#-how-to-build)
 </div>
@@ -23,11 +23,11 @@ Default online video players are often slow, limited to 2x speed, and filled wit
 
 This extension lets you:
 - **Set any speed** up to `4.0x` (with customized preset buttons and a hold-space speedup option).
-- **Skip silent parts** automatically using a smart sound scanner that fast-forwards through quiet gaps.
+- **Pop out Picture-in-Picture** floating player to multitask while watching lectures across any app.
 - **Hide screen clutter** with simple toggles to hide notes, doubt boxes, and floating AI buttons.
 
 > [!NOTE]
-> PW Control is built with **zero external dependencies** (no frameworks, no heavy libraries) using vanilla JavaScript, HTML, and CSS. This keeps it incredibly light, memory-efficient, and fast.
+> Enhancer for Physics Wallah is built with **zero external dependencies** (no frameworks, no heavy libraries) using vanilla JavaScript, HTML, and CSS. This keeps it incredibly light, memory-efficient, and fast.
 
 ---
 
