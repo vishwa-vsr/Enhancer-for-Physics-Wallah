@@ -1,10 +1,20 @@
 # Changelog
 
-All notable changes to the **PW Control** extension project will be documented in this file.
+All notable changes to the **Enhancer for Physics Wallah** extension project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+
+## [1.0.5] - 2026-08-01
+
+### Rebranded
+- **Official Rebranding**: Renamed the extension from `PW Control` to **Enhancer for Physics Wallah** across all manifests, code assets, documentation, and promotional packages.
+- **New 2D Flat Vector Logo**: Upgraded extension icons to the new transparent **Deep Blue & Cyan Wave Arrow** logo with soft curved squircle edges.
+- **Web Store Promo Suite**: Generated high-resolution 1280x800 promo posters, 440x280 small tile banner, and 1400x560 marquee hero banner featuring the white gradient grid layout and zero emojis.
+
+---
+
 ## [1.0.4] - 2026-08-01
 
 ### Added & Redesigned
