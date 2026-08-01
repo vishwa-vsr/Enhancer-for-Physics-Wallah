@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/icons/icon128.png" width="96" height="96" alt="Enhancer for Physics Wallah Logo" />
+  <img src="assets/logo_300.png" width="120" height="120" alt="Enhancer for Physics Wallah Logo" />
   
   #  Enhancer for Physics Wallah
   ### Playback Speed & Focus Extension for Physics Wallah (`pw.live`)
