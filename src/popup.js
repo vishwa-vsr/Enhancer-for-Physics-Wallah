@@ -66,7 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const customToggles = {
     enableHotkeys: document.getElementById('enable-hotkeys-toggle'),
     disableScroll: document.getElementById('disable-scroll-toggle'),
-    holdSpaceSpeedUp: document.getElementById('hold-space-toggle')
+    holdSpaceSpeedUp: document.getElementById('hold-space-toggle'),
+    alwaysExpandWidget: document.getElementById('always-expand-toggle')
   };
 
   const holdSpaceSpeedInput = document.getElementById('hold-space-speed');
@@ -202,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   safeStorageGet(
-    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP'],
+    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP'],
     (result) => {
       applyTheme(result.themeMode === 'light');
       // Load focus toggles
@@ -230,6 +231,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (customToggles.holdSpaceSpeedUp) {
         customToggles.holdSpaceSpeedUp.checked = !!result.holdSpaceSpeedUp;
         toggleHoldSpaceConfig(!result.holdSpaceSpeedUp);
+      }
+      if (customToggles.alwaysExpandWidget) {
+        customToggles.alwaysExpandWidget.checked = !!result.alwaysExpandWidget;
       }
       if (holdSpaceSpeedInput) {
         holdSpaceSpeedInput.value = result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed).toFixed(1) : "2.0";

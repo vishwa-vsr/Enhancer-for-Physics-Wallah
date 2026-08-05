@@ -32,6 +32,19 @@
   let spacePressTimer = null;
   let isHoldingSpace = false;
   let speedBeforeHold = 1.0;
+  let isPointerHoldingOnPlayer = false;
+  let alwaysExpandWidget = false;
+
+  function applyAlwaysExpandState() {
+    const container = document.getElementById('pwc-speed-control');
+    if (container) {
+      if (alwaysExpandWidget) {
+        container.classList.add('pwc-always-expanded');
+      } else {
+        container.classList.remove('pwc-always-expanded');
+      }
+    }
+  }
 
 
 
@@ -96,7 +109,7 @@
     }
     try {
       chrome.storage.local.get(
-        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP'], 
+        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP'], 
         function (result) {
           try {
             if (chrome.runtime && chrome.runtime.id) {
@@ -155,9 +168,12 @@
     disableScroll = !!result.disableScroll;
     holdSpaceSpeedUp = !!result.holdSpaceSpeedUp;
     holdSpaceSpeed = result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed) : 2.0;
+    alwaysExpandWidget = !!result.alwaysExpandWidget;
     keySpeedUp = result.keySpeedUp || 'h';
     keySlowDown = result.keySlowDown || 'j';
     keyReset = result.keyReset || 'l';
+
+    applyAlwaysExpandState();
 
     if (activeVideo) {
       activeVideo.autoPictureInPicture = enablePiP;
@@ -219,6 +235,10 @@
             }
             if (changes.hasOwnProperty('keySlowDown')) {
               keySlowDown = changes.keySlowDown.newValue;
+            }
+            if (changes.hasOwnProperty('alwaysExpandWidget')) {
+              alwaysExpandWidget = !!changes.alwaysExpandWidget.newValue;
+              applyAlwaysExpandState();
             }
             if (changes.hasOwnProperty('keyReset')) {
               keyReset = changes.keyReset.newValue;
@@ -706,6 +726,7 @@
     sliderWrapper.appendChild(ticks);
     sliderContainer.appendChild(sliderWrapper);
     container.appendChild(sliderContainer);
+    applyAlwaysExpandState();
   }
 
   // Inject floating widget directly inside the player's controls container
@@ -775,68 +796,7 @@
     }
   }
 
-  // Display a visual speed toast overlay inside the player on change using safe DOM APIs
-  function showSpeedToast(speed) {
-    const video = getActiveVideo();
-    if (!video) return;
-    const playerContainer = video.parentElement;
-    if (!playerContainer) return;
 
-    let toast = playerContainer.querySelector('#pwc-speed-toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'pwc-speed-toast';
-      toast.className = 'pwc-speed-toast';
-      playerContainer.appendChild(toast);
-    }
-
-    toast.textContent = '';
-
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', 'currentColor');
-    svg.setAttribute('stroke-width', '2.2');
-    svg.setAttribute('stroke-linecap', 'round');
-    svg.setAttribute('stroke-linejoin', 'round');
-
-    const path = document.createElementNS(svgNS, 'path');
-    path.setAttribute('d', 'M6 18A8 8 0 1 1 18 18');
-    svg.appendChild(path);
-
-    const line = document.createElementNS(svgNS, 'line');
-    line.setAttribute('x1', '12');
-    line.setAttribute('y1', '14');
-    line.setAttribute('x2', '15');
-    line.setAttribute('y2', '9');
-    svg.appendChild(line);
-
-    const circle = document.createElementNS(svgNS, 'circle');
-    circle.setAttribute('cx', '12');
-    circle.setAttribute('cy', '14');
-    circle.setAttribute('r', '1.5');
-    circle.setAttribute('fill', 'currentColor');
-    svg.appendChild(circle);
-
-    toast.appendChild(svg);
-
-    const span = document.createElement('span');
-    span.textContent = `${speed.toFixed(1)}x`;
-    toast.appendChild(span);
-
-    if (toastTimeout) {
-      clearTimeout(toastTimeout);
-    }
-
-    toast.classList.remove('pwc-toast-visible');
-    toast.offsetHeight; 
-    toast.classList.add('pwc-toast-visible');
-
-    toastTimeout = setTimeout(() => {
-      toast.classList.remove('pwc-toast-visible');
-    }, 800);
-  }
 
   // Display a visual warning/info toast overlay inside the player using safe DOM APIs
   function showInfoToast(text) {
@@ -1207,7 +1167,6 @@
     if (isSettingRate || !activeVideo) return;
     currentSpeed = activeVideo.playbackRate;
     updateUI();
-    showSpeedToast(currentSpeed);
   }
 
   // Delay applying speed on play to allow player init scripts to settle
@@ -1273,13 +1232,8 @@
 
   // Save the speed setting and apply it to the video
   function saveSpeed(speed) {
-    const changed = (currentSpeed !== speed);
     currentSpeed = speed;
     applySpeedToActiveVideo();
-
-    if (changed) {
-      showSpeedToast(speed);
-    }
     safeSetSettings({ preferredSpeed: speed });
   }
 
@@ -1294,6 +1248,22 @@
     const slider = container.querySelector('.pwc-speed-slider');
 
     updateSliderBackground(slider, currentSpeed);
+
+    let mouseLeaveTimer = null;
+    container.addEventListener('mouseenter', () => {
+      if (mouseLeaveTimer) {
+        clearTimeout(mouseLeaveTimer);
+        mouseLeaveTimer = null;
+      }
+      container.classList.add('pwc-expanded');
+    });
+
+    container.addEventListener('mouseleave', () => {
+      if (alwaysExpandWidget) return;
+      mouseLeaveTimer = setTimeout(() => {
+        container.classList.remove('pwc-expanded');
+      }, 250);
+    });
 
     slider.addEventListener('input', (e) => {
       let val = parseFloat(e.target.value);
@@ -1407,7 +1377,6 @@
       }
     }
     updateUI();
-    showSpeedToast(speed);
   }
 
   // Helper to check if user is typing in a text entry field
@@ -1486,6 +1455,29 @@
       isHoldingSpace = false;
     }
   });
+
+  // Track screen hold state to suppress custom top pill during PW native screen hold
+  const startHold = (e) => {
+    const video = getActiveVideo();
+    if (!video) return;
+    const playerContainer = document.getElementById('video-player-container') || video.closest('.video-player-app') || video.parentElement;
+    if (playerContainer && playerContainer.contains(e.target)) {
+      isPointerHoldingOnPlayer = true;
+    }
+  };
+
+  const endHold = () => {
+    isPointerHoldingOnPlayer = false;
+  };
+
+  document.addEventListener('pointerdown', startHold, true);
+  document.addEventListener('mousedown', startHold, true);
+  document.addEventListener('touchstart', startHold, true);
+
+  document.addEventListener('pointerup', endHold, true);
+  document.addEventListener('mouseup', endHold, true);
+  document.addEventListener('touchend', endHold, true);
+  document.addEventListener('pointercancel', endHold, true);
 
 
 
