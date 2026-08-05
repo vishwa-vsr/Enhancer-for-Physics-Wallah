@@ -800,6 +800,125 @@
         applyDistractorsState();
       }
     }
+    injectQualityControl();
+  }
+
+  // Programmatically construct the dedicated quality widget displaying 720, 480, etc.
+  function buildQualityControl(container) {
+    container.textContent = '';
+
+    const currentLabel = (preferredQuality || '720p').replace('p', '').trim(); // e.g. "720" or "480"
+
+    const btn = document.createElement('button');
+    btn.className = 'pwc-quality-btn';
+    btn.type = 'button';
+    btn.setAttribute('title', 'Video Quality (Click to switch 720)');
+
+    const badge = document.createElement('span');
+    badge.className = 'pwc-quality-badge';
+    badge.textContent = currentLabel;
+    btn.appendChild(badge);
+
+    // Single Click: Instantly switch to 720
+    btn.addEventListener('click', () => {
+      saveQualitySetting('720p');
+    });
+
+    container.appendChild(btn);
+
+    // Pop-Out Quality Selector Menu (Pops up above control bar)
+    const menuContainer = document.createElement('div');
+    menuContainer.className = 'pwc-quality-menu-container';
+
+    const qualityOptions = ['720p', '480p', '360p', '240p', 'Auto'];
+    qualityOptions.forEach(opt => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      const optLabel = opt.replace('p', '');
+      item.className = `pwc-quality-item ${currentLabel.toLowerCase() === optLabel.toLowerCase() ? 'active' : ''}`;
+      item.textContent = optLabel;
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        saveQualitySetting(opt);
+      });
+      menuContainer.appendChild(item);
+    });
+
+    container.appendChild(menuContainer);
+  }
+
+  function saveQualitySetting(q) {
+    preferredQuality = q;
+    safeSetSettings({ preferredQuality: q });
+    updateQualityUI();
+    autoApplyVideoQuality();
+  }
+
+  function updateQualityUI() {
+    const qBadge = document.querySelector('#pwc-quality-control .pwc-quality-badge');
+    if (qBadge) {
+      qBadge.textContent = (preferredQuality || '720p').replace('p', '').trim();
+    }
+    const currentLabel = (preferredQuality || '720p').replace('p', '').trim().toLowerCase();
+    document.querySelectorAll('#pwc-quality-control .pwc-quality-item').forEach(item => {
+      if (item.textContent.trim().toLowerCase() === currentLabel) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+  }
+
+  function injectQualityControl() {
+    if (!extensionEnabled) {
+      const container = document.getElementById('pwc-quality-control');
+      if (container) container.remove();
+      return;
+    }
+    const footerRight = document.getElementById('footer-right-section');
+    if (footerRight) {
+      if (!document.getElementById('pwc-quality-control')) {
+        const container = document.createElement('div');
+        container.id = 'pwc-quality-control';
+        container.className = 'pwc-quality-container';
+        buildQualityControl(container);
+
+        const speedCtrl = document.getElementById('pwc-speed-control');
+        if (speedCtrl && speedCtrl.nextSibling) {
+          footerRight.insertBefore(container, speedCtrl.nextSibling);
+        } else {
+          footerRight.appendChild(container);
+        }
+      } else {
+        updateQualityUI();
+      }
+      return;
+    }
+
+    const settingsBtn = findSettingsButton();
+    const fullscreenBtn = findFullscreenButton();
+    const refBtn = settingsBtn || fullscreenBtn;
+
+    if (refBtn) {
+      const parent = getToolbarContainer(refBtn);
+      if (parent) {
+        if (!document.getElementById('pwc-quality-control')) {
+          const container = document.createElement('div');
+          container.id = 'pwc-quality-control';
+          container.className = 'pwc-quality-container';
+          buildQualityControl(container);
+
+          const speedCtrl = document.getElementById('pwc-speed-control');
+          if (speedCtrl && speedCtrl.nextSibling) {
+            parent.insertBefore(container, speedCtrl.nextSibling);
+          } else {
+            parent.appendChild(container);
+          }
+        } else {
+          updateQualityUI();
+        }
+      }
+    }
   }
 
 
