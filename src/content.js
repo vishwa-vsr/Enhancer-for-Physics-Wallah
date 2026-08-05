@@ -1188,47 +1188,15 @@
       });
     } catch (e) {}
 
-    // 2. Inject lightweight page-context script to set VideoJS / HLS quality levels directly
+    // 2. Inject lightweight page-context script via web_accessible_resources to bypass CSP limits
     const scriptId = 'pwc-quality-engine-script';
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement('script');
-      script.id = scriptId;
-      script.textContent = `
-        (function() {
-          function setPlayerQuality(q) {
-            try {
-              if (window.videojs && window.videojs.players) {
-                Object.keys(window.videojs.players).forEach(function(id) {
-                  var p = window.videojs.players[id];
-                  if (p && p.qualityLevels) {
-                    var levels = p.qualityLevels();
-                    if (levels && levels.length) {
-                      var targetH = parseInt(q, 10);
-                      var hasTarget = false;
-                      for (var i = 0; i < levels.length; i++) {
-                        if (levels[i].height == targetH) { hasTarget = true; break; }
-                      }
-                      for (var j = 0; j < levels.length; j++) {
-                        if (q === 'auto' || !hasTarget) {
-                          levels[j].enabled = true;
-                        } else {
-                          levels[j].enabled = (levels[j].height == targetH);
-                        }
-                      }
-                    }
-                  }
-                });
-              }
-            } catch(err) {}
-          }
-          window.addEventListener('message', function(ev) {
-            if (ev && ev.data && ev.data.type === 'PWC_SET_QUALITY') {
-              setPlayerQuality(ev.data.quality);
-            }
-          });
-        })();
-      `;
-      (document.head || document.documentElement).appendChild(script);
+    if (!document.getElementById(scriptId) && typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
+      try {
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = chrome.runtime.getURL('inject.js');
+        (document.head || document.documentElement).appendChild(script);
+      } catch (e) {}
     }
 
     // Send quality setting to injected page-level player hook

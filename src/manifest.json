@@ -36,5 +36,18 @@
       "run_at": "document_start",
       "all_frames": true
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "inject.js"
+      ],
+      "matches": [
+        "*://*.pw.live/*",
+        "*://*.penpencil.co/*",
+        "*://*.penpencil.xyz/*",
+        "*://*.pwnet.in/*"
+      ]
+    }
   ]
 }
