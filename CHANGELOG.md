@@ -4,6 +4,14 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2026-08-05
+
+### Added & Improved
+- **Default Video Quality Selector (Closes #1)**: Added a new Default Video Quality dropdown selector (`Auto`, `720p`, `480p`, `360p`, `240p`) in the popup dashboard right under the Speed tab. When opening any lecture video on `pw.live`, the extension automatically sets the player resolution to your preferred quality.
+- **Auto Quality Fallback**: Automatically selects the highest available resolution if your exact preferred quality level isn't available for a specific lecture.
+
+---
+
 ## [1.0.6] - 2026-08-05
 
 ### Added & Improved

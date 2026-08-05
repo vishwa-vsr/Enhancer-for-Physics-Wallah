@@ -202,8 +202,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+  const qualitySelect = document.getElementById('quality-select');
+
   safeStorageGet(
-    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP'],
+    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'preferredQuality', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP'],
     (result) => {
       applyTheme(result.themeMode === 'light');
       // Load focus toggles
@@ -234,6 +236,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (customToggles.alwaysExpandWidget) {
         customToggles.alwaysExpandWidget.checked = !!result.alwaysExpandWidget;
+      }
+      if (qualitySelect) {
+        qualitySelect.value = result.preferredQuality || '720p';
       }
       if (holdSpaceSpeedInput) {
         holdSpaceSpeedInput.value = result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed).toFixed(1) : "2.0";
@@ -291,6 +296,12 @@ document.addEventListener('DOMContentLoaded', () => {
         safeStorageSet({ [key]: isChecked });
       });
     }
+  }
+
+  if (qualitySelect) {
+    qualitySelect.addEventListener('change', (e) => {
+      safeStorageSet({ preferredQuality: e.target.value });
+    });
   }
 
   // Bind interactive hold space custom speed rate changes

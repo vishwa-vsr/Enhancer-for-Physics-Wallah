@@ -34,6 +34,7 @@
   let speedBeforeHold = 1.0;
   let isPointerHoldingOnPlayer = false;
   let alwaysExpandWidget = false;
+  let preferredQuality = '720p';
 
   function applyAlwaysExpandState() {
     const container = document.getElementById('pwc-speed-control');
@@ -109,7 +110,7 @@
     }
     try {
       chrome.storage.local.get(
-        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP'], 
+        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'preferredQuality', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP'], 
         function (result) {
           try {
             if (chrome.runtime && chrome.runtime.id) {
@@ -169,6 +170,7 @@
     holdSpaceSpeedUp = !!result.holdSpaceSpeedUp;
     holdSpaceSpeed = result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed) : 2.0;
     alwaysExpandWidget = !!result.alwaysExpandWidget;
+    preferredQuality = result.preferredQuality || '720p';
     keySpeedUp = result.keySpeedUp || 'h';
     keySlowDown = result.keySlowDown || 'j';
     keyReset = result.keyReset || 'l';
@@ -239,6 +241,10 @@
             if (changes.hasOwnProperty('alwaysExpandWidget')) {
               alwaysExpandWidget = !!changes.alwaysExpandWidget.newValue;
               applyAlwaysExpandState();
+            }
+            if (changes.hasOwnProperty('preferredQuality')) {
+              preferredQuality = changes.preferredQuality.newValue || '720p';
+              autoApplyVideoQuality();
             }
             if (changes.hasOwnProperty('keyReset')) {
               keyReset = changes.keyReset.newValue;
@@ -1169,10 +1175,59 @@
     updateUI();
   }
 
+  // Automatically select default video quality (e.g. 720p, 480p, 360p, auto) on PW player
+  function autoApplyVideoQuality() {
+    if (!extensionEnabled || !preferredQuality) return;
+
+    const video = getActiveVideo();
+    if (!video) return;
+
+    const targetStr = (preferredQuality || '720p').toLowerCase().replace('p', '');
+
+    let attempts = 0;
+    const interval = setInterval(() => {
+      attempts++;
+      if (attempts > 12) {
+        clearInterval(interval);
+        return;
+      }
+
+      const root = (video.getRootNode && video.getRootNode()) || document;
+      const playerContainer = document.getElementById('video-player-container') ||
+        video.closest('.video-player-app') ||
+        video.closest('[class*="video-player" i]') ||
+        video.closest('[class*="player" i]') ||
+        video.parentElement ||
+        root;
+
+      if (!playerContainer || !playerContainer.querySelectorAll) return;
+
+      const candidates = Array.from(playerContainer.querySelectorAll('li, button, span, div, a'));
+      const matchingItems = candidates.filter(el => {
+        const txt = (el.textContent || '').trim().toLowerCase();
+        if (targetStr === 'auto') {
+          return txt === 'auto' || txt.includes('auto');
+        }
+        return txt.includes(`${targetStr}p`) || txt === targetStr;
+      });
+
+      if (matchingItems.length > 0) {
+        const exactMatch = matchingItems.find(el => (el.textContent || '').trim().toLowerCase().includes(`${targetStr}p`)) || matchingItems[0];
+        if (exactMatch && typeof exactMatch.click === 'function') {
+          try {
+            exactMatch.click();
+            clearInterval(interval);
+          } catch (e) {}
+        }
+      }
+    }, 400);
+  }
+
   // Delay applying speed on play to allow player init scripts to settle
   function onVideoPlay() {
     setTimeout(() => {
       applySpeedToActiveVideo();
+      autoApplyVideoQuality();
     }, 200);
   }
 
