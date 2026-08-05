@@ -1269,20 +1269,77 @@
     updateUI();
   }
 
-  // Seamless React Quality Switcher: Trigger PW's React synthetic quality click path
+  function saveQualitySetting(q) {
+    preferredQuality = q;
+    safeSetSettings({ preferredQuality: q });
+    updateQualityUI();
+    applyUserSelectedQuality(q);
+  }
+
+  function updateQualityUI() {
+    const qBadge = document.querySelector('#pwc-quality-control .pwc-quality-badge');
+    if (qBadge) {
+      qBadge.textContent = (preferredQuality || '720p').replace('p', '').trim();
+    }
+    const currentLabel = (preferredQuality || '720p').replace('p', '').trim().toLowerCase();
+    document.querySelectorAll('#pwc-quality-control .pwc-quality-item').forEach(item => {
+      if (item.textContent.trim().toLowerCase() === currentLabel) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+  }
+
+  function injectQualityControl() {
+    if (!extensionEnabled) {
+      const container = document.getElementById('pwc-quality-control');
+      if (container) container.remove();
+      return;
+    }
+
+    const toolbar = findPWToolbar();
+    if (toolbar) {
+      if (!document.getElementById('pwc-quality-control')) {
+        const container = document.createElement('div');
+        container.id = 'pwc-quality-control';
+        container.className = 'pwc-quality-container';
+        buildQualityControl(container);
+
+        const speedCtrl = document.getElementById('pwc-speed-control');
+        if (speedCtrl && speedCtrl.nextSibling) {
+          toolbar.insertBefore(container, speedCtrl.nextSibling);
+        } else {
+          toolbar.appendChild(container);
+        }
+      } else {
+        updateQualityUI();
+      }
+    }
+  }
+
+  // 1. Silent Background Quality Persistence (runs on page load / play event without clicking DOM)
   function autoApplyVideoQuality() {
     if (!extensionEnabled || !preferredQuality) return;
 
     const targetStr = (preferredQuality || '720p').toLowerCase().replace('p', '').trim();
 
-    // 1. Write localStorage keys
+    // Save to localStorage so PW player loads preferred quality natively on initialization
     try {
       ['pw_quality', 'pw_video_quality', 'vjs_quality', 'video_quality', 'resolution', 'preferredQuality'].forEach(key => {
         window.localStorage.setItem(key, targetStr === 'auto' ? 'auto' : targetStr);
       });
     } catch (e) {}
 
-    // 2. Trigger PW's React settings click path smoothly
+    // Send quality setting to injected page-level script
+    window.postMessage({ type: 'PWC_SET_QUALITY', quality: targetStr }, '*');
+  }
+
+  // 2. On-Demand User Click Handler (runs ONLY when user clicks our quality widget or popup menu)
+  function applyUserSelectedQuality(q) {
+    autoApplyVideoQuality();
+
+    const targetStr = (q || '720p').toLowerCase().replace('p', '').trim();
     const video = getActiveVideo();
     if (!video) return;
 
@@ -1307,15 +1364,14 @@
       }
     }
 
-    // Step A: Find PW Settings Gear button
     const settingsBtn = findSettingsButton() || playerContainer.querySelector('[class*="setting" i], [id*="setting" i], [title*="setting" i], [class*="gear" i]');
     if (!settingsBtn) return;
 
-    // Check if Quality sub-menu is already open or needs gear click
     let qualityRow = Array.from(playerContainer.querySelectorAll('div, span, p, li')).find(el => {
       return (el.textContent || '').trim().toLowerCase() === 'quality' && el.children.length === 0;
     });
 
+    // Only click settings button if settings menu isn't already open
     if (!qualityRow) {
       triggerClick(settingsBtn);
     }
