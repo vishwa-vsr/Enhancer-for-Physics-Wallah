@@ -4,17 +4,10 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.7] - 2026-08-05
-
-### Added & Improved
-- **Default Video Quality Selector (Closes #1)**: Added a new Default Video Quality dropdown selector (`Auto`, `720p`, `480p`, `360p`, `240p`) in the popup dashboard right under the Speed tab. When opening any lecture video on `pw.live`, the extension automatically sets the player resolution to your preferred quality.
-- **Auto Quality Fallback**: Automatically selects the highest available resolution if your exact preferred quality level isn't available for a specific lecture.
-
----
-
 ## [1.0.6] - 2026-08-05
 
 ### Added & Improved
+- **Default Video Quality Selector (Closes #1)**: Added a Default Video Quality dropdown selector (`Auto`, `720p`, `480p`, `360p`, `240p`) in the popup dashboard right under the Speed tab. Automatically interacts with PW's native quality menu (`720`, `480`, `360`, `240`, `Auto`) when a lecture loads.
 - **Always Expand Speed Bar**: Added a new toggle switch in the extension popup menu allowing users to keep the video speed slider permanently expanded on the player control bar.
 - **Hover Buffer & Gap Fix**: Fixed widget hover collapsing by replacing margin gaps with hoverable padding and adding a 250ms safety buffer.
 - **Removed Custom Speed Toast**: Removed custom video screen speed toast popups to declutter the video frame and prevent overlay conflicts.

@@ -1175,50 +1175,65 @@
     updateUI();
   }
 
-  // Automatically select default video quality (e.g. 720p, 480p, 360p, auto) on PW player
+  // Automatically select default video quality (e.g. 720, 480, 360, auto) on PW player
   function autoApplyVideoQuality() {
     if (!extensionEnabled || !preferredQuality) return;
 
     const video = getActiveVideo();
     if (!video) return;
 
-    const targetStr = (preferredQuality || '720p').toLowerCase().replace('p', '');
+    const targetNum = (preferredQuality || '720p').toLowerCase().replace('p', '').trim();
 
     let attempts = 0;
     const interval = setInterval(() => {
       attempts++;
-      if (attempts > 12) {
+      if (attempts > 10) {
         clearInterval(interval);
         return;
       }
 
       const root = (video.getRootNode && video.getRootNode()) || document;
-      const playerContainer = document.getElementById('video-player-container') ||
-        video.closest('.video-player-app') ||
-        video.closest('[class*="video-player" i]') ||
-        video.closest('[class*="player" i]') ||
-        video.parentElement ||
-        root;
+      
+      // Helper to find visible quality item matching targetNum (e.g. "720", "720p", or "auto")
+      function findQualityItem() {
+        const candidates = Array.from(root.querySelectorAll('li, button, span, div, a, p, label'));
+        return candidates.find(el => {
+          if (el.children.length > 2) return false;
+          const txt = (el.textContent || '').trim().toLowerCase();
+          if (targetNum === 'auto') {
+            return txt === 'auto';
+          }
+          return txt === targetNum || txt === `${targetNum}p` || txt === `${targetNum} p` || txt.startsWith(targetNum);
+        });
+      }
 
-      if (!playerContainer || !playerContainer.querySelectorAll) return;
+      let item = findQualityItem();
 
-      const candidates = Array.from(playerContainer.querySelectorAll('li, button, span, div, a'));
-      const matchingItems = candidates.filter(el => {
-        const txt = (el.textContent || '').trim().toLowerCase();
-        if (targetStr === 'auto') {
-          return txt === 'auto' || txt.includes('auto');
-        }
-        return txt.includes(`${targetStr}p`) || txt === targetStr;
-      });
-
-      if (matchingItems.length > 0) {
-        const exactMatch = matchingItems.find(el => (el.textContent || '').trim().toLowerCase().includes(`${targetStr}p`)) || matchingItems[0];
-        if (exactMatch && typeof exactMatch.click === 'function') {
+      // If quality item is not visible in DOM yet, programmatically click PW Settings button to open menu
+      if (!item) {
+        const settingsBtn = findSettingsButton() || root.querySelector('[class*="setting" i], [class*="gear" i]');
+        if (settingsBtn && typeof settingsBtn.click === 'function') {
           try {
-            exactMatch.click();
-            clearInterval(interval);
+            settingsBtn.click();
           } catch (e) {}
         }
+        item = findQualityItem();
+      }
+
+      // Click matching quality item and close settings menu
+      if (item && typeof item.click === 'function') {
+        try {
+          item.click();
+          clearInterval(interval);
+
+          // Close settings menu after brief 150ms delay
+          setTimeout(() => {
+            const settingsBtn = findSettingsButton() || root.querySelector('[class*="setting" i], [class*="gear" i]');
+            if (settingsBtn && typeof settingsBtn.click === 'function') {
+              try { settingsBtn.click(); } catch (e) {}
+            }
+          }, 150);
+        } catch (e) {}
       }
     }, 400);
   }
