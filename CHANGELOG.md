@@ -7,7 +7,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.6] - 2026-08-05
 
 ### Added & Improved
-- **Default Video Quality Selector (Closes #1)**: Added a Default Video Quality dropdown selector (`Auto`, `720p`, `480p`, `360p`, `240p`) in the popup dashboard right under the Speed tab. Automatically interacts with PW's native quality menu (`720`, `480`, `360`, `240`, `Auto`) when a lecture loads.
 - **Always Expand Speed Bar**: Added a new toggle switch in the extension popup menu allowing users to keep the video speed slider permanently expanded on the player control bar.
 - **Hover Buffer & Gap Fix**: Fixed widget hover collapsing by replacing margin gaps with hoverable padding and adding a 250ms safety buffer.
 - **Removed Custom Speed Toast**: Removed custom video screen speed toast popups to declutter the video frame and prevent overlay conflicts.

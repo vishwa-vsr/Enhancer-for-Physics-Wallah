@@ -556,31 +556,6 @@ body.light-theme .settings-toggle-btn:hover {
   cursor: pointer;
 }
 
-/* Quality Dropdown Select */
-.quality-dropdown {
-  background: var(--bg-card, rgba(255, 255, 255, 0.06));
-  color: var(--text-primary, #ffffff);
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: inherit;
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.quality-dropdown:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-.quality-dropdown option {
-  background: #18191c;
-  color: #ffffff;
-}
-
 /* Custom Snap Points Collapsible Editor */
 .presets-editor-container:not(.expanded):not(.collapsing) {
   display: none !important;

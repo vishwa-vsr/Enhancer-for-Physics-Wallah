@@ -34,7 +34,6 @@
   let speedBeforeHold = 1.0;
   let isPointerHoldingOnPlayer = false;
   let alwaysExpandWidget = false;
-  let preferredQuality = '720p';
 
   function applyAlwaysExpandState() {
     const container = document.getElementById('pwc-speed-control');
@@ -110,7 +109,7 @@
     }
     try {
       chrome.storage.local.get(
-        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'preferredQuality', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP'], 
+        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP'], 
         function (result) {
           try {
             if (chrome.runtime && chrome.runtime.id) {
@@ -170,7 +169,6 @@
     holdSpaceSpeedUp = !!result.holdSpaceSpeedUp;
     holdSpaceSpeed = result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed) : 2.0;
     alwaysExpandWidget = !!result.alwaysExpandWidget;
-    preferredQuality = result.preferredQuality || '720p';
     keySpeedUp = result.keySpeedUp || 'h';
     keySlowDown = result.keySlowDown || 'j';
     keyReset = result.keyReset || 'l';
@@ -241,10 +239,6 @@
             if (changes.hasOwnProperty('alwaysExpandWidget')) {
               alwaysExpandWidget = !!changes.alwaysExpandWidget.newValue;
               applyAlwaysExpandState();
-            }
-            if (changes.hasOwnProperty('preferredQuality')) {
-              preferredQuality = changes.preferredQuality.newValue || '720p';
-              autoApplyVideoQuality();
             }
             if (changes.hasOwnProperty('keyReset')) {
               keyReset = changes.keyReset.newValue;
@@ -800,100 +794,6 @@
       }
       applyDistractorsState();
     }
-    injectQualityControl();
-  }
-
-  // Programmatically construct the dedicated quality widget displaying 720, 480, etc.
-  function buildQualityControl(container) {
-    container.textContent = '';
-
-    const currentLabel = (preferredQuality || '720p').replace('p', '').trim(); // e.g. "720" or "480"
-
-    const btn = document.createElement('button');
-    btn.className = 'pwc-quality-btn';
-    btn.type = 'button';
-    btn.setAttribute('title', 'Video Quality (Click to switch 720)');
-
-    const badge = document.createElement('span');
-    badge.className = 'pwc-quality-badge';
-    badge.textContent = currentLabel;
-    btn.appendChild(badge);
-
-    // Single Click: Instantly switch to 720
-    btn.addEventListener('click', () => {
-      saveQualitySetting('720p');
-    });
-
-    container.appendChild(btn);
-
-    // Pop-Out Quality Selector Menu (Pops up above control bar)
-    const menuContainer = document.createElement('div');
-    menuContainer.className = 'pwc-quality-menu-container';
-
-    const qualityOptions = ['720p', '480p', '360p', '240p', 'Auto'];
-    qualityOptions.forEach(opt => {
-      const item = document.createElement('button');
-      item.type = 'button';
-      const optLabel = opt.replace('p', '');
-      item.className = `pwc-quality-item ${currentLabel.toLowerCase() === optLabel.toLowerCase() ? 'active' : ''}`;
-      item.textContent = optLabel;
-      item.addEventListener('click', (e) => {
-        e.stopPropagation();
-        saveQualitySetting(opt);
-      });
-      menuContainer.appendChild(item);
-    });
-
-    container.appendChild(menuContainer);
-  }
-
-  function saveQualitySetting(q) {
-    preferredQuality = q;
-    safeSetSettings({ preferredQuality: q });
-    updateQualityUI();
-    autoApplyVideoQuality();
-  }
-
-  function updateQualityUI() {
-    const qBadge = document.querySelector('#pwc-quality-control .pwc-quality-badge');
-    if (qBadge) {
-      qBadge.textContent = (preferredQuality || '720p').replace('p', '').trim();
-    }
-    const currentLabel = (preferredQuality || '720p').replace('p', '').trim().toLowerCase();
-    document.querySelectorAll('#pwc-quality-control .pwc-quality-item').forEach(item => {
-      if (item.textContent.trim().toLowerCase() === currentLabel) {
-        item.classList.add('active');
-      } else {
-        item.classList.remove('active');
-      }
-    });
-  }
-
-  function injectQualityControl() {
-    if (!extensionEnabled) {
-      const container = document.getElementById('pwc-quality-control');
-      if (container) container.remove();
-      return;
-    }
-
-    const toolbar = findPWToolbar();
-    if (toolbar) {
-      if (!document.getElementById('pwc-quality-control')) {
-        const container = document.createElement('div');
-        container.id = 'pwc-quality-control';
-        container.className = 'pwc-quality-container';
-        buildQualityControl(container);
-
-        const speedCtrl = document.getElementById('pwc-speed-control');
-        if (speedCtrl && speedCtrl.nextSibling) {
-          toolbar.insertBefore(container, speedCtrl.nextSibling);
-        } else {
-          toolbar.appendChild(container);
-        }
-      } else {
-        updateQualityUI();
-      }
-    }
   }
 
 
@@ -1269,150 +1169,10 @@
     updateUI();
   }
 
-  function saveQualitySetting(q) {
-    preferredQuality = q;
-    safeSetSettings({ preferredQuality: q });
-    updateQualityUI();
-    applyUserSelectedQuality(q);
-  }
-
-  function updateQualityUI() {
-    const qBadge = document.querySelector('#pwc-quality-control .pwc-quality-badge');
-    if (qBadge) {
-      qBadge.textContent = (preferredQuality || '720p').replace('p', '').trim();
-    }
-    const currentLabel = (preferredQuality || '720p').replace('p', '').trim().toLowerCase();
-    document.querySelectorAll('#pwc-quality-control .pwc-quality-item').forEach(item => {
-      if (item.textContent.trim().toLowerCase() === currentLabel) {
-        item.classList.add('active');
-      } else {
-        item.classList.remove('active');
-      }
-    });
-  }
-
-  function injectQualityControl() {
-    if (!extensionEnabled) {
-      const container = document.getElementById('pwc-quality-control');
-      if (container) container.remove();
-      return;
-    }
-
-    const toolbar = findPWToolbar();
-    if (toolbar) {
-      if (!document.getElementById('pwc-quality-control')) {
-        const container = document.createElement('div');
-        container.id = 'pwc-quality-control';
-        container.className = 'pwc-quality-container';
-        buildQualityControl(container);
-
-        const speedCtrl = document.getElementById('pwc-speed-control');
-        if (speedCtrl && speedCtrl.nextSibling) {
-          toolbar.insertBefore(container, speedCtrl.nextSibling);
-        } else {
-          toolbar.appendChild(container);
-        }
-      } else {
-        updateQualityUI();
-      }
-    }
-  }
-
-  // 1. Silent Background Quality Persistence (runs on page load / play event without clicking DOM)
-  function autoApplyVideoQuality() {
-    if (!extensionEnabled || !preferredQuality) return;
-
-    const targetStr = (preferredQuality || '720p').toLowerCase().replace('p', '').trim();
-
-    // Save to localStorage so PW player loads preferred quality natively on initialization
-    try {
-      ['pw_quality', 'pw_video_quality', 'vjs_quality', 'video_quality', 'resolution', 'preferredQuality'].forEach(key => {
-        window.localStorage.setItem(key, targetStr === 'auto' ? 'auto' : targetStr);
-      });
-    } catch (e) {}
-
-    // Send quality setting to injected page-level script
-    window.postMessage({ type: 'PWC_SET_QUALITY', quality: targetStr }, '*');
-  }
-
-  // 2. On-Demand User Click Handler (runs ONLY when user clicks our quality widget or popup menu)
-  function applyUserSelectedQuality(q) {
-    autoApplyVideoQuality();
-
-    const targetStr = (q || '720p').toLowerCase().replace('p', '').trim();
-    const video = getActiveVideo();
-    if (!video) return;
-
-    const root = (video.getRootNode && video.getRootNode()) || document;
-    const playerContainer = document.getElementById('video-player-container') ||
-      video.closest('.video-player-app') ||
-      video.closest('[class*="video-player" i]') ||
-      video.closest('[class*="player" i]') ||
-      video.parentElement ||
-      root;
-
-    if (!playerContainer) return;
-
-    function triggerClick(el) {
-      if (!el) return;
-      const opts = { bubbles: true, cancelable: true, view: window };
-      try { el.dispatchEvent(new MouseEvent('mousedown', opts)); } catch (e) {}
-      try { el.dispatchEvent(new MouseEvent('mouseup', opts)); } catch (e) {}
-      try { el.dispatchEvent(new MouseEvent('click', opts)); } catch (e) {}
-      if (typeof el.click === 'function') {
-        try { el.click(); } catch (e) {}
-      }
-    }
-
-    const settingsBtn = findSettingsButton() || playerContainer.querySelector('[class*="setting" i], [id*="setting" i], [title*="setting" i], [class*="gear" i]');
-    if (!settingsBtn) return;
-
-    let qualityRow = Array.from(playerContainer.querySelectorAll('div, span, p, li')).find(el => {
-      return (el.textContent || '').trim().toLowerCase() === 'quality' && el.children.length === 0;
-    });
-
-    // Only click settings button if settings menu isn't already open
-    if (!qualityRow) {
-      triggerClick(settingsBtn);
-    }
-
-    setTimeout(() => {
-      qualityRow = Array.from(playerContainer.querySelectorAll('div, span, p, li')).find(el => {
-        return (el.textContent || '').trim().toLowerCase() === 'quality' && el.children.length === 0;
-      });
-
-      if (qualityRow) {
-        const clickableQualityRow = qualityRow.closest('button, [class*="cursor-pointer" i], div') || qualityRow;
-        triggerClick(clickableQualityRow);
-
-        setTimeout(() => {
-          const optionEls = Array.from(playerContainer.querySelectorAll('div, span, p, li, button')).filter(el => {
-            if (el.children.length > 2) return false;
-            const txt = (el.textContent || '').trim().toLowerCase();
-            if (targetStr === 'auto') return txt === 'auto';
-            return txt === targetStr || txt === `${targetStr}p` || txt === `${targetStr} p`;
-          });
-
-          if (optionEls.length > 0) {
-            const targetOpt = optionEls[0];
-            const optClickable = targetOpt.closest('button, [class*="cursor-pointer" i], div') || targetOpt;
-            triggerClick(optClickable);
-
-            setTimeout(() => {
-              const openSettingsBtn = findSettingsButton() || playerContainer.querySelector('[class*="setting" i], [id*="setting" i], [title*="setting" i], [class*="gear" i]');
-              if (openSettingsBtn) triggerClick(openSettingsBtn);
-            }, 120);
-          }
-        }, 120);
-      }
-    }, 120);
-  }
-
   // Delay applying speed on play to allow player init scripts to settle
   function onVideoPlay() {
     setTimeout(() => {
       applySpeedToActiveVideo();
-      autoApplyVideoQuality();
     }, 200);
   }
 
