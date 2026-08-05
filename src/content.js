@@ -1175,67 +1175,64 @@
     updateUI();
   }
 
-  // Automatically select default video quality (e.g. 720, 480, 360, auto) on PW player
+  // Open-source Inspired Quality Engine: Sets player memory & engine stream levels silently
   function autoApplyVideoQuality() {
     if (!extensionEnabled || !preferredQuality) return;
 
-    const video = getActiveVideo();
-    if (!video) return;
-
     const targetNum = (preferredQuality || '720p').toLowerCase().replace('p', '').trim();
 
-    let attempts = 0;
-    const interval = setInterval(() => {
-      attempts++;
-      if (attempts > 10) {
-        clearInterval(interval);
-        return;
-      }
+    // 1. Pre-populate localStorage quality keys so PW player loads target resolution natively
+    try {
+      ['pw_quality', 'pw_video_quality', 'vjs_quality', 'video_quality', 'resolution', 'preferredQuality'].forEach(key => {
+        window.localStorage.setItem(key, targetNum === 'auto' ? 'auto' : targetNum);
+      });
+    } catch (e) {}
 
-      const root = (video.getRootNode && video.getRootNode()) || document;
-      
-      // Helper to find visible quality item matching targetNum (e.g. "720", "720p", or "auto")
-      function findQualityItem() {
-        const candidates = Array.from(root.querySelectorAll('li, button, span, div, a, p, label'));
-        return candidates.find(el => {
-          if (el.children.length > 2) return false;
-          const txt = (el.textContent || '').trim().toLowerCase();
-          if (targetNum === 'auto') {
-            return txt === 'auto';
+    // 2. Inject lightweight page-context script to set VideoJS / HLS quality levels directly
+    const scriptId = 'pwc-quality-engine-script';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.textContent = `
+        (function() {
+          function setPlayerQuality(q) {
+            try {
+              if (window.videojs && window.videojs.players) {
+                Object.keys(window.videojs.players).forEach(function(id) {
+                  var p = window.videojs.players[id];
+                  if (p && p.qualityLevels) {
+                    var levels = p.qualityLevels();
+                    if (levels && levels.length) {
+                      var targetH = parseInt(q, 10);
+                      var hasTarget = false;
+                      for (var i = 0; i < levels.length; i++) {
+                        if (levels[i].height == targetH) { hasTarget = true; break; }
+                      }
+                      for (var j = 0; j < levels.length; j++) {
+                        if (q === 'auto' || !hasTarget) {
+                          levels[j].enabled = true;
+                        } else {
+                          levels[j].enabled = (levels[j].height == targetH);
+                        }
+                      }
+                    }
+                  }
+                });
+              }
+            } catch(err) {}
           }
-          return txt === targetNum || txt === `${targetNum}p` || txt === `${targetNum} p` || txt.startsWith(targetNum);
-        });
-      }
-
-      let item = findQualityItem();
-
-      // If quality item is not visible in DOM yet, programmatically click PW Settings button to open menu
-      if (!item) {
-        const settingsBtn = findSettingsButton() || root.querySelector('[class*="setting" i], [class*="gear" i]');
-        if (settingsBtn && typeof settingsBtn.click === 'function') {
-          try {
-            settingsBtn.click();
-          } catch (e) {}
-        }
-        item = findQualityItem();
-      }
-
-      // Click matching quality item and close settings menu
-      if (item && typeof item.click === 'function') {
-        try {
-          item.click();
-          clearInterval(interval);
-
-          // Close settings menu after brief 150ms delay
-          setTimeout(() => {
-            const settingsBtn = findSettingsButton() || root.querySelector('[class*="setting" i], [class*="gear" i]');
-            if (settingsBtn && typeof settingsBtn.click === 'function') {
-              try { settingsBtn.click(); } catch (e) {}
+          window.addEventListener('message', function(ev) {
+            if (ev && ev.data && ev.data.type === 'PWC_SET_QUALITY') {
+              setPlayerQuality(ev.data.quality);
             }
-          }, 150);
-        } catch (e) {}
-      }
-    }, 400);
+          });
+        })();
+      `;
+      (document.head || document.documentElement).appendChild(script);
+    }
+
+    // Send quality setting to injected page-level player hook
+    window.postMessage({ type: 'PWC_SET_QUALITY', quality: targetNum }, '*');
   }
 
   // Delay applying speed on play to allow player init scripts to settle
