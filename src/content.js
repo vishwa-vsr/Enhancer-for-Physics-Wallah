@@ -1269,32 +1269,87 @@
     updateUI();
   }
 
-  // Open-source Inspired Quality Engine: Sets player memory & engine stream levels silently
+  // Seamless React Quality Switcher: Trigger PW's React synthetic quality click path
   function autoApplyVideoQuality() {
     if (!extensionEnabled || !preferredQuality) return;
 
-    const targetNum = (preferredQuality || '720p').toLowerCase().replace('p', '').trim();
+    const targetStr = (preferredQuality || '720p').toLowerCase().replace('p', '').trim();
 
-    // 1. Pre-populate localStorage quality keys so PW player loads target resolution natively
+    // 1. Write localStorage keys
     try {
       ['pw_quality', 'pw_video_quality', 'vjs_quality', 'video_quality', 'resolution', 'preferredQuality'].forEach(key => {
-        window.localStorage.setItem(key, targetNum === 'auto' ? 'auto' : targetNum);
+        window.localStorage.setItem(key, targetStr === 'auto' ? 'auto' : targetStr);
       });
     } catch (e) {}
 
-    // 2. Inject lightweight page-context script via web_accessible_resources to bypass CSP limits
-    const scriptId = 'pwc-quality-engine-script';
-    if (!document.getElementById(scriptId) && typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
-      try {
-        const script = document.createElement('script');
-        script.id = scriptId;
-        script.src = chrome.runtime.getURL('inject.js');
-        (document.head || document.documentElement).appendChild(script);
-      } catch (e) {}
+    // 2. Trigger PW's React settings click path smoothly
+    const video = getActiveVideo();
+    if (!video) return;
+
+    const root = (video.getRootNode && video.getRootNode()) || document;
+    const playerContainer = document.getElementById('video-player-container') ||
+      video.closest('.video-player-app') ||
+      video.closest('[class*="video-player" i]') ||
+      video.closest('[class*="player" i]') ||
+      video.parentElement ||
+      root;
+
+    if (!playerContainer) return;
+
+    function triggerClick(el) {
+      if (!el) return;
+      const opts = { bubbles: true, cancelable: true, view: window };
+      try { el.dispatchEvent(new MouseEvent('mousedown', opts)); } catch (e) {}
+      try { el.dispatchEvent(new MouseEvent('mouseup', opts)); } catch (e) {}
+      try { el.dispatchEvent(new MouseEvent('click', opts)); } catch (e) {}
+      if (typeof el.click === 'function') {
+        try { el.click(); } catch (e) {}
+      }
     }
 
-    // Send quality setting to injected page-level player hook
-    window.postMessage({ type: 'PWC_SET_QUALITY', quality: targetNum }, '*');
+    // Step A: Find PW Settings Gear button
+    const settingsBtn = findSettingsButton() || playerContainer.querySelector('[class*="setting" i], [id*="setting" i], [title*="setting" i], [class*="gear" i]');
+    if (!settingsBtn) return;
+
+    // Check if Quality sub-menu is already open or needs gear click
+    let qualityRow = Array.from(playerContainer.querySelectorAll('div, span, p, li')).find(el => {
+      return (el.textContent || '').trim().toLowerCase() === 'quality' && el.children.length === 0;
+    });
+
+    if (!qualityRow) {
+      triggerClick(settingsBtn);
+    }
+
+    setTimeout(() => {
+      qualityRow = Array.from(playerContainer.querySelectorAll('div, span, p, li')).find(el => {
+        return (el.textContent || '').trim().toLowerCase() === 'quality' && el.children.length === 0;
+      });
+
+      if (qualityRow) {
+        const clickableQualityRow = qualityRow.closest('button, [class*="cursor-pointer" i], div') || qualityRow;
+        triggerClick(clickableQualityRow);
+
+        setTimeout(() => {
+          const optionEls = Array.from(playerContainer.querySelectorAll('div, span, p, li, button')).filter(el => {
+            if (el.children.length > 2) return false;
+            const txt = (el.textContent || '').trim().toLowerCase();
+            if (targetStr === 'auto') return txt === 'auto';
+            return txt === targetStr || txt === `${targetStr}p` || txt === `${targetStr} p`;
+          });
+
+          if (optionEls.length > 0) {
+            const targetOpt = optionEls[0];
+            const optClickable = targetOpt.closest('button, [class*="cursor-pointer" i], div') || targetOpt;
+            triggerClick(optClickable);
+
+            setTimeout(() => {
+              const openSettingsBtn = findSettingsButton() || playerContainer.querySelector('[class*="setting" i], [id*="setting" i], [title*="setting" i], [class*="gear" i]');
+              if (openSettingsBtn) triggerClick(openSettingsBtn);
+            }, 120);
+          }
+        }, 120);
+      }
+    }, 120);
   }
 
   // Delay applying speed on play to allow player init scripts to settle
