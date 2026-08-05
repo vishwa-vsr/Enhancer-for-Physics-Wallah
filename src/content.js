@@ -735,70 +735,70 @@
     applyAlwaysExpandState();
   }
 
+  // Bulletproof PW Control Bar Finder: locates bottom control bar regardless of layout changes
+  function findPWToolbar() {
+    const fRight = document.getElementById('footer-right-section');
+    if (fRight) return fRight;
+
+    const video = getActiveVideo();
+    if (!video) return null;
+
+    const root = (video.getRootNode && video.getRootNode()) || document;
+    const playerContainer = document.getElementById('video-player-container') ||
+      video.closest('.video-player-app') ||
+      video.closest('[class*="video-player" i]') ||
+      video.closest('[class*="player" i]') ||
+      video.parentElement ||
+      root;
+
+    if (!playerContainer || !playerContainer.querySelectorAll) return null;
+
+    // Scan all containers holding 3 or more control buttons/icons near the bottom of the player
+    const candidates = Array.from(playerContainer.querySelectorAll('div, section, footer, nav'));
+    const toolbars = candidates.filter(div => {
+      const btns = div.querySelectorAll('button, svg, [role="button"], [class*="icon" i]');
+      return btns.length >= 3 && div.offsetWidth > 80;
+    });
+
+    if (toolbars.length > 0) {
+      toolbars.sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length);
+      return toolbars[0];
+    }
+
+    const settingsBtn = findSettingsButton();
+    const fullscreenBtn = findFullscreenButton();
+    const refBtn = settingsBtn || fullscreenBtn;
+    if (refBtn) {
+      return getToolbarContainer(refBtn);
+    }
+
+    return null;
+  }
+
   // Inject floating widget directly inside the player's controls container
   function injectSpeedControl() {
     if (!extensionEnabled) {
       const container = document.getElementById('pwc-speed-control');
-      if (container) {
-        container.remove();
-      }
+      if (container) container.remove();
       return;
     }
-    const footerRight = document.getElementById('footer-right-section');
-    if (footerRight) {
-      // 1. Primary path: PW Player overlay toolbar injection (placed as firstChild)
+
+    const toolbar = findPWToolbar();
+    if (toolbar) {
       if (!document.getElementById('pwc-speed-control')) {
         const container = document.createElement('div');
         container.id = 'pwc-speed-control';
         container.className = 'pwc-speed-container';
         buildSpeedControl(container);
 
-        if (footerRight.firstChild) {
-          footerRight.insertBefore(container, footerRight.firstChild);
+        if (toolbar.firstChild) {
+          toolbar.insertBefore(container, toolbar.firstChild);
         } else {
-          footerRight.appendChild(container);
+          toolbar.appendChild(container);
         }
         setupUIEventListeners(container);
-      } else {
-        const container = document.getElementById('pwc-speed-control');
-        if (footerRight.firstChild && footerRight.firstChild !== container) {
-          footerRight.insertBefore(container, footerRight.firstChild);
-        }
       }
-
       applyDistractorsState();
-      return;
-    }
-
-    // 2. Fallback path: VideoJS native player controls container injection (placed as firstChild)
-    const settingsBtn = findSettingsButton();
-    const fullscreenBtn = findFullscreenButton();
-    const refBtn = settingsBtn || fullscreenBtn;
-
-    if (refBtn) {
-      const parent = getToolbarContainer(refBtn);
-      if (parent) {
-        if (!document.getElementById('pwc-speed-control')) {
-          const container = document.createElement('div');
-          container.id = 'pwc-speed-control';
-          container.className = 'pwc-speed-container';
-          buildSpeedControl(container);
-
-          if (parent.firstChild) {
-            parent.insertBefore(container, parent.firstChild);
-          } else {
-            parent.appendChild(container);
-          }
-          setupUIEventListeners(container);
-        } else {
-          const container = document.getElementById('pwc-speed-control');
-          if (parent.firstChild && parent.firstChild !== container) {
-            parent.insertBefore(container, parent.firstChild);
-          }
-        }
-
-        applyDistractorsState();
-      }
     }
     injectQualityControl();
   }
@@ -875,8 +875,9 @@
       if (container) container.remove();
       return;
     }
-    const footerRight = document.getElementById('footer-right-section');
-    if (footerRight) {
+
+    const toolbar = findPWToolbar();
+    if (toolbar) {
       if (!document.getElementById('pwc-quality-control')) {
         const container = document.createElement('div');
         container.id = 'pwc-quality-control';
@@ -885,38 +886,12 @@
 
         const speedCtrl = document.getElementById('pwc-speed-control');
         if (speedCtrl && speedCtrl.nextSibling) {
-          footerRight.insertBefore(container, speedCtrl.nextSibling);
+          toolbar.insertBefore(container, speedCtrl.nextSibling);
         } else {
-          footerRight.appendChild(container);
+          toolbar.appendChild(container);
         }
       } else {
         updateQualityUI();
-      }
-      return;
-    }
-
-    const settingsBtn = findSettingsButton();
-    const fullscreenBtn = findFullscreenButton();
-    const refBtn = settingsBtn || fullscreenBtn;
-
-    if (refBtn) {
-      const parent = getToolbarContainer(refBtn);
-      if (parent) {
-        if (!document.getElementById('pwc-quality-control')) {
-          const container = document.createElement('div');
-          container.id = 'pwc-quality-control';
-          container.className = 'pwc-quality-container';
-          buildQualityControl(container);
-
-          const speedCtrl = document.getElementById('pwc-speed-control');
-          if (speedCtrl && speedCtrl.nextSibling) {
-            parent.insertBefore(container, speedCtrl.nextSibling);
-          } else {
-            parent.appendChild(container);
-          }
-        } else {
-          updateQualityUI();
-        }
       }
     }
   }
