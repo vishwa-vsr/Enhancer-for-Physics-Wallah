@@ -35,13 +35,15 @@
   let isPointerHoldingOnPlayer = false;
   let alwaysExpandWidget = false;
 
-  function applyAlwaysExpandState() {
-    const container = document.getElementById('pwc-speed-control');
+  function applyAlwaysExpandState(targetContainer) {
+    const container = targetContainer || document.getElementById('pwc-speed-control');
     if (container) {
       if (alwaysExpandWidget) {
         container.classList.add('pwc-always-expanded');
+        container.classList.add('pwc-expanded');
       } else {
         container.classList.remove('pwc-always-expanded');
+        container.classList.remove('pwc-expanded');
       }
     }
   }
@@ -726,7 +728,7 @@
     sliderWrapper.appendChild(ticks);
     sliderContainer.appendChild(sliderWrapper);
     container.appendChild(sliderContainer);
-    applyAlwaysExpandState();
+    applyAlwaysExpandState(container);
   }
 
   // Bulletproof PW Control Bar Finder: locates bottom control bar regardless of layout changes
@@ -779,7 +781,8 @@
 
     const toolbar = findPWToolbar();
     if (toolbar) {
-      if (!document.getElementById('pwc-speed-control')) {
+      const existingContainer = document.getElementById('pwc-speed-control');
+      if (!existingContainer) {
         const container = document.createElement('div');
         container.id = 'pwc-speed-control';
         container.className = 'pwc-speed-container';
@@ -791,6 +794,9 @@
           toolbar.appendChild(container);
         }
         setupUIEventListeners(container);
+        applyAlwaysExpandState(container);
+      } else {
+        applyAlwaysExpandState(existingContainer);
       }
       applyDistractorsState();
     }
