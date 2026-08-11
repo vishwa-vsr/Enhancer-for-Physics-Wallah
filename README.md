@@ -7,7 +7,7 @@
   [![Version: 1.0.6](https://img.shields.io/badge/version-1.0.6-blue.svg)](#)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-blue?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj)
-  [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-orange?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/pw-control/)
+  [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-orange?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--on-green?logo=microsoft-edge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan)
 
   **Enhancer for Physics Wallah** is a simple, lightweight browser extension that gives you complete control over your video playback on the `pw.live` student portal. It adds a custom speed slider (from `0.5x` up to `4.0x`), Picture-in-Picture mode, and toggles to hide distracting screen elements (like chats, notes, and doubt boxes) directly inside the video player.
