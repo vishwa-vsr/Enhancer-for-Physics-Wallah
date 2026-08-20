@@ -7,7 +7,7 @@
   <!-- Modern clean typography from Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
@@ -28,7 +28,7 @@
       </div>
       <button type="button" id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle Theme">
         <!-- Sun icon for light mode (visible when in dark mode) -->
-        <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
           <circle cx="12" cy="12" r="5"></circle>
           <line x1="12" y1="1" x2="12" y2="3"></line>
           <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -40,7 +40,7 @@
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
         <!-- Moon icon for dark mode (visible when in light mode) -->
-        <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
@@ -75,12 +75,12 @@
     <main class="popup-content">
       <!-- TAB 1: SPEED PANEL -->
       <div class="tab-panel active" id="speed-tab">
-        <!-- Section 1: Tactile Speed Control HUD -->
+        <!-- Section 1: Tactile Speed Control HUD Card -->
         <section class="hud-section" aria-label="Playback Speed Controller">
           <div class="hud-header">
             <span class="hud-title">Video Speed</span>
             <div class="hud-controls-group">
-              <button type="button" id="settings-toggle-btn" class="settings-toggle-btn" aria-label="Customize Snap Points" aria-expanded="false">
+              <button type="button" id="settings-toggle-btn" class="settings-toggle-btn" aria-label="Customize Snap Points" aria-expanded="false" title="Customize Snap Points">
                 <svg class="settings-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="3" />
                   <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
@@ -93,30 +93,6 @@
           <div class="slider-wrapper">
             <input type="range" id="speed-slider" min="0.5" max="4.0" step="0.1" value="1.0" aria-label="Playback Speed Slider">
             <div class="ticks-row"></div>
-          </div>
-
-
-
-          <!-- Integrated Hide Speed Widget Footer Row -->
-          <div class="hud-footer-row">
-            <div class="feature-info">
-              <label for="hide-speed-toggle" class="hud-footer-title">Hide Speed Widget</label>
-            </div>
-            <label class="switch" aria-label="Toggle Hide Speed Widget">
-              <input type="checkbox" id="hide-speed-toggle">
-              <span class="switch-slider"></span>
-            </label>
-          </div>
-
-          <!-- Integrated Always Expand Speed Bar Footer Row -->
-          <div class="hud-footer-row" style="margin-top: 6px;">
-            <div class="feature-info">
-              <label for="always-expand-toggle" class="hud-footer-title">Always Expand Speed Bar</label>
-            </div>
-            <label class="switch" aria-label="Toggle Always Expand Speed Bar">
-              <input type="checkbox" id="always-expand-toggle">
-              <span class="switch-slider"></span>
-            </label>
           </div>
 
           <!-- Snap Points Editor (Collapsible) -->
@@ -155,16 +131,38 @@
               </div>
             </div>
           </div>
+
+          <!-- Integrated Hide Speed Widget Footer Row -->
+          <div class="hud-footer-row">
+            <div class="feature-info">
+              <label for="hide-speed-toggle" class="hud-footer-title">Hide Speed Widget</label>
+            </div>
+            <label class="switch" aria-label="Toggle Hide Speed Widget">
+              <input type="checkbox" id="hide-speed-toggle">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- Integrated Always Expand Speed Bar Footer Row -->
+          <div class="hud-footer-row">
+            <div class="feature-info">
+              <label for="always-expand-toggle" class="hud-footer-title">Always Expand Speed Bar</label>
+            </div>
+            <label class="switch" aria-label="Toggle Always Expand Speed Bar">
+              <input type="checkbox" id="always-expand-toggle">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
         </section>
 
-        <!-- Section 3: Shortcut Control Settings -->
+        <!-- Section 2: Shortcut Control Settings Grouped Card -->
         <section class="shortcuts-section" aria-label="Control Shortcuts">
-          <h2 class="section-title">Shortcut & Mouse Wheel Settings</h2>
+          <h2 class="section-title">Shortcuts & Controls</h2>
           
-          <div class="toggles-list">
-            <!-- Toggle 1: Enable Keyboard Shortcuts (Combined Single Card) -->
-            <div class="feature-card feature-card-combined">
-              <div class="feature-card-main-row">
+          <div class="settings-group-card">
+            <!-- Row 1: Enable Keyboard Shortcuts -->
+            <div class="setting-row-group">
+              <div class="feature-row">
                 <div class="feature-info">
                   <label for="enable-hotkeys-toggle" class="feature-title">Enable Keyboard Hotkeys</label>
                 </div>
@@ -174,25 +172,25 @@
                 </label>
               </div>
 
-              <!-- Collapsible Hotkeys Sub-Row inside Single Card -->
+              <!-- Collapsible Hotkeys Sub-Row -->
               <div class="hotkeys-editor" id="hotkeys-editor-container">
                 <div class="input-row">
-                  <span class="input-label">Speed Up Key</span>
+                  <span class="input-label">Speed Up</span>
                   <input type="text" id="key-speedup" class="hotkey-input" readonly value="">
                 </div>
                 <div class="input-row">
-                  <span class="input-label">Slow Down Key</span>
+                  <span class="input-label">Slow Down</span>
                   <input type="text" id="key-slowdown" class="hotkey-input" readonly value="">
                 </div>
                 <div class="input-row">
-                  <span class="input-label">Reset Speed Key</span>
+                  <span class="input-label">Reset Speed</span>
                   <input type="text" id="key-reset" class="hotkey-input" readonly value="">
                 </div>
               </div>
             </div>
 
-            <!-- Toggle 2: Disable Mouse Scroll Control -->
-            <div class="feature-card">
+            <!-- Row 2: Disable Mouse Scroll Control -->
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="disable-scroll-toggle" class="feature-title">Disable Scroll Wheel Adjust</label>
               </div>
@@ -202,9 +200,9 @@
               </label>
             </div>
 
-            <!-- Toggle 3: Hold Space to Speed Up (Combined Card) -->
-            <div class="feature-card feature-card-combined">
-              <div class="feature-card-main-row">
+            <!-- Row 3: Hold Space to Speed Up -->
+            <div class="setting-row-group">
+              <div class="feature-row">
                 <div class="feature-info">
                   <label for="hold-space-toggle" class="feature-title">Hold Space to Speed Up</label>
                 </div>
@@ -228,10 +226,8 @@
               </div>
             </div>
 
-
-
-            <!-- Option 9: Instant Hide Controls Button -->
-            <div class="feature-card">
+            <!-- Row 4: Instant Hide Controls Button -->
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="enable-instant-hide-toggle" class="feature-title">Instant Hide Button</label>
               </div>
@@ -241,8 +237,8 @@
               </label>
             </div>
 
-            <!-- Option 10: Picture-in-Picture Button -->
-            <div class="feature-card">
+            <!-- Row 5: Picture-in-Picture Button -->
+            <div class="feature-row">
               <div class="feature-info">
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <label for="enable-pip-toggle" class="feature-title">Picture-in-Picture Button</label>
@@ -254,21 +250,19 @@
                 <span class="switch-slider"></span>
               </label>
             </div>
-
           </div>
         </section>
       </div>
 
       <!-- TAB 2: FOCUS PANEL -->
       <div class="tab-panel" id="focus-tab">
-        <!-- Section 2: Study Focus Settings -->
+        <!-- Section: Study Focus Settings Grouped Card -->
         <section class="focus-section" aria-label="Study Focus Settings">
           <h2 class="section-title">Focus Toggles</h2>
           
-          <div class="toggles-list">
-
+          <div class="settings-group-card">
             <!-- Option 1: Ask AI -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="hide-askai-toggle" class="feature-title">Hide 'Ask AI'</label>
               </div>
@@ -279,7 +273,7 @@
             </div>
 
             <!-- Option 2: Doubt Q&A -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="hide-doubt-toggle" class="feature-title">Hide Doubt Q&amp;A</label>
               </div>
@@ -289,8 +283,8 @@
               </label>
             </div>
 
-            <!-- Option 2b: Live Chat -->
-            <div class="feature-card">
+            <!-- Option 3: Live Chat -->
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="hide-chat-toggle" class="feature-title">Hide Live Chat</label>
               </div>
@@ -300,8 +294,8 @@
               </label>
             </div>
 
-            <!-- Option 3: Hide Notes -->
-            <div class="feature-card">
+            <!-- Option 4: Hide Notes -->
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="hide-notes-toggle" class="feature-title">Hide Study Notes</label>
               </div>
@@ -309,8 +303,10 @@
                 <input type="checkbox" id="hide-notes-toggle">
                 <span class="switch-slider"></span>
               </label>
-            </div>            <!-- Option 4: Hide Note Timeline -->
-            <div class="feature-card">
+            </div>
+
+            <!-- Option 5: Hide Note Timeline -->
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="hide-notetimeline-toggle" class="feature-title">Hide Note Timeline</label>
               </div>
@@ -319,8 +315,9 @@
                 <span class="switch-slider"></span>
               </label>
             </div>
+
             <!-- Option 6: Hide Settings Icon -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="hide-setting-toggle" class="feature-title">Hide Settings Icon</label>
               </div>
@@ -331,7 +328,7 @@
             </div>
 
             <!-- Option 7: Hide Horizontal Timeline -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="hide-timeline-toggle" class="feature-title">Hide Timeline Line</label>
               </div>
@@ -342,7 +339,7 @@
             </div>
 
             <!-- Option 8: Hide Time Text -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="hide-timetext-toggle" class="feature-title">Hide Time Display</label>
               </div>
@@ -351,8 +348,6 @@
                 <span class="switch-slider"></span>
               </label>
             </div>
-
-
           </div>
         </section>
       </div>
@@ -365,9 +360,9 @@
             <span class="beta-badge">Beta</span>
           </h2>
 
-          <div class="toggles-list">
+          <div class="settings-group-card">
             <!-- Master Toggle -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="ss-enable-toggle" class="feature-title">Enable Skip Silence</label>
               </div>
@@ -377,9 +372,8 @@
               </label>
             </div>
 
-
             <!-- Speech Speed Stepper -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <span class="feature-title">Speech Speed</span>
               </div>
@@ -394,7 +388,7 @@
             </div>
 
             <!-- Silence Speed Stepper -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <span class="feature-title">Silence Speed</span>
               </div>
@@ -409,7 +403,7 @@
             </div>
 
             <!-- Auto Noise Calibration -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="ss-auto-toggle" class="feature-title">Auto Noise Calibration</label>
               </div>
@@ -420,8 +414,8 @@
             </div>
 
             <!-- Silence Threshold Slider (Manual) -->
-            <div class="feature-card feature-card-combined" id="ss-manual-sensitivity-card">
-              <div class="feature-card-main-row">
+            <div class="setting-row-group" id="ss-manual-sensitivity-card">
+              <div class="feature-row">
                 <div class="feature-info">
                   <span class="feature-title">Silence Threshold</span>
                 </div>
@@ -435,7 +429,7 @@
             </div>
 
             <!-- Minimum Silence Duration -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="ss-min-duration" class="feature-title">Min. Silence (sec)</label>
               </div>
@@ -445,7 +439,7 @@
             </div>
 
             <!-- Mute During Silence -->
-            <div class="feature-card">
+            <div class="feature-row">
               <div class="feature-info">
                 <label for="ss-mute-toggle" class="feature-title">Mute During Silence</label>
               </div>
@@ -456,7 +450,7 @@
             </div>
 
             <!-- Time Saved Display -->
-            <div class="feature-card ss-time-saved-card">
+            <div class="feature-row ss-time-saved-card">
               <div class="feature-info">
                 <span class="feature-title">Time Saved</span>
               </div>
@@ -470,7 +464,6 @@
                 </button>
               </div>
             </div>
-
           </div>
         </section>
       </div>

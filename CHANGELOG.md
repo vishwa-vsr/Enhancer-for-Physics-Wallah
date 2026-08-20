@@ -7,6 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.7] - 2026-08-20
 
 ### Added & Redesigned
+- **Modern Dashboard Popup UI**: Redesigned the entire extension popup interface into a clean, modern dashboard aesthetic.
+- **Borderless Pure White Cards**: Setting sections now sit on crisp, pure white cards with zero harsh outlines or borders.
+- **Cool Ice-Gray Canvas (Light Mode)**: Soft, cool ice-gray background canvas that creates clear, distinct contrast with the white cards.
+- **Smooth Pill Tab Navigation**: Redesigned the top Speed, Focus, and Silence tabs into a seamless pill container where the active tab floats as a white pill with soft elevation.
+- **Grouped Settings Layout**: Neatly organized related toggles and sliders into unified section cards with subtle dividers.
+- **Constant 500px Window Height**: Fixed the popup height across all three tabs to prevent window jumping or resizing when switching tabs.
+- **Right-Edge Auto-Hiding Scrollbar**: Moved the scrollbar flush to the far right window edge, auto-hiding when idle and smoothly fading in on scroll or hover.
+- **Modern Indigo Accent**: Updated active switches, slider bars, and highlights to a modern Indigo accent (`#5A55EA`).
+- **Inter Typography & Rounded Corners**: Switched to the Inter font and smooth 14px rounded card corners for crisp readability.
+- **Updated Dark Mode**: Refreshed the Dark Theme with borderless slate cards on a deep dark canvas.
 - **New Modern Logo**: Redesigned the extension icon to a sleek, high-contrast monochrome design (Supersonic Dual Chevrons) with full Dark & Light mode support.
 - **Skip Silence (Beta)**: Automatically fast-forwards through teacher pauses, whiteboard writing, and silent thinking time during lectures.
 - **Auto Noise Calibration**: Automatically adjusts to your lecture's background noise (fan hum, AC, quiet speech) so you don't need to tweak settings.
