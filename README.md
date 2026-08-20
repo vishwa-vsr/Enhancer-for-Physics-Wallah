@@ -4,13 +4,13 @@
   #  Enhancer for Physics Wallah
   ### Playback Speed & Focus Extension for Physics Wallah (`pw.live`)
 
-  [![Version: 1.0.6](https://img.shields.io/badge/version-1.0.6-blue.svg)](#)
+  [![Version: 1.0.7](https://img.shields.io/badge/version-1.0.7-blue.svg)](#)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-blue?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-orange?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--on-green?logo=microsoft-edge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan)
 
-  **Enhancer for Physics Wallah** is a simple, lightweight browser extension that gives you complete control over your video playback on the `pw.live` student portal. It adds a custom speed slider (from `0.5x` up to `4.0x`), Picture-in-Picture mode, and toggles to hide distracting screen elements (like chats, notes, and doubt boxes) directly inside the video player.
+  **Enhancer for Physics Wallah** is a simple, lightweight browser extension that gives you complete control over your video playback on the `pw.live` student portal. It adds a custom speed slider (from `0.5x` up to `4.0x`), automatic **Skip Silence (Beta)** acceleration, Picture-in-Picture mode, and toggles to hide distracting screen elements (like chats, notes, and doubt boxes) directly inside the video player.
 
   [Direct Download](#-direct-store-downloads) • [Key Features](#-key-features) • [Project Structure](#-project-structure) • [How to Build](#-how-to-build)
 </div>
@@ -49,6 +49,14 @@ If you want to run the latest development code locally:
 ---
 
 ## 🌟 Key Features
+
+### 🔇 Skip Silence (Beta)
+* **Intelligent Auto-Skipping**: Automatically accelerates through teacher pauses, whiteboard writing, and silent thinking time.
+* **Auto Noise Calibration**: Automatically calculates the room's noise floor over a rolling 10-second history so you don't have to fiddle with manual settings.
+* **Decibel-Based Silence Threshold**: Fine-tune the sensitivity in real decibels (`-60 dB` to `-20 dB`) with intuitive **Strict** vs. **Aggressive** controls.
+* **Smooth 200ms Acceleration**: Glides smoothly into silence speed on each audio sample tick (~23ms) with studio-grade clickless audio fades.
+* **Live On-Player Controls**: 1-click toggle button and real-time audio visualizer right in the player toolbar.
+* **Time Saved Tracker**: Shows exactly how much study time you've saved.
 
 ### ⏱️ Playback Optimization
 * **Fine-Tuning Slider**: Smoothly adjust speed from `0.5x` to `4.0x` in increments of `0.1x`.
@@ -130,15 +138,17 @@ Contributions are welcome! Please follow these guidelines:
 
 ---
 
-## 📢 Recent Updates (v1.0.4)
+## 📢 Recent Updates (v1.0.7)
 
-Here are the latest updates and changes in version `1.0.4`:
-* **Feature Cleanup**: Completely removed the Skip Silence and Skip Intro features to make the extension lighter, simpler, and zero-overhead.
-* **Dashboard Crash Safety**: Added a safe wrapper around storage calls inside the settings menu to prevent visual freezes if local storage fails to load.
-* **Cleaned Codebase**: Deleted unused experimental audio files to keep the build light and clean.
+Here are the latest updates and changes in version `1.0.7`:
+* **Skip Silence (Beta)**: High-performance audio worklet silence detection that seamlessly fast-forwards through lecture pauses.
+* **Auto Noise Calibration & Decibel Thresholds**: Smart noise floor calibration with fine-grained `-60 dB` to `-20 dB` controls.
+* **Studio-Grade Fades & Smooth Speed Ramps**: Exponential audio curves and tick-based speed acceleration eliminating all pops and clicks.
+* **Permanent Audio Graph Caching**: Rock-solid Web Audio API lifecycle handling preventing duplicate connection errors across video switches.
 
 ---
 
 ## 📄 License & Credits
 
 * **License**: This project is licensed under the MIT License. See [LICENSE](LICENSE) for more details.
+* **Acknowledgements**: Special thanks and credit to [vantezzen/skip-silence](https://github.com/vantezzen/skip-silence) for the open-source audio worklet architecture, noise floor calibration algorithm, and hysteresis pattern that inspired the Skip Silence feature.

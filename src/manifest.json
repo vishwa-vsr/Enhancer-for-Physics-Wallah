@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Enhancer for Physics Wallah",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Supercharge your PhysicsWallah lectures! Custom video speeds up to 4.0x, Picture-in-Picture, and 1-click decluttering on pw.live.",
   "icons": {
     "16": "icons/icon16.png",

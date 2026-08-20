@@ -35,6 +35,527 @@
   let isPointerHoldingOnPlayer = false;
   let alwaysExpandWidget = false;
 
+  // Skip Silence configuration
+  let skipSilenceEnabled = false;
+  let skipSilenceMode = 'speedup'; // 'speedup' or 'hardskip'
+  let skipSilenceSpeechSpeed = 1.0;
+  let skipSilenceSilenceSpeed = 3.0;
+  let skipSilenceThreshold = -40; // Manual threshold in dB (-60dB to -20dB)
+  let skipSilenceDynamicThreshold = true; // Auto-calculate threshold from noise floor
+  let skipSilenceMute = false;
+  let skipSilenceTimeSaved = 0; // milliseconds
+  let skipSilenceSessionSaved = 0; // per-session ms
+  let skipSilenceMinDuration = 0.5; // minimum silence in seconds before skipping (0.3-3.0)
+
+  // Skip Silence engine state (internal)
+  let ssAudioContext = null;
+  let ssSourceNode = null;
+  let ssWorkletNode = null;
+  let ssDelayNode = null;
+  let ssGainNode = null;
+  let ssConnectedVideo = null; // Track which video the audio pipeline is connected to
+  let ssCurrentState = 'idle'; // 'idle', 'speech', 'silence'
+  let ssIsSilentNow = false;
+  let ssSilenceStartTime = 0;
+  let ssSilentMsAccumulated = 0; // Tick-based silence accumulator (bypasses setTimeout throttling)
+  let ssVolumeHistory = []; // Rolling buffer of volume levels (dB) for ~10 seconds (~470 entries)
+  let ssCalculatedNoiseFloorDb = -45; // Auto-calculated noise floor threshold in dB
+  let ssSamplesSinceCalc = 0;
+  let ssLastVolumeLevel = 0;
+  let ssLastVolumeDb = -100;
+  let ssEngineRunning = false;
+  let ssInitializing = false;
+
+  // Inline AudioWorklet processor code for skip silence volume detection
+  const VOLUME_PROCESSOR_CODE = `
+class VolumeProcessor extends AudioWorkletProcessor {
+  constructor() {
+    super();
+    this._rms = 0;
+    this._count = 0;
+    this._enabled = true;
+    this.port.onmessage = (e) => { this._enabled = e.data; };
+  }
+  process(inputs, outputs) {
+    const input = inputs[0];
+    if (!input || !input.length) return true;
+    const samples = input[0];
+    if (!samples) return true;
+    let sum = 0;
+    for (let i = 0; i < samples.length; i++) {
+      sum += samples[i] * samples[i];
+    }
+    this._rms += sum / samples.length;
+    this._count += 1;
+    // Report every ~1024 samples (~23ms at 44.1kHz)
+    if (this._count >= Math.ceil(1024 / samples.length)) {
+      if (this._enabled) {
+        this.port.postMessage(Math.sqrt(this._rms / this._count));
+      }
+      this._rms = 0;
+      this._count = 0;
+    }
+    return true;
+  }
+}
+registerProcessor('pwc-volume-processor', VolumeProcessor);
+`;
+
+  // Convert raw RMS to Decibels (dB), clamped between -100dB and 0dB
+  function rmsToDb(rms) {
+    if (!rms || rms <= 0.000001) return -100;
+    const db = 20 * Math.log10(rms);
+    return Math.max(-100, Math.min(0, Math.round(db * 10) / 10));
+  }
+
+  // Converts or clamps manual threshold to dB (-60dB to -20dB)
+  function manualThresholdToDb(val) {
+    if (typeof val === 'number' && val < 0) {
+      return Math.max(-60, Math.min(-20, val));
+    }
+    // Fallback if legacy 1-100 scale: 1 -> -60dB, 100 -> -20dB
+    const legacy = Math.max(1, Math.min(100, val || 30));
+    return Math.round(-60 + ((legacy - 1) / 99) * 40);
+  }
+
+  // Calculate effective thresholds with 3dB Hysteresis (Schmitt Trigger)
+  function getEffectiveThresholds() {
+    let baseDb;
+    if (skipSilenceDynamicThreshold) {
+      baseDb = ssCalculatedNoiseFloorDb;
+    } else {
+      baseDb = manualThresholdToDb(skipSilenceThreshold);
+    }
+    // Hysteresis: drop below baseDb to enter silence, rise above baseDb + 3dB to exit silence
+    return {
+      silenceThresholdDb: baseDb,
+      speechThresholdDb: baseDb + 3
+    };
+  }
+
+  // Rolling volume history buffer for dynamic noise-floor auto-calibration (~10s history)
+  function updateDynamicNoiseFloor(db) {
+    if (!Number.isFinite(db)) return;
+    ssVolumeHistory.push(db);
+    if (ssVolumeHistory.length > 470) {
+      ssVolumeHistory.shift();
+    }
+    // Recalculate roughly once every ~23 samples (~500ms)
+    ssSamplesSinceCalc++;
+    if (ssSamplesSinceCalc >= 23 && ssVolumeHistory.length >= 47) {
+      ssSamplesSinceCalc = 0;
+      const sorted = ssVolumeHistory.slice().sort((a, b) => a - b);
+      const p15Index = Math.floor(sorted.length * 0.15);
+      const noiseFloor = sorted[p15Index];
+      // 15th percentile noise floor + 3dB margin, clamped within realistic boundaries (-60dB to -20dB)
+      ssCalculatedNoiseFloorDb = Math.max(-60, Math.min(-20, Math.round((noiseFloor + 3) * 10) / 10));
+    }
+  }
+
+  // Helper to ensure AudioContext stays awake across browser autoplay policies
+  function resumeAudioContextOnInteraction(audioCtx) {
+    if (!audioCtx || audioCtx.state !== 'suspended') return;
+    audioCtx.resume();
+    const resumeFn = () => {
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    };
+    document.addEventListener('pointerdown', resumeFn, { once: true, capture: true });
+    document.addEventListener('keydown', resumeFn, { once: true, capture: true });
+  }
+
+  // Permanent Audio Graph cache per HTMLMediaElement (WeakMap + DOM property fallback)
+  const videoAudioGraphs = new WeakMap();
+
+  function getCachedAudioGraph(video) {
+    if (!video) return null;
+    return videoAudioGraphs.get(video) || video._pwcAudioGraph || null;
+  }
+
+  // Initialize or resume the audio pipeline for skip silence
+  async function ssInit() {
+    const video = getActiveVideo();
+    if (!video || ssInitializing) return;
+
+    ssInitializing = true;
+    try {
+      let graph = getCachedAudioGraph(video);
+
+      if (!graph) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Create worklet from inline code via Blob URL
+        const blob = new Blob([VOLUME_PROCESSOR_CODE], { type: 'application/javascript' });
+        const workletUrl = URL.createObjectURL(blob);
+        await audioCtx.audioWorklet.addModule(workletUrl);
+        URL.revokeObjectURL(workletUrl);
+
+        // Create source node once per video element
+        const sourceNode = audioCtx.createMediaElementSource(video);
+
+        // Create delay node for lookahead buffer (60ms)
+        const delayNode = audioCtx.createDelay(1.0);
+        delayNode.delayTime.value = 0.06;
+
+        // Create gain node for muting during silence
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = 1.0;
+
+        // Create worklet node for volume analysis
+        const workletNode = new AudioWorkletNode(audioCtx, 'pwc-volume-processor');
+
+        // Audio routing:
+        // video -> source -> delay -> gain -> destination (speakers)
+        // video -> source -> workletNode (volume analysis, no output)
+        sourceNode.connect(delayNode);
+        delayNode.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        sourceNode.connect(workletNode);
+
+        graph = {
+          context: audioCtx,
+          sourceNode: sourceNode,
+          delayNode: delayNode,
+          gainNode: gainNode,
+          workletNode: workletNode
+        };
+
+        videoAudioGraphs.set(video, graph);
+        video._pwcAudioGraph = graph;
+      }
+
+      // Ensure AudioContext is resumed
+      resumeAudioContextOnInteraction(graph.context);
+
+      // Point current engine references to this active video's graph
+      ssAudioContext = graph.context;
+      ssSourceNode = graph.sourceNode;
+      ssDelayNode = graph.delayNode;
+      ssGainNode = graph.gainNode;
+      ssWorkletNode = graph.workletNode;
+      ssConnectedVideo = video;
+
+      // Enable worklet message reporting
+      ssWorkletNode.port.postMessage(true);
+      ssWorkletNode.port.onmessage = (event) => {
+        if (!ssEngineRunning || isHoldingSpace) return;
+        ssLastVolumeLevel = event.data;
+        const db = rmsToDb(event.data);
+        ssLastVolumeDb = db;
+        ssProcessVolume(db);
+      };
+
+      ssEngineRunning = true;
+      ssCurrentState = 'speech';
+      ssIsSilentNow = false;
+      ssSilentMsAccumulated = 0;
+      ssInitializing = false;
+      updateSkipSilenceUI();
+    } catch (err) {
+      ssInitializing = false;
+      ssEngineRunning = false;
+      console.warn('PW Control: Skip Silence init failed:', err.message);
+      if (err.name === 'NotSupportedError' || err.message.includes('CORS') || err.message.includes('cross-origin')) {
+        showInfoToast('Skip Silence: Video source blocked (CORS)');
+      }
+      ssDestroy();
+    }
+  }
+
+  // Safely set video playback rate without event loop oscillation
+  function setVideoPlaybackRate(rate) {
+    const video = getActiveVideo();
+    if (!video) return;
+    const clamped = Math.round(rate * 100) / 100;
+    if (Math.abs(video.playbackRate - clamped) > 0.02) {
+      isSettingRate = true;
+      video.playbackRate = clamped;
+      setTimeout(() => { isSettingRate = false; }, 30);
+    }
+  }
+
+  // Smoothly enter silence state (exponential fade out)
+  function ssEnterSilence() {
+    if (skipSilenceMute && ssGainNode && ssAudioContext) {
+      const now = ssAudioContext.currentTime;
+      ssGainNode.gain.cancelScheduledValues(now);
+      ssGainNode.gain.setTargetAtTime(0, now, 0.015);
+    }
+  }
+
+  // Smoothly exit silence state (restore speed + exponential fade in)
+  function ssExitSilence() {
+    setVideoPlaybackRate(skipSilenceSpeechSpeed);
+    if (ssGainNode && ssAudioContext) {
+      const now = ssAudioContext.currentTime;
+      ssGainNode.gain.cancelScheduledValues(now);
+      ssGainNode.gain.setTargetAtTime(1, now, 0.04);
+    }
+  }
+
+  // Disable the skip silence engine (never disconnect source to prevent re-creation errors)
+  function ssDestroy() {
+    ssEngineRunning = false;
+    ssCurrentState = 'idle';
+    ssIsSilentNow = false;
+    ssSilentMsAccumulated = 0;
+
+    // Stop worklet processing
+    if (ssWorkletNode) {
+      try {
+        ssWorkletNode.port.postMessage(false);
+      } catch (e) {}
+    }
+
+    // Unmute gain node so audio is completely normal
+    if (ssGainNode && ssAudioContext) {
+      try {
+        ssGainNode.gain.cancelScheduledValues(ssAudioContext.currentTime);
+        ssGainNode.gain.setValueAtTime(1.0, ssAudioContext.currentTime);
+      } catch (e) {}
+    }
+
+    // Restore normal playback speed
+    const video = getActiveVideo();
+    if (video && !isHoldingSpace) {
+      const normalSpeed = extensionEnabled ? currentSpeed : 1.0;
+      if (video.playbackRate !== normalSpeed) {
+        setVideoPlaybackRate(normalSpeed);
+      }
+    }
+    updateSkipSilenceUI();
+  }
+
+  // Process volume level on worklet tick cadence (zero setTimeout reliance)
+  function ssProcessVolume(db) {
+    updateDynamicNoiseFloor(db);
+    const { silenceThresholdDb, speechThresholdDb } = getEffectiveThresholds();
+    const windowMs = ssAudioContext ? (1024 / ssAudioContext.sampleRate) * 1000 : 23.2;
+
+    // Hysteresis detection
+    if (ssIsSilentNow) {
+      if (db > speechThresholdDb) {
+        ssIsSilentNow = false;
+      }
+    } else {
+      if (db < silenceThresholdDb) {
+        ssIsSilentNow = true;
+      }
+    }
+
+    if (ssIsSilentNow) {
+      const prevSilentMs = ssSilentMsAccumulated;
+      ssSilentMsAccumulated += windowMs;
+
+      const minSilenceMs = Math.round(skipSilenceMinDuration * 1000);
+      if (ssSilentMsAccumulated >= minSilenceMs) {
+        if (ssCurrentState !== 'silence') {
+          ssCurrentState = 'silence';
+          ssSilenceStartTime = Date.now();
+          ssEnterSilence();
+          updateSkipSilenceUI();
+        }
+
+        // Tick-based speed ramp over 200ms (zero setInterval)
+        if (prevSilentMs < minSilenceMs + 200) {
+          const progress = Math.min((ssSilentMsAccumulated - minSilenceMs) / 200, 1);
+          const targetSpeed = skipSilenceSpeechSpeed + (skipSilenceSilenceSpeed - skipSilenceSpeechSpeed) * progress;
+          setVideoPlaybackRate(targetSpeed);
+        }
+
+        // Track time saved
+        const saved = windowMs * (1 - (skipSilenceSpeechSpeed / skipSilenceSilenceSpeed));
+        skipSilenceTimeSaved += saved;
+        skipSilenceSessionSaved += saved;
+        safeSetSettings({ skipSilenceTimeSaved: Math.round(skipSilenceTimeSaved) });
+      }
+    } else {
+      ssSilentMsAccumulated = 0;
+      if (ssCurrentState === 'silence') {
+        ssCurrentState = 'speech';
+        ssExitSilence();
+        updateSkipSilenceUI();
+      }
+    }
+  }
+
+  // Toggle skip silence on/off
+  function toggleSkipSilence(enable) {
+    skipSilenceEnabled = enable;
+    safeSetSettings({ skipSilenceEnabled: enable });
+    if (enable) {
+      ssInit();
+    } else {
+      ssDestroy();
+    }
+  }
+
+  // Format milliseconds to human-readable time saved string
+  function formatTimeSaved(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    if (totalSeconds < 60) return totalSeconds + 's';
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    if (minutes < 60) return minutes + 'm ' + seconds + 's';
+    const hours = Math.floor(minutes / 60);
+    const remMinutes = minutes % 60;
+    return hours + 'h ' + remMinutes + 'm';
+  }
+
+  // Build and inject the Skip Silence toggle button + visualizer + status into the player toolbar
+  function injectSkipSilenceButton() {
+    if (!extensionEnabled) {
+      const existing = document.getElementById('pwc-ss-container');
+      if (existing) existing.remove();
+      return;
+    }
+
+    const toolbar = findPWToolbar();
+    if (!toolbar) return;
+
+    let container = document.getElementById('pwc-ss-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'pwc-ss-container';
+      container.className = 'pwc-ss-container';
+
+      // Toggle button
+      const btn = document.createElement('button');
+      btn.id = 'pwc-ss-toggle';
+      btn.className = 'pwc-ss-toggle';
+      btn.type = 'button';
+      btn.setAttribute('title', 'Skip Silence (Beta)');
+
+      // Waveform SVG icon
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+
+      // Speaker with X (muted/silence icon)
+      const path1 = document.createElementNS(svgNS, 'path');
+      path1.setAttribute('d', 'M11 5L6 9H2v6h4l5 4V5z');
+      svg.appendChild(path1);
+      const line1 = document.createElementNS(svgNS, 'line');
+      line1.setAttribute('x1', '23');
+      line1.setAttribute('y1', '9');
+      line1.setAttribute('x2', '17');
+      line1.setAttribute('y2', '15');
+      svg.appendChild(line1);
+      const line2 = document.createElementNS(svgNS, 'line');
+      line2.setAttribute('x1', '17');
+      line2.setAttribute('y1', '9');
+      line2.setAttribute('x2', '23');
+      line2.setAttribute('y2', '15');
+      svg.appendChild(line2);
+
+      btn.appendChild(svg);
+      container.appendChild(btn);
+
+      // Equalizer visualizer (5 bars)
+      const vizContainer = document.createElement('div');
+      vizContainer.className = 'pwc-ss-visualizer';
+      vizContainer.id = 'pwc-ss-visualizer';
+      for (let i = 0; i < 5; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'pwc-ss-bar';
+        vizContainer.appendChild(bar);
+      }
+      container.appendChild(vizContainer);
+
+      // Status text
+      const statusText = document.createElement('span');
+      statusText.className = 'pwc-ss-status';
+      statusText.id = 'pwc-ss-status';
+      statusText.textContent = '';
+      container.appendChild(statusText);
+
+      // Insert after speed control
+      const speedControl = document.getElementById('pwc-speed-control');
+      if (speedControl && speedControl.nextSibling) {
+        toolbar.insertBefore(container, speedControl.nextSibling);
+      } else if (toolbar.children.length > 1) {
+        toolbar.insertBefore(container, toolbar.children[1]);
+      } else {
+        toolbar.appendChild(container);
+      }
+
+      // Click handler
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        toggleSkipSilence(!skipSilenceEnabled);
+      });
+    }
+
+    updateSkipSilenceUI();
+  }
+
+  // Update the skip silence UI elements
+  function updateSkipSilenceUI() {
+    const container = document.getElementById('pwc-ss-container');
+    if (!container) return;
+
+    const btn = document.getElementById('pwc-ss-toggle');
+    const viz = document.getElementById('pwc-ss-visualizer');
+    const status = document.getElementById('pwc-ss-status');
+
+    if (btn) {
+      btn.classList.toggle('active', skipSilenceEnabled);
+      btn.classList.toggle('speech', skipSilenceEnabled && ssCurrentState === 'speech');
+      btn.classList.toggle('silence', skipSilenceEnabled && ssCurrentState === 'silence');
+    }
+
+    if (viz) {
+      viz.classList.toggle('active', skipSilenceEnabled && ssEngineRunning);
+      viz.classList.toggle('silence', ssCurrentState === 'silence');
+      // Update bar heights based on volume level
+      if (skipSilenceEnabled && ssEngineRunning) {
+        const bars = viz.querySelectorAll('.pwc-ss-bar');
+        const baseHeight = Math.min(ssLastVolumeLevel * 500, 1); // Normalize to 0-1
+        bars.forEach((bar, i) => {
+          const variation = 0.3 + Math.random() * 0.7;
+          const h = Math.max(3, baseHeight * variation * 16);
+          bar.style.height = h + 'px';
+        });
+      }
+    }
+
+    if (status) {
+      if (!skipSilenceEnabled) {
+        status.textContent = '';
+        status.style.display = 'none';
+      } else if (ssCurrentState === 'silence') {
+        status.textContent = 'Skipping...';
+        status.style.display = '';
+        status.style.color = '#fb923c';
+      } else if (ssCurrentState === 'speech') {
+        if (skipSilenceSessionSaved > 0) {
+          status.textContent = 'Saved ' + formatTimeSaved(skipSilenceSessionSaved);
+        } else {
+          status.textContent = 'Listening...';
+        }
+        status.style.display = '';
+        status.style.color = '#4ade80';
+      } else {
+        status.textContent = '';
+        status.style.display = 'none';
+      }
+    }
+  }
+
+  // Periodic UI update for skip silence visualizer (4fps is enough for visual feedback)
+  setInterval(() => {
+    if (skipSilenceEnabled && ssEngineRunning) {
+      updateSkipSilenceUI();
+    }
+  }, 250);
+
   function applyAlwaysExpandState(targetContainer) {
     const container = targetContainer || document.getElementById('pwc-speed-control');
     if (container) {
@@ -111,7 +632,7 @@
     }
     try {
       chrome.storage.local.get(
-        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP'], 
+        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceMode', 'skipSilenceSpeechSpeed', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'], 
         function (result) {
           try {
             if (chrome.runtime && chrome.runtime.id) {
@@ -187,6 +708,20 @@
 
     applySettingsHTML(hideSettings);
     applyDistractorsState();
+
+    skipSilenceEnabled = !!result.skipSilenceEnabled;
+    skipSilenceMode = result.skipSilenceMode || 'speedup';
+    skipSilenceSpeechSpeed = result.skipSilenceSpeechSpeed !== undefined ? parseFloat(result.skipSilenceSpeechSpeed) : 1.0;
+    skipSilenceSilenceSpeed = result.skipSilenceSilenceSpeed !== undefined ? parseFloat(result.skipSilenceSilenceSpeed) : 3.0;
+    skipSilenceThreshold = result.skipSilenceThreshold !== undefined ? parseInt(result.skipSilenceThreshold) : -40;
+    skipSilenceDynamicThreshold = result.skipSilenceDynamicThreshold !== false;
+    skipSilenceMute = !!result.skipSilenceMute;
+    skipSilenceTimeSaved = result.skipSilenceTimeSaved || 0;
+    skipSilenceMinDuration = result.skipSilenceMinDuration !== undefined ? parseFloat(result.skipSilenceMinDuration) : 0.5;
+
+    if (skipSilenceEnabled) {
+      ssInit();
+    }
   });
 
   // Listen for storage changes from the settings popup
@@ -244,6 +779,49 @@
             }
             if (changes.hasOwnProperty('keyReset')) {
               keyReset = changes.keyReset.newValue;
+            }
+            if (changes.hasOwnProperty('skipSilenceEnabled')) {
+              const wasEnabled = skipSilenceEnabled;
+              skipSilenceEnabled = !!changes.skipSilenceEnabled.newValue;
+              if (skipSilenceEnabled && !wasEnabled) {
+                ssInit();
+              } else if (!skipSilenceEnabled && wasEnabled) {
+                ssDestroy();
+              }
+            }
+            if (changes.hasOwnProperty('skipSilenceSpeechSpeed')) {
+              skipSilenceSpeechSpeed = parseFloat(changes.skipSilenceSpeechSpeed.newValue) || 1.0;
+              if (ssEngineRunning && ssCurrentState === 'speech') {
+                setVideoPlaybackRate(skipSilenceSpeechSpeed);
+              }
+            }
+            if (changes.hasOwnProperty('skipSilenceSilenceSpeed')) {
+              skipSilenceSilenceSpeed = parseFloat(changes.skipSilenceSilenceSpeed.newValue) || 3.0;
+              if (ssEngineRunning && ssCurrentState === 'silence') {
+                setVideoPlaybackRate(skipSilenceSilenceSpeed);
+              }
+            }
+            if (changes.hasOwnProperty('skipSilenceThreshold')) {
+              skipSilenceThreshold = parseInt(changes.skipSilenceThreshold.newValue) || -40;
+            }
+            if (changes.hasOwnProperty('skipSilenceDynamicThreshold')) {
+              skipSilenceDynamicThreshold = changes.skipSilenceDynamicThreshold.newValue !== false;
+            }
+            if (changes.hasOwnProperty('skipSilenceMute')) {
+              skipSilenceMute = !!changes.skipSilenceMute.newValue;
+              if (ssGainNode && ssAudioContext) {
+                if (skipSilenceMute && ssCurrentState === 'silence') {
+                  ssGainNode.gain.setTargetAtTime(0, ssAudioContext.currentTime, 0.01);
+                } else {
+                  ssGainNode.gain.setTargetAtTime(1, ssAudioContext.currentTime, 0.01);
+                }
+              }
+            }
+            if (changes.hasOwnProperty('skipSilenceTimeSaved')) {
+              skipSilenceTimeSaved = changes.skipSilenceTimeSaved.newValue || 0;
+            }
+            if (changes.hasOwnProperty('skipSilenceMinDuration')) {
+              skipSilenceMinDuration = parseFloat(changes.skipSilenceMinDuration.newValue) || 0.5;
             }
 
 
@@ -1155,6 +1733,15 @@
     cachedTimeTexts = null;
     cachedNativeSpeedBadges = null;
 
+    // Reset skip silence session counter and reconnect engine for new video
+    skipSilenceSessionSaved = 0;
+    if (skipSilenceEnabled && ssConnectedVideo !== video) {
+      ssDestroy();
+      setTimeout(() => {
+        if (skipSilenceEnabled) ssInit();
+      }, 500);
+    }
+
     activeVideo.addEventListener('ratechange', onRateChange);
     activeVideo.addEventListener('play', onVideoPlay);
     activeVideo.addEventListener('enterpictureinpicture', onEnterPiP);
@@ -1179,6 +1766,9 @@
   function onVideoPlay() {
     setTimeout(() => {
       applySpeedToActiveVideo();
+      if (skipSilenceEnabled && !ssEngineRunning) {
+        ssInit();
+      }
     }, 200);
   }
 
@@ -1944,10 +2534,14 @@
       isModifyingDOM = true;
       try {
         injectSpeedControl();
+        injectSkipSilenceButton();
         injectInstantHideButton();
         injectPiPButton();
       } finally {
         isModifyingDOM = false;
+      }
+      if (skipSilenceEnabled && !ssEngineRunning && !video.paused) {
+        ssInit();
       }
     }
   }

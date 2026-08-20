@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   safeStorageGet(
-    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP'],
+    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceMode', 'skipSilenceSpeechSpeed', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'],
     (result) => {
       applyTheme(result.themeMode === 'light');
       // Load focus toggles
@@ -259,7 +259,49 @@ document.addEventListener('DOMContentLoaded', () => {
       const speed = result.preferredSpeed ? parseFloat(result.preferredSpeed) : 1.0;
       updateSpeedUI(speed);
 
+      // Load Skip Silence settings
+      const ssEnableToggle = document.getElementById('ss-enable-toggle');
+      if (ssEnableToggle) ssEnableToggle.checked = !!result.skipSilenceEnabled;
 
+      const ssSpeechSpeedInput = document.getElementById('ss-speech-speed');
+      if (ssSpeechSpeedInput) {
+        ssSpeechSpeedInput.value = result.skipSilenceSpeechSpeed !== undefined ? parseFloat(result.skipSilenceSpeechSpeed).toFixed(1) : '1.0';
+      }
+
+      const ssSilenceSpeedInput = document.getElementById('ss-silence-speed');
+      if (ssSilenceSpeedInput) {
+        ssSilenceSpeedInput.value = result.skipSilenceSilenceSpeed !== undefined ? parseFloat(result.skipSilenceSilenceSpeed).toFixed(1) : '3.0';
+      }
+
+      const ssAutoToggle = document.getElementById('ss-auto-toggle');
+      const ssManualSensitivityCard = document.getElementById('ss-manual-sensitivity-card');
+      const isAutoThreshold = result.skipSilenceDynamicThreshold !== false;
+      if (ssAutoToggle) ssAutoToggle.checked = isAutoThreshold;
+      if (ssManualSensitivityCard) ssManualSensitivityCard.style.display = isAutoThreshold ? 'none' : 'flex';
+
+      const ssThresholdSlider = document.getElementById('ss-threshold-slider');
+      const ssSensitivityValue = document.getElementById('ss-sensitivity-value');
+      if (ssThresholdSlider) {
+        const thresholdVal = (result.skipSilenceThreshold !== undefined && result.skipSilenceThreshold < 0)
+          ? parseInt(result.skipSilenceThreshold)
+          : -40;
+        ssThresholdSlider.value = thresholdVal;
+        if (ssSensitivityValue) ssSensitivityValue.textContent = `${thresholdVal} dB`;
+      }
+
+      const ssMuteToggle = document.getElementById('ss-mute-toggle');
+      if (ssMuteToggle) ssMuteToggle.checked = !!result.skipSilenceMute;
+
+      const ssTimeSaved = document.getElementById('ss-time-saved');
+      if (ssTimeSaved) {
+        const ms = result.skipSilenceTimeSaved || 0;
+        ssTimeSaved.textContent = formatTimeSavedPopup(ms);
+      }
+
+      const ssMinDurationInput = document.getElementById('ss-min-duration');
+      if (ssMinDurationInput) {
+        ssMinDurationInput.value = result.skipSilenceMinDuration !== undefined ? parseFloat(result.skipSilenceMinDuration).toFixed(1) : '0.5';
+      }
 
       // Remove loading overlay
       dismissLoadingOverlay();
@@ -477,6 +519,154 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.tabs.create({ url: rateUrl });
       } else {
         window.open(rateUrl, '_blank');
+      }
+    });
+  }
+
+
+  // === SKIP SILENCE TAB EVENT HANDLERS ===
+
+  // Format milliseconds to human-readable string for popup display
+  function formatTimeSavedPopup(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    if (totalSeconds < 60) return totalSeconds + 's';
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    if (minutes < 60) return minutes + 'm ' + seconds + 's';
+    const hours = Math.floor(minutes / 60);
+    const remMinutes = minutes % 60;
+    return hours + 'h ' + remMinutes + 'm';
+  }
+
+  // Skip Silence enable toggle
+  const ssEnableToggleEl = document.getElementById('ss-enable-toggle');
+  if (ssEnableToggleEl) {
+    ssEnableToggleEl.addEventListener('change', (e) => {
+      safeStorageSet({ skipSilenceEnabled: e.target.checked });
+    });
+  }
+
+  // Speech speed stepper
+  function updateSSSpeechSpeed(delta) {
+    const input = document.getElementById('ss-speech-speed');
+    if (!input) return;
+    let val = parseFloat(input.value);
+    if (isNaN(val)) val = 1.0;
+    val = Math.round((val + delta) * 10) / 10;
+    if (val < 0.5) val = 0.5;
+    if (val > 4.0) val = 4.0;
+    input.value = val.toFixed(1);
+    safeStorageSet({ skipSilenceSpeechSpeed: val });
+  }
+
+  const ssSpeechMinus = document.getElementById('ss-speech-minus');
+  const ssSpeechPlus = document.getElementById('ss-speech-plus');
+  if (ssSpeechMinus) ssSpeechMinus.addEventListener('click', () => updateSSSpeechSpeed(-0.1));
+  if (ssSpeechPlus) ssSpeechPlus.addEventListener('click', () => updateSSSpeechSpeed(0.1));
+
+  const ssSpeechSpeedEl = document.getElementById('ss-speech-speed');
+  if (ssSpeechSpeedEl) {
+    ssSpeechSpeedEl.addEventListener('change', () => {
+      let val = parseFloat(ssSpeechSpeedEl.value);
+      if (isNaN(val) || val < 0.5 || val > 4.0) val = 1.0;
+      val = Math.round(val * 10) / 10;
+      ssSpeechSpeedEl.value = val.toFixed(1);
+      safeStorageSet({ skipSilenceSpeechSpeed: val });
+    });
+  }
+
+  // Silence speed stepper
+  function updateSSSilenceSpeed(delta) {
+    const input = document.getElementById('ss-silence-speed');
+    if (!input) return;
+    let val = parseFloat(input.value);
+    if (isNaN(val)) val = 3.0;
+    val = Math.round((val + delta) * 10) / 10;
+    if (val < 1.5) val = 1.5;
+    if (val > 6.0) val = 6.0;
+    input.value = val.toFixed(1);
+    safeStorageSet({ skipSilenceSilenceSpeed: val });
+  }
+
+  const ssSilenceMinus = document.getElementById('ss-silence-minus');
+  const ssSilencePlus = document.getElementById('ss-silence-plus');
+  if (ssSilenceMinus) ssSilenceMinus.addEventListener('click', () => updateSSSilenceSpeed(-0.1));
+  if (ssSilencePlus) ssSilencePlus.addEventListener('click', () => updateSSSilenceSpeed(0.1));
+
+  const ssSilenceSpeedEl = document.getElementById('ss-silence-speed');
+  if (ssSilenceSpeedEl) {
+    ssSilenceSpeedEl.addEventListener('change', () => {
+      let val = parseFloat(ssSilenceSpeedEl.value);
+      if (isNaN(val) || val < 1.5 || val > 6.0) val = 3.0;
+      val = Math.round(val * 10) / 10;
+      ssSilenceSpeedEl.value = val.toFixed(1);
+      safeStorageSet({ skipSilenceSilenceSpeed: val });
+    });
+  }
+
+  // Auto noise calibration toggle
+  const ssAutoToggleEl = document.getElementById('ss-auto-toggle');
+  const ssManualSensitivityCardEl = document.getElementById('ss-manual-sensitivity-card');
+  if (ssAutoToggleEl) {
+    ssAutoToggleEl.addEventListener('change', (e) => {
+      const isAuto = e.target.checked;
+      if (ssManualSensitivityCardEl) {
+        ssManualSensitivityCardEl.style.display = isAuto ? 'none' : 'flex';
+      }
+      safeStorageSet({ skipSilenceDynamicThreshold: isAuto });
+    });
+  }
+
+  // Silence threshold slider
+  const ssThresholdSliderEl = document.getElementById('ss-threshold-slider');
+  const ssSensitivityValueEl = document.getElementById('ss-sensitivity-value');
+  if (ssThresholdSliderEl) {
+    ssThresholdSliderEl.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      if (ssSensitivityValueEl) ssSensitivityValueEl.textContent = `${val} dB`;
+      safeStorageSet({ skipSilenceThreshold: val });
+    });
+  }
+
+  // Mute during silence toggle
+  const ssMuteToggleEl = document.getElementById('ss-mute-toggle');
+  if (ssMuteToggleEl) {
+    ssMuteToggleEl.addEventListener('change', (e) => {
+      safeStorageSet({ skipSilenceMute: e.target.checked });
+    });
+  }
+
+  // Reset time saved button
+  const ssResetBtn = document.getElementById('ss-reset-btn');
+  if (ssResetBtn) {
+    ssResetBtn.addEventListener('click', () => {
+      safeStorageSet({ skipSilenceTimeSaved: 0 });
+      const ssTimeSavedEl = document.getElementById('ss-time-saved');
+      if (ssTimeSavedEl) ssTimeSavedEl.textContent = '0s';
+    });
+  }
+
+  // Minimum silence duration input
+  const ssMinDurationEl = document.getElementById('ss-min-duration');
+  if (ssMinDurationEl) {
+    ssMinDurationEl.addEventListener('change', () => {
+      let val = parseFloat(ssMinDurationEl.value);
+      if (isNaN(val) || val < 0.3) val = 0.3;
+      if (val > 3.0) val = 3.0;
+      val = Math.round(val * 10) / 10;
+      ssMinDurationEl.value = val.toFixed(1);
+      safeStorageSet({ skipSilenceMinDuration: val });
+    });
+  }
+
+  // Listen for time saved updates from content script in real-time
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local' && changes.skipSilenceTimeSaved) {
+        const ssTimeSavedEl = document.getElementById('ss-time-saved');
+        if (ssTimeSavedEl) {
+          ssTimeSavedEl.textContent = formatTimeSavedPopup(changes.skipSilenceTimeSaved.newValue || 0);
+        }
       }
     });
   }

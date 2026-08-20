@@ -62,6 +62,14 @@
         </svg>
         Focus
       </button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="silence-tab">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H2v6h4l5 4V5z" />
+          <line x1="23" y1="9" x2="17" y2="15" />
+          <line x1="17" y1="9" x2="23" y2="15" />
+        </svg>
+        Silence
+      </button>
     </nav>
     
     <main class="popup-content">
@@ -348,6 +356,124 @@
           </div>
         </section>
       </div>
+
+      <!-- TAB 3: SILENCE PANEL -->
+      <div class="tab-panel" id="silence-tab">
+        <section class="silence-section" aria-label="Skip Silence Settings">
+          <h2 class="section-title">
+            Skip Silence
+            <span class="beta-badge">Beta</span>
+          </h2>
+
+          <div class="toggles-list">
+            <!-- Master Toggle -->
+            <div class="feature-card">
+              <div class="feature-info">
+                <label for="ss-enable-toggle" class="feature-title">Enable Skip Silence</label>
+              </div>
+              <label class="switch" aria-label="Toggle Skip Silence">
+                <input type="checkbox" id="ss-enable-toggle">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+
+
+            <!-- Speech Speed Stepper -->
+            <div class="feature-card">
+              <div class="feature-info">
+                <span class="feature-title">Speech Speed</span>
+              </div>
+              <div class="stepper-box">
+                <button type="button" class="stepper-btn" id="ss-speech-minus" aria-label="Decrease Speech Speed">−</button>
+                <div class="stepper-value-wrapper">
+                  <input type="number" id="ss-speech-speed" class="stepper-input" min="0.5" max="4.0" step="0.1" value="1.0">
+                  <span class="stepper-unit">x</span>
+                </div>
+                <button type="button" class="stepper-btn" id="ss-speech-plus" aria-label="Increase Speech Speed">+</button>
+              </div>
+            </div>
+
+            <!-- Silence Speed Stepper -->
+            <div class="feature-card">
+              <div class="feature-info">
+                <span class="feature-title">Silence Speed</span>
+              </div>
+              <div class="stepper-box">
+                <button type="button" class="stepper-btn" id="ss-silence-minus" aria-label="Decrease Silence Speed">−</button>
+                <div class="stepper-value-wrapper">
+                  <input type="number" id="ss-silence-speed" class="stepper-input" min="1.5" max="6.0" step="0.1" value="3.0">
+                  <span class="stepper-unit">x</span>
+                </div>
+                <button type="button" class="stepper-btn" id="ss-silence-plus" aria-label="Increase Silence Speed">+</button>
+              </div>
+            </div>
+
+            <!-- Auto Noise Calibration -->
+            <div class="feature-card">
+              <div class="feature-info">
+                <label for="ss-auto-toggle" class="feature-title">Auto Noise Calibration</label>
+              </div>
+              <label class="switch" aria-label="Toggle Auto Noise Calibration">
+                <input type="checkbox" id="ss-auto-toggle">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+
+            <!-- Silence Threshold Slider (Manual) -->
+            <div class="feature-card feature-card-combined" id="ss-manual-sensitivity-card">
+              <div class="feature-card-main-row">
+                <div class="feature-info">
+                  <span class="feature-title">Silence Threshold</span>
+                </div>
+                <span class="ss-sensitivity-value" id="ss-sensitivity-value">-40 dB</span>
+              </div>
+              <div class="ss-sensitivity-row">
+                <span class="ss-range-label">Strict</span>
+                <input type="range" id="ss-threshold-slider" class="ss-threshold-slider" min="-60" max="-20" step="1" value="-40">
+                <span class="ss-range-label">Aggressive</span>
+              </div>
+            </div>
+
+            <!-- Minimum Silence Duration -->
+            <div class="feature-card">
+              <div class="feature-info">
+                <label for="ss-min-duration" class="feature-title">Min. Silence (sec)</label>
+              </div>
+              <div class="ss-min-duration-group">
+                <input type="number" id="ss-min-duration" class="ss-min-duration-input" min="0.3" max="3.0" step="0.1" value="0.5">
+              </div>
+            </div>
+
+            <!-- Mute During Silence -->
+            <div class="feature-card">
+              <div class="feature-info">
+                <label for="ss-mute-toggle" class="feature-title">Mute During Silence</label>
+              </div>
+              <label class="switch" aria-label="Toggle Mute During Silence">
+                <input type="checkbox" id="ss-mute-toggle">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+
+            <!-- Time Saved Display -->
+            <div class="feature-card ss-time-saved-card">
+              <div class="feature-info">
+                <span class="feature-title">Time Saved</span>
+              </div>
+              <div class="ss-time-saved-group">
+                <span class="ss-time-saved-value" id="ss-time-saved">0s</span>
+                <button type="button" class="ss-reset-btn" id="ss-reset-btn" title="Reset time saved counter">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      </div>
     </main>
     
     <footer class="popup-footer">
@@ -363,7 +489,7 @@
         </svg>
         Rate Us
       </a>
-      <a href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/blob/main/CHANGELOG.md" target="_blank" class="version-link" rel="noopener noreferrer">v1.0.6</a>
+      <a href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/blob/main/CHANGELOG.md" target="_blank" class="version-link" rel="noopener noreferrer">v1.0.7</a>
     </footer>
   </div>
   <script src="popup.js"></script>
