@@ -6,8 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.0.7] - 2026-08-20
 
-### Added — Skip Silence (Beta)
-- **Skip Silence**: Automatically fast-forwards through teacher pauses, whiteboard writing, and silent thinking time during lectures.
+### Added & Redesigned
+- **New Modern Logo**: Redesigned the extension icon to a sleek, high-contrast monochrome design (Supersonic Dual Chevrons) with full Dark & Light mode support.
+- **Skip Silence (Beta)**: Automatically fast-forwards through teacher pauses, whiteboard writing, and silent thinking time during lectures.
 - **Auto Noise Calibration**: Automatically adjusts to your lecture's background noise (fan hum, AC, quiet speech) so you don't need to tweak settings.
 - **Silence Threshold Slider**: Simple slider in decibels (`-60 dB` to `-20 dB`) with **Strict** and **Aggressive** settings for fine-tuning.
 - **Smooth Speed Acceleration**: Glides smoothly from normal speech speed to silence speed with crystal-clear, pop-free audio.

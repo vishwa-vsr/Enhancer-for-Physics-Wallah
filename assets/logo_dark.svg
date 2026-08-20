@@ -1,0 +1,8 @@
+<!-- Dark Mode: Full-Bleed White Squircle with Balanced Razor Black Chevrons -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <rect fill="#ffffff" x="0" y="0" width="512" height="512" rx="118" ry="118" />
+  <g fill="#000000">
+    <path d="M 111 100 L 183 100 L 293 256 L 183 412 L 111 412 L 221 256 Z" />
+    <path d="M 219 100 L 291 100 L 401 256 L 291 412 L 219 412 L 329 256 Z" />
+  </g>
+</svg>

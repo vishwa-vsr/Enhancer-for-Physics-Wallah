@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <style>
+      :root {
+        --badge-fill: #000000;
+        --icon-fill: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --badge-fill: #ffffff;
+          --icon-fill: #000000;
+        }
+      }
+      .adaptive-badge { fill: var(--badge-fill); }
+      .adaptive-glyph { fill: var(--icon-fill); }
+    </style>
+  </defs>
+
+  <!-- Full-Bleed Edge-to-Edge Squircle Badge -->
+  <rect class="adaptive-badge" x="0" y="0" width="512" height="512" rx="118" ry="118" />
+
+  <!-- Sleeker Razor Speed Chevrons (Golden Ratio ~65% Balanced Scale) -->
+  <g class="adaptive-glyph">
+    <!-- Left Chevron -->
+    <path d="M 111 100 L 183 100 L 293 256 L 183 412 L 111 412 L 221 256 Z" />
+    
+    <!-- Right Chevron -->
+    <path d="M 219 100 L 291 100 L 401 256 L 291 412 L 219 412 L 329 256 Z" />
+  </g>
+</svg>

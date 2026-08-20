@@ -217,8 +217,8 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .header-logo-img {
-  width: 26px;
-  height: 26px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
   display: block;
 }
