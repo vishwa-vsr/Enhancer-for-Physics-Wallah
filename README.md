@@ -4,7 +4,7 @@
   #  Enhancer for Physics Wallah
   ### Playback Speed & Focus Extension for Physics Wallah (`pw.live`)
 
-  [![Version: 1.0.7](https://img.shields.io/badge/version-1.0.7-blue.svg)](#)
+  [![Version: 1.0.7.2](https://img.shields.io/badge/version-1.0.7.2-blue.svg)](#)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-blue?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-orange?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/)
@@ -138,9 +138,9 @@ Contributions are welcome! Please follow these guidelines:
 
 ---
 
-## 📢 Recent Updates (v1.0.7)
+## 📢 Recent Updates (v1.0.7.2)
 
-Here are the latest updates and changes in version `1.0.7`:
+Here are the latest updates and changes in version `1.0.7.2`:
 * **Skip Silence (Beta)**: High-performance audio worklet silence detection that seamlessly fast-forwards through lecture pauses.
 * **Auto Noise Calibration & Decibel Thresholds**: Smart noise floor calibration with fine-grained `-60 dB` to `-20 dB` controls.
 * **Studio-Grade Fades & Smooth Speed Ramps**: Exponential audio curves and tick-based speed acceleration eliminating all pops and clicks.
