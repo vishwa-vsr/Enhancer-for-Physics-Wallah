@@ -491,6 +491,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const feedbackLink = document.querySelector('.feedback-link');
+  if (feedbackLink) {
+    feedbackLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const url = feedbackLink.getAttribute('href');
+      if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
+        chrome.tabs.create({ url: url });
+      } else {
+        window.open(url, '_blank');
+      }
+    });
+  }
+
   const versionLink = document.querySelector('.version-link');
   if (versionLink) {
     versionLink.addEventListener('click', (e) => {

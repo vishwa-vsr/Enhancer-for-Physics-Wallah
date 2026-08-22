@@ -4,10 +4,11 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.7.2] - 2026-08-21
+## [1.0.7.5] - 2026-08-22
 
-### Changed & Improved
-- **Version Bump & Distribution Package**: Updated extension version to `v1.0.7.2` with fresh compiled dist packages and store zip archives for Chrome, Firefox, and Edge.
+### Added & Improved
+- **Feedback Link in Popup**: Added a quick Feedback button with a matching message icon in the bottom footer of the popup menu.
+- **Automatic Uninstall Feedback Survey**: Added a background service worker that automatically opens an exit feedback survey whenever the extension is uninstalled.
 
 ---
 
