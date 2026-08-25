@@ -1,8 +1,8 @@
 <div align="center">
   <img src="assets/logo_300.png" width="120" height="120" alt="Enhancer for Physics Wallah Logo" />
   
-  #  Enhancer for Physics Wallah
-  ### Playback Speed & Focus Extension for Physics Wallah (`pw.live`)
+  # Enhancer for Physics Wallah
+  ### Video playback control, smart silence skipping, and focus tools for `pw.live`
 
   [![Version: 1.0.7.6](https://img.shields.io/badge/version-1.0.7.6-blue.svg)](#)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -10,144 +10,140 @@
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-orange?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--on-green?logo=microsoft-edge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan)
 
-  **Enhancer for Physics Wallah** is a simple, lightweight browser extension that gives you complete control over your video playback on the `pw.live` student portal. It adds a custom speed slider (from `0.5x` up to `4.0x`), automatic **Skip Silence (Beta)** acceleration, Picture-in-Picture mode, and toggles to hide distracting screen elements (like chats, notes, and doubt boxes) directly inside the video player.
+  **Enhancer for Physics Wallah** gives you full control over video playback on Physics Wallah student portals. Adjust playback speed up to 4.0x, automatically skip teacher pauses with smart audio detection, pop videos into Picture-in-Picture mode, and hide distracting page elements.
 
-  [Direct Download](#-direct-store-downloads) • [Key Features](#-key-features) • [Project Structure](#-project-structure) • [How to Build](#-how-to-build)
+  [Install](#-installation) • [Features](#-features) • [Hotkeys](#-keyboard-shortcuts) • [Building Locally](#-building-from-source) • [Contributing](#-contributing)
 </div>
 
 ---
 
-## 📖 Overview
+## 🚀 Installation
 
-Default online video players are often slow, limited to 2x speed, and filled with distracting sidebars. 
+### Official Web Stores
+Install the extension directly from your browser's official store:
+* **Google Chrome:** [Chrome Web Store](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj)
+* **Mozilla Firefox:** [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/)
+* **Microsoft Edge:** [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan)
 
-This extension lets you:
-- **Set any speed** up to `4.0x` (with customized preset buttons and a hold-space speedup option).
-- **Pop out Picture-in-Picture** floating player to multitask while watching lectures across any app.
-- **Hide screen clutter** with simple toggles to hide notes, doubt boxes, and floating AI buttons.
-
-> [!NOTE]
-> Enhancer for Physics Wallah is built with **zero external dependencies** (no frameworks, no heavy libraries) using vanilla JavaScript, HTML, and CSS. This keeps it incredibly light, memory-efficient, and fast.
-
----
-
-## 🚀 Installation & Download
-
-### 🌐 Direct Store Downloads
-Get the extension officially from your browser's store:
-* **Google Chrome:** [Download from Chrome Web Store](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj)
-* **Mozilla Firefox:** [Download from Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/pw-control/)
-* **Microsoft Edge:** [Download from Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan)
-
-### 🛠️ Developer Mode Install (Local Testing)
-If you want to run the latest development code locally:
-1. Clone or download this repository.
-2. Open your browser's extensions page (`chrome://extensions` or `edge://extensions`).
-3. Toggle **Developer mode** on in the top-right.
-4. Click **Load unpacked** in the top-left and select the `dist/chrome` (or `dist/edge`) folder.
+### Developer Mode (Local Installation)
+If you want to run the latest unreleased version directly from source:
+1. Download or clone this repository.
+2. Build the project by running:
+   ```bash
+   python src/build.py -y
+   ```
+3. Open your browser's extension manager:
+   * **Chrome / Brave:** Navigate to `chrome://extensions`
+   * **Edge:** Navigate to `edge://extensions`
+   * **Firefox:** Navigate to `about:debugging#/runtime/this-firefox`
+4. Turn on **Developer mode** (top-right toggle).
+5. Click **Load unpacked** (or **Load Temporary Add-on** in Firefox) and select the generated folder:
+   * Chrome / Edge: Select `dist/chrome` or `dist/edge`
+   * Firefox: Select `dist/firefox/manifest.json`
 
 ---
 
-## 🌟 Key Features
+## ✨ Features
+
+### ⚡ Playback Controls
+* **Extended Speed Range:** Adjust playback speed from `0.5x` up to `4.0x` in fine `0.1x` steps.
+* **Custom Speed Presets:** Configure up to 4 quick-select speed buttons (default: `1.0x`, `2.0x`, `3.0x`, `4.0x`).
+* **Mouse Scroll Adjust:** Hover over the on-player speed slider and scroll your mouse wheel to change speeds quickly.
+* **Hold Space to Accelerate:** Hold down <kbd>Spacebar</kbd> to temporarily boost speed (default `2.0x`), releasing to return to your normal speed.
+* **Picture-in-Picture (PiP):** Pop out lectures into a floating window to take notes in another app.
 
 ### 🔇 Skip Silence (Beta)
-* **Intelligent Auto-Skipping**: Automatically accelerates through teacher pauses, whiteboard writing, and silent thinking time.
-* **Auto Noise Calibration**: Automatically calculates the room's noise floor over a rolling 10-second history so you don't have to fiddle with manual settings.
-* **Decibel-Based Silence Threshold**: Fine-tune the sensitivity in real decibels (`-60 dB` to `-20 dB`) with intuitive **Strict** vs. **Aggressive** controls.
-* **Smooth 200ms Acceleration**: Glides smoothly into silence speed on each audio sample tick (~23ms) with studio-grade clickless audio fades.
-* **Live On-Player Controls**: 1-click toggle button and real-time audio visualizer right in the player toolbar.
-* **Time Saved Tracker**: Shows exactly how much study time you've saved.
+* **Automatic Fast-Forward:** Speeds up through teacher pauses, whiteboard writing, and silent thinking time (from `1.5x` up to `6.0x`).
+* **Auto Noise Calibration:** Analyzes background room noise over a rolling 10-second window to detect silence accurately without manual tuning.
+* **Manual Threshold Option:** Adjust sensitivity manually from `-60 dB` to `-20 dB`.
+* **Mute During Silence:** Optional toggle to mute audio while silent fast-forwarding is active.
+* **Time Saved Tracker:** Displays the total study time saved across your lecture sessions.
 
-### ⏱️ Playback Optimization
-* **Fine-Tuning Slider**: Smoothly adjust speed from `0.5x` to `4.0x` in increments of `0.1x`.
-* **Instant Snap Presets**: Define 4 custom favorite speeds and switch to them instantly.
-* **Hold Space to Speed Up**: Press and hold <kbd>Spacebar</kbd> to temporarily play at your configured speedup rate (default: `2.0x`).
-* **Mouse Wheel Adjust**: Simply hover your cursor over the speed slider widget and scroll to step the speed up or down.
-
-### 🎯 Focus & Decluttering Toggles
-Quickly toggle off interface distractions:
-* **Hide 'Ask AI'**: Hide the floating AI helper capsule.
-* **Hide Doubt Q&A**: Remove the floating doubt-entry buttons.
-* **Hide Live Chat**: Clean up the live chat overlay and side-panel comments.
-* **Hide Study Notes**: Hide secondary lecture attachment sheets.
-* **Hide Time Elements**: Hide player seek timelines or time labels if they make you anxious.
+### 🎯 Focus & Clean Mode
+Hide distracting UI elements with one click from the popup menu:
+* Hide **Ask AI** helper button
+* Hide **Doubt Q&A** panel
+* Hide **Live Chat** and comments
+* Hide **Study Notes** tabs
+* Hide **Timeline** or **Time Display**
 
 ---
 
-## ⌨️ Configurable Hotkeys
+## ⌨️ Keyboard Shortcuts
 
-You can map keyboard shortcuts inside the dashboard popup. The default shortcuts are:
+Hotkeys are **disabled by default**. You can enable and customize them inside the extension popup:
 
-| Action | Default Key | Description |
+| Action | Default Shortcut | Description |
 | :--- | :---: | :--- |
 | **Speed Up** | <kbd>h</kbd> | Increases speed by `0.1x` |
 | **Slow Down** | <kbd>j</kbd> | Decreases speed by `0.1x` |
-| **Reset Speed** | <kbd>l</kbd> | Resets playback rate to `1.0x` |
+| **Reset Speed** | <kbd>l</kbd> | Resets speed back to `1.0x` |
+| **Hold Boost** | <kbd>Space</kbd> *(Hold)* | Plays at boost speed while held down |
+
+---
+
+## 🔒 Privacy & Permissions
+
+This extension runs completely client-side in your browser.
+* **Zero Telemetry / Tracking:** No user data, watch history, or login credentials are saved or transmitted.
+* **Local Storage Only:** Uses browser `storage` strictly to remember your settings (speed presets, toggle states, theme).
+* **Target Sites:** Runs only on Physics Wallah video portals:
+  * `*://*.pw.live/*`
+  * `*://*.penpencil.co/*`
+  * `*://*.penpencil.xyz/*`
+  * `*://*.pwnet.in/*`
+
+Read our complete [Privacy Policy](PRIVACY_POLICY.md) for details.
 
 ---
 
 ## 📂 Project Structure
 
-A clean overview of the source files and build folders:
-
 ```
-pw-control/
-├── src/                  # Source files
-│   ├── manifest.json     # Extension setup & permissions
-│   ├── content.js        # Script injected into the video page
-│   ├── content.css       # Style overrides for the video player
-│   ├── popup.html        # Settings dashboard HTML layout
+Enhancer-for-Physics-Wallah/
+├── src/                  # Source files (edit your code here)
+│   ├── manifest.json     # Extension manifest (Manifest V3)
+│   ├── content.js        # Video player injection & speed logic
+│   ├── content.css       # Video player overlay styles
+│   ├── popup.html        # Settings dashboard UI
 │   ├── popup.js          # Settings dashboard logic
-│   ├── popup.css         # Sleek obsidian dashboard styles
-│   └── build.py          # Python compiler/minifier script
-├── assets/               # Promotional images & icons
-└── dist/                 # Generated builds (Git-ignored)
-    ├── chrome/           # Build optimized for Chrome/Edge
-    └── firefox/          # Build optimized for Firefox
+│   ├── popup.css         # Popup styles & theme definitions
+│   └── build.py          # Python build, minification, and packaging script
+├── assets/               # Extension icons and promotional art
+├── dist/                 # Generated builds (Git-ignored)
+│   ├── chrome/           # Build for Chrome / Chromium
+│   ├── edge/             # Build for Microsoft Edge
+│   └── firefox/          # Build for Mozilla Firefox (Gecko manifest)
+└── backup/               # Automatic version backups generated during releases
 ```
 
 ---
 
-## 🛠️ How to Build & Pack
+## 🛠️ Building from Source
 
-The project uses a custom Python build script to automate cleaning, compiling, minifying, and packaging the extension.
+The build pipeline uses Python 3 to clean code, strip comments, minify assets, and generate browser-specific distributions.
 
-### Standard Build
-To compile the files for local use (output goes to `dist/`):
+### 1. Build Local Dist Folders
 ```bash
-python src/build.py --skip-prompt
+python src/build.py -y
 ```
+Outputs build folders into `dist/chrome`, `dist/edge`, and `dist/firefox`.
 
-### Store Release Build (Zipped)
-To package the extension into store-uploadable zip archives:
+### 2. Build Release Zip Archives
 ```bash
-python src/build.py --zip
+python src/build.py -y --zip
 ```
-*(This will ask if you want to automatically bump the version in `manifest.json` and will output ready-to-upload zip packages inside `dist/`.)*
+Creates upload-ready `.zip` bundles in the `dist/` directory for the Chrome Web Store, Edge Add-ons, and Mozilla Add-ons.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these guidelines:
-
-1. Fork this repository and create a new feature branch (`git checkout -b feature/awesome-feature`).
-2. Make your edits and ensure files are properly structured.
-3. Run `python src/build.py` to verify the code compiles and minifies correctly.
-4. Submit a Pull Request describing your changes.
-
----
-
-## 📢 Recent Updates (v1.0.7.6)
-
-Here are the latest updates and changes in version `1.0.7.6`:
-* **Auto Silence Speed Restoration (Fixes #5)**: Fixed playback speed resetting back to 1.0x after silence ended; now cleanly restores your active lecture speed.
-* **Unified Speed Controls**: Removed redundant "Speech Speed" option from the Silence menu for a clean single-control experience.
-* **Silence Speed Lock**: Locked manual speed adjustments and keyboard shortcuts while silent fast-forwarding is actively running.
+Contributions are welcome! Read our [CONTRIBUTING.md](CONTRIBUTING.md) guide for details on setting up your environment, code style, and submitting pull requests.
 
 ---
 
 ## 📄 License & Credits
 
-* **License**: This project is licensed under the MIT License. See [LICENSE](LICENSE) for more details.
-* **Acknowledgements**: Special thanks and credit to [vantezzen/skip-silence](https://github.com/vantezzen/skip-silence) for the open-source audio worklet architecture, noise floor calibration algorithm, and hysteresis pattern that inspired the Skip Silence feature.
+* **License:** Distributed under the [MIT License](LICENSE).
+* **Acknowledgements:** Special thanks to [vantezzen/skip-silence](https://github.com/vantezzen/skip-silence) for the open-source audio processing ideas and noise floor calibration patterns that inspired our Skip Silence feature.
