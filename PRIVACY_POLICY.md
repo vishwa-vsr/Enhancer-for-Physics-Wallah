@@ -84,5 +84,5 @@ We may update this Privacy Policy from time to time to reflect improvements, fea
 
 This extension is completely open-source. If you have any questions, suggestions, or concerns regarding this Privacy Policy or your privacy while using the extension, please feel free to reach out to us:
 
-- ✉️ **Email:** `[Your Contact / Support Email Here]` *(e.g., support@yourdomain.com)*
+- ✉️ **Email:** [extensionsfeedback@gmail.com](mailto:extensionsfeedback@gmail.com)
 - 🔗 **GitHub Repository & Issues:** [https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah)
