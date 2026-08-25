@@ -1,7 +1,7 @@
 # Privacy Policy for Enhancer for Physics Wallah
 
-**Effective Date:** August 22, 2026  
-**Latest Version:** 1.0.7.5
+**Effective Date:** August 25, 2026  
+**Latest Version:** 1.0.7.6
 
 At **Enhancer for Physics Wallah** (also known as **PW Control**), we believe your privacy should always come first. This Privacy Policy explains clearly and transparently how our browser extension operates and how user data is handled.
 
@@ -41,7 +41,16 @@ The extension only uses the standard browser local storage API (`chrome.storage.
 
 ---
 
-## 4. Website Permissions & Content Scripts
+## 4. Data Retention and Deletion
+
+All your settings, preferences, and saved time records stay exclusively on your local computer.
+
+- **How to Delete Stored Data:** You can instantly delete all data stored by this extension at any time by simply uninstalling the extension or clearing your browser's extension data/cache.
+- **No Residual Server Data:** Because we do not upload or store your data on external servers, there is no remote data left behind when you delete or uninstall the extension.
+
+---
+
+## 5. Website Permissions & Content Scripts
 
 The extension only activates on official Physics Wallah lecture portals (`pw.live`, `penpencil.co`, `penpencil.xyz`, and `pwnet.in`).
 
@@ -50,7 +59,7 @@ The extension only activates on official Physics Wallah lecture portals (`pw.liv
 
 ---
 
-## 5. Voluntary Feedback & Uninstall Surveys
+## 6. Voluntary Feedback & Uninstall Surveys
 
 - **Feedback Link:** The popup menu includes an optional link to a Google Form where you can submit feedback or feature requests.
 - **Uninstall Survey:** When you uninstall the extension, your browser may open an optional exit survey hosted on Google Forms to help us understand why you removed it.
@@ -58,15 +67,22 @@ The extension only activates on official Physics Wallah lecture portals (`pw.liv
 
 ---
 
-## 6. Security & No Remote Code
+## 7. Security & No Remote Code
 
 - **100% Local Package:** All executable scripts, styles, and assets are bundled directly within the extension package installed on your computer.
 - **No Remote Code Execution:** In full compliance with Chrome Web Store, Mozilla Add-ons, and Microsoft Edge policies, the extension does not download or execute any remote code or external scripts at runtime.
 
 ---
 
-## 7. Open Source & Contact
+## 8. Changes to This Privacy Policy
 
-This extension is completely open-source. You can review the complete source code, report issues, or ask questions at our official GitHub repository:
+We may update this Privacy Policy from time to time to reflect improvements, feature additions, or legal requirements. Any modifications will be posted directly on this page with an updated **Effective Date** and **Version** number at the top. We encourage you to review this policy periodically.
 
-🔗 **GitHub Repository:** [https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah)
+---
+
+## 9. Contact & Open Source
+
+This extension is completely open-source. If you have any questions, suggestions, or concerns regarding this Privacy Policy or your privacy while using the extension, please feel free to reach out to us:
+
+- ✉️ **Email:** `[Your Contact / Support Email Here]` *(e.g., support@yourdomain.com)*
+- 🔗 **GitHub Repository & Issues:** [https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah)

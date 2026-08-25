@@ -38,7 +38,6 @@
   // Skip Silence configuration
   let skipSilenceEnabled = false;
   let skipSilenceMode = 'speedup'; // 'speedup' or 'hardskip'
-  let skipSilenceSpeechSpeed = 1.0;
   let skipSilenceSilenceSpeed = 3.0;
   let skipSilenceThreshold = -40; // Manual threshold in dB (-60dB to -20dB)
   let skipSilenceDynamicThreshold = true; // Auto-calculate threshold from noise floor
@@ -286,7 +285,8 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
   // Smoothly exit silence state (restore speed + exponential fade in)
   function ssExitSilence() {
-    setVideoPlaybackRate(skipSilenceSpeechSpeed);
+    const normalSpeed = extensionEnabled ? currentSpeed : 1.0;
+    setVideoPlaybackRate(normalSpeed);
     if (ssGainNode && ssAudioContext) {
       const now = ssAudioContext.currentTime;
       ssGainNode.gain.cancelScheduledValues(now);
@@ -358,14 +358,15 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         }
 
         // Tick-based speed ramp over 200ms (zero setInterval)
-        if (prevSilentMs < minSilenceMs + 200) {
+        const baseSpeed = extensionEnabled ? currentSpeed : 1.0;
+        if (!isHoldingSpace && prevSilentMs < minSilenceMs + 200) {
           const progress = Math.min((ssSilentMsAccumulated - minSilenceMs) / 200, 1);
-          const targetSpeed = skipSilenceSpeechSpeed + (skipSilenceSilenceSpeed - skipSilenceSpeechSpeed) * progress;
+          const targetSpeed = baseSpeed + (skipSilenceSilenceSpeed - baseSpeed) * progress;
           setVideoPlaybackRate(targetSpeed);
         }
 
         // Track time saved
-        const saved = windowMs * (1 - (skipSilenceSpeechSpeed / skipSilenceSilenceSpeed));
+        const saved = windowMs * (1 - (baseSpeed / skipSilenceSilenceSpeed));
         skipSilenceTimeSaved += saved;
         skipSilenceSessionSaved += saved;
         safeSetSettings({ skipSilenceTimeSaved: Math.round(skipSilenceTimeSaved) });
@@ -374,7 +375,9 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       ssSilentMsAccumulated = 0;
       if (ssCurrentState === 'silence') {
         ssCurrentState = 'speech';
-        ssExitSilence();
+        if (!isHoldingSpace) {
+          ssExitSilence();
+        }
         updateSkipSilenceUI();
       }
     }
@@ -632,7 +635,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     }
     try {
       chrome.storage.local.get(
-        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceMode', 'skipSilenceSpeechSpeed', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'], 
+        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceMode', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'], 
         function (result) {
           try {
             if (chrome.runtime && chrome.runtime.id) {
@@ -711,7 +714,6 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
     skipSilenceEnabled = !!result.skipSilenceEnabled;
     skipSilenceMode = result.skipSilenceMode || 'speedup';
-    skipSilenceSpeechSpeed = result.skipSilenceSpeechSpeed !== undefined ? parseFloat(result.skipSilenceSpeechSpeed) : 1.0;
     skipSilenceSilenceSpeed = result.skipSilenceSilenceSpeed !== undefined ? parseFloat(result.skipSilenceSilenceSpeed) : 3.0;
     skipSilenceThreshold = result.skipSilenceThreshold !== undefined ? parseInt(result.skipSilenceThreshold) : -40;
     skipSilenceDynamicThreshold = result.skipSilenceDynamicThreshold !== false;
@@ -787,12 +789,6 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
                 ssInit();
               } else if (!skipSilenceEnabled && wasEnabled) {
                 ssDestroy();
-              }
-            }
-            if (changes.hasOwnProperty('skipSilenceSpeechSpeed')) {
-              skipSilenceSpeechSpeed = parseFloat(changes.skipSilenceSpeechSpeed.newValue) || 1.0;
-              if (ssEngineRunning && ssCurrentState === 'speech') {
-                setVideoPlaybackRate(skipSilenceSpeechSpeed);
               }
             }
             if (changes.hasOwnProperty('skipSilenceSilenceSpeed')) {
@@ -1758,6 +1754,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
   // Update speed UI when speed changes (syncs with native controls)
   function onRateChange() {
     if (isSettingRate || !activeVideo) return;
+    if (skipSilenceEnabled && ssCurrentState === 'silence') return;
     currentSpeed = activeVideo.playbackRate;
     updateUI();
   }
@@ -1862,6 +1859,10 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     });
 
     slider.addEventListener('input', (e) => {
+      if (skipSilenceEnabled && ssCurrentState === 'silence') {
+        e.target.value = currentSpeed;
+        return;
+      }
       let val = parseFloat(e.target.value);
       
       // Magnetic attraction snapping effect (snaps within 0.22 threshold to snap point dots)
@@ -1879,7 +1880,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     });
 
     container.addEventListener('wheel', (e) => {
-      if (!extensionEnabled || disableScroll) return;
+      if (!extensionEnabled || disableScroll || (skipSilenceEnabled && ssCurrentState === 'silence')) return;
       e.preventDefault();
       const val = stepSpeed(e.deltaY < 0 ? 1 : -1);
       slider.value = val;
@@ -2080,6 +2081,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
   // Listen to keyboard shortcuts (bubble phase)
   document.addEventListener('keydown', (e) => {
     if (!extensionEnabled || !enableHotkeys) return;
+    if (skipSilenceEnabled && ssCurrentState === 'silence') return;
 
     // Safety check: Ignore if typing in text fields
     if (isUserTyping()) return;

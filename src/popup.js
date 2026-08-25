@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   safeStorageGet(
-    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceMode', 'skipSilenceSpeechSpeed', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'],
+    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceMode', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'],
     (result) => {
       applyTheme(result.themeMode !== 'dark');
       // Load focus toggles
@@ -262,11 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // Load Skip Silence settings
       const ssEnableToggle = document.getElementById('ss-enable-toggle');
       if (ssEnableToggle) ssEnableToggle.checked = !!result.skipSilenceEnabled;
-
-      const ssSpeechSpeedInput = document.getElementById('ss-speech-speed');
-      if (ssSpeechSpeedInput) {
-        ssSpeechSpeedInput.value = result.skipSilenceSpeechSpeed !== undefined ? parseFloat(result.skipSilenceSpeechSpeed).toFixed(1) : '1.0';
-      }
 
       const ssSilenceSpeedInput = document.getElementById('ss-silence-speed');
       if (ssSilenceSpeedInput) {
@@ -556,35 +551,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (ssEnableToggleEl) {
     ssEnableToggleEl.addEventListener('change', (e) => {
       safeStorageSet({ skipSilenceEnabled: e.target.checked });
-    });
-  }
-
-  // Speech speed stepper
-  function updateSSSpeechSpeed(delta) {
-    const input = document.getElementById('ss-speech-speed');
-    if (!input) return;
-    let val = parseFloat(input.value);
-    if (isNaN(val)) val = 1.0;
-    val = Math.round((val + delta) * 10) / 10;
-    if (val < 0.5) val = 0.5;
-    if (val > 4.0) val = 4.0;
-    input.value = val.toFixed(1);
-    safeStorageSet({ skipSilenceSpeechSpeed: val });
-  }
-
-  const ssSpeechMinus = document.getElementById('ss-speech-minus');
-  const ssSpeechPlus = document.getElementById('ss-speech-plus');
-  if (ssSpeechMinus) ssSpeechMinus.addEventListener('click', () => updateSSSpeechSpeed(-0.1));
-  if (ssSpeechPlus) ssSpeechPlus.addEventListener('click', () => updateSSSpeechSpeed(0.1));
-
-  const ssSpeechSpeedEl = document.getElementById('ss-speech-speed');
-  if (ssSpeechSpeedEl) {
-    ssSpeechSpeedEl.addEventListener('change', () => {
-      let val = parseFloat(ssSpeechSpeedEl.value);
-      if (isNaN(val) || val < 0.5 || val > 4.0) val = 1.0;
-      val = Math.round(val * 10) / 10;
-      ssSpeechSpeedEl.value = val.toFixed(1);
-      safeStorageSet({ skipSilenceSpeechSpeed: val });
     });
   }
 

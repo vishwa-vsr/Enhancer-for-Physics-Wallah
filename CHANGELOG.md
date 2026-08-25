@@ -4,6 +4,15 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7.6] - 2026-08-25
+
+### Fixed & Improved
+- **Auto Silence Speed Restoration (Fixes #5)**: Fixed a bug where video playback speed reset back to `1.0x` after silent sections ended instead of restoring the user's active lecture speed.
+- **Unified Speed Control**: Removed redundant "Speech Speed" option from the Silence settings tab to maintain a single, clean speed controller across the extension.
+- **Silence Control Lock**: Locked manual speed controls and hotkeys while silent sections are fast-forwarding to prevent accidental speed overrides.
+
+---
+
 ## [1.0.7.5] - 2026-08-22
 
 ### Added & Improved
