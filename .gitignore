@@ -2,6 +2,7 @@
 dist/
 backup/
 docs/
+pages/
 assets/promo-posters/
 assets/skip silence/
 *.zip
