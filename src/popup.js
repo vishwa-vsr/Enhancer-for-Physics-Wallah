@@ -67,7 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
     enableHotkeys: document.getElementById('enable-hotkeys-toggle'),
     disableScroll: document.getElementById('disable-scroll-toggle'),
     holdSpaceSpeedUp: document.getElementById('hold-space-toggle'),
-    alwaysExpandWidget: document.getElementById('always-expand-toggle')
+    alwaysExpandWidget: document.getElementById('always-expand-toggle'),
+    showFinishTime: document.getElementById('show-finish-time-toggle')
   };
 
   const holdSpaceSpeedInput = document.getElementById('hold-space-speed');
@@ -96,13 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabPanels = document.querySelectorAll('.tab-panel');
   const popupContainer = document.querySelector('.popup-container');
 
-  function updateExtensionState(enabled) {
-    if (enabled) {
-      popupContainer.classList.remove('extension-disabled');
-    } else {
-      popupContainer.classList.add('extension-disabled');
-    }
-  }
+
 
   let snapPoints = [1.0, 2.0, 3.0, 4.0];
 
@@ -143,14 +138,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Dynamically redraw tick labels and preset buttons based on custom snap points
+  // Equal-distance 4-point segmented slider interpolation functions
+  // Points: [p0, p1, p2, p3] mapped at 0%, 33.3333%, 66.6667%, 100%
+  function speedToSliderPercent(speed, points) {
+    const pts = (points && points.length === 4) ? points : [1.0, 2.0, 3.0, 4.0];
+    const s = parseFloat(speed);
+    if (isNaN(s) || s <= pts[0]) return 0;
+    if (s >= pts[3]) return 100;
+    if (s <= pts[1]) {
+      const span = pts[1] - pts[0];
+      const frac = span > 0 ? (s - pts[0]) / span : 0;
+      return frac * (100 / 3);
+    }
+    if (s <= pts[2]) {
+      const span = pts[2] - pts[1];
+      const frac = span > 0 ? (s - pts[1]) / span : 0;
+      return (100 / 3) + frac * (100 / 3);
+    }
+    const span = pts[3] - pts[2];
+    const frac = span > 0 ? (s - pts[2]) / span : 0;
+    return (200 / 3) + frac * (100 / 3);
+  }
+
+  function sliderPercentToSpeed(pct, points) {
+    const pts = (points && points.length === 4) ? points : [1.0, 2.0, 3.0, 4.0];
+    const p = Math.max(0, Math.min(100, parseFloat(pct)));
+    let raw = pts[0];
+    if (p <= 0) {
+      raw = pts[0];
+    } else if (p >= 100) {
+      raw = pts[3];
+    } else if (p <= (100 / 3)) {
+      const frac = p / (100 / 3);
+      raw = pts[0] + frac * (pts[1] - pts[0]);
+    } else if (p <= (200 / 3)) {
+      const frac = (p - (100 / 3)) / (100 / 3);
+      raw = pts[1] + frac * (pts[2] - pts[1]);
+    } else {
+      const frac = (p - (200 / 3)) / (100 / 3);
+      raw = pts[2] + frac * (pts[3] - pts[2]);
+    }
+    return Math.round(raw * 10) / 10;
+  }
+
+  // Dynamically redraw tick labels at exact equal distances (0%, 33.33%, 66.67%, 100%)
   function updateTicksAndPresets(points) {
     const ticksRow = document.querySelector('.ticks-row');
     if (ticksRow) {
       ticksRow.textContent = '';
-      points.forEach(pt => {
-        // Calculate slider left percentage position (min: 0.5, max: 4.0, range: 3.5)
-        const pct = ((pt - 0.5) / 3.5) * 100;
+      const stops = [0, 100 / 3, 200 / 3, 100];
+      points.forEach((pt, index) => {
+        const pct = stops[index] !== undefined ? stops[index] : (index / (points.length - 1)) * 100;
         const span = document.createElement('span');
         span.className = 'tick-label';
         span.style.left = `${pct}%`;
@@ -167,9 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
       speedDisplay.textContent = `${formattedSpeed}x`;
     }
     if (speedSlider) {
-      speedSlider.value = formattedSpeed;
-      // Calculate and set CSS variable for visual slider progress fill (min 0.5, max 4.0)
-      const percent = ((parseFloat(formattedSpeed) - 0.5) / 3.5) * 100;
+      const percent = speedToSliderPercent(formattedSpeed, snapPoints);
+      speedSlider.value = Math.round(percent * 10);
       speedSlider.style.setProperty('--percent', `${percent}%`);
     }
   }
@@ -203,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   safeStorageGet(
-    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceMode', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'],
+    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'],
     (result) => {
       applyTheme(result.themeMode !== 'dark');
       // Load focus toggles
@@ -217,8 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Load extension enabled state (always active)
-      updateExtensionState(result.extensionEnabled !== false);
+
 
       // Load custom settings
       if (customToggles.enableHotkeys) {
@@ -234,6 +270,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (customToggles.alwaysExpandWidget) {
         customToggles.alwaysExpandWidget.checked = !!result.alwaysExpandWidget;
+      }
+      if (customToggles.showFinishTime) {
+        customToggles.showFinishTime.checked = result.showFinishTime !== false;
+      }
+      const finishTimeFormatSelect = document.getElementById('finish-time-format-select');
+      if (finishTimeFormatSelect) {
+        finishTimeFormatSelect.value = result.finishTimeFormat || 'minimal';
       }
       if (holdSpaceSpeedInput) {
         holdSpaceSpeedInput.value = result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed).toFixed(1) : "2.0";
@@ -330,6 +373,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Save finish time format selector changes
+  const finishTimeFormatSelect = document.getElementById('finish-time-format-select');
+  if (finishTimeFormatSelect) {
+    finishTimeFormatSelect.addEventListener('change', (e) => {
+      safeStorageSet({ finishTimeFormat: e.target.value });
+    });
+  }
+
   // Bind interactive hold space custom speed rate changes
   const holdSpaceMinusBtn = document.getElementById('hold-space-minus');
   const holdSpacePlusBtn = document.getElementById('hold-space-plus');
@@ -366,32 +417,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+  // Validate, auto-sort and sanitize snap points
+  function sanitizeAndSortSnapPoints() {
+    let rawVals = snapInputs.map((inp, idx) => {
+      let v = parseFloat(inp ? inp.value : (idx + 1.0));
+      if (isNaN(v) || v < 0.5) v = 0.5;
+      if (v > 4.0) v = 4.0;
+      return Math.round(v * 10) / 10;
+    });
+
+    // Sort ascending
+    rawVals.sort((a, b) => a - b);
+
+    // Enforce strictly increasing (at least 0.1 gap if duplicates exist)
+    for (let i = 1; i < rawVals.length; i++) {
+      if (rawVals[i] <= rawVals[i - 1]) {
+        rawVals[i] = Math.min(4.0, Math.round((rawVals[i - 1] + 0.1) * 10) / 10);
+      }
+    }
+    // If pushing right exceeded 4.0, push backwards
+    for (let i = rawVals.length - 2; i >= 0; i--) {
+      if (rawVals[i] >= rawVals[i + 1]) {
+        rawVals[i] = Math.max(0.5, Math.round((rawVals[i + 1] - 0.1) * 10) / 10);
+      }
+    }
+
+    snapPoints = rawVals;
+    snapInputs.forEach((inp, idx) => {
+      if (inp) inp.value = snapPoints[idx].toFixed(1);
+    });
+
+    safeStorageSet({ snapPoints: snapPoints });
+    updateTicksAndPresets(snapPoints);
+
+    // Refresh current speed UI with updated mapping
+    safeStorageGet('preferredSpeed', (res) => {
+      const current = res.preferredSpeed ? parseFloat(res.preferredSpeed) : 1.0;
+      updateSpeedUI(current);
+    });
+  }
+
   // Bind interactive snap point input changes
-  snapInputs.forEach((input, index) => {
+  snapInputs.forEach((input) => {
     if (input) {
       input.addEventListener('change', () => {
-        let val = parseFloat(input.value);
-        if (isNaN(val) || val < 0.5 || val > 4.0) {
-          // Reset to index default
-          val = index + 1.0;
-        }
-
-        // Round to 1 decimal place
-        val = Math.round(val * 10) / 10;
-        input.value = val.toFixed(1);
-
-        // Update snap point state
-        snapPoints[index] = val;
-
-        // Save array to storage
-        safeStorageSet({ snapPoints: snapPoints });
-
-        // Dynamically redraw tick marks and preset button attributes
-        updateTicksAndPresets(snapPoints);
-        updateSpeedUI(speedSlider ? parseFloat(speedSlider.value) : 1.0);
+        sanitizeAndSortSnapPoints();
       });
     }
   });
+
+  // Bind Quick Speed Reset Button (resets active speed to 1.0x)
+  const speedResetBtn = document.getElementById('speed-reset-btn');
+  if (speedResetBtn) {
+    speedResetBtn.addEventListener('click', () => {
+      const targetSpeed = 1.0;
+      updateSpeedUI(targetSpeed);
+      saveSpeed(targetSpeed);
+    });
+  }
+
+  // Bind Snap Points Reset Defaults Button (resets points to [1.0, 2.0, 3.0, 4.0])
+  const snapResetDefaultsBtn = document.getElementById('snap-reset-defaults-btn');
+  if (snapResetDefaultsBtn) {
+    snapResetDefaultsBtn.addEventListener('click', () => {
+      snapPoints = [1.0, 2.0, 3.0, 4.0];
+      snapInputs.forEach((input, index) => {
+        if (input && snapPoints[index] !== undefined) {
+          input.value = snapPoints[index].toFixed(1);
+        }
+      });
+      safeStorageSet({ snapPoints: snapPoints });
+      updateTicksAndPresets(snapPoints);
+
+      safeStorageGet('preferredSpeed', (res) => {
+        const current = res.preferredSpeed ? parseFloat(res.preferredSpeed) : 1.0;
+        updateSpeedUI(current);
+      });
+    });
+  }
 
   // Bind interactive key press recording with guide labels
   for (const key in keyInputs) {
@@ -431,10 +534,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Bind slider drag changes
+  // Bind slider drag changes with smooth segmented interpolation & magnetic snap
   if (speedSlider) {
     speedSlider.addEventListener('input', (e) => {
-      const val = parseFloat(e.target.value);
+      const percent = parseFloat(e.target.value) / 10;
+      let val = sliderPercentToSpeed(percent, snapPoints);
+
+      // Magnetic snapping within ~2.2% of any snap point
+      const snapPercents = [0, 100 / 3, 200 / 3, 100];
+      for (let i = 0; i < snapPercents.length; i++) {
+        if (Math.abs(percent - snapPercents[i]) <= 2.2) {
+          val = snapPoints[i];
+          break;
+        }
+      }
+
+      if (speedDisplay) {
+        speedDisplay.textContent = `${val.toFixed(1)}x`;
+      }
+      const actualPct = speedToSliderPercent(val, snapPoints);
+      speedSlider.style.setProperty('--percent', `${actualPct}%`);
+      saveSpeed(val);
+    });
+
+    speedSlider.addEventListener('change', (e) => {
+      const percent = parseFloat(e.target.value) / 10;
+      const val = sliderPercentToSpeed(percent, snapPoints);
       updateSpeedUI(val);
       saveSpeed(val);
     });

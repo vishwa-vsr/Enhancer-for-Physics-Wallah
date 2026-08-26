@@ -80,6 +80,12 @@
           <div class="hud-header">
             <span class="hud-title">Video Speed</span>
             <div class="hud-controls-group">
+              <button type="button" id="speed-reset-btn" class="settings-toggle-btn reset-speed-btn" aria-label="Reset Speed to 1.0x" title="Reset Speed to 1.0x">
+                <svg class="reset-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                </svg>
+              </button>
               <button type="button" id="settings-toggle-btn" class="settings-toggle-btn" aria-label="Customize Snap Points" aria-expanded="false" title="Customize Snap Points">
                 <svg class="settings-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="3" />
@@ -91,14 +97,23 @@
           </div>
           
           <div class="slider-wrapper">
-            <input type="range" id="speed-slider" min="0.5" max="4.0" step="0.1" value="1.0" aria-label="Playback Speed Slider">
+            <input type="range" id="speed-slider" min="0" max="1000" step="1" value="0" aria-label="Playback Speed Slider">
             <div class="ticks-row"></div>
           </div>
 
           <!-- Snap Points Editor (Collapsible) -->
           <div id="presets-editor-container" class="presets-editor-container">
             <div class="presets-editor-section">
-              <span class="preset-editor-title">Edit Snap Points</span>
+              <div class="preset-editor-header">
+                <span class="preset-editor-title">Edit Snap Points</span>
+                <button type="button" id="snap-reset-defaults-btn" class="snap-reset-defaults-btn" title="Reset Snap Points to 1.0x, 2.0x, 3.0x, 4.0x">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                  </svg>
+                  Reset
+                </button>
+              </div>
               <div class="presets-editor-grid">
                 <div class="preset-edit-box">
                   <span class="preset-label">Pt 1</span>
@@ -152,6 +167,27 @@
               <input type="checkbox" id="always-expand-toggle">
               <span class="switch-slider"></span>
             </label>
+          </div>
+
+          <!-- Integrated Dynamic Lecture Finish Time Footer Row -->
+          <div class="hud-footer-row">
+            <div class="feature-info">
+              <label for="show-finish-time-toggle" class="hud-footer-title">
+                Show Finish Time
+                <span class="beta-badge" style="margin-left: 4px;">Beta</span>
+              </label>
+            </div>
+            <div class="finish-time-controls">
+              <select id="finish-time-format-select" class="finish-time-format-select" aria-label="Finish Time Format" title="Finish Time Display Format">
+                <option value="minimal" selected>Minimal (Time Only)</option>
+                <option value="clock">Clock with Label</option>
+                <option value="full">Full (Clock + Left)</option>
+              </select>
+              <label class="switch" aria-label="Toggle Show Finish Time">
+                <input type="checkbox" id="show-finish-time-toggle" checked>
+                <span class="switch-slider"></span>
+              </label>
+            </div>
           </div>
         </section>
 
@@ -441,10 +477,10 @@
               </div>
               <div class="ss-time-saved-group">
                 <span class="ss-time-saved-value" id="ss-time-saved">0s</span>
-                <button type="button" class="ss-reset-btn" id="ss-reset-btn" title="Reset time saved counter">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
-                    <polyline points="1 4 1 10 7 10"></polyline>
-                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                <button type="button" class="settings-toggle-btn reset-speed-btn" id="ss-reset-btn" aria-label="Reset Time Saved" title="Reset Time Saved">
+                  <svg class="reset-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
                   </svg>
                 </button>
               </div>
@@ -473,7 +509,7 @@
         </svg>
         Rate Us
       </a>
-      <a href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/blob/main/CHANGELOG.md" target="_blank" class="version-link" rel="noopener noreferrer">v1.0.7.6</a>
+      <a href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/blob/main/CHANGELOG.md" target="_blank" class="version-link" rel="noopener noreferrer">v1.0.8</a>
     </footer>
   </div>
   <script src="popup.js"></script>

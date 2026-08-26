@@ -48,11 +48,6 @@
   transform: scale(1.12);
 }
 
-.pwc-speed-badge {
-  font-size: 15px;
-  font-weight: 700;
-  color: inherit;
-}
 
 /* Slider Container (slides out on hover to the right) */
 .pwc-speed-slider-container {
@@ -427,4 +422,45 @@ html.pwc-collapsed-state * {
   letter-spacing: 0.02em;
   opacity: 0.9;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Dynamic Lecture Finish Time Badge (Matches native PW player time text) */
+.pwc-finish-time-badge {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: 'RedditSans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  user-select: none;
+  pointer-events: none;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+.pwc-finish-icon {
+  width: 13px;
+  height: 13px;
+  stroke: #B5BBC5;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.pwc-finish-prefix {
+  color: #B5BBC5;
+  font-weight: 500;
+}
+
+.pwc-finish-clock {
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.pwc-finish-left {
+  color: #B5BBC5;
+  font-weight: 500;
 }

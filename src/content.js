@@ -3,6 +3,7 @@
   let currentSpeed = 1.0;
   let activeVideo = null;
   let isSettingRate = false;
+  let settingRateTimer = null;
   let toastTimeout = null;
   let isModifyingDOM = false;
   let extensionEnabled = true;
@@ -34,10 +35,11 @@
   let speedBeforeHold = 1.0;
   let isPointerHoldingOnPlayer = false;
   let alwaysExpandWidget = false;
+  let showFinishTime = true;
+  let finishTimeFormat = 'minimal';
 
   // Skip Silence configuration
   let skipSilenceEnabled = false;
-  let skipSilenceMode = 'speedup'; // 'speedup' or 'hardskip'
   let skipSilenceSilenceSpeed = 3.0;
   let skipSilenceThreshold = -40; // Manual threshold in dB (-60dB to -20dB)
   let skipSilenceDynamicThreshold = true; // Auto-calculate threshold from noise floor
@@ -270,7 +272,10 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     if (Math.abs(video.playbackRate - clamped) > 0.02) {
       isSettingRate = true;
       video.playbackRate = clamped;
-      setTimeout(() => { isSettingRate = false; }, 30);
+      if (settingRateTimer) clearTimeout(settingRateTimer);
+      settingRateTimer = setTimeout(() => {
+        isSettingRate = false;
+      }, 150);
     }
   }
 
@@ -292,6 +297,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       ssGainNode.gain.cancelScheduledValues(now);
       ssGainNode.gain.setTargetAtTime(1, now, 0.04);
     }
+    updateUI();
   }
 
   // Disable the skip silence engine (never disconnect source to prevent re-creation errors)
@@ -329,6 +335,13 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
   // Process volume level on worklet tick cadence (zero setTimeout reliance)
   function ssProcessVolume(db) {
+    const video = getActiveVideo();
+    if (!video || video.paused || video.ended || video.readyState < 2) {
+      ssIsSilentNow = false;
+      ssSilentMsAccumulated = 0;
+      return;
+    }
+
     updateDynamicNoiseFloor(db);
     const { silenceThresholdDb, speechThresholdDb } = getEffectiveThresholds();
     const windowMs = ssAudioContext ? (1024 / ssAudioContext.sampleRate) * 1000 : 23.2;
@@ -635,7 +648,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     }
     try {
       chrome.storage.local.get(
-        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceMode', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'], 
+        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'], 
         function (result) {
           try {
             if (chrome.runtime && chrome.runtime.id) {
@@ -660,12 +673,81 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     } catch (err) {}
   }
 
-  // Dynamically redraw tick marks inside player UI using safe DOM APIs
+  // Equal-distance 4-point segmented slider interpolation functions
+  // Points: [p0, p1, p2, p3] mapped at 0%, 33.3333%, 66.6667%, 100%
+  function speedToSliderPercent(speed, points) {
+    const pts = (points && points.length === 4) ? points : [1.0, 2.0, 3.0, 4.0];
+    const s = parseFloat(speed);
+    if (isNaN(s) || s <= pts[0]) return 0;
+    if (s >= pts[3]) return 100;
+    if (s <= pts[1]) {
+      const span = pts[1] - pts[0];
+      const frac = span > 0 ? (s - pts[0]) / span : 0;
+      return frac * (100 / 3);
+    }
+    if (s <= pts[2]) {
+      const span = pts[2] - pts[1];
+      const frac = span > 0 ? (s - pts[1]) / span : 0;
+      return (100 / 3) + frac * (100 / 3);
+    }
+    const span = pts[3] - pts[2];
+    const frac = span > 0 ? (s - pts[2]) / span : 0;
+    return (200 / 3) + frac * (100 / 3);
+  }
+
+  function sliderPercentToSpeed(pct, points) {
+    const pts = (points && points.length === 4) ? points : [1.0, 2.0, 3.0, 4.0];
+    const p = Math.max(0, Math.min(100, parseFloat(pct)));
+    let raw = pts[0];
+    if (p <= 0) {
+      raw = pts[0];
+    } else if (p >= 100) {
+      raw = pts[3];
+    } else if (p <= (100 / 3)) {
+      const frac = p / (100 / 3);
+      raw = pts[0] + frac * (pts[1] - pts[0]);
+    } else if (p <= (200 / 3)) {
+      const frac = (p - (100 / 3)) / (100 / 3);
+      raw = pts[1] + frac * (pts[2] - pts[1]);
+    } else {
+      const frac = (p - (200 / 3)) / (100 / 3);
+      raw = pts[2] + frac * (pts[3] - pts[2]);
+    }
+    return Math.round(raw * 10) / 10;
+  }
+
+  function sanitizeSnapPoints(points) {
+    if (!points || !Array.isArray(points) || points.length !== 4) {
+      return [1.0, 2.0, 3.0, 4.0];
+    }
+    let raw = points.map(v => {
+      let n = parseFloat(v);
+      if (isNaN(n) || n < 0.5) n = 0.5;
+      if (n > 4.0) n = 4.0;
+      return Math.round(n * 10) / 10;
+    });
+    raw.sort((a, b) => a - b);
+    for (let i = 1; i < raw.length; i++) {
+      if (raw[i] <= raw[i - 1]) {
+        raw[i] = Math.min(4.0, Math.round((raw[i - 1] + 0.1) * 10) / 10);
+      }
+    }
+    for (let i = raw.length - 2; i >= 0; i--) {
+      if (raw[i] >= raw[i + 1]) {
+        raw[i] = Math.max(0.5, Math.round((raw[i + 1] - 0.1) * 10) / 10);
+      }
+    }
+    return raw;
+  }
+
+  // Dynamically redraw tick marks inside player UI at exact equal distances (0%, 33.33%, 66.67%, 100%)
   function updatePlayerTicks(points) {
+    snapPoints = sanitizeSnapPoints(points);
+    const stops = [0, 100 / 3, 200 / 3, 100];
     document.querySelectorAll('.pwc-slider-ticks').forEach(ticksContainer => {
       ticksContainer.textContent = '';
-      points.forEach(pt => {
-        const pct = ((pt - 0.5) / 3.5) * 100;
+      snapPoints.forEach((pt, index) => {
+        const pct = stops[index] !== undefined ? stops[index] : (index / (snapPoints.length - 1)) * 100;
         const tickLabel = document.createElement('span');
         tickLabel.className = 'pwc-tick-label';
         tickLabel.style.left = `${pct}%`;
@@ -673,6 +755,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         ticksContainer.appendChild(tickLabel);
       });
     });
+    updateUI();
   }
 
   // Load initial settings safely
@@ -706,20 +789,22 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     }
 
     if (result.snapPoints && Array.isArray(result.snapPoints) && result.snapPoints.length === 4) {
-      snapPoints = result.snapPoints.map(v => parseFloat(v));
+      snapPoints = sanitizeSnapPoints(result.snapPoints);
     }
 
     applySettingsHTML(hideSettings);
     applyDistractorsState();
 
     skipSilenceEnabled = !!result.skipSilenceEnabled;
-    skipSilenceMode = result.skipSilenceMode || 'speedup';
     skipSilenceSilenceSpeed = result.skipSilenceSilenceSpeed !== undefined ? parseFloat(result.skipSilenceSilenceSpeed) : 3.0;
     skipSilenceThreshold = result.skipSilenceThreshold !== undefined ? parseInt(result.skipSilenceThreshold) : -40;
     skipSilenceDynamicThreshold = result.skipSilenceDynamicThreshold !== false;
     skipSilenceMute = !!result.skipSilenceMute;
     skipSilenceTimeSaved = result.skipSilenceTimeSaved || 0;
     skipSilenceMinDuration = result.skipSilenceMinDuration !== undefined ? parseFloat(result.skipSilenceMinDuration) : 0.5;
+
+    showFinishTime = result.showFinishTime !== false;
+    finishTimeFormat = result.finishTimeFormat || 'minimal';
 
     if (skipSilenceEnabled) {
       ssInit();
@@ -778,6 +863,15 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
             if (changes.hasOwnProperty('alwaysExpandWidget')) {
               alwaysExpandWidget = !!changes.alwaysExpandWidget.newValue;
               applyAlwaysExpandState();
+            }
+            if (changes.hasOwnProperty('showFinishTime')) {
+              showFinishTime = changes.showFinishTime.newValue !== false;
+              injectFinishTimeBadge();
+              updateFinishTime();
+            }
+            if (changes.hasOwnProperty('finishTimeFormat')) {
+              finishTimeFormat = changes.finishTimeFormat.newValue || 'minimal';
+              updateFinishTime();
             }
             if (changes.hasOwnProperty('keyReset')) {
               keyReset = changes.keyReset.newValue;
@@ -1280,18 +1374,19 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     const input = document.createElement('input');
     input.type = 'range';
     input.className = 'pwc-speed-slider';
-    input.min = '0.5';
-    input.max = '4.0';
-    input.step = '0.1';
-    input.value = currentSpeed;
+    input.min = '0';
+    input.max = '1000';
+    input.step = '1';
+    input.value = Math.round(speedToSliderPercent(currentSpeed, snapPoints) * 10);
     sliderWrapper.appendChild(input);
 
     const ticks = document.createElement('div');
     ticks.className = 'pwc-slider-ticks';
     
-    // Add ticks dynamically
-    snapPoints.forEach(pt => {
-      const pct = ((pt - 0.5) / 3.5) * 100;
+    // Add ticks dynamically at equal distances (0%, 33.33%, 66.67%, 100%)
+    const stops = [0, 100 / 3, 200 / 3, 100];
+    snapPoints.forEach((pt, index) => {
+      const pct = stops[index] !== undefined ? stops[index] : (index / (snapPoints.length - 1)) * 100;
       const tickLabel = document.createElement('span');
       tickLabel.className = 'pwc-tick-label';
       tickLabel.style.left = `${pct}%`;
@@ -1374,6 +1469,148 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       }
       applyDistractorsState();
     }
+  }
+
+  // Update dynamic lecture finish time badge
+  function updateFinishTime() {
+    const badges = document.querySelectorAll('#pwc-finish-time-badge');
+    if (!badges || badges.length === 0) return;
+
+    if (!extensionEnabled || !showFinishTime) {
+      badges.forEach(b => { b.style.display = 'none'; });
+      return;
+    }
+
+    const video = getActiveVideo();
+    if (!video || !isFinite(video.duration) || video.duration <= 0) {
+      badges.forEach(b => { b.style.display = 'none'; });
+      return;
+    }
+
+    const remainingSec = Math.max(0, video.duration - (video.currentTime || 0));
+    if (remainingSec <= 0.5) {
+      badges.forEach(b => { b.style.display = 'none'; });
+      return;
+    }
+
+    const speed = (extensionEnabled && currentSpeed > 0) ? currentSpeed : (video.playbackRate || 1.0);
+    const adjustedSec = remainingSec / speed;
+    const finishDate = new Date(Date.now() + adjustedSec * 1000);
+
+    let hours = finishDate.getHours();
+    const minutes = finishDate.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const clockStr = `${hours}:${minutes} ${ampm}`;
+
+    const totalRemMinutes = Math.round(adjustedSec / 60);
+    let remStr = '';
+    if (totalRemMinutes < 60) {
+      remStr = `${totalRemMinutes}m`;
+    } else {
+      const remH = Math.floor(totalRemMinutes / 60);
+      const remM = totalRemMinutes % 60;
+      remStr = remM > 0 ? `${remH}h ${remM}m` : `${remH}h`;
+    }
+
+    let prefix = 'Ends at ';
+    let clock = clockStr;
+    let left = ` • ${remStr} left`;
+    let showIcon = true;
+
+    if (finishTimeFormat === 'minimal') {
+      prefix = '';
+      clock = clockStr;
+      left = '';
+      showIcon = false;
+    } else if (finishTimeFormat === 'clock') {
+      prefix = 'Ends at ';
+      clock = clockStr;
+      left = '';
+      showIcon = true;
+    } else {
+      prefix = 'Ends at ';
+      clock = clockStr;
+      left = ` • ${remStr} left`;
+      showIcon = true;
+    }
+
+    badges.forEach(badge => {
+      badge.style.display = 'inline-flex';
+      const iconEl = badge.querySelector('.pwc-finish-icon');
+      const prefixEl = badge.querySelector('.pwc-finish-prefix');
+      const clockEl = badge.querySelector('.pwc-finish-clock');
+      const leftEl = badge.querySelector('.pwc-finish-left');
+
+      if (iconEl) iconEl.style.display = showIcon ? 'inline-block' : 'none';
+      if (prefixEl && prefixEl.textContent !== prefix) prefixEl.textContent = prefix;
+      if (clockEl && clockEl.textContent !== clock) clockEl.textContent = clock;
+      if (leftEl && leftEl.textContent !== left) leftEl.textContent = left;
+    });
+  }
+
+  // Inject finish time badge into player toolbar
+  function injectFinishTimeBadge() {
+    if (!extensionEnabled || !showFinishTime) {
+      const existing = document.getElementById('pwc-finish-time-badge');
+      if (existing) existing.remove();
+      return;
+    }
+
+    const toolbar = findPWToolbar();
+    if (!toolbar) return;
+
+    let badge = document.getElementById('pwc-finish-time-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'pwc-finish-time-badge';
+      badge.className = 'pwc-finish-time-badge';
+
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      svg.classList.add('pwc-finish-icon');
+
+      const circle = document.createElementNS(svgNS, 'circle');
+      circle.setAttribute('cx', '12');
+      circle.setAttribute('cy', '12');
+      circle.setAttribute('r', '10');
+      svg.appendChild(circle);
+
+      const poly = document.createElementNS(svgNS, 'polyline');
+      poly.setAttribute('points', '12 6 12 12 16 14');
+      svg.appendChild(poly);
+
+      badge.appendChild(svg);
+
+      const prefixSpan = document.createElement('span');
+      prefixSpan.className = 'pwc-finish-prefix';
+      badge.appendChild(prefixSpan);
+
+      const clockSpan = document.createElement('span');
+      clockSpan.className = 'pwc-finish-clock';
+      badge.appendChild(clockSpan);
+
+      const leftSpan = document.createElement('span');
+      leftSpan.className = 'pwc-finish-left';
+      badge.appendChild(leftSpan);
+
+      const speedCtrl = toolbar.querySelector('#pwc-speed-control');
+      if (speedCtrl && speedCtrl.nextSibling) {
+        toolbar.insertBefore(badge, speedCtrl.nextSibling);
+      } else if (toolbar.firstChild) {
+        toolbar.insertBefore(badge, toolbar.firstChild);
+      } else {
+        toolbar.appendChild(badge);
+      }
+    }
+    updateFinishTime();
   }
 
 
@@ -1699,12 +1936,13 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
     const targetSpeed = extensionEnabled ? currentSpeed : 1.0;
 
-    if (video.playbackRate !== targetSpeed) {
+    if (Math.abs(video.playbackRate - targetSpeed) > 0.02) {
       isSettingRate = true;
       video.playbackRate = targetSpeed;
-      setTimeout(() => {
+      if (settingRateTimer) clearTimeout(settingRateTimer);
+      settingRateTimer = setTimeout(() => {
         isSettingRate = false;
-      }, 50);
+      }, 150);
     }
     updateUI();
   }
@@ -1715,6 +1953,12 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       try {
         activeVideo.removeEventListener('ratechange', onRateChange);
         activeVideo.removeEventListener('play', onVideoPlay);
+        activeVideo.removeEventListener('pause', onVideoPause);
+        activeVideo.removeEventListener('ended', onVideoPause);
+        activeVideo.removeEventListener('timeupdate', updateFinishTime);
+        activeVideo.removeEventListener('durationchange', updateFinishTime);
+        activeVideo.removeEventListener('seeking', updateFinishTime);
+        activeVideo.removeEventListener('seeked', updateFinishTime);
         activeVideo.removeEventListener('enterpictureinpicture', onEnterPiP);
         activeVideo.removeEventListener('leavepictureinpicture', onLeavePiP);
       } catch (e) {}
@@ -1740,6 +1984,12 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
     activeVideo.addEventListener('ratechange', onRateChange);
     activeVideo.addEventListener('play', onVideoPlay);
+    activeVideo.addEventListener('pause', onVideoPause);
+    activeVideo.addEventListener('ended', onVideoPause);
+    activeVideo.addEventListener('timeupdate', updateFinishTime);
+    activeVideo.addEventListener('durationchange', updateFinishTime);
+    activeVideo.addEventListener('seeking', updateFinishTime);
+    activeVideo.addEventListener('seeked', updateFinishTime);
     activeVideo.addEventListener('enterpictureinpicture', onEnterPiP);
     activeVideo.addEventListener('leavepictureinpicture', onLeavePiP);
 
@@ -1754,7 +2004,19 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
   // Update speed UI when speed changes (syncs with native controls)
   function onRateChange() {
     if (isSettingRate || !activeVideo) return;
-    if (skipSilenceEnabled && ssCurrentState === 'silence') return;
+    
+    // If Skip Silence is running, never let automated or native player events overwrite user's preferred speed
+    if (skipSilenceEnabled && ssEngineRunning) {
+      if (ssCurrentState === 'silence') return;
+      // If in speech mode, enforce that video stays at the user's preferred speed
+      const expectedSpeed = extensionEnabled ? currentSpeed : 1.0;
+      if (Math.abs(activeVideo.playbackRate - expectedSpeed) > 0.05) {
+        setVideoPlaybackRate(expectedSpeed);
+      }
+      return;
+    }
+    
+    if (isHoldingSpace) return;
     currentSpeed = activeVideo.playbackRate;
     updateUI();
   }
@@ -1767,6 +2029,19 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         ssInit();
       }
     }, 200);
+  }
+
+  // Reset silence states when video is paused or ended
+  function onVideoPause() {
+    ssIsSilentNow = false;
+    ssSilentMsAccumulated = 0;
+    if (ssCurrentState === 'silence') {
+      ssCurrentState = 'idle';
+      if (!isHoldingSpace) {
+        ssExitSilence();
+      }
+      updateSkipSilenceUI();
+    }
   }
 
   let pwcTextTrack = null;
@@ -1860,17 +2135,18 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
     slider.addEventListener('input', (e) => {
       if (skipSilenceEnabled && ssCurrentState === 'silence') {
-        e.target.value = currentSpeed;
+        const pct = speedToSliderPercent(currentSpeed, snapPoints);
+        e.target.value = Math.round(pct * 10);
         return;
       }
-      let val = parseFloat(e.target.value);
+      const percent = parseFloat(e.target.value) / 10;
+      let val = sliderPercentToSpeed(percent, snapPoints);
       
-      // Magnetic attraction snapping effect (snaps within 0.22 threshold to snap point dots)
-      const threshold = 0.22;
-      for (const snap of snapPoints) {
-        if (Math.abs(val - snap) <= threshold) {
-          val = snap;
-          e.target.value = val;
+      // Magnetic attraction snapping effect within ~2.2% of any snap point
+      const snapPercents = [0, 100 / 3, 200 / 3, 100];
+      for (let i = 0; i < snapPercents.length; i++) {
+        if (Math.abs(percent - snapPercents[i]) <= 2.2) {
+          val = snapPoints[i];
           break;
         }
       }
@@ -1883,7 +2159,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       if (!extensionEnabled || disableScroll || (skipSilenceEnabled && ssCurrentState === 'silence')) return;
       e.preventDefault();
       const val = stepSpeed(e.deltaY < 0 ? 1 : -1);
-      slider.value = val;
+      slider.value = Math.round(speedToSliderPercent(val, snapPoints) * 10);
       updateSliderBackground(slider, val);
       saveSpeed(val);
     }, { passive: false });
@@ -1896,14 +2172,15 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     });
 
     document.querySelectorAll('.pwc-speed-slider').forEach(slider => {
-      slider.value = currentSpeed;
+      const pct = speedToSliderPercent(currentSpeed, snapPoints);
+      slider.value = Math.round(pct * 10);
       updateSliderBackground(slider, currentSpeed);
     });
 
     document.querySelectorAll('.pwc-tick-label').forEach(label => {
       const valText = label.textContent.replace('x', '');
       const val = parseFloat(valText);
-      if (!isNaN(val) && Math.abs(currentSpeed - val) < 0.15) {
+      if (!isNaN(val) && Math.abs(currentSpeed - val) < 0.06) {
         label.classList.add('pwc-active-tick');
       } else {
         label.classList.remove('pwc-active-tick');
@@ -1916,6 +2193,9 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     document.querySelectorAll('.pwc-needle').forEach(needle => {
       needle.style.transform = `rotate(${angle}deg)`;
     });
+
+    // Update lecture finish time badge
+    updateFinishTime();
   }
 
   // Helper function to match keys case-insensitively, supporting spacebar and shifts
@@ -1965,12 +2245,13 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     currentSpeed = speed;
     const video = getActiveVideo();
     if (video) {
-      if (video.playbackRate !== speed) {
+      if (Math.abs(video.playbackRate - speed) > 0.02) {
         isSettingRate = true;
         video.playbackRate = speed;
-        setTimeout(() => {
+        if (settingRateTimer) clearTimeout(settingRateTimer);
+        settingRateTimer = setTimeout(() => {
           isSettingRate = false;
-        }, 50);
+        }, 150);
       }
     }
     updateUI();
@@ -2539,6 +2820,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         injectSkipSilenceButton();
         injectInstantHideButton();
         injectPiPButton();
+        injectFinishTimeBadge();
       } finally {
         isModifyingDOM = false;
       }
