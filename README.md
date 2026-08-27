@@ -50,7 +50,6 @@ If you want to run the latest unreleased version directly from source:
 * **Custom Speed Presets:** Configure up to 4 quick-select speed buttons (default: `1.0x`, `2.0x`, `3.0x`, `4.0x`).
 * **Mouse Scroll Adjust:** Hover over the on-player speed slider and scroll your mouse wheel to change speeds quickly.
 * **Hold Space to Accelerate:** Hold down <kbd>Spacebar</kbd> to temporarily boost speed (default `2.0x`), releasing to return to your normal speed.
-* **Picture-in-Picture (PiP):** Pop out lectures into a floating window to take notes in another app.
 
 ### 🔇 Skip Silence (Beta)
 * **Automatic Fast-Forward:** Speeds up through teacher pauses, whiteboard writing, and silent thinking time (from `1.5x` up to `6.0x`).
