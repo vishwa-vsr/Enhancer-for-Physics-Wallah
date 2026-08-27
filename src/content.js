@@ -67,6 +67,8 @@
   let ssEngineRunning = false;
   let ssInitializing = false;
 
+  let autoPauseOnHide = false;
+
   // Inline AudioWorklet processor code for skip silence volume detection
   const VOLUME_PROCESSOR_CODE = `
 class VolumeProcessor extends AudioWorkletProcessor {
@@ -590,8 +592,8 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
   // Helper to step speed up or down by 0.1, clamped to 0.5–4.0
   function stepSpeed(direction) {
     let val = direction > 0
-      ? Math.min(4.0, currentSpeed + 0.1)
-      : Math.max(0.5, currentSpeed - 0.1);
+        ? Math.min(4.0, currentSpeed + 0.1)
+        : Math.max(0.5, currentSpeed - 0.1);
     return Math.round(val * 10) / 10;
   }
 
@@ -648,7 +650,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     }
     try {
       chrome.storage.local.get(
-        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'], 
+        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration', 'autoPauseOnHide'], 
         function (result) {
           try {
             if (chrome.runtime && chrome.runtime.id) {
@@ -1006,7 +1008,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       cachedVideo = videos[0];
       return videos[0];
     }
-    
+
     let mainVideo = videos[0];
     let maxArea = -1;
     for (const v of videos) {
@@ -1032,10 +1034,10 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       const tagName = current.tagName.toLowerCase();
       const role = current.getAttribute('role');
       const className = current.getAttribute('class') || '';
-      
+
       if (
-        tagName === 'button' || 
-        role === 'button' || 
+        tagName === 'button' ||
+        role === 'button' ||
         (className.includes('btn') || className.includes('button') || className.includes('control'))
       ) {
         return current;
@@ -1051,7 +1053,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     while (current && current !== document.body) {
       const className = (current.getAttribute('class') || '').toLowerCase();
       const id = (current.id || '').toLowerCase();
-      
+
       if (className.includes('dashboard') || id.includes('dashboard') || className.includes('page-manager')) {
         return false;
       }
@@ -1242,7 +1244,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     const id = (el.id || '').toLowerCase();
     const title = (el.getAttribute('title') || '').toLowerCase();
     const ariaLabel = (el.getAttribute('aria-label') || '').toLowerCase();
-    
+
     // Safety check: Never match the dashboard or main page manager layouts
     if (className.includes('dashboard') || id.includes('dashboard') || className.includes('page-manager')) {
       return null;
@@ -1250,7 +1252,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
     // Structural attributes are safe to match broadly
     const attrs = `${className} ${id} ${title} ${ariaLabel}`;
-    
+
     // Only use textContent for leaf elements (no children) to avoid matching nested junk
     const isLeaf = el.children.length === 0;
     const leafText = isLeaf ? (el.textContent || '').trim().toLowerCase() : '';
@@ -1299,7 +1301,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
   function checkElementOrChildType(el) {
     const type = getDistractorType(el);
     if (type) return type;
-    
+
     // Check direct children (level 1)
     for (const child of el.children) {
       const t = getDistractorType(child);
@@ -1382,7 +1384,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
     const ticks = document.createElement('div');
     ticks.className = 'pwc-slider-ticks';
-    
+
     // Add ticks dynamically at equal distances (0%, 33.33%, 66.67%, 100%)
     const stops = [0, 100 / 3, 200 / 3, 100];
     snapPoints.forEach((pt, index) => {
@@ -1670,7 +1672,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     }
 
     toast.classList.remove('pwc-toast-visible');
-    toast.offsetHeight; 
+    toast.offsetHeight;
     toast.classList.add('pwc-toast-visible');
 
     toastTimeout = setTimeout(() => {
@@ -1710,7 +1712,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     if (!video) return [];
     const playerContainer = document.getElementById('video-player-container') || video.closest('.video-player-app') || video.parentElement;
     if (!playerContainer) return [];
-    
+
     const elements = playerContainer.querySelectorAll(
       '.vjs-current-time, .vjs-duration, .vjs-time-divider, .vjs-remaining-time, .vjs-time-control, ' +
       '[class*="time-display" i], [class*="time-text" i], ' +
@@ -1741,10 +1743,10 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       // or it is a specific VideoJS time class
       const text = (el.textContent || '').trim();
       const isVjsTime = className.includes('vjs-current-time') || 
-                        className.includes('vjs-duration') || 
-                        className.includes('vjs-time-divider') || 
-                        className.includes('vjs-remaining-time') || 
-                        className.includes('vjs-time-control');
+        className.includes('vjs-duration') ||
+        className.includes('vjs-time-divider') ||
+        className.includes('vjs-remaining-time') ||
+        className.includes('vjs-time-control');
 
       if (isVjsTime) {
         return true;
@@ -1788,7 +1790,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         const className = node.getAttribute('class') || '';
         const id = node.id || '';
         const isSelf = className.includes('pwc-') || id.includes('pwc-');
-        
+
         if (!isSelf && (text === '/' || text === '|' || text === '-')) {
           setHidden(node, shouldHide);
         }
@@ -1818,7 +1820,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         const parent = getToolbarContainer(refBtn);
         if (parent) {
           const siblings = Array.from(parent.children);
-          
+
           // Filter out our own injected speed control, pip button, and non-element nodes
           const nativeButtons = siblings.filter(el => {
             return el.nodeType === 1 && el.id !== 'pwc-speed-control' && el.id !== 'pwc-pip-btn';
@@ -1832,7 +1834,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
           if (settingsIdx !== -1) {
             nativeButtons.forEach((btn, index) => {
               const offset = settingsIdx - index;
-              
+
               if (offset === 1) {
                 // Notes (1 button left of Settings)
                 setHidden(btn, activeSettings.hideNotes);
@@ -2004,7 +2006,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
   // Update speed UI when speed changes (syncs with native controls)
   function onRateChange() {
     if (isSettingRate || !activeVideo) return;
-    
+
     // If Skip Silence is running, never let automated or native player events overwrite user's preferred speed
     if (skipSilenceEnabled && ssEngineRunning) {
       if (ssCurrentState === 'silence') return;
@@ -2015,7 +2017,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       }
       return;
     }
-    
+
     if (isHoldingSpace) return;
     currentSpeed = activeVideo.playbackRate;
     updateUI();
@@ -2053,9 +2055,9 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     const root = (activeVideo.getRootNode && activeVideo.getRootNode()) || document;
     const captionEl = root.querySelector ? (
       root.querySelector('.vjs-text-track-display') ||
-      root.querySelector('.caption-window') ||
-      root.querySelector('.player-timedtext') ||
-      root.querySelector('.shaka-text-container') ||
+        root.querySelector('.caption-window') ||
+        root.querySelector('.player-timedtext') ||
+        root.querySelector('.shaka-text-container') ||
       root.querySelector('[class*="caption"]') ||
       root.querySelector('[class*="subtitle"]')
     ) : null;
@@ -2141,7 +2143,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       }
       const percent = parseFloat(e.target.value) / 10;
       let val = sliderPercentToSpeed(percent, snapPoints);
-      
+
       // Magnetic attraction snapping effect within ~2.2% of any snap point
       const snapPercents = [0, 100 / 3, 200 / 3, 100];
       for (let i = 0; i < snapPercents.length; i++) {
@@ -2157,11 +2159,11 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
     container.addEventListener('wheel', (e) => {
       if (!extensionEnabled || disableScroll || (skipSilenceEnabled && ssCurrentState === 'silence')) return;
-      e.preventDefault();
-      const val = stepSpeed(e.deltaY < 0 ? 1 : -1);
-      slider.value = Math.round(speedToSliderPercent(val, snapPoints) * 10);
-      updateSliderBackground(slider, val);
-      saveSpeed(val);
+        e.preventDefault();
+        const val = stepSpeed(e.deltaY < 0 ? 1 : -1);
+        slider.value = Math.round(speedToSliderPercent(val, snapPoints) * 10);
+        updateSliderBackground(slider, val);
+        saveSpeed(val);
     }, { passive: false });
   }
 
@@ -2201,7 +2203,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
   // Helper function to match keys case-insensitively, supporting spacebar and shifts
   function matchKey(event, targetKey) {
     if (!targetKey) return false;
-    
+
     if (targetKey === '>') {
       return event.key === '>' || (event.shiftKey && event.key === '.');
     }
@@ -2211,7 +2213,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     if (targetKey === 'Space') {
       return event.key === ' ' || event.key === 'Space';
     }
-    
+
     return event.key.toLowerCase() === targetKey.toLowerCase();
   }
 
@@ -2275,62 +2277,74 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
   // Dedicated capture-phase Spacebar interceptors to prevent double-toggling
   document.addEventListener('keydown', (e) => {
-    if (!extensionEnabled) return;
-    if (e.key !== ' ' && e.code !== 'Space') return;
-    
-    // Safety check: Ignore if typing in text fields
-    if (isUserTyping()) return;
+      if (!extensionEnabled) return;
+      if (e.key !== ' ' && e.code !== 'Space') return;
 
-    if (holdSpaceSpeedUp) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      
-      if (isHoldingSpace) return;
-      if (!spacePressTimer) {
-        speedBeforeHold = currentSpeed;
-        spacePressTimer = setTimeout(() => {
-          isHoldingSpace = true;
-          applyTemporarySpeed(holdSpaceSpeed);
-        }, 300);
+      // Safety check: Ignore if typing in text fields
+      if (isUserTyping()) return;
+
+      if (holdSpaceSpeedUp) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        if (isHoldingSpace) return;
+        if (!spacePressTimer) {
+          speedBeforeHold = currentSpeed;
+          spacePressTimer = setTimeout(() => {
+            isHoldingSpace = true;
+            applyTemporarySpeed(holdSpaceSpeed);
+          }, 300);
+        }
       }
-    }
   }, true); // useCapture = true
 
   document.addEventListener('keyup', (e) => {
-    if (!extensionEnabled) return;
-    if (e.key !== ' ' && e.code !== 'Space') return;
+      if (!extensionEnabled) return;
+      if (e.key !== ' ' && e.code !== 'Space') return;
 
-    if (holdSpaceSpeedUp) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
+      if (holdSpaceSpeedUp) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
 
-      if (spacePressTimer) {
-        clearTimeout(spacePressTimer);
-        spacePressTimer = null;
-      }
+        if (spacePressTimer) {
+          clearTimeout(spacePressTimer);
+          spacePressTimer = null;
+        }
 
-      if (isHoldingSpace) {
-        applyTemporarySpeed(speedBeforeHold);
-        isHoldingSpace = false;
-      } else {
-        // Only toggle play/pause if user is not typing in a text field
-        if (!isUserTyping()) {
-          togglePlayPause();
+        if (isHoldingSpace) {
+          applyTemporarySpeed(speedBeforeHold);
+          isHoldingSpace = false;
+        } else {
+          // Only toggle play/pause if user is not typing in a text field
+          if (!isUserTyping()) {
+            togglePlayPause();
+          }
         }
       }
-    }
   }, true); // useCapture = true
   // Safety net: Reset hold-space state when tab loses focus
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden && isHoldingSpace) {
-      if (spacePressTimer) {
-        clearTimeout(spacePressTimer);
-        spacePressTimer = null;
+    if (document.hidden){
+
+    const video = getActiveVideo();
+    if (!video) return;
+
+    if (autoPauseOnHide && !video.paused) {
+      video.pause().catch(() => {});
+    }
+
+    if(isHoldingSpace) {
+        if (spacePressTimer) {
+          clearTimeout(spacePressTimer);
+          spacePressTimer = null;
+        }
+        applyTemporarySpeed(speedBeforeHold);
+        isHoldingSpace = false;
       }
-      applyTemporarySpeed(speedBeforeHold);
-      isHoldingSpace = false;
+    } else if (autoPauseOnHide && video.paused) {
+      video.play().catch(() => {});
     }
   });
 
@@ -2401,7 +2415,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     // Determine the control bar container to inject into
     const footerRight = document.getElementById('footer-right-section');
     const controlBar = footerRight ? footerRight.parentElement : null;
-    
+
     // Fallback: search for settings/fullscreen buttons and trace their parent container
     let fallbackControlBar = null;
     if (!controlBar) {
@@ -2545,7 +2559,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
           if (HTMLVideoElement.prototype.requestPictureInPicture) {
             HTMLVideoElement.prototype.requestPictureInPicture.call(video).catch(() => {
               showInfoToast("Failed to enter Picture-in-Picture.");
-            });
+              });
           }
         });
       }
@@ -2628,7 +2642,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     // Determine the control bar container to inject into
     const footerRight = document.getElementById('footer-right-section');
     const controlBar = footerRight ? footerRight.parentElement : null;
-    
+
     // Fallback: search for settings/fullscreen buttons and trace their parent container
     let fallbackControlBar = null;
     if (!controlBar) {

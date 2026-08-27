@@ -68,7 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
     disableScroll: document.getElementById('disable-scroll-toggle'),
     holdSpaceSpeedUp: document.getElementById('hold-space-toggle'),
     alwaysExpandWidget: document.getElementById('always-expand-toggle'),
-    showFinishTime: document.getElementById('show-finish-time-toggle')
+    showFinishTime: document.getElementById('show-finish-time-toggle'),
+    autoPauseOnHide: document.getElementById("autopause-toggle"),
   };
 
   const holdSpaceSpeedInput = document.getElementById('hold-space-speed');
@@ -240,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   safeStorageGet(
-    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration', 'installDate', 'reviewPromptStatus', 'reviewPromptNextShowTime'],
+    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration', 'installDate', 'reviewPromptStatus', 'reviewPromptNextShowTime',  'autoPauseOnHide',],
     (result) => {
       applyTheme(result.themeMode !== 'dark');
       // Load focus toggles
@@ -273,6 +274,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (customToggles.showFinishTime) {
         customToggles.showFinishTime.checked = result.showFinishTime !== false;
+      }
+      if (customToggles.autoPauseOnHide) {
+        customToggles.autoPauseOnHide.checked = !!result.autoPauseOnHide;
       }
       const finishTimeFormatSelect = document.getElementById('finish-time-format-select');
       if (finishTimeFormatSelect) {
