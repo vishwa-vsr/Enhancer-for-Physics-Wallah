@@ -59,8 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hideSetting: document.getElementById('hide-setting-toggle'),
     hideTimeLine: document.getElementById('hide-timeline-toggle'),
     hideTimeText: document.getElementById('hide-timetext-toggle'),
-    enableInstantHide: document.getElementById('enable-instant-hide-toggle'),
-    enablePiP: document.getElementById('enable-pip-toggle')
+    enableInstantHide: document.getElementById('enable-instant-hide-toggle')
   };
 
   const customToggles = {
@@ -240,17 +239,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   safeStorageGet(
-    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration', 'installDate', 'reviewPromptStatus', 'reviewPromptNextShowTime'],
+    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration', 'installDate', 'reviewPromptStatus', 'reviewPromptNextShowTime'],
     (result) => {
       applyTheme(result.themeMode !== 'dark');
       // Load focus toggles
       for (const key in toggles) {
         if (toggles[key]) {
-          if (key === 'enablePiP') {
-            toggles[key].checked = result[key] !== false;
-          } else {
-            toggles[key].checked = !!result[key];
-          }
+          toggles[key].checked = !!result[key];
         }
       }
 

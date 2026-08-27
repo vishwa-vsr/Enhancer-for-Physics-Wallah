@@ -10,7 +10,6 @@
 
   // New Caching and Feature states
   let enableInstantHide = false;
-  let enablePiP = true;
   let cachedVideo = null;
   let cachedSettingsBtn = null;
   let cachedFullscreenBtn = null;
@@ -648,7 +647,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     }
     try {
       chrome.storage.local.get(
-        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'], 
+        ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'], 
         function (result) {
           try {
             if (chrome.runtime && chrome.runtime.id) {
@@ -771,7 +770,6 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       }
     }
 
-    enablePiP = result.enablePiP !== false;
     enableInstantHide = !!result.enableInstantHide;
     enableHotkeys = !!result.enableHotkeys;
     disableScroll = !!result.disableScroll;
@@ -783,10 +781,6 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     keyReset = result.keyReset || 'l';
 
     applyAlwaysExpandState();
-
-    if (activeVideo) {
-      activeVideo.autoPictureInPicture = enablePiP;
-    }
 
     if (result.snapPoints && Array.isArray(result.snapPoints) && result.snapPoints.length === 4) {
       snapPoints = sanitizeSnapPoints(result.snapPoints);
@@ -833,13 +827,6 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
             // Sync hotkey bindings in real-time
             if (changes.hasOwnProperty('enableInstantHide')) {
               enableInstantHide = !!changes.enableInstantHide.newValue;
-              changed = true;
-            }
-            if (changes.hasOwnProperty('enablePiP')) {
-              enablePiP = changes.enablePiP.newValue !== false;
-              if (activeVideo) {
-                activeVideo.autoPictureInPicture = enablePiP;
-              }
               changed = true;
             }
             if (changes.hasOwnProperty('enableHotkeys')) {
@@ -993,14 +980,6 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       cachedVideo = null;
       return null;
     }
-
-    // Force unlock Picture-in-Picture on all videos found
-    videos.forEach(v => {
-      if (v.hasAttribute('disablepictureinpicture')) {
-        v.removeAttribute('disablepictureinpicture');
-      }
-      v.disablePictureInPicture = false;
-    });
 
     if (videos.length === 1) {
       cachedVideo = videos[0];
@@ -1819,9 +1798,9 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         if (parent) {
           const siblings = Array.from(parent.children);
           
-          // Filter out our own injected speed control, pip button, and non-element nodes
+          // Filter out our own injected speed control and non-element nodes
           const nativeButtons = siblings.filter(el => {
-            return el.nodeType === 1 && el.id !== 'pwc-speed-control' && el.id !== 'pwc-pip-btn';
+            return el.nodeType === 1 && el.id !== 'pwc-speed-control';
           });
 
           // Find settings button index in the native buttons list
@@ -1959,8 +1938,6 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         activeVideo.removeEventListener('durationchange', updateFinishTime);
         activeVideo.removeEventListener('seeking', updateFinishTime);
         activeVideo.removeEventListener('seeked', updateFinishTime);
-        activeVideo.removeEventListener('enterpictureinpicture', onEnterPiP);
-        activeVideo.removeEventListener('leavepictureinpicture', onLeavePiP);
       } catch (e) {}
     }
 
@@ -1990,15 +1967,6 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     activeVideo.addEventListener('durationchange', updateFinishTime);
     activeVideo.addEventListener('seeking', updateFinishTime);
     activeVideo.addEventListener('seeked', updateFinishTime);
-    activeVideo.addEventListener('enterpictureinpicture', onEnterPiP);
-    activeVideo.addEventListener('leavepictureinpicture', onLeavePiP);
-
-    // Apply auto Picture-in-Picture natively
-    if (enablePiP) {
-      video.autoPictureInPicture = true;
-    } else {
-      video.autoPictureInPicture = false;
-    }
   }
 
   // Update speed UI when speed changes (syncs with native controls)
@@ -2041,60 +2009,6 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         ssExitSilence();
       }
       updateSkipSilenceUI();
-    }
-  }
-
-  let pwcTextTrack = null;
-  let captionIntervalId = null;
-
-  function syncCaptionsToPiP() {
-    if (!document.pictureInPictureElement || !activeVideo) return;
-
-    const root = (activeVideo.getRootNode && activeVideo.getRootNode()) || document;
-    const captionEl = root.querySelector ? (
-      root.querySelector('.vjs-text-track-display') ||
-      root.querySelector('.caption-window') ||
-      root.querySelector('.player-timedtext') ||
-      root.querySelector('.shaka-text-container') ||
-      root.querySelector('[class*="caption"]') ||
-      root.querySelector('[class*="subtitle"]')
-    ) : null;
-
-    if (!captionEl) return;
-
-    const text = (captionEl.textContent || "").trim();
-    if (!pwcTextTrack && typeof activeVideo.addTextTrack === 'function') {
-      try {
-        pwcTextTrack = activeVideo.addTextTrack('captions', 'PWC_captions', 'en');
-        pwcTextTrack.mode = 'showing';
-      } catch (e) {}
-    }
-
-    if (pwcTextTrack && typeof VTTCue !== 'undefined') {
-      try {
-        if (pwcTextTrack.cues) {
-          Array.from(pwcTextTrack.cues).forEach(cue => pwcTextTrack.removeCue(cue));
-        }
-        if (text) {
-          const cue = new VTTCue(activeVideo.currentTime, activeVideo.currentTime + 10, text);
-          pwcTextTrack.addCue(cue);
-        }
-      } catch (e) {}
-    }
-  }
-
-  function onEnterPiP() {
-    updatePiPButtonUI(true);
-    if (!captionIntervalId) {
-      captionIntervalId = setInterval(syncCaptionsToPiP, 500);
-    }
-  }
-
-  function onLeavePiP() {
-    updatePiPButtonUI(false);
-    if (captionIntervalId) {
-      clearInterval(captionIntervalId);
-      captionIntervalId = null;
     }
   }
 
@@ -2486,297 +2400,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     }
   }
 
-  function stylePiPButton(btn) {
-    btn.style.setProperty('position', 'relative', 'important');
-    btn.style.setProperty('z-index', '999999', 'important');
-    btn.style.setProperty('pointer-events', 'auto', 'important');
-    btn.style.setProperty('height', '100%', 'important');
-    btn.style.setProperty('width', '36px', 'important');
-    btn.style.setProperty('display', 'inline-flex', 'important');
-    btn.style.setProperty('align-items', 'center', 'important');
-    btn.style.setProperty('justify-content', 'center', 'important');
-    btn.style.setProperty('background', 'transparent', 'important');
-    btn.style.setProperty('border', 'none', 'important');
-    btn.style.setProperty('color', '#ffffff', 'important');
-    btn.style.setProperty('cursor', 'pointer', 'important');
-    btn.style.setProperty('padding', '0', 'important');
-    btn.style.setProperty('margin', '0 6px', 'important');
-    btn.style.setProperty('transition', 'color 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease', 'important');
 
-    if (!btn.pwcHasHoverListeners) {
-      btn.pwcHasHoverListeners = true;
-      btn.addEventListener('mouseenter', () => {
-        btn.style.setProperty('color', '#ffffff', 'important');
-        btn.style.setProperty('transform', 'scale(1.12)', 'important');
-      });
-      btn.addEventListener('mouseleave', () => {
-        btn.style.setProperty('color', '#ffffff', 'important');
-        btn.style.setProperty('transform', 'scale(1)', 'important');
-      });
-    }
-  }
-
-  // Robust PiP toggler with immediate synchronous execution to preserve User Gesture activation
-  function togglePiP(video) {
-    if (!video) return;
-
-    // Force-enable Picture-in-Picture on video
-    video.disablePictureInPicture = false;
-    if (video.hasAttribute('disablepictureinpicture')) {
-      video.removeAttribute('disablepictureinpicture');
-    }
-
-    if (document.pictureInPictureElement) {
-      if (document.exitPictureInPicture) {
-        document.exitPictureInPicture().catch(() => {});
-      }
-    } else {
-      let promise = null;
-      if (typeof video.requestPictureInPicture === 'function') {
-        try { promise = video.requestPictureInPicture(); } catch (e) {}
-      }
-      if (!promise && HTMLVideoElement.prototype.requestPictureInPicture) {
-        try { promise = HTMLVideoElement.prototype.requestPictureInPicture.call(video); } catch (e) {}
-      }
-
-      if (promise && typeof promise.catch === 'function') {
-        promise.catch(err => {
-          console.warn("PW Control: Primary PiP request failed, trying prototype call fallback:", err);
-          if (HTMLVideoElement.prototype.requestPictureInPicture) {
-            HTMLVideoElement.prototype.requestPictureInPicture.call(video).catch(() => {
-              showInfoToast("Failed to enter Picture-in-Picture.");
-            });
-          }
-        });
-      }
-    }
-  }
-
-  function setupPiPButtonListeners(btn) {
-    if (btn.pwcHasClickEventListener) return;
-    btn.pwcHasClickEventListener = true;
-
-    btn.addEventListener('click', () => {
-      const video = getActiveVideo();
-      if (video) {
-        togglePiP(video);
-      }
-    });
-  }
-
-  // Find native or player-provided PiP buttons on the page so we can attach working handlers to them
-  function findNativePiPButtons() {
-    const video = getActiveVideo();
-    if (!video) return [];
-
-    const root = (video.getRootNode && video.getRootNode()) || document;
-    const buttons = Array.from(root.querySelectorAll ? root.querySelectorAll(
-      '[class*="pip" i], [id*="pip" i], [title*="picture" i], [aria-label*="picture" i]'
-    ) || [] : []);
-
-    const fsBtn = findFullscreenButton();
-    if (fsBtn) {
-      const fsWrapper = fsBtn.closest('.flex-col') || fsBtn.closest('button') || fsBtn.parentElement;
-      if (fsWrapper && fsWrapper.nextElementSibling) {
-        const nextBtn = getControlButton(fsWrapper.nextElementSibling) || fsWrapper.nextElementSibling;
-        if (nextBtn && !buttons.includes(nextBtn) && nextBtn.id !== 'pwc-pip-btn') {
-          buttons.push(nextBtn);
-        }
-      }
-    }
-    return buttons;
-  }
-
-  // Remove all injected instances of PiP buttons across light and shadow DOMs
-  function removeAllPiPButtons() {
-    const mainBtn = document.getElementById('pwc-pip-btn');
-    if (mainBtn) mainBtn.remove();
-
-    const all = document.querySelectorAll('*');
-    all.forEach(el => {
-      if (el.shadowRoot) {
-        const shadowBtn = el.shadowRoot.getElementById('pwc-pip-btn') || el.shadowRoot.querySelector('#pwc-pip-btn');
-        if (shadowBtn) shadowBtn.remove();
-      }
-    });
-  }
-
-  // Inject and manage the Picture-in-Picture button inside the controls bar
-  function injectPiPButton() {
-    const video = getActiveVideo();
-    if (!video) return;
-
-    // Attach working listener to any native PiP button in PW player toolbar
-    const nativeBtns = findNativePiPButtons();
-    nativeBtns.forEach(nBtn => {
-      if (nBtn && nBtn.id !== 'pwc-pip-btn' && !nBtn.pwcHasNativePiPListener) {
-        nBtn.pwcHasNativePiPListener = true;
-        nBtn.addEventListener('click', () => {
-          const v = getActiveVideo();
-          if (v) {
-            togglePiP(v);
-          }
-        });
-      }
-    });
-
-    if (!extensionEnabled || !enablePiP) {
-      removeAllPiPButtons();
-      return;
-    }
-
-    // Determine the control bar container to inject into
-    const footerRight = document.getElementById('footer-right-section');
-    const controlBar = footerRight ? footerRight.parentElement : null;
-    
-    // Fallback: search for settings/fullscreen buttons and trace their parent container
-    let fallbackControlBar = null;
-    if (!controlBar) {
-      const settingsBtn = findSettingsButton();
-      const fullscreenBtn = findFullscreenButton();
-      const refBtn = settingsBtn || fullscreenBtn;
-      if (refBtn) {
-        fallbackControlBar = getToolbarContainer(refBtn);
-      }
-    }
-
-    const parent = controlBar || fallbackControlBar || footerRight || (video.parentElement || video.parentNode);
-    if (!parent) return;
-
-    // Target the light DOM container or shadow container
-    const targetContainer = footerRight || parent;
-
-    // Search targetContainer/parent for our button to support shadow roots!
-    const exactBtn = targetContainer.querySelector('#pwc-pip-btn');
-
-    // Create and inject the button if it doesn't exist
-    if (!exactBtn) {
-      const btn = document.createElement('button');
-      btn.id = 'pwc-pip-btn';
-      btn.className = 'pwc-pip-btn';
-      btn.type = 'button';
-      stylePiPButton(btn);
-
-      // Insert right before fullscreen button if found inside the same parent, otherwise append
-      const fullscreenBtn = findFullscreenButton();
-      if (fullscreenBtn && fullscreenBtn.parentElement === targetContainer) {
-        targetContainer.insertBefore(btn, fullscreenBtn);
-      } else {
-        targetContainer.appendChild(btn);
-      }
-
-      setupPiPButtonListeners(btn);
-      // Initial UI draw
-      updatePiPButtonUI(document.pictureInPictureElement === video, btn);
-    } else {
-      stylePiPButton(exactBtn);
-      // Ensure it is in the correct position if the toolbar rebuilt
-      if (exactBtn.parentElement !== targetContainer) {
-        const fullscreenBtn = findFullscreenButton();
-        if (fullscreenBtn && fullscreenBtn.parentElement === targetContainer) {
-          targetContainer.insertBefore(exactBtn, fullscreenBtn);
-        } else {
-          targetContainer.appendChild(exactBtn);
-        }
-      }
-      setupPiPButtonListeners(exactBtn);
-      // Update UI state based on current PiP state
-      updatePiPButtonUI(document.pictureInPictureElement === video, exactBtn);
-    }
-  }
-
-  function updatePiPButtonUI(isInPiP, btnElement = null) {
-    let btn = btnElement;
-    if (!btn) {
-      const footerRight = document.getElementById('footer-right-section');
-      const controlBar = footerRight ? footerRight.parentElement : null;
-      let fallbackControlBar = null;
-      if (!controlBar) {
-        const settingsBtn = findSettingsButton();
-        const fullscreenBtn = findFullscreenButton();
-        const refBtn = settingsBtn || fullscreenBtn;
-        if (refBtn) {
-          fallbackControlBar = getToolbarContainer(refBtn);
-        }
-      }
-      const parent = controlBar || fallbackControlBar || footerRight;
-      if (parent) {
-        btn = parent.querySelector('#pwc-pip-btn');
-      }
-    }
-    if (!btn) return;
-
-    btn.textContent = '';
-    btn.setAttribute('title', isInPiP ? 'Exit Picture-in-Picture' : 'Picture-in-Picture');
-
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', 'currentColor');
-    svg.setAttribute('stroke-width', '2.3');
-    svg.setAttribute('stroke-linecap', 'square');
-    svg.setAttribute('stroke-linejoin', 'miter');
-
-    // Inline style for SVG to make sure it renders even inside Shadow DOM and passes clicks to the parent button
-    svg.style.setProperty('width', '28px', 'important');
-    svg.style.setProperty('height', '28px', 'important');
-    svg.style.setProperty('stroke', 'currentColor', 'important');
-    svg.style.setProperty('stroke-width', '2.4', 'important');
-    svg.style.setProperty('fill', 'none', 'important');
-    svg.style.setProperty('transition', 'transform 0.2s ease', 'important');
-    svg.style.setProperty('pointer-events', 'none', 'important');
-
-    if (isInPiP) {
-      // Exit PiP Icon: Sharp outer screen frame + exit diagonal arrow
-      const rect = document.createElementNS(svgNS, 'rect');
-      rect.setAttribute('x', '2');
-      rect.setAttribute('y', '4');
-      rect.setAttribute('width', '20');
-      rect.setAttribute('height', '14');
-      rect.setAttribute('rx', '0');
-      rect.setAttribute('ry', '0');
-      rect.setAttribute('fill', 'none');
-      rect.style.setProperty('fill', 'none', 'important');
-      rect.style.setProperty('pointer-events', 'none', 'important');
-      svg.appendChild(rect);
-
-      const path = document.createElementNS(svgNS, 'path');
-      path.setAttribute('d', 'M10 10l-4-4m0 0h3m-3 0v3');
-      path.style.setProperty('pointer-events', 'none', 'important');
-      svg.appendChild(path);
-    } else {
-      // Enter PiP Icon: Sharp rectangular line geometry
-      const rect1 = document.createElementNS(svgNS, 'rect');
-      rect1.setAttribute('x', '2');
-      rect1.setAttribute('y', '4');
-      rect1.setAttribute('width', '20');
-      rect1.setAttribute('height', '14');
-      rect1.setAttribute('rx', '0');
-      rect1.setAttribute('ry', '0');
-      rect1.setAttribute('fill', 'none');
-      rect1.style.setProperty('fill', 'none', 'important');
-      rect1.style.setProperty('pointer-events', 'none', 'important');
-      svg.appendChild(rect1);
-
-      // Inner Floating PiP Window (sharp 90-degree rectangular outline)
-      const rect2 = document.createElementNS(svgNS, 'rect');
-      rect2.setAttribute('x', '11');
-      rect2.setAttribute('y', '10');
-      rect2.setAttribute('width', '8');
-      rect2.setAttribute('height', '6');
-      rect2.setAttribute('rx', '0');
-      rect2.setAttribute('ry', '0');
-      rect2.setAttribute('fill', 'none');
-      rect2.setAttribute('stroke', 'currentColor');
-      rect2.style.setProperty('fill', 'none', 'important');
-      rect2.style.setProperty('stroke', 'currentColor', 'important');
-      rect2.style.setProperty('stroke-width', '2.2', 'important');
-      rect2.style.setProperty('pointer-events', 'none', 'important');
-      svg.appendChild(rect2);
-    }
-    btn.appendChild(svg);
-  }
 
   // Throttled execution of DOM monitoring to optimize performance
   let monitorTimeout = null;
@@ -2819,7 +2443,6 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         injectSpeedControl();
         injectSkipSilenceButton();
         injectInstantHideButton();
-        injectPiPButton();
         injectFinishTimeBadge();
       } finally {
         isModifyingDOM = false;
