@@ -16,12 +16,28 @@ function setUninstallSurveyUrl() {
   }
 }
 
+function trackInstallDate() {
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+    try {
+      chrome.storage.local.get('installDate', (result) => {
+        if (!result || !result.installDate) {
+          chrome.storage.local.set({ installDate: Date.now() });
+        }
+      });
+    } catch (err) {
+      console.warn('[PW Control] Error setting install date:', err);
+    }
+  }
+}
+
 // Set upon initial install or extension update
 if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onInstalled) {
   chrome.runtime.onInstalled.addListener(() => {
     setUninstallSurveyUrl();
+    trackInstallDate();
   });
 }
 
 // Immediate execution fallback
 setUninstallSurveyUrl();
+trackInstallDate();

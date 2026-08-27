@@ -512,6 +512,43 @@
       <a href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/blob/main/CHANGELOG.md" target="_blank" class="version-link" rel="noopener noreferrer">v1.0.8</a>
     </footer>
   </div>
+
+  <!-- Review Prompt Modal Dialog -->
+  <div id="review-modal" class="review-modal-overlay" style="display: none;" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
+    <div class="review-modal-backdrop"></div>
+    <div class="review-modal-card">
+      <div class="review-stars-row" aria-hidden="true">
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+      </div>
+      <h2 id="review-modal-title" class="review-modal-title">Love the extension?</h2>
+      <p class="review-modal-desc">Please take 10 seconds to leave a rating on the store.</p>
+      <div class="review-modal-actions">
+        <button type="button" id="review-btn-accept" class="review-btn review-btn-primary">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Leave a Review
+        </button>
+        <button type="button" id="review-btn-later" class="review-btn review-btn-secondary">Maybe Later</button>
+        <button type="button" id="review-btn-never" class="review-btn-link">Don't Ask Again</button>
+      </div>
+    </div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

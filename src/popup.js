@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   safeStorageGet(
-    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration'],
+    ['preferredSpeed', 'hideAskAI', 'hideDoubt', 'hideChat', 'hideNotes', 'hideNoteTimeline', 'hideSpeed', 'hideSetting', 'hideTimeLine', 'hideTimeText', 'enableInstantHide', 'enableHotkeys', 'disableScroll', 'holdSpaceSpeedUp', 'holdSpaceSpeed', 'alwaysExpandWidget', 'showFinishTime', 'finishTimeFormat', 'keySpeedUp', 'keySlowDown', 'keyReset', 'snapPoints', 'extensionEnabled', 'themeMode', 'enablePiP', 'skipSilenceEnabled', 'skipSilenceSilenceSpeed', 'skipSilenceThreshold', 'skipSilenceDynamicThreshold', 'skipSilenceMute', 'skipSilenceTimeSaved', 'skipSilenceMinDuration', 'installDate', 'reviewPromptStatus', 'reviewPromptNextShowTime'],
     (result) => {
       applyTheme(result.themeMode !== 'dark');
       // Load focus toggles
@@ -340,6 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (ssMinDurationInput) {
         ssMinDurationInput.value = result.skipSilenceMinDuration !== undefined ? parseFloat(result.skipSilenceMinDuration).toFixed(1) : '0.5';
       }
+
+      // Check Review Prompt display logic
+      checkAndTriggerReviewPrompt(result);
 
       // Remove loading overlay
       dismissLoadingOverlay();
@@ -775,5 +778,122 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+
+  // === REVIEW PROMPT MODAL LOGIC ===
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+  const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+
+  const reviewModal = document.getElementById('review-modal');
+  const reviewBackdrop = reviewModal ? reviewModal.querySelector('.review-modal-backdrop') : null;
+  const reviewBtnAccept = document.getElementById('review-btn-accept');
+  const reviewBtnLater = document.getElementById('review-btn-later');
+  const reviewBtnNever = document.getElementById('review-btn-never');
+
+  function getStoreReviewUrl() {
+    let storeUrl = 'https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj/reviews';
+    const ua = (navigator.userAgent || '').toLowerCase();
+    if (ua.includes('firefox')) {
+      storeUrl = 'https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/';
+    } else if (ua.includes('edg')) {
+      storeUrl = 'https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan';
+    }
+    return storeUrl;
+  }
+
+  function showReviewModal() {
+    if (!reviewModal) return;
+    reviewModal.style.display = 'flex';
+    reviewModal.setAttribute('aria-hidden', 'false');
+    // Force layout reflow before adding active class for smooth CSS transition
+    void reviewModal.offsetWidth;
+    reviewModal.classList.add('active');
+  }
+
+  function hideReviewModal() {
+    if (!reviewModal) return;
+    reviewModal.classList.remove('active');
+    reviewModal.setAttribute('aria-hidden', 'true');
+    setTimeout(() => {
+      if (!reviewModal.classList.contains('active')) {
+        reviewModal.style.display = 'none';
+      }
+    }, 220);
+  }
+
+  function checkAndTriggerReviewPrompt(storedData) {
+    const now = Date.now();
+    let installDate = storedData.installDate;
+
+    // Gracefully handle existing users: record Day 1 on their first popup open after update
+    if (!installDate) {
+      installDate = now;
+      safeStorageSet({ installDate: now });
+    }
+
+    const reviewPromptStatus = storedData.reviewPromptStatus;
+    const reviewPromptNextShowTime = storedData.reviewPromptNextShowTime || 0;
+
+    // Do not show if permanently dismissed or already reviewed
+    if (reviewPromptStatus === 'reviewed' || reviewPromptStatus === 'dismissed_permanently') {
+      return;
+    }
+
+    // Check if at least 1 full day has passed since install and snooze interval has elapsed
+    const hasBeenOneDay = (now - installDate) >= ONE_DAY_MS;
+    const isSnoozeOver = now >= reviewPromptNextShowTime;
+
+    if (hasBeenOneDay && isSnoozeOver) {
+      // Gentle delayed entrance so popup UI smoothly mounts first
+      setTimeout(() => {
+        showReviewModal();
+      }, 350);
+    }
+  }
+
+  // Response 1: Leave a Review (opens browser store & permanently stops asking)
+  if (reviewBtnAccept) {
+    reviewBtnAccept.addEventListener('click', () => {
+      const url = getStoreReviewUrl();
+      if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
+        chrome.tabs.create({ url: url });
+      } else {
+        window.open(url, '_blank');
+      }
+      safeStorageSet({ reviewPromptStatus: 'reviewed' });
+      hideReviewModal();
+    });
+  }
+
+  // Response 2: Maybe Later (3 days snooze)
+  if (reviewBtnLater) {
+    reviewBtnLater.addEventListener('click', () => {
+      safeStorageSet({ reviewPromptNextShowTime: Date.now() + THREE_DAYS_MS });
+      hideReviewModal();
+    });
+  }
+
+  // Response 3: Don't Ask Again (Permanently dismiss)
+  if (reviewBtnNever) {
+    reviewBtnNever.addEventListener('click', () => {
+      safeStorageSet({ reviewPromptStatus: 'dismissed_permanently' });
+      hideReviewModal();
+    });
+  }
+
+  // Backdrop click dismissal (treated as Maybe Later - 3 days snooze)
+  if (reviewBackdrop) {
+    reviewBackdrop.addEventListener('click', () => {
+      safeStorageSet({ reviewPromptNextShowTime: Date.now() + THREE_DAYS_MS });
+      hideReviewModal();
+    });
+  }
+
+  // Escape key dismissal (treated as Maybe Later - 3 days snooze)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && reviewModal && reviewModal.classList.contains('active')) {
+      safeStorageSet({ reviewPromptNextShowTime: Date.now() + THREE_DAYS_MS });
+      hideReviewModal();
+    }
+  });
 
 });

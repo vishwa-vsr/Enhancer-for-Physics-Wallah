@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.8] - 2026-08-26
 
 ### Added & Improved
+- **Review Prompt Modal**: Added a polite, non-intrusive review prompt inside the extension popup that appears after 1 day of use, allowing students to easily rate the extension on their respective browser store (Chrome Web Store, Firefox Add-ons, or Microsoft Edge Add-ons). Features three friendly response options: *Leave a Review* (opens browser-specific store and permanently stops asking), *Maybe Later* (snoozes for 3 days), and *Don't Ask Again* (permanently dismisses).
+- **Install Date Tracking**: Added automated installation timestamp recording via the background worker to power time-based prompt features, with seamless Day 1 fallback initialization for existing users upon first launch after updating.
 - **Dynamic Lecture Finish Time Calculator (Beta - Fixes #3)**: Automatically calculates and displays the exact clock time your lecture will finish based on your active playback speed (defaults to clean time-only mode, e.g. `8:55 PM`). Includes customizable display formats (`Minimal`, `Clock with Label`, `Full`) and an on/off toggle in the popup.
 - **Equal-Distance Snap Points**: Speed slider points are now spaced at equal physical intervals across both the popup and the video player bar to completely eliminate text overlap.
 - **Smooth Decimal Speed Scaling**: Move smoothly through any custom speed (such as `1.3x` or `2.5x`) without losing fine control.
