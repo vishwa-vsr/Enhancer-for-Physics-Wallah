@@ -67,6 +67,7 @@
   let ssInitializing = false;
 
   let autoPauseOnHide = false;
+  let wasPausedByExtension = false;
 
   // Inline AudioWorklet processor code for skip silence volume detection
   const VOLUME_PROCESSOR_CODE = `
@@ -801,6 +802,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
     showFinishTime = result.showFinishTime !== false;
     finishTimeFormat = result.finishTimeFormat || 'minimal';
+    autoPauseOnHide = !!result.autoPauseOnHide;
 
     if (skipSilenceEnabled) {
       ssInit();
@@ -915,6 +917,10 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
             if (changes.hasOwnProperty('preferredSpeed')) {
               currentSpeed = parseFloat(changes.preferredSpeed.newValue);
               applySpeedToActiveVideo();
+            }
+
+            if (changes.hasOwnProperty('autoPauseOnHide')) {
+              autoPauseOnHide = !!changes.autoPauseOnHide.newValue;
             }
 
             if (changed) {
@@ -2240,16 +2246,20 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
   }, true); // useCapture = true
   // Safety net: Reset hold-space state when tab loses focus
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden){
-
     const video = getActiveVideo();
     if (!video) return;
 
-    if (autoPauseOnHide && !video.paused) {
-      video.pause().catch(() => {});
-    }
+    if (document.hidden) {
+      if (autoPauseOnHide && !video.paused) {
+        try {
+          video.pause();
+        } catch (e) {}
+        wasPausedByExtension = true;
+      } else {
+        wasPausedByExtension = false;
+      }
 
-    if(isHoldingSpace) {
+      if (isHoldingSpace) {
         if (spacePressTimer) {
           clearTimeout(spacePressTimer);
           spacePressTimer = null;
@@ -2257,8 +2267,11 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         applyTemporarySpeed(speedBeforeHold);
         isHoldingSpace = false;
       }
-    } else if (autoPauseOnHide && video.paused) {
-      video.play().catch(() => {});
+    } else {
+      if (autoPauseOnHide && video.paused && wasPausedByExtension) {
+        video.play().catch(() => {});
+      }
+      wasPausedByExtension = false;
     }
   });
 
