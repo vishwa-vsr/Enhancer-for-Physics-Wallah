@@ -219,9 +219,15 @@ document.addEventListener('DOMContentLoaded', () => {
   function dismissLoadingOverlay() {
     if (loadingOverlay) {
       loadingOverlay.classList.add('fade-out');
-      loadingOverlay.addEventListener('transitionend', () => {
-        loadingOverlay.remove();
-      }, { once: true });
+      let removed = false;
+      const removeOverlay = () => {
+        if (!removed && loadingOverlay.parentNode) {
+          removed = true;
+          loadingOverlay.remove();
+        }
+      };
+      loadingOverlay.addEventListener('transitionend', removeOverlay, { once: true });
+      setTimeout(removeOverlay, 250); // Fallback if transition is skipped
     }
   }
 
@@ -498,8 +504,11 @@ document.addEventListener('DOMContentLoaded', () => {
   for (const key in keyInputs) {
     const input = keyInputs[key];
     if (input) {
+      let isSavingKey = false;
+
       // Guide prompt on click/focus
       input.addEventListener('focus', () => {
+        isSavingKey = false;
         input.value = 'Press key...';
         input.style.color = 'var(--accent-focus)';
       });
@@ -507,6 +516,10 @@ document.addEventListener('DOMContentLoaded', () => {
       // Restore saved value on blur if no key was recorded
       input.addEventListener('blur', () => {
         input.style.removeProperty('color');
+        if (isSavingKey) {
+          isSavingKey = false;
+          return;
+        }
         safeStorageGet(key, (result) => {
           input.value = result[key] || getDefaultKey(key);
         });
@@ -525,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (boundKey === ' ') boundKey = 'Space';
 
         input.value = boundKey;
+        isSavingKey = true;
         
         safeStorageSet({ [key]: boundKey });
         input.blur(); // exit focus state
@@ -552,7 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const actualPct = speedToSliderPercent(val, snapPoints);
       speedSlider.style.setProperty('--percent', `${actualPct}%`);
-      saveSpeed(val);
+      // Update UI in real-time while dragging, but save to storage on change/release
     });
 
     speedSlider.addEventListener('change', (e) => {
@@ -726,6 +740,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ssThresholdSliderEl.addEventListener('input', (e) => {
       const val = parseInt(e.target.value);
       if (ssSensitivityValueEl) ssSensitivityValueEl.textContent = `${val} dB`;
+    });
+    ssThresholdSliderEl.addEventListener('change', (e) => {
+      const val = parseInt(e.target.value);
       safeStorageSet({ skipSilenceThreshold: val });
     });
   }
@@ -799,9 +816,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!reviewModal) return;
     reviewModal.style.display = 'flex';
     reviewModal.setAttribute('aria-hidden', 'false');
-    // Force layout reflow before adding active class for smooth CSS transition
-    void reviewModal.offsetWidth;
-    reviewModal.classList.add('active');
+    requestAnimationFrame(() => {
+      reviewModal.classList.add('active');
+    });
   }
 
   function hideReviewModal() {
