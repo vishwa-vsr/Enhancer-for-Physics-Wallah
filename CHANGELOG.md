@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.8.1] - 2026-08-30
 
 ### Added & Improved
-- **Auto-Pause on Tab Switch**: Automatically pauses lecture playback when switching tabs or minimizing the browser, and resumes seamlessly upon return (contributed by @undefined-parth in #8).
+- **Auto-Pause on Tab Switch**: Automatically pauses lecture playback when switching tabs or minimizing the browser, and resumes seamlessly upon return (contributed by [@undefined-parth](https://github.com/undefined-parth) in [#8](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/pull/8)).
 
 ### Performance & Battery
 - **Faster Video Detection**: Video player is now remembered instantly, cutting CPU load and preventing video lag.
