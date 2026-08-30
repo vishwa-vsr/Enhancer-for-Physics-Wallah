@@ -10,7 +10,7 @@
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-orange?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--on-green?logo=microsoft-edge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan)
 
-  **Enhancer for Physics Wallah** gives you full control over video playback on Physics Wallah student portals. Adjust playback speed up to 4.0x, automatically skip teacher pauses with smart audio detection, pop videos into Picture-in-Picture mode, and hide distracting page elements.
+  **Enhancer for Physics Wallah** gives you full control over video playback on Physics Wallah student portals. Adjust playback speed up to 4.0x, automatically skip teacher pauses with smart audio detection, auto-pause when switching tabs, and hide distracting page elements.
 
   [Install](#-installation) • [Features](#-features) • [Hotkeys](#-keyboard-shortcuts) • [Building Locally](#-building-from-source) • [Contributing](#-contributing)
 </div>
@@ -60,6 +60,7 @@ If you want to run the latest unreleased version directly from source:
 
 ### 🎯 Focus & Clean Mode
 Hide distracting UI elements with one click from the popup menu:
+* **Auto-pause on Tab Switch:** Pauses video automatically when you switch tabs or minimize the browser, resuming when you return.
 * Hide **Ask AI** helper button
 * Hide **Doubt Q&A** panel
 * Hide **Live Chat** and comments

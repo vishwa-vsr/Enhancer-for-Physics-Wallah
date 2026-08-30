@@ -4,7 +4,10 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.8.1] - 2026-08-29
+## [1.0.8.1] - 2026-08-30
+
+### Added & Improved
+- **Auto-Pause on Tab Switch**: Automatically pauses lecture playback when switching tabs or minimizing the browser, and resumes seamlessly upon return (contributed by @undefined-parth in #8).
 
 ### Performance & Battery
 - **Faster Video Detection**: Video player is now remembered instantly, cutting CPU load and preventing video lag.
