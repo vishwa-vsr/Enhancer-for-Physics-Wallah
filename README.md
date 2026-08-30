@@ -4,7 +4,7 @@
   # Enhancer for Physics Wallah
   ### Video playback control, smart silence skipping, and focus tools for `pw.live`
 
-  [![Version: 1.0.7.6](https://img.shields.io/badge/version-1.0.7.6-blue.svg)](#)
+  [![Version: 1.0.8.1](https://img.shields.io/badge/version-1.0.8.1-blue.svg)](#)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-blue?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-orange?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/)

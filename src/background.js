@@ -1,43 +1,37 @@
-// Background Service Worker for PW Control
+// Background Service Worker for PW Control (Manifest V3)
 
 const UNINSTALL_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScW98YLIwoVbtv27qBN9e9ECJSoDfJfPEHHZ6EdEL_WLHqCfQ/viewform';
 
-function setUninstallSurveyUrl() {
-  if (typeof chrome !== 'undefined' && chrome.runtime && typeof chrome.runtime.setUninstallURL === 'function') {
-    try {
-      chrome.runtime.setUninstallURL(UNINSTALL_URL, () => {
-        if (chrome.runtime.lastError) {
-          console.warn('[PW Control] Failed to set uninstall URL:', chrome.runtime.lastError.message);
-        }
-      });
-    } catch (err) {
-      console.warn('[PW Control] Error setting uninstall URL:', err);
+async function setupExtensionOnInstall() {
+  try {
+    // Configure uninstall survey URL
+    if (typeof chrome !== 'undefined' && chrome.runtime && typeof chrome.runtime.setUninstallURL === 'function') {
+      try {
+        await chrome.runtime.setUninstallURL(UNINSTALL_URL);
+      } catch (err) {
+        console.warn('[PW Control] Warning setting uninstall URL:', err);
+      }
     }
-  }
-}
 
-function trackInstallDate() {
-  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-    try {
-      chrome.storage.local.get('installDate', (result) => {
+    // Initialize install date if not already recorded
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      try {
+        const result = await chrome.storage.local.get('installDate');
         if (!result || !result.installDate) {
-          chrome.storage.local.set({ installDate: Date.now() });
+          await chrome.storage.local.set({ installDate: Date.now() });
         }
-      });
-    } catch (err) {
-      console.warn('[PW Control] Error setting install date:', err);
+      } catch (err) {
+        console.warn('[PW Control] Warning setting install date:', err);
+      }
     }
+  } catch (e) {
+    console.warn('[PW Control] Error during install setup:', e);
   }
 }
 
-// Set upon initial install or extension update
+// Event-driven listener: strictly executed on install or extension update
 if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onInstalled) {
   chrome.runtime.onInstalled.addListener(() => {
-    setUninstallSurveyUrl();
-    trackInstallDate();
+    setupExtensionOnInstall();
   });
 }
-
-// Immediate execution fallback
-setUninstallSurveyUrl();
-trackInstallDate();

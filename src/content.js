@@ -255,6 +255,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       ssSilentMsAccumulated = 0;
       ssInitializing = false;
       updateSkipSilenceUI();
+      manageSSVisualizerInterval();
     } catch (err) {
       ssInitializing = false;
       ssEngineRunning = false;
@@ -332,6 +333,8 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         setVideoPlaybackRate(normalSpeed);
       }
     }
+    scheduleSkipSilenceSave(true);
+    manageSSVisualizerInterval();
     updateSkipSilenceUI();
   }
 
@@ -380,11 +383,11 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
           setVideoPlaybackRate(targetSpeed);
         }
 
-        // Track time saved
+        // Track time saved in memory
         const saved = windowMs * (1 - (baseSpeed / skipSilenceSilenceSpeed));
         skipSilenceTimeSaved += saved;
         skipSilenceSessionSaved += saved;
-        safeSetSettings({ skipSilenceTimeSaved: Math.round(skipSilenceTimeSaved) });
+        scheduleSkipSilenceSave();
       }
     } else {
       ssSilentMsAccumulated = 0;
@@ -395,6 +398,25 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         }
         updateSkipSilenceUI();
       }
+    }
+  }
+
+  // Throttled storage persistence for time saved (max once every 10 seconds or on pause)
+  let ssSaveTimer = null;
+  function scheduleSkipSilenceSave(forceImmediate = false) {
+    if (forceImmediate) {
+      if (ssSaveTimer) {
+        clearTimeout(ssSaveTimer);
+        ssSaveTimer = null;
+      }
+      safeSetSettings({ skipSilenceTimeSaved: Math.round(skipSilenceTimeSaved) });
+      return;
+    }
+    if (!ssSaveTimer) {
+      ssSaveTimer = setTimeout(() => {
+        ssSaveTimer = null;
+        safeSetSettings({ skipSilenceTimeSaved: Math.round(skipSilenceTimeSaved) });
+      }, 10000);
     }
   }
 
@@ -567,12 +589,25 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     }
   }
 
-  // Periodic UI update for skip silence visualizer (4fps is enough for visual feedback)
-  setInterval(() => {
+  // Managed periodic UI update for skip silence visualizer (active only when running)
+  let ssVisualizerInterval = null;
+  function manageSSVisualizerInterval() {
     if (skipSilenceEnabled && ssEngineRunning) {
-      updateSkipSilenceUI();
+      if (!ssVisualizerInterval) {
+        ssVisualizerInterval = setInterval(() => {
+          if (skipSilenceEnabled && ssEngineRunning) {
+            updateSkipSilenceUI();
+          } else {
+            clearInterval(ssVisualizerInterval);
+            ssVisualizerInterval = null;
+          }
+        }, 250);
+      }
+    } else if (ssVisualizerInterval) {
+      clearInterval(ssVisualizerInterval);
+      ssVisualizerInterval = null;
     }
-  }, 250);
+  }
 
   function applyAlwaysExpandState(targetContainer) {
     const container = targetContainer || document.getElementById('pwc-speed-control');
@@ -951,24 +986,22 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
     });
   }
 
-  // Helper to find video elements in the document and all shadow roots recursively
+  // Helper to find video elements cleanly without expensive querySelectorAll('*')
   function findVideos(root = document) {
     let videos = [];
     if (!root) return videos;
     try {
       if (root.querySelectorAll) {
         videos = Array.from(root.querySelectorAll('video'));
-        const all = root.querySelectorAll('*');
-        for (let i = 0; i < all.length; i++) {
-          const el = all[i];
-          if (el.shadowRoot) {
-            videos = videos.concat(findVideos(el.shadowRoot));
-          }
-          try {
-            if (el.contentDocument) {
-              videos = videos.concat(findVideos(el.contentDocument));
+        // Search shadow roots only in candidate player containers if no video is found directly
+        if (videos.length === 0) {
+          const containers = root.querySelectorAll('#video-player-container, .video-player-app, [class*="player" i]');
+          for (let i = 0; i < containers.length; i++) {
+            const el = containers[i];
+            if (el.shadowRoot) {
+              videos = videos.concat(findVideos(el.shadowRoot));
             }
-          } catch (e) {}
+          }
         }
       }
     } catch (e) {}
@@ -977,7 +1010,12 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
   // Helper to find the active video element (selects the video with largest display area)
   function getActiveVideo() {
-    // If a video is currently in Picture-in-Picture, it is definitely the active one!
+    // 1. Instant return if cached video is still valid and connected to the page
+    if (cachedVideo && cachedVideo.isConnected && (cachedVideo.offsetWidth > 0 || cachedVideo.videoWidth > 0 || document.pictureInPictureElement === cachedVideo)) {
+      return cachedVideo;
+    }
+
+    // 2. If a video is currently in Picture-in-Picture, it is definitely the active one!
     if (document.pictureInPictureElement) {
       cachedVideo = document.pictureInPictureElement;
       return document.pictureInPictureElement;
@@ -1468,7 +1506,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
       return;
     }
 
-    const video = getActiveVideo();
+    const video = activeVideo || cachedVideo || getActiveVideo();
     if (!video || !isFinite(video.duration) || video.duration <= 0) {
       badges.forEach(b => { b.style.display = 'none'; });
       return;
@@ -2011,6 +2049,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
   function onVideoPause() {
     ssIsSilentNow = false;
     ssSilentMsAccumulated = 0;
+    scheduleSkipSilenceSave(true);
     if (ssCurrentState === 'silence') {
       ssCurrentState = 'idle';
       if (!isHoldingSpace) {
@@ -2244,13 +2283,23 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         }
       }
   }, true); // useCapture = true
-  // Safety net: Reset hold-space state when tab loses focus
+  // Safety net: Reset hold-space state when tab loses focus or window blurs
+  const cancelSpaceHold = () => {
+    if (spacePressTimer) {
+      clearTimeout(spacePressTimer);
+      spacePressTimer = null;
+    }
+    if (isHoldingSpace) {
+      applyTemporarySpeed(speedBeforeHold);
+      isHoldingSpace = false;
+    }
+  };
+
   document.addEventListener('visibilitychange', () => {
     const video = getActiveVideo();
-    if (!video) return;
 
     if (document.hidden) {
-      if (autoPauseOnHide && !video.paused) {
+      if (autoPauseOnHide && video && !video.paused) {
         try {
           video.pause();
         } catch (e) {}
@@ -2259,25 +2308,20 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         wasPausedByExtension = false;
       }
 
-      if (isHoldingSpace) {
-        if (spacePressTimer) {
-          clearTimeout(spacePressTimer);
-          spacePressTimer = null;
-        }
-        applyTemporarySpeed(speedBeforeHold);
-        isHoldingSpace = false;
-      }
+      cancelSpaceHold();
     } else {
-      if (autoPauseOnHide && video.paused && wasPausedByExtension) {
+      if (autoPauseOnHide && video && video.paused && wasPausedByExtension) {
         video.play().catch(() => {});
       }
       wasPausedByExtension = false;
     }
   });
 
+  window.addEventListener('blur', cancelSpaceHold);
+
   // Track screen hold state to suppress custom top pill during PW native screen hold
   const startHold = (e) => {
-    const video = getActiveVideo();
+    const video = activeVideo || cachedVideo || getActiveVideo();
     if (!video) return;
     const playerContainer = document.getElementById('video-player-container') || video.closest('.video-player-app') || video.parentElement;
     if (playerContainer && playerContainer.contains(e.target)) {
@@ -2398,22 +2442,20 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
         lastCollapsedTime = Date.now();
 
         // Bind root event listeners to reveal controls on mouse move or screen touch
-        if (!document.documentElement.pwcHasMouseMoveListener) {
-          document.documentElement.pwcHasMouseMoveListener = true;
+        const revealControls = () => {
+          // Ignore movements within 400ms of clicking to avoid micro-movements cancelling focus mode
+          if (Date.now() - lastCollapsedTime < 400) {
+            return;
+          }
+          if (document.documentElement.classList.contains('pwc-collapsed-state')) {
+            document.documentElement.classList.remove('pwc-collapsed-state');
+          }
+          document.removeEventListener('mousemove', revealControls);
+          document.removeEventListener('touchstart', revealControls);
+        };
 
-          const revealControls = () => {
-            // Ignore movements within 400ms of clicking to avoid micro-movements cancelling focus mode
-            if (Date.now() - lastCollapsedTime < 400) {
-              return;
-            }
-            if (document.documentElement.classList.contains('pwc-collapsed-state')) {
-              document.documentElement.classList.remove('pwc-collapsed-state');
-            }
-          };
-
-          document.addEventListener('mousemove', revealControls);
-          document.addEventListener('touchstart', revealControls);
-        }
+        document.addEventListener('mousemove', revealControls);
+        document.addEventListener('touchstart', revealControls);
       });
     } else {
       // Ensure it is in the correct parent

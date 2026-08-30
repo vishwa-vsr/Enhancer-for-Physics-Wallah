@@ -4,6 +4,20 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8.1] - 2026-08-29
+
+### Performance & Battery
+- **Faster Video Detection**: Video player is now remembered instantly, cutting CPU load and preventing video lag.
+- **Battery & Storage Saver**: Skip Silence saves data gently in batches instead of saving dozens of times per second.
+- **Smart Timer Cleanup**: Background visualizer timers now stop automatically when not in use.
+
+### Offline & Reliability
+- **100% Offline Popup**: Removed internet font downloads; popup now opens instantly offline using clean system fonts.
+- **Smoother Speed Slider**: Dragging the slider is smoother and only saves once you release your mouse.
+- **Spacebar Safety**: Switching apps or clicking outside the browser now safely resets temporary speed boosts.
+
+---
+
 ## [1.0.8] - 2026-08-26
 
 ### Added & Improved
