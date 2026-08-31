@@ -1,0 +1,75 @@
+.stepperBox {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-control);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  height: 28px;
+  box-sizing: border-box;
+}
+
+.stepperBtn {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.stepperBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-control-hover);
+}
+
+.stepperBtn:active {
+  transform: scale(0.9);
+}
+
+.stepperValueWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.stepperInput {
+  width: 28px;
+  background: transparent;
+  border: none;
+  color: var(--accent-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.stepperInput::-webkit-outer-spin-button,
+.stepperInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepperUnit {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: 1px;
+  user-select: none;
+}

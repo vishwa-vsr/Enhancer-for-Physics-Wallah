@@ -1,5 +1,6 @@
 # Build & compiled directories
 dist/
+node_modules/
 backup/
 docs/
 pages/

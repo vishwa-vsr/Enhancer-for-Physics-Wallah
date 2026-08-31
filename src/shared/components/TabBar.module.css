@@ -1,0 +1,77 @@
+.tabNavigation {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tab-nav-bg);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 3px;
+  margin: 0 14px;
+  gap: 3px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.tabIndicator {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(33.333% - 4px);
+  background: var(--tab-indicator-bg);
+  border: none;
+  border-radius: 8px;
+  box-shadow: var(--tab-indicator-shadow);
+  transition: transform var(--transition-normal);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.tabBtn {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--tab-btn-fg);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: color var(--transition-fast);
+  outline: none;
+  white-space: nowrap;
+}
+
+.tabBtn:hover {
+  color: var(--text-primary);
+}
+
+.tabBtn.active {
+  color: var(--tab-btn-fg-active);
+}
+
+.tabIcon {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.2px;
+  stroke: currentColor;
+  fill: none;
+  flex-shrink: 0;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabBtn.active .tabIcon {
+  color: var(--accent-primary);
+  transform: scale(1.05);
+}
