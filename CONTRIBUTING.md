@@ -1,52 +1,115 @@
 # Contributing to Enhancer for Physics Wallah
 
-First off, thank you for considering contributing to **Enhancer for Physics Wallah**! Whether you're fixing a bug, adding a new distraction toggle, or helping build the Study Planner dashboard, your contributions help thousands of students study with fewer distractions.
+First off, thank you for considering contributing to **Enhancer for Physics Wallah**! 💜
 
-This guide provides everything you need to know to get started quickly and write code that integrates seamlessly with the project.
+Whether you're fixing a bug, adding a new UI toggle, fine-tuning the silence skip audio DSP engine, or optimizing performance, your contributions directly help thousands of students study with fewer distractions.
+
+This guide provides everything you need to know to get started quickly and write clean code that integrates seamlessly with our modular TypeScript architecture.
 
 ---
 
 ## 📑 Table of Contents
 1. [Architecture & Code Map](#-architecture--code-map)
-2. [Development Setup](#-development-setup)
-3. [Testing & Debugging Like a Pro](#-testing--debugging-like-a-pro)
-4. [Coding Standards & Best Practices](#-coding-standards--best-practices)
-5. [Commit Message Conventions](#-commit-message-conventions)
-6. [Pull Request Process](#-pull-request-process)
+2. [Step-by-Step Developer Recipes](#-step-by-step-developer-recipes)
+3. [Development Setup](#-development-setup)
+4. [Testing & Debugging Guide](#-testing--debugging-guide)
+5. [Coding Standards & Design Tokens](#-coding-standards--design-tokens)
+6. [Commit Message Conventions](#-commit-message-conventions)
+7. [Pull Request Process](#-pull-request-process)
 
 ---
 
 ## 🗺️ Architecture & Code Map
 
-Before writing code, it helps to understand how the extension is organized:
+The project is structured into three clean layers:
 
 ```
 src/
-├── shared/                  # Reusable foundation (used by popup & upcoming dashboard)
-│   ├── tokens.css           # Single source of truth for all colors, themes & spacing
-│   ├── types.ts             # TypeScript interfaces for all 30+ settings & storage keys
-│   ├── storage.ts           # Type-safe wrapper for chrome.storage.local (with fallback)
-│   ├── theme.ts             # Signal-based dark/light theme manager
-│   └── components/          # Shared Preact UI blocks (Toggle, FeatureRow, Stepper, TabBar)
+├── shared/                       # Reusable foundation (types, storage, tokens, theme)
+│   ├── tokens.css                # CSS Variables for dark/light themes & design tokens
+│   ├── types.ts                  # Shared TypeScript interfaces for storage settings
+│   ├── storage.ts                # Type-safe wrapper around chrome.storage.local
+│   ├── theme.ts                  # Signal-based dark/light theme switcher
+│   └── components/               # Shared Preact components (Toggle, Stepper, TabBar, FeatureRow)
 │
-├── popup/                   # Extension popup interface
-│   ├── main.tsx             # Preact entry point
-│   ├── App.tsx              # Root component & tab layout
-│   ├── store.ts             # Reactive state management using Preact Signals
-│   ├── components/          # Header (logo, theme toggle) & Footer (links, version)
-│   └── features/            # Feature tabs: SpeedTab, FocusTab, SilenceTab, ReviewModal
+├── popup/                        # Extension popup UI (Preact + CSS Modules)
+│   ├── main.tsx                  # Preact entry point
+│   ├── App.tsx                   # Main root view & tab manager
+│   ├── store.ts                  # Reactive state using Preact Signals
+│   ├── components/               # Header, Footer, and modal views
+│   └── features/                 # SpeedTab, FocusTab, SilenceTab, ReviewModal
 │
-├── content.js               # In-page script running directly inside pw.live video pages
-│                            # Controls <video> playback, speed sliders, and audio analyzer
-├── content.css              # Styling for on-player controls & UI decluttering
-├── background.js            # Background service worker (uninstall survey, lifecycle)
-└── manifest.json            # Manifest V3 permissions & match patterns
+├── content/                      # Modular in-page content script (TypeScript)
+│   ├── index.ts                  # Initialization entry point & global listener coordinator
+│   ├── types.ts                  # Content state & audio engine types
+│   ├── state.ts                  # Reactive content state & chrome.storage.onChanged handler
+│   └── modules/
+│       ├── video/
+│       │   ├── detector.ts       # Shadow-DOM piercing video locator & PIP detector
+│       │   └── controller.ts     # PlaybackRate controller with anti-oscillation guards
+│       ├── distractions/
+│       │   ├── elements.ts       # PW toolbar locator (#footer-right-section) & button matchers
+│       │   └── focus-css.ts      # Settings-offset button index hider & zero-flicker classes
+│       ├── ui/
+│       │   ├── speed-hud.ts      # Speedometer button, segmented slider & needle dial
+│       │   ├── finish-time.ts    # Dynamic lecture finish clock & remaining time badge
+│       │   ├── focus-mode.ts     # Instant Focus arrow button & full-player collapse
+│       │   ├── silence-hud.ts    # Skip silence toolbar button, 5-bar equalizer & status text
+│       │   └── toast.ts          # On-screen warning & notification overlay
+│       ├── audio/
+│       │   └── skip-silence.ts   # Inline AudioWorklet processor & noise floor calibration
+│       ├── shortcuts/
+│       │   ├── keyboard.ts       # Hotkeys listener (h, j, l) with input protection
+│       │   └── space-hold.ts     # Capture-phase spacebar speed boost & tap play/pause
+│       ├── visibility/
+│       │   └── auto-pause.ts     # Auto pause/resume when switching tabs
+│       └── dom/
+│           └── observer.ts       # Throttled MutationObserver & safety interval
+│
+├── content.css                   # Styles for injected in-player widgets & focus hiding
+├── background.js                 # Background service worker (Manifest V3 lifecycle)
+└── manifest.json                 # Base extension manifest configuration
 ```
 
-### 💡 Where should your code go?
-* **Adding a new toggle for pw.live?** Add the CSS/DOM selector in `content.js`, the type in `src/shared/types.ts`, and the toggle in `src/popup/features/focus/FocusTab.tsx`.
-* **Tweaking popup styles?** Edit the corresponding `.module.css` file using design tokens from `src/shared/tokens.css`.
-* **Adding video player features?** Edit `src/content.js` and `src/content.css`.
+---
+
+## 🍳 Step-by-Step Developer Recipes
+
+### 💡 Recipe 1: Adding a new distraction toggle for PW Live
+1. **Define the setting key:**
+   - Add the new boolean key to `HideSettings` in `src/content/types.ts` and `src/shared/types.ts`.
+   - Add the default value (`false`) in `src/content/state.ts` and `DEFAULT_SETTINGS` in `src/shared/types.ts`.
+2. **Add CSS / DOM Hiding Logic:**
+   - Map the class in `classMap` inside `src/content/modules/distractions/focus-css.ts`.
+   - Add CSS rules in `src/content.css` under `/* Focus Toggle Hiding Rules */` (e.g. `html.pwc-hide-myfeature .my-target-class { display: none !important; }`).
+3. **Add the UI toggle in Popup:**
+   - Open `src/popup/features/focus/FocusTab.tsx` and add a `<FeatureRow>` with a `<Toggle>` bound to the new setting.
+
+---
+
+### 💡 Recipe 2: Adding or modifying in-player HUD widgets
+1. **Create or edit the component module:**
+   - Edit the relevant module in `src/content/modules/ui/` (e.g., `speed-hud.ts` or `finish-time.ts`).
+   - Use `findPWToolbar()` from `src/content/modules/distractions/elements.ts` to attach buttons safely inside the player bar without breaking PhysicsWallah's existing layout.
+2. **Hook into the DOM monitor:**
+   - Ensure your injection function is called inside `monitor()` in `src/content/modules/dom/observer.ts`.
+
+---
+
+### 💡 Recipe 3: Modifying or adding keyboard shortcuts
+1. **Add the handler:**
+   - Edit `src/content/modules/shortcuts/keyboard.ts`.
+   - Always use `isUserTyping()` protection to prevent hotkeys from triggering when students type in doubt boxes, chat, or search inputs.
+2. **Expose hotkey settings in popup:**
+   - If configurable, add the key state to `src/shared/types.ts` and UI controls in `src/popup/features/speed/SpeedTab.tsx`.
+
+---
+
+### 💡 Recipe 4: Updating Popup Theme & Colors
+1. **Edit design tokens:**
+   - Update `src/shared/tokens.css`. All colors, shadows, borders, and transitions are defined as CSS custom properties (`var(--accent-primary)`, `var(--bg-card)`, etc.).
+2. **Never hardcode hex colors in popup components:**
+   - Always reference tokens to guarantee seamless support for both **Dark Mode** and **Light Mode**.
 
 ---
 
@@ -63,105 +126,98 @@ src/
 git clone https://github.com/YOUR-USERNAME/Enhancer-for-Physics-Wallah.git
 cd Enhancer-for-Physics-Wallah
 
-# 2. Install development dependencies
+# 2. Install dependencies
 npm install
 
 # 3. Create a feature branch
 git checkout -b feat/your-feature-name
 ```
 
-### 3. Build Commands
+### 3. NPM Scripts & Commands
 ```bash
-npm run dev        # Starts Vite dev server (for fast component iteration)
+npm run dev        # Starts Vite dev server for popup UI development
 npm run build      # Compiles production extension into dist/chrome, dist/firefox, dist/edge
-npm run zip        # Packages distribution zips inside dist/
-npm run lint       # Checks code for TypeScript & ESLint errors
+npm run package    # Compiles and creates store-ready .zip packages inside dist/
+npm run lint       # Runs ESLint and strict TypeScript typechecking
 npm run format     # Formats all TS, TSX, CSS, and HTML files with Prettier
 ```
 
 ---
 
-## 🔍 Testing & Debugging Like a Pro
+## 🔍 Testing & Debugging Guide
 
 ### How to Load the Extension in Your Browser
-1. Run `npm run build` to generate the `dist/` folder.
+1. Run `npm run build` to generate the `dist/` directory.
 2. Open your browser's extension manager:
    * **Chrome / Brave:** Navigate to `chrome://extensions`
    * **Edge:** Navigate to `edge://extensions`
    * **Firefox:** Navigate to `about:debugging#/runtime/this-firefox`
 3. Enable **Developer Mode** (top-right toggle).
-4. Click **Load unpacked** and select the **`dist/chrome`** directory (or **`dist/firefox/manifest.json`** in Firefox).
+4. Click **Load unpacked** and select:
+   * **Chrome / Edge / Brave:** `dist/chrome` or `dist/edge`
+   * **Firefox:** Click *Load Temporary Add-on* and select `dist/firefox/manifest.json`.
 
-### Debugging Different Parts of the Extension
-* **Debugging the Popup:** Right-click the extension icon in your browser toolbar and select **Inspect popup**. This opens Chrome DevTools specifically for the popup window.
-* **Debugging the Content Script (Video Player):** Open any Physics Wallah lecture page (`pw.live`), press <kbd>F12</kbd> to open DevTools, and switch to the **Console** tab.
-* **Debugging the Background Service Worker:** In `chrome://extensions`, locate the extension card and click the **Inspect views: service worker** link.
-* **Applying Code Changes:** After running `npm run build`, click the 🔄 **Reload** icon on the extension card in `chrome://extensions`, then refresh the `pw.live` tab.
+### How to Debug Different Components
+* **Popup Window:** Right-click the extension icon in your browser toolbar and click **Inspect popup**.
+* **Content Script (Video Player HUD & Audio Engine):** Open any Physics Wallah lecture page (`pw.live`), press <kbd>F12</kbd>, and check the **Console** tab.
+* **Background Service Worker:** In `chrome://extensions`, click **Inspect views: service worker** on the extension card.
+* **Reloading Changes:** After running `npm run build`, click the 🔄 **Reload** icon on the extension card in `chrome://extensions`, then refresh the `pw.live` tab.
 
 ---
 
-## 🎨 Coding Standards & Best Practices
+## 🎨 Coding Standards & Design Tokens
 
-1. **Always Use Design Tokens (Never Hardcode Colors):**
-   * Use CSS custom properties from `src/shared/tokens.css` (e.g. `var(--accent-primary)`, `var(--bg-card)`, `var(--text-primary)`).
-   * This ensures your UI works automatically in both Dark Mode and Light Mode.
+1. **Strict TypeScript:**
+   - Maintain full type safety with `strict: true`.
+   - Avoid using `any`. Use proper interfaces from `src/shared/types.ts` or `src/content/types.ts`.
 
-2. **Strict TypeScript:**
-   * Provide explicit types for component props and storage data.
-   * Avoid using `any`. If unsure, use `unknown` or define a strict interface in `src/shared/types.ts`.
+2. **Scoped CSS Modules:**
+   - Style popup components using scoped CSS Modules (`[Component].module.css`) to prevent global style leaks.
 
-3. **CSS Modules:**
-   * Style popup components using scoped CSS Modules (`Component.module.css`).
-   * This prevents class name collisions across different features.
-
-4. **Reactive State via Preact Signals:**
-   * Popup state is managed via `@preact/signals` in `src/popup/store.ts`.
-   * Update signals and save to storage using the `saveSetting()` helper from `src/shared/storage.ts`.
-
-5. **Client-Side Privacy:**
-   * Never introduce analytics, tracking pixels, or remote external scripts. All code must run 100% locally.
+3. **Client-Side Privacy:**
+   - Never add third-party analytics, remote scripts, or tracking libraries. Everything must execute locally on the user's machine.
 
 ---
 
 ## 💬 Commit Message Conventions
 
-We follow [Conventional Commits](https://www.conventionalcommits.org/) to keep our git history readable:
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-| Prefix | When to use | Example |
+| Type | Purpose | Example |
 | :--- | :--- | :--- |
-| `feat:` | Adding a new user-facing feature | `feat: add auto-pause on window blur` |
-| `fix:` | Fixing a bug | `fix: prevent spacebar boost from locking on text input` |
-| `docs:` | Updating documentation or changelog | `docs: add troubleshooting steps to README` |
-| `style:` | Formatting, whitespace, or visual CSS tweaks | `style: adjust stepper button hover radius` |
-| `refactor:`| Code refactoring without changing functionality | `refactor: split speed slider math into utility file` |
-| `perf:` | Performance or memory optimization | `perf: throttle audio analyser calculation` |
-| `chore:` | Tooling, build scripts, or dependency updates | `chore: update vite and typescript dependencies` |
+| `feat:` | New user-facing feature | `feat: add instant focus mode chevron button` |
+| `fix:` | Bug fix | `fix: prevent spacebar hold from triggering in chat inputs` |
+| `refactor:` | Code restructuring without behavior change | `refactor: split content script into TypeScript modules` |
+| `perf:` | Performance optimization | `perf: throttle audio noise floor recalculations` |
+| `docs:` | Documentation changes | `docs: update architecture map in CONTRIBUTING.md` |
+| `style:` | Formatting, whitespace, or CSS styling | `style: improve segmented slider tick glow` |
+| `chore:` | Tooling, build scripts, or dependency updates | `chore: update vite bundler config` |
 
 ---
 
 ## 🚀 Pull Request Process
 
-1. Make sure your code passes all checks before opening a PR:
+1. Verify that all tests, types, and formatting pass:
    ```bash
    npm run format
    npm run lint
    npm run build
    ```
-2. Commit your changes with a clear conventional commit message:
+2. Commit your changes:
    ```bash
    git add .
-   git commit -m "feat: add lecture finish time format setting"
+   git commit -m "feat: add customizable speed step setting"
    ```
 3. Push to your fork:
    ```bash
    git push origin feat/your-feature-name
    ```
 4. Open a **Pull Request** on GitHub against the `main` branch.
-5. In your PR description, explain:
-   * **What:** What changes did you make?
-   * **Why:** Why was this change needed?
-   * **Testing:** How did you test your changes (which browser, what steps)?
+5. In your PR description, outline:
+   * **Summary:** What changes were made?
+   * **Motivation:** What problem does this solve?
+   * **Testing:** Which browsers (Chrome, Firefox, Edge) did you test on?
 
 ---
 
-Thank you for building with the open-source community! 💜
+Thank you for helping make studying on Physics Wallah better for everyone! 🚀
