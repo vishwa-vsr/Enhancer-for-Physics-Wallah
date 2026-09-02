@@ -1,7 +1,7 @@
 # Privacy Policy for Enhancer for Physics Wallah
 
-**Effective Date:** August 29, 2026  
-**Latest Version:** 1.0.8.1
+**Effective Date:** September 2, 2026  
+**Latest Version:** 1.0.8.2
 
 At **Enhancer for Physics Wallah** (also known as **PW Control**), we believe your privacy should always come first. This Privacy Policy explains clearly and transparently how our browser extension operates and how user data is handled.
 
@@ -54,7 +54,7 @@ All your settings, preferences, and saved time records stay exclusively on your 
 
 The extension only activates on official Physics Wallah lecture portals (`pw.live`, `penpencil.co`, `penpencil.xyz`, and `pwnet.in`).
 
-- It runs solely to attach the custom video control bar (speed slider, Picture-in-Picture button, Skip Silence visualizer) and apply Focus Mode decluttering.
+- It runs solely to attach the custom video control bar (speed slider, Skip Silence visualizer) and apply Focus Mode decluttering.
 - It does not run on or monitor any other websites you visit.
 
 ---

@@ -4,6 +4,18 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8.2] - 2026-09-02
+
+### Performance & UI Polish
+- **Faster & Lighter Popup**: Completely rebuilt the popup interface to open instantly and use less browser memory.
+- **Smoother Animations**: Butter-smooth animations when opening speed settings and adjusting playback controls.
+- **Refined Controls**: Crisp, tactile buttons, switches, and icons for a cleaner look in both Dark and Light mode.
+
+### Under the Hood & Architecture
+- **Modern TypeScript & Preact Engine**: Migrated the popup codebase from plain JavaScript to modern TypeScript and Preact, establishing a clean modular foundation for the upcoming Study Planner dashboard.
+
+---
+
 ## [1.0.8.1] - 2026-08-30
 
 ### Added & Improved

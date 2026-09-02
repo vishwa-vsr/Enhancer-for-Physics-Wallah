@@ -1,0 +1,552 @@
+/* === 7. SPEED CONTROLS HUD CARD === */
+.hudSection {
+  background: var(--bg-card);
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  padding: 14px 14px 8px 14px;
+}
+
+.hudHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.hudTitle {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.hudControlsGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hudValue {
+  font-family: 'Space Mono', monospace;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--accent-primary);
+  letter-spacing: -0.02em;
+  margin-left: 2px;
+}
+
+.settingsToggleBtn {
+  background: var(--bg-control);
+  border: none;
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  outline: none;
+  padding: 0;
+}
+
+.settingsToggleBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-control-hover);
+}
+
+.settingsToggleBtn:active {
+  transform: scale(0.92);
+}
+
+.settingsIcon {
+  width: 14px;
+  height: 14px;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), color 200ms ease;
+  display: block;
+}
+
+.settingsToggleBtn[aria-expanded="true"] .settingsIcon {
+  transform: rotate(90deg);
+  color: var(--accent-primary);
+}
+
+.resetSpeedBtn {
+  background: var(--bg-control);
+  border: none;
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  outline: none;
+  padding: 0;
+}
+
+.resetSpeedBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-control-hover);
+}
+
+.resetSpeedBtn:active {
+  transform: scale(0.92);
+}
+
+.resetIcon {
+  width: 14px;
+  height: 14px;
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), color 200ms ease;
+  display: block;
+}
+
+.resetSpeedBtn:hover .resetIcon {
+  transform: rotate(-90deg);
+  color: var(--accent-primary);
+}
+
+.resetSpeedBtn:active .resetIcon {
+  transform: rotate(-180deg) scale(0.9);
+}
+
+/* Range Slider */
+.sliderWrapper {
+  position: relative;
+  margin-top: 4px;
+  margin-bottom: 2px;
+  padding: 0 2px;
+}
+
+.speedSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(to right, var(--accent-primary) 0%, var(--accent-primary) var(--percent, 14.3%), var(--slider-track-bg) var(--percent, 14.3%), var(--slider-track-bg) 100%);
+  border-radius: var(--radius-full);
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+}
+
+.speedSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background: var(--slider-thumb-bg);
+  border: 3px solid var(--accent-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.speedSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.speedSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background: var(--slider-thumb-bg);
+  border: 3px solid var(--accent-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+/* Tick Mark Labels */
+.ticksRow {
+  position: relative;
+  width: calc(100% - 16px);
+  margin-left: 8px;
+  margin-right: 8px;
+  height: 14px;
+  margin-top: 6px;
+}
+
+.tickLabel {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-family: 'Inter', sans-serif;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tickLabel:hover {
+  color: var(--text-primary);
+}
+
+/* Custom Snap Points Collapsible Editor */
+.presetsEditorContainer:not(.expanded):not(.collapsing) {
+  display: none !important;
+}
+
+.presetsEditorContainer {
+  display: block;
+  overflow: hidden;
+  transform-origin: top center;
+}
+
+@keyframes slideDownExpand {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    max-height: 130px;
+    margin-top: 10px;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpCollapse {
+  0% {
+    opacity: 1;
+    max-height: 130px;
+    margin-top: 10px;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.presetsEditorContainer.expanded {
+  display: block;
+  animation: slideDownExpand 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.presetsEditorContainer.collapsing {
+  display: block;
+  animation: slideUpCollapse 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.presetsEditorSection {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 10px;
+  background: var(--bg-control);
+}
+
+.presetEditorHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.presetEditorTitle {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.snapResetDefaultsBtn {
+  background: var(--bg-card);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.snapResetDefaultsBtn svg {
+  transition: transform 300ms ease;
+}
+
+.snapResetDefaultsBtn:hover {
+  color: var(--accent-primary);
+  background: var(--bg-card-hover);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.snapResetDefaultsBtn:hover svg {
+  transform: rotate(-90deg);
+}
+
+.snapResetDefaultsBtn:active {
+  transform: scale(0.95);
+}
+
+.presetsEditorGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.presetEditBox {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+}
+
+.presetLabel {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.snapInputWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 4px 6px;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-fast);
+}
+
+.snapInputWrapper:focus-within {
+  background: var(--bg-card);
+  box-shadow: 0 0 0 2px var(--accent-primary);
+}
+
+.snapEditInput {
+  width: 24px;
+  background: transparent;
+  border: none;
+  color: var(--accent-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.snapEditInput::-webkit-outer-spin-button,
+.snapEditInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.snapUnit {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: 1px;
+  user-select: none;
+}
+
+/* Integrated Speed Widget Footer Rows */
+.hudFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--divider-color);
+}
+
+.hudFooterTitle {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.finishTimeControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.finishTimeFormatSelect {
+  background: var(--bg-control);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 6px;
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.finishTimeFormatSelect:hover {
+  background: var(--bg-control-hover);
+}
+
+.finishTimeFormatSelect:focus {
+  box-shadow: 0 0 0 2px var(--accent-primary);
+}
+
+.betaBadge {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.1);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 2px 6px;
+  line-height: 1.2;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+:global(body:not(.light-theme)) .betaBadge {
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.15);
+}
+
+/* === Shortcuts & Controls Card === */
+.shortcutsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.sectionTitle {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin: 0 0 2px 2px;
+  display: flex;
+  align-items: center;
+}
+
+.settingsGroupCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  border: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.settingRowGroup {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.settingRowGroup:not(:last-child) {
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.hotkeysEditor {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: var(--bg-control);
+  border: none;
+  padding: 8px 14px 10px 14px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.inputRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.inputLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-align: center;
+}
+
+.hotkeyInput {
+  background: var(--bg-card);
+  border: none;
+  color: var(--input-fg);
+  font-family: 'Space Mono', monospace;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  width: 100%;
+  padding: 5px 6px;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.hotkeyInput:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.hotkeyInput:focus {
+  box-shadow: 0 0 0 2px var(--accent-primary);
+}
+
+.featureConfigRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--bg-control);
+  border: none;
+  transition: opacity var(--transition-fast);
+}
+
+.configLabel {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.featureConfigRow div[class*="stepperBox"] {
+  background: var(--bg-card);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
