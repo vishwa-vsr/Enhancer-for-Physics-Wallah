@@ -2,6 +2,7 @@ import { defineConfig, Plugin } from 'vite';
 import preact from '@preact/preset-vite';
 import { resolve } from 'path';
 import fs from 'fs';
+import { transformSync } from 'esbuild';
 
 function copyExtensionAssetsPlugin(): Plugin {
   return {
@@ -57,11 +58,24 @@ function copyExtensionAssetsPlugin(): Plugin {
         if (fs.existsSync(resolve(srcDir, 'icons'))) {
           copyDir(resolve(srcDir, 'icons'), resolve(targetDir, 'icons'));
         }
-        // Copy static content/background scripts
+        // Minify and copy static content/background scripts and CSS
         for (const file of staticFiles) {
           const srcFile = resolve(srcDir, file);
           if (fs.existsSync(srcFile)) {
-            fs.copyFileSync(srcFile, resolve(targetDir, file));
+            const rawContent = fs.readFileSync(srcFile, 'utf-8');
+            try {
+              if (file.endsWith('.js')) {
+                const minified = transformSync(rawContent, { minify: true, target: 'chrome90' });
+                fs.writeFileSync(resolve(targetDir, file), minified.code, 'utf-8');
+              } else if (file.endsWith('.css')) {
+                const minified = transformSync(rawContent, { loader: 'css', minify: true });
+                fs.writeFileSync(resolve(targetDir, file), minified.code, 'utf-8');
+              } else {
+                fs.copyFileSync(srcFile, resolve(targetDir, file));
+              }
+            } catch {
+              fs.copyFileSync(srcFile, resolve(targetDir, file));
+            }
           }
         }
 
