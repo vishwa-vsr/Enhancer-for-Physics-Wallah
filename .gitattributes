@@ -1,0 +1,6 @@
+﻿# GitHub Language Statistics Customizations
+# Treat non-code asset directories and images as documentation/non-detectable
+assets/* linguist-documentation
+docs/* linguist-documentation
+*.svg linguist-detectable=false
+*.png linguist-detectable=false
