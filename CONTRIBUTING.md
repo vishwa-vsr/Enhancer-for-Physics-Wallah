@@ -7,7 +7,7 @@ Thank you for helping improve **Enhancer for Physics Wallah**! This guide walks 
 ## 🛠️ Development Setup
 
 ### 1. Prerequisites
-* **Python 3.x** (used to build and minify distribution packages)
+* **Node.js (v18 or higher)** and **npm**
 * **Git**
 * A Chromium-based browser (Chrome, Edge, Brave) or Mozilla Firefox
 
@@ -18,53 +18,63 @@ Thank you for helping improve **Enhancer for Physics Wallah**! This guide walks 
    git clone https://github.com/YOUR-USERNAME/Enhancer-for-Physics-Wallah.git
    cd Enhancer-for-Physics-Wallah
    ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
 
 ---
 
 ## ✏️ Making Changes
 
-### Project Rules
-* **Edit only inside `src/`:** Never make manual edits inside `dist/` because that folder is wiped and regenerated automatically during builds.
-* **Keep it dependency-free:** Do not add heavy JavaScript frameworks or runtime npm dependencies. Keep the core scripts fast and lightweight using vanilla JavaScript.
+### Project Guidelines
+* **Edit only inside `src/`:** Never make manual edits inside `dist/` because that folder is regenerated automatically during builds.
+* **Modern Stack:** The popup UI is built with **Preact**, **TypeScript**, and **CSS Modules**. Use standard Preact components and shared design tokens (`src/shared/tokens.css`).
+* **Keep bundles lightweight:** Avoid heavy runtime dependencies to keep the extension fast, lightweight, and responsive.
 
-### Workflow
+### Development Workflow
 1. Create a dedicated branch for your work:
    ```bash
    git checkout -b feature/your-feature-name
    ```
-2. Make your edits inside `src/`.
-3. Compile the build folders:
+2. Start the development server (optional for live feedback) or build:
    ```bash
-   python src/build.py -y
+   npm run dev      # Hot-reload development server
+   npm run build    # Compile production bundles into dist/
    ```
-4. Test your changes live on `pw.live`:
+3. Test your changes live on `pw.live`:
    * Open `chrome://extensions` (or `about:debugging` in Firefox).
    * Click **Load unpacked** and select `dist/chrome` (or `dist/firefox/manifest.json`).
-   * Test the video player, popup menu settings, and keyboard hotkeys.
+   * Test video controls, popup menu settings, themes, and keyboard hotkeys.
 
 ---
 
-## 🧪 Testing & Troubleshooting Checklist
+## 🧪 Testing & Code Quality Checklist
 
-Before committing your code, check the following:
-* [ ] **Extension loads without errors:** Check the Extensions page for any red error flags.
-* [ ] **Console check:** Open Developer Tools (<kbd>F12</kbd>) on a video lecture page and check the Console for unexpected errors or warnings.
-* [ ] **Build script runs cleanly:** `python src/build.py -y` runs with zero syntax or file errors.
-* [ ] **Theme check:** Check that your UI changes display properly in both Dark Mode and Light Mode inside the popup.
+Before committing your code, please verify:
+* [ ] **Type check passes:** `npm run build` runs with zero TypeScript or build errors.
+* [ ] **Linter check:** `npm run lint` passes with 0 errors and 0 warnings.
+* [ ] **Console check:** Open Developer Tools (<kbd>F12</kbd>) on a video lecture page and check the Console for unexpected errors.
+* [ ] **Theme check:** Check that your UI changes display properly in both Dark Mode and Light Mode.
 
 ---
 
 ## 🚀 Submitting a Pull Request
 
-1. **Commit your changes:**
+1. **Format and lint your code:**
+   ```bash
+   npm run format
+   npm run lint
+   ```
+2. **Commit your changes:**
    ```bash
    git commit -m "Add custom shortcut for instant hide button"
    ```
-2. **Push to your fork:**
+3. **Push to your fork:**
    ```bash
    git push origin feature/your-feature-name
    ```
-3. **Open a Pull Request:**
+4. **Open a Pull Request:**
    * Go to the original [Enhancer-for-Physics-Wallah](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah) repository.
    * Click **Compare & pull request**.
    * Provide a clear description of what changed, why it was needed, and how you tested it.

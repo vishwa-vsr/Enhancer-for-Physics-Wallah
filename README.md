@@ -4,7 +4,7 @@
   # Enhancer for Physics Wallah
   ### Video playback control, smart silence skipping, and focus tools for `pw.live`
 
-  [![Version: 1.0.8.1](https://img.shields.io/badge/version-1.0.8.1-blue.svg)](#)
+  [![Version: 1.0.8.2](https://img.shields.io/badge/version-1.0.8.2-blue.svg)](#)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-blue?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-orange?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/)
@@ -28,9 +28,10 @@ Install the extension directly from your browser's official store:
 ### Developer Mode (Local Installation)
 If you want to run the latest unreleased version directly from source:
 1. Download or clone this repository.
-2. Build the project by running:
+2. Install dependencies and build:
    ```bash
-   python src/build.py -y
+   npm install
+   npm run build
    ```
 3. Open your browser's extension manager:
    * **Chrome / Brave:** Navigate to `chrome://extensions`
@@ -47,7 +48,7 @@ If you want to run the latest unreleased version directly from source:
 
 ### ⚡ Playback Controls
 * **Extended Speed Range:** Adjust playback speed from `0.5x` up to `4.0x` in fine `0.1x` steps.
-* **Custom Speed Presets:** Configure up to 4 quick-select speed buttons (default: `1.0x`, `2.0x`, `3.0x`, `4.0x`).
+* **Custom Speed Presets:** Configure up to 4 quick-select speed points (default: `1.0x`, `2.0x`, `3.0x`, `4.0x`).
 * **Mouse Scroll Adjust:** Hover over the on-player speed slider and scroll your mouse wheel to change speeds quickly.
 * **Hold Space to Accelerate:** Hold down <kbd>Spacebar</kbd> to temporarily boost speed (default `2.0x`), releasing to return to your normal speed.
 
@@ -101,39 +102,45 @@ Read our complete [Privacy Policy](PRIVACY_POLICY.md) for details.
 
 ```
 Enhancer-for-Physics-Wallah/
-├── src/                  # Source files (edit your code here)
-│   ├── manifest.json     # Extension manifest (Manifest V3)
+├── src/                  # Source code
+│   ├── shared/           # Shared design tokens, types, components & storage
+│   ├── popup/            # Extension popup (Preact + TypeScript + CSS Modules)
 │   ├── content.js        # Video player injection & speed logic
 │   ├── content.css       # Video player overlay styles
-│   ├── popup.html        # Settings dashboard UI
-│   ├── popup.js          # Settings dashboard logic
-│   ├── popup.css         # Popup styles & theme definitions
-│   └── build.py          # Python build, minification, and packaging script
+│   ├── background.js     # Background service worker
+│   ├── manifest.json     # Extension manifest (Manifest V3)
+│   └── icons/            # High-resolution extension icons
 ├── assets/               # Extension icons and promotional art
-├── dist/                 # Generated builds (Git-ignored)
+├── docs/                 # Specifications & study planner architecture
+├── dist/                 # Generated production builds (Git-ignored)
 │   ├── chrome/           # Build for Chrome / Chromium
 │   ├── edge/             # Build for Microsoft Edge
 │   └── firefox/          # Build for Mozilla Firefox (Gecko manifest)
-└── backup/               # Automatic version backups generated during releases
+├── package.json          # Dependencies, build scripts & package manifest
+├── vite.config.ts        # Vite multi-target bundler configuration
+└── tsconfig.json         # TypeScript strict-mode configuration
 ```
 
 ---
 
 ## 🛠️ Building from Source
 
-The build pipeline uses Python 3 to clean code, strip comments, minify assets, and generate browser-specific distributions.
-
-### 1. Build Local Dist Folders
+### 1. Development Mode (Hot Reload)
 ```bash
-python src/build.py -y
+npm run dev
 ```
-Outputs build folders into `dist/chrome`, `dist/edge`, and `dist/firefox`.
 
-### 2. Build Release Zip Archives
+### 2. Build Production Distribution Folders
 ```bash
-python src/build.py -y --zip
+npm run build
 ```
-Creates upload-ready `.zip` bundles in the `dist/` directory for the Chrome Web Store, Edge Add-ons, and Mozilla Add-ons.
+Outputs optimized production builds into `dist/chrome`, `dist/edge`, and `dist/firefox`.
+
+### 3. Build Store-Ready Release Zip Archives
+```bash
+npm run zip
+```
+Creates upload-ready `.zip` bundles inside the `dist/` directory for the Chrome Web Store, Edge Add-ons, and Mozilla Add-ons.
 
 ---
 
