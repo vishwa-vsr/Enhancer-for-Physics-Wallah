@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "build:fast": "vite build",
-    "zip": "powershell -Command \"Compress-Archive -Path dist/chrome/* -DestinationPath pw-enhancer-chrome.zip -Force; Compress-Archive -Path dist/firefox/* -DestinationPath pw-enhancer-firefox.zip -Force\"",
+    "zip": "powershell -Command \"Compress-Archive -Path dist/chrome/* -DestinationPath dist/pw-chrome-v1.0.8.2.zip -Force; Compress-Archive -Path dist/firefox/* -DestinationPath dist/pw-firefox-v1.0.8.2.zip -Force; Compress-Archive -Path dist/edge/* -DestinationPath dist/pw-edge-v1.0.8.2.zip -Force\"",
     "package": "npm run build && npm run zip",
     "lint": "eslint src --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\""

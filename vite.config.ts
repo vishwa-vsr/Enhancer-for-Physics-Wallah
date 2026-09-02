@@ -25,21 +25,7 @@ function copyExtensionAssetsPlugin(): Plugin {
         }
       };
 
-      // 1. Copy icons to root dist
-      if (fs.existsSync(resolve(srcDir, 'icons'))) {
-        copyDir(resolve(srcDir, 'icons'), resolve(distDir, 'icons'));
-      }
-
-      // 2. Copy content and background scripts to root dist
-      const staticFiles = ['content.js', 'content.css', 'background.js'];
-      for (const file of staticFiles) {
-        const srcFile = resolve(srcDir, file);
-        if (fs.existsSync(srcFile)) {
-          fs.copyFileSync(srcFile, resolve(distDir, file));
-        }
-      }
-
-      // 3. Create manifest for Chrome
+      // 1. Parse base manifest
       const manifestSrc = resolve(srcDir, 'manifest.json');
       let baseManifest: any = {};
       if (fs.existsSync(manifestSrc)) {
@@ -47,10 +33,10 @@ function copyExtensionAssetsPlugin(): Plugin {
         if (baseManifest.action) {
           baseManifest.action.default_popup = 'src/popup/index.html';
         }
-        fs.writeFileSync(resolve(distDir, 'manifest.json'), JSON.stringify(baseManifest, null, 2));
       }
 
-      // 4. Create browser-specific target folders (chrome, edge, firefox) so both dist/ and dist/chrome work!
+      // 2. Create browser-specific target folders (chrome, edge, firefox)
+      const staticFiles = ['content.js', 'content.css', 'background.js'];
       const targets = ['chrome', 'edge', 'firefox'];
       for (const target of targets) {
         const targetDir = resolve(distDir, target);
@@ -71,7 +57,7 @@ function copyExtensionAssetsPlugin(): Plugin {
         if (fs.existsSync(resolve(srcDir, 'icons'))) {
           copyDir(resolve(srcDir, 'icons'), resolve(targetDir, 'icons'));
         }
-        // Copy scripts
+        // Copy static content/background scripts
         for (const file of staticFiles) {
           const srcFile = resolve(srcDir, file);
           if (fs.existsSync(srcFile)) {
@@ -94,6 +80,15 @@ function copyExtensionAssetsPlugin(): Plugin {
           };
         }
         fs.writeFileSync(resolve(targetDir, 'manifest.json'), JSON.stringify(targetManifest, null, 2));
+      }
+
+      // 3. Clean up loose Vite build files from the root of dist/ so only target folders remain
+      const itemsToClean = ['assets', 'src', 'icons', 'manifest.json', 'content.js', 'content.css', 'background.js'];
+      for (const item of itemsToClean) {
+        const p = resolve(distDir, item);
+        if (fs.existsSync(p)) {
+          fs.rmSync(p, { recursive: true, force: true });
+        }
       }
     },
   };
