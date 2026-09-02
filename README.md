@@ -8,23 +8,18 @@
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
   [![Preact](https://img.shields.io/badge/Preact-10-673AB8?logo=preact&logoColor=white)](https://preactjs.com/)
-  [![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
   [![Manifest V3](https://img.shields.io/badge/Manifest-V3-success)](#)
-  
-  [![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-4285F4?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj)
-  [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-FF7139?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/)
-  [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--on-0078D7?logo=microsoft-edge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan)
+  [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-brightgreen)](#-privacy--security)
 
   **Enhancer for Physics Wallah** gives students total control over their learning workflow on Physics Wallah student portals. Speed up lectures up to 4.0x, automatically skip teacher pauses with real-time audio detection, calculate dynamic finish times, auto-pause when switching tabs, and instantly declutter on-screen distractions with 1 click.
 
-  [Install](#-installation) • [Features](#-features) • [Hotkeys](#-keyboard-shortcuts) • [Architecture](#-project-architecture) • [Building Locally](#-building-from-source) • [Contributing](#-contributing)
+  [Install](#-installation) • [Features](#-features) • [Hotkeys](#-keyboard-shortcuts) • [FAQ](#-frequently-asked-questions) • [Privacy](#-privacy--security) • [Contributing](CONTRIBUTING.md)
 </div>
 
 ---
 
 ## 🚀 Installation
 
-### 🌐 Official Web Stores
 Install the extension directly with one click from your browser's official store:
 
 | Store Link | Active Users | Rating & Reviews |
@@ -35,36 +30,13 @@ Install the extension directly with one click from your browser's official store
 
 ---
 
-### 💻 Developer Mode (Run from Source)
-To test the latest unreleased features directly from source:
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah.git
-   cd Enhancer-for-Physics-Wallah
-   ```
-2. Install dependencies and compile:
-   ```bash
-   npm install
-   npm run build
-   ```
-3. Open your browser's extension management page:
-   * **Chrome / Brave:** `chrome://extensions`
-   * **Edge:** `edge://extensions`
-   * **Firefox:** `about:debugging#/runtime/this-firefox`
-4. Enable **Developer mode** (top-right toggle).
-5. Click **Load unpacked** (or **Load Temporary Add-on** in Firefox) and select the generated folder:
-   * **Chrome / Edge / Brave:** Select `dist/chrome` or `dist/edge`
-   * **Firefox:** Select `dist/firefox/manifest.json`
-
----
-
 ## ✨ Features
 
 ### ⚡ 1. Video Playback & Speed HUD
-* **Extended Speed Range:** Fine-tune video speeds from `0.5x` up to `4.0x` in precise `0.1x` increments.
+* **Extended Speed Range:** Fine-tune video playback speed from `0.5x` up to `4.0x` in precise `0.1x` steps.
 * **4-Point Segmented Slider:** Equal-distance quick-snap slider with magnetic point attraction (customizable defaults: `1.0x`, `2.0x`, `3.0x`, `4.0x`).
-* **SVG Speedometer Dial:** Real-time animated dial needle reflecting your exact playback rate.
-* **Mouse Wheel Adjustment:** Hover over the on-player speed badge and scroll your mouse wheel to effortlessly step speeds up or down by `0.1x`.
+* **SVG Speedometer Dial:** Real-time animated dial needle reflecting your exact playback speed.
+* **Mouse Wheel Adjustment:** Hover over the on-player speed badge and scroll your mouse wheel to quickly step speeds up or down by `0.1x`.
 * **Hold Space to Accelerate:** Hold down <kbd>Spacebar</kbd> to temporarily boost speed (default `2.0x`), releasing it to instantly return to your normal speed. Quick-tap toggles Play/Pause.
 
 ---
@@ -79,7 +51,7 @@ To test the latest unreleased features directly from source:
 ---
 
 ### ⏰ 3. Dynamic Lecture Finish Time Badge
-* **Real-Time Finish Clock:** Displays the exact wall-clock time your lecture will end, dynamically recalculated whenever you change video speeds or skip forward.
+* **Real-Time Finish Clock:** Displays the exact wall-clock time your lecture will end, dynamically recalculated whenever you change video speeds or seek.
 * **Customizable Formats:**
   * **Minimal:** `10:45 AM`
   * **Clock:** `Ends at 10:45 AM`
@@ -88,7 +60,7 @@ To test the latest unreleased features directly from source:
 ---
 
 ### 🎯 4. Focus Mode & Distraction Decluttering
-* **1-Click Instant Focus Mode:** Click the chevron arrow button on the toolbar to collapse all controls, sidebars, and mouse cursor for a cinematic study experience. Move your mouse or touch the screen to bring them back.
+* **1-Click Instant Focus Mode:** Click the chevron arrow button on the toolbar to collapse all controls, sidebars, and mouse cursor for a clean, cinematic study experience. Move your mouse or touch the screen to bring them back.
 * **Auto-Pause on Tab Switch:** Pauses the lecture automatically when switching tabs or minimizing the browser, and resumes seamlessly when you return.
 * **Granular Element Toggles:** Individually hide:
   * 🤖 **Ask AI** helper button
@@ -114,89 +86,58 @@ Hotkeys can be customized or toggled on/off in the extension popup:
 
 ---
 
-## 🔒 Privacy & Permissions
+## ❓ Frequently Asked Questions
 
-This extension runs **100% locally** in your browser:
-* **Zero Telemetry / Tracking:** No user data, viewing habits, or login credentials are collected, stored, or sent to external servers.
-* **Local Storage Only:** Uses browser `storage` exclusively on your device to remember your speed presets, hotkeys, and toggle preferences.
-* **Strict Target Permissions:** Runs only on official Physics Wallah video portals:
-  * `*://*.pw.live/*`
-  * `*://*.penpencil.co/*`
-  * `*://*.penpencil.xyz/*`
-  * `*://*.pwnet.in/*`
+<details>
+<summary><b>1. Why aren't keyboard shortcuts working when I press keys?</b></summary>
+<br/>
+Keyboard shortcuts are <b>disabled by default</b> so they don't accidentally interfere when you are typing search queries, comments, or study notes. You can enable them with one click inside the extension popup under the <b>Speed</b> tab.
+</details>
+
+<details>
+<summary><b>2. How does Skip Silence detect teacher pauses?</b></summary>
+<br/>
+Skip Silence uses real-time audio analysis directly inside your browser. It continuously measures the teacher's background room noise over a rolling 10-second buffer. When the sound drops below the speech threshold, the video automatically speeds up and smoothly returns to normal speed as soon as the teacher begins talking.
+</details>
+
+<details>
+<summary><b>3. How do I exit Instant Focus Mode?</b></summary>
+<br/>
+Simply move your mouse cursor or tap anywhere on your screen. The player controls, toolbar, and badges will smoothly fade back into view.
+</details>
+
+<details>
+<summary><b>4. Does this work on live lectures or only recorded videos?</b></summary>
+<br/>
+All speed controls, focus mode decluttering, and finish time estimates work seamlessly on recorded batch lectures. On live streams, speed adjustments are handled dynamically within the available live stream buffer.
+</details>
+
+---
+
+## 🔒 Privacy & Security
+
+This extension runs **100% locally** on your computer:
+* **Zero Telemetry / Analytics:** No personal information, watch history, or login credentials are saved or transmitted to any external server.
+* **Local Storage Only:** Settings (custom speeds, hotkeys, theme) are saved strictly inside your browser's local storage.
+* **Official Domains Only:** Operates exclusively on Physics Wallah portals (`pw.live`, `penpencil.co`, `penpencil.xyz`, `pwnet.in`).
 
 Read our complete [Privacy Policy](PRIVACY_POLICY.md) for details.
 
 ---
 
-## 📂 Project Architecture
+## 👩‍💻 Want to Build or Contribute?
 
-```
-Enhancer-for-Physics-Wallah/
-├── src/
-│   ├── shared/                   # Shared types, storage helpers, design tokens & theme
-│   ├── popup/                    # Preact + TypeScript + CSS Modules popup interface
-│   │   ├── components/           # Header, Footer, and shared layouts
-│   │   └── features/             # SpeedTab, FocusTab, SilenceTab, ReviewModal
-│   ├── content/                  # Modular TypeScript content script architecture
-│   │   ├── index.ts              # Entry point coordinating listeners & observers
-│   │   ├── types.ts              # Content state interfaces & AudioGraph types
-│   │   ├── state.ts              # Safe storage access & reactive state store
-│   │   └── modules/
-│   │       ├── video/            # Shadow-DOM video detector & playback rate controller
-│   │       ├── distractions/     # PW toolbar finder & relative offset button hider
-│   │       ├── ui/               # Speed HUD, finish time badge, focus mode, visualizer & toast
-│   │       ├── audio/            # Skip silence AudioWorklet & noise-floor calibration engine
-│   │       ├── shortcuts/        # Hotkeys & capture-phase spacebar hold handlers
-│   │       ├── visibility/       # Auto pause/resume on background tab switch
-│   │       └── dom/              # Throttled MutationObserver & safety interval
-│   ├── content.css               # In-player widget styling & CSS declutter rules
-│   ├── background.js             # Background service worker (Manifest V3 lifecycle)
-│   └── manifest.json             # Base extension manifest configuration
-├── dist/                         # Generated production distributions (Git-ignored)
-│   ├── chrome/                   # Production build for Chrome / Brave / Opera
-│   ├── edge/                     # Production build for Microsoft Edge
-│   └── firefox/                  # Production build for Mozilla Firefox
-├── vite.config.ts                # Multi-target Vite & esbuild bundler configuration
-└── tsconfig.json                 # TypeScript strict configuration
-```
+We welcome open-source contributions! Whether you want to add new features, fix a bug, or improve styling, check out our developer guide:
 
----
-
-## 🛠️ Building from Source
-
-### 1. Development Mode (Hot Module Replacement)
-```bash
-npm run dev
-```
-
-### 2. Build Production Distribution Folders
-```bash
-npm run build
-```
-Typechecks with `tsc --noEmit` and bundles optimized production builds into `dist/chrome`, `dist/edge`, and `dist/firefox`.
-
-### 3. Package Store-Ready Zip Archives
-```bash
-npm run package
-```
-Builds the project and compresses upload-ready `.zip` bundles inside `dist/` (`pw-chrome-*.zip`, `pw-firefox-*.zip`, `pw-edge-*.zip`).
-
-### 4. Lint and Code Formatting
-```bash
-npm run lint      # Runs ESLint across all TypeScript and TSX files
-npm run format    # Auto-formats all code using Prettier
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are warmly welcomed! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) guide for environment setup, developer recipes, coding standards, and PR guidelines.
+👉 **[Read CONTRIBUTING.md](CONTRIBUTING.md)** for:
+- 🛠️ Local development setup (`git clone`, `npm run dev`)
+- 🗺️ Complete TypeScript architecture map
+- 🍳 Step-by-step developer recipes (Adding toggles, HUD widgets, hotkeys)
+- 🔍 Testing, debugging & PR guidelines
 
 ---
 
 ## 📄 License & Acknowledgements
 
 * **License:** Distributed under the [MIT License](LICENSE).
-* **Acknowledgements:** Special thanks to [vantezzen/skip-silence](https://github.com/vantezzen/skip-silence) for the open-source audio processing ideas and noise-floor calibration patterns that inspired our Skip Silence feature.
+* **Acknowledgements:** Special thanks to [vantezzen/skip-silence](https://github.com/vantezzen/skip-silence) for the open-source audio processing ideas that inspired our Skip Silence feature.
