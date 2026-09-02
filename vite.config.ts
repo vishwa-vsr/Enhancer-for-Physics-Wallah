@@ -2,7 +2,7 @@ import { defineConfig, Plugin } from 'vite';
 import preact from '@preact/preset-vite';
 import { resolve } from 'path';
 import fs from 'fs';
-import { transformSync } from 'esbuild';
+import { transformSync, buildSync } from 'esbuild';
 
 function copyExtensionAssetsPlugin(): Plugin {
   return {
@@ -37,7 +37,7 @@ function copyExtensionAssetsPlugin(): Plugin {
       }
 
       // 2. Create browser-specific target folders (chrome, edge, firefox)
-      const staticFiles = ['content.js', 'content.css', 'background.js'];
+      const staticFiles = ['content.css', 'background.js'];
       const targets = ['chrome', 'edge', 'firefox'];
       for (const target of targets) {
         const targetDir = resolve(distDir, target);
@@ -58,7 +58,7 @@ function copyExtensionAssetsPlugin(): Plugin {
         if (fs.existsSync(resolve(srcDir, 'icons'))) {
           copyDir(resolve(srcDir, 'icons'), resolve(targetDir, 'icons'));
         }
-        // Minify and copy static content/background scripts and CSS
+        // Minify and copy static background script and CSS
         for (const file of staticFiles) {
           const srcFile = resolve(srcDir, file);
           if (fs.existsSync(srcFile)) {
@@ -76,6 +76,26 @@ function copyExtensionAssetsPlugin(): Plugin {
             } catch {
               fs.copyFileSync(srcFile, resolve(targetDir, file));
             }
+          }
+        }
+
+        // Bundle TypeScript content script into target content.js
+        const contentEntry = resolve(srcDir, 'content/index.ts');
+        if (fs.existsSync(contentEntry)) {
+          buildSync({
+            entryPoints: [contentEntry],
+            bundle: true,
+            minify: true,
+            target: 'chrome90',
+            outfile: resolve(targetDir, 'content.js'),
+            format: 'iife',
+          });
+        } else {
+          const legacyContent = resolve(srcDir, 'content.js');
+          if (fs.existsSync(legacyContent)) {
+            const rawContent = fs.readFileSync(legacyContent, 'utf-8');
+            const minified = transformSync(rawContent, { minify: true, target: 'chrome90' });
+            fs.writeFileSync(resolve(targetDir, 'content.js'), minified.code, 'utf-8');
           }
         }
 

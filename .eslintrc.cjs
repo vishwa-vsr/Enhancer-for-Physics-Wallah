@@ -20,5 +20,5 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'warn',
     'no-console': 'warn',
   },
-  ignorePatterns: ['dist/', 'node_modules/', 'src/popup.js', 'src/content.js', 'src/background.js'],
+  ignorePatterns: ['dist/', 'node_modules/', 'src/popup.js', 'src/background.js'],
 };
