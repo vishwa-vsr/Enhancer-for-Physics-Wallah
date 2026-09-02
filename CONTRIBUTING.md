@@ -13,7 +13,6 @@ This guide provides everything you need to know to get started quickly and write
 4. [Coding Standards & Best Practices](#-coding-standards--best-practices)
 5. [Commit Message Conventions](#-commit-message-conventions)
 6. [Pull Request Process](#-pull-request-process)
-7. [Good First Issues & Areas to Contribute](#-good-first-issues--areas-to-contribute)
 
 ---
 
@@ -164,13 +163,5 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) to keep o
    * **Testing:** How did you test your changes (which browser, what steps)?
 
 ---
-
-## 💡 Good First Issues & Areas to Contribute
-
-Looking for ideas to contribute? Here are great places to start:
-* **Study Planner Dashboard (`src/dashboard/`):** Help implement the Organise or Workflow Kanban tabs (see [`docs/STUDY_PLANNER.md`](docs/STUDY_PLANNER.md)).
-* **New Declutter Options:** Notice new distracting popups or banners on `pw.live`? Add a new 1-click toggle to hide them.
-* **Keyboard Shortcuts:** Add customizable shortcuts for seeking forward/backward.
-* **Accessibility:** Improve keyboard navigation, ARIA attributes, and high-contrast styling.
 
 Thank you for building with the open-source community! 💜
