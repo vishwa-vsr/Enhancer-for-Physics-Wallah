@@ -9,19 +9,33 @@ This guide provides everything you need to know to get started quickly and write
 ---
 
 ## 📑 Table of Contents
-1. [Architecture & Code Map](#-architecture--code-map)
-2. [Step-by-Step Developer Recipes](#-step-by-step-developer-recipes)
-3. [Development Setup](#-development-setup)
-4. [Testing & Debugging Guide](#-testing--debugging-guide)
-5. [Coding Standards & Design Tokens](#-coding-standards--design-tokens)
-6. [Commit Message Conventions](#-commit-message-conventions)
-7. [Pull Request Process](#-pull-request-process)
+1. [Technology Stack & Prerequisites](#-technology-stack--prerequisites)
+2. [Architecture & Code Map](#-architecture--code-map)
+3. [Step-by-Step Developer Recipes](#-step-by-step-developer-recipes)
+4. [Development Setup & Commands](#-development-setup--commands)
+5. [Testing & Debugging Guide](#-testing--debugging-guide)
+6. [Coding Standards & Design Tokens](#-coding-standards--design-tokens)
+7. [Commit Message Conventions](#-commit-message-conventions)
+8. [Pull Request Process](#-pull-request-process)
+
+---
+
+## 🧰 Technology Stack & Prerequisites
+
+The extension is built with modern, ultra-lightweight web technologies:
+
+* **Language & Core:** [TypeScript 5.7](https://www.typescriptlang.org/) (Strict Mode)
+* **Popup UI Framework:** [Preact 10](https://preactjs.com/) + [@preact/signals](https://preactjs.com/guide/v10/signals/) (Reactive state management)
+* **Bundler & Build Tool:** [Vite 6](https://vitejs.dev/) + [esbuild](https://esbuild.github.io/) (High-speed multi-browser compilation)
+* **Styling System:** Scoped [CSS Modules](https://github.com/css-modules/css-modules) + CSS Custom Property Design Tokens (`tokens.css`)
+* **Audio DSP Engine:** [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) + [AudioWorklet](https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet) (Real-time background noise calibration & silence detection)
+* **Extension Platform:** Chrome Extension [Manifest V3](https://developer.chrome.com/docs/extensions/mv3/intro/) (Chrome, Edge, Brave, Opera) & Gecko MV3 (Firefox compatibility)
 
 ---
 
 ## 🗺️ Architecture & Code Map
 
-The project is structured into three clean layers:
+The codebase is organized into three clean layers:
 
 ```
 src/
@@ -113,7 +127,7 @@ src/
 
 ---
 
-## 🛠️ Development Setup
+## 🛠️ Development Setup & Commands
 
 ### 1. Prerequisites
 * **Node.js (v18 or higher)** and **npm**

@@ -11,6 +11,14 @@
   [![Manifest V3](https://img.shields.io/badge/Manifest-V3-success)](#)
   [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-brightgreen)](#-privacy--security)
 
+  <p align="center">
+    <a href="https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj"><img src="https://developer.chrome.com/static/docs/webstore/branding/image/206x58-chrome-web-bcb82d15b2486.png" alt="Available in the Chrome Web Store" height="46"></a>
+    &nbsp;&nbsp;
+    <a href="https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/"><img src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg" alt="Get the Add-on for Firefox" height="46"></a>
+    &nbsp;&nbsp;
+    <a href="https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan"><img src="https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png" alt="Get it from Microsoft Edge" height="46"></a>
+  </p>
+
   **Enhancer for Physics Wallah** gives students total control over their learning workflow on Physics Wallah student portals. Speed up lectures up to 4.0x, automatically skip teacher pauses with real-time audio detection, calculate dynamic finish times, auto-pause when switching tabs, and instantly declutter on-screen distractions with 1 click.
 
   [Install](#-installation) • [Features](#-features) • [Hotkeys](#-keyboard-shortcuts) • [FAQ](#-frequently-asked-questions) • [Privacy](#-privacy--security) • [Contributing](CONTRIBUTING.md)
