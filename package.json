@@ -1,12 +1,14 @@
 {
   "name": "enhancer-for-physics-wallah",
-  "version": "1.0.8.1",
+  "version": "1.0.8.2",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "build:fast": "vite build",
+    "zip": "powershell -Command \"Compress-Archive -Path dist/chrome/* -DestinationPath pw-enhancer-chrome.zip -Force; Compress-Archive -Path dist/firefox/* -DestinationPath pw-enhancer-firefox.zip -Force\"",
+    "package": "npm run build && npm run zip",
     "lint": "eslint src --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\""
   },

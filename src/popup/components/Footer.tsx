@@ -52,7 +52,7 @@ export const Footer = () => {
         <StarIcon />
         Rate Us
       </a>
-      <span class={styles.version}>v1.0.8.1</span>
+      <span class={styles.version}>v1.0.8.2</span>
     </footer>
   );
 };
