@@ -207,7 +207,6 @@ export const Sidebar = ({
                       height="12"
                       style={{
                         transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.15s ease',
                         color: 'var(--text-muted)',
                         flexShrink: 0,
                       }}
