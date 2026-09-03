@@ -65,7 +65,7 @@
 .navItemActive {
   background-color: var(--accent-dim) !important;
   color: var(--accent-primary) !important;
-  font-weight: 600;
+  font-weight: 500 !important; /* Keep font-weight 500 so text never gets bold or jumps */
 }
 
 .navLeft {
@@ -80,7 +80,7 @@
   border-radius: 9999px;
   background-color: var(--bg-control);
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .navItemActive .badge {
@@ -169,11 +169,6 @@
   color: var(--text-primary);
 }
 
-.subjectItemExpanded {
-  background-color: var(--bg-control);
-  color: var(--text-primary);
-}
-
 .subjectLeft {
   display: flex;
   align-items: center;
@@ -182,7 +177,20 @@
   min-width: 0;
 }
 
+.chevronWrapper {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .subjectIcon {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
   color: var(--accent-primary);
   display: flex;
   align-items: center;
@@ -198,10 +206,16 @@
   font-weight: 500;
 }
 
+/* Fixed width container so right-side actions NEVER push the text or icon */
 .subjectRight {
+  position: relative;
+  width: 68px;
+  min-width: 68px;
+  height: 24px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .subjectActions {
@@ -264,6 +278,7 @@
   outline: none;
   color: var(--text-secondary);
   font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -279,7 +294,7 @@
 .chapterItemActive {
   background-color: var(--accent-dim) !important;
   color: var(--accent-primary) !important;
-  font-weight: 600;
+  font-weight: 500 !important; /* Keep font-weight 500 so text never gets bold or jumps */
 }
 
 .chapterItemActive .badge {
@@ -295,6 +310,16 @@
   min-width: 0;
 }
 
+.chapterIcon {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .chapterName {
   white-space: nowrap;
   overflow: hidden;
@@ -303,9 +328,14 @@
 }
 
 .chapterRight {
+  position: relative;
+  width: 54px;
+  min-width: 54px;
+  height: 20px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .chapterActions {
@@ -336,7 +366,6 @@
   border: 1px solid rgba(107, 127, 215, 0.2);
   cursor: pointer;
   font-weight: 600;
-  transition: all var(--transition-fast);
 }
 
 .emptyBtn:hover {
@@ -363,7 +392,6 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
 }
 
 .settingsBtn:hover {
@@ -374,5 +402,5 @@
 .settingsBtnActive {
   background-color: var(--accent-dim);
   color: var(--accent-primary);
-  font-weight: 600;
+  font-weight: 500 !important; /* Keep font-weight 500 so text never gets bold or jumps */
 }

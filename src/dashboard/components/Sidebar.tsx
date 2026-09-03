@@ -194,25 +194,26 @@ export const Sidebar = ({
             return (
               <div key={sub.id} class={styles.subjectGroup}>
                 <div
-                  class={`${styles.subjectItem} ${isExpanded ? styles.subjectItemExpanded : ''}`}
+                  class={styles.subjectItem}
                   onClick={() => toggleSubjectExpanded(sub.id)}
                 >
                   <div class={styles.subjectLeft}>
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.4}
-                      width="12"
-                      height="12"
-                      style={{
-                        transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                        color: 'var(--text-muted)',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                    <div class={styles.chevronWrapper}>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2.4}
+                        width="12"
+                        height="12"
+                        style={{
+                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                          color: 'var(--text-muted)',
+                        }}
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </div>
 
                     <div class={styles.subjectIcon}>
                       <svg
@@ -321,23 +322,24 @@ export const Sidebar = ({
                             }}
                           >
                             <div class={styles.chapterLeft}>
-                              <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                                width="14"
-                                height="14"
-                                style={{
-                                  color: isChapActive
-                                    ? 'var(--accent-primary)'
-                                    : 'var(--text-muted)',
-                                  flexShrink: 0,
-                                }}
-                              >
-                                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-                                <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-                              </svg>
+                              <div class={styles.chapterIcon}>
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth={2}
+                                  width="14"
+                                  height="14"
+                                  style={{
+                                    color: isChapActive
+                                      ? 'var(--accent-primary)'
+                                      : 'var(--text-muted)',
+                                  }}
+                                >
+                                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                                  <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                                </svg>
+                              </div>
                               <span class={styles.chapterName}>{chap.name}</span>
                             </div>
 
