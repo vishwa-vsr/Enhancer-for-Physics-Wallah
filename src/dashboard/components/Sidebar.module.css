@@ -147,7 +147,7 @@
 }
 
 .subjectGroup {
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .subjectItem {
@@ -155,12 +155,13 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 9px 12px;
+  padding: 11px 16px;
   border-radius: var(--radius-md);
   background: transparent;
   border: none;
+  outline: none;
   color: var(--text-secondary);
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -171,24 +172,39 @@
   color: var(--text-primary);
 }
 
-.subjectItemActive {
-  background-color: var(--bg-control-hover);
-  color: var(--accent-primary);
-  font-weight: 600;
+.subjectItemExpanded {
+  background-color: var(--bg-control);
+  color: var(--text-primary);
 }
 
 .subjectLeft {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
   min-width: 0;
+}
+
+.subjectIcon {
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .subjectName {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.subjectRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .subjectActions {
@@ -226,14 +242,14 @@
 }
 
 .chaptersList {
-  margin-left: 18px;
-  padding-left: 8px;
+  margin-left: 16px;
+  padding-left: 10px;
   border-left: 1.5px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-top: 2px;
-  margin-bottom: 4px;
+  gap: 3px;
+  margin-top: 3px;
+  margin-bottom: 6px;
 }
 
 .chapterItem {
@@ -241,12 +257,13 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
   background: transparent;
   border: none;
-  color: var(--text-muted);
-  font-size: 12.5px;
+  outline: none;
+  color: var(--text-secondary);
+  font-size: 13px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -262,12 +279,30 @@
   font-weight: 600;
 }
 
+.chapterItemActive .badge {
+  background-color: var(--accent-primary);
+  color: #ffffff;
+}
+
+.chapterLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
 .chapterName {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 1;
   text-align: left;
+}
+
+.chapterRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .chapterActions {

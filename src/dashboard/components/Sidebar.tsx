@@ -43,11 +43,11 @@ export const Sidebar = ({
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth={3}
+            strokeWidth={4.2}
             strokeLinecap="round"
             strokeLinejoin="round"
-            width="20"
-            height="20"
+            width="22"
+            height="22"
           >
             <polyline points="13 17 18 12 13 7" />
             <polyline points="6 17 11 12 6 7" />
@@ -189,90 +189,105 @@ export const Sidebar = ({
           subjects.value.map((sub) => {
             const isExpanded = !!expandedSubjects.value[sub.id];
             const subChapters = chapters.value.filter((c) => c.subjectId === sub.id);
-            const isSubActive = currentView.type === 'chapter' && currentView.subjectId === sub.id;
+            const subTasksCount = tasks.value.filter((t) => t.subjectId === sub.id).length;
 
             return (
               <div key={sub.id} class={styles.subjectGroup}>
-                <div class={`${styles.subjectItem} ${isSubActive ? styles.subjectItemActive : ''}`}>
-                  <div class={styles.subjectLeft} onClick={() => toggleSubjectExpanded(sub.id)}>
+                <div
+                  class={`${styles.subjectItem} ${isExpanded ? styles.subjectItemExpanded : ''}`}
+                  onClick={() => toggleSubjectExpanded(sub.id)}
+                >
+                  <div class={styles.subjectLeft}>
                     <svg
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth={2.2}
-                      width="14"
-                      height="14"
+                      strokeWidth={2.4}
+                      width="12"
+                      height="12"
                       style={{
                         transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
                         transition: 'transform 0.15s ease',
+                        color: 'var(--text-muted)',
+                        flexShrink: 0,
                       }}
                     >
                       <polyline points="9 18 15 12 9 6" />
                     </svg>
+
+                    <div class={styles.subjectIcon}>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        width="17"
+                        height="17"
+                      >
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                        <path d="M6 6h10" />
+                        <path d="M6 10h10" />
+                      </svg>
+                    </div>
+
                     <span class={styles.subjectName}>{sub.name}</span>
                   </div>
 
-                  <div class={styles.subjectActions}>
-                    <button
-                      class={styles.iconBtn}
-                      title="Add Chapter"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenAddChapter(sub.id);
-                      }}
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2.2}
-                        width="12"
-                        height="12"
+                  <div class={styles.subjectRight}>
+                    <div class={styles.subjectActions} onClick={(e) => e.stopPropagation()}>
+                      <button
+                        class={styles.iconBtn}
+                        title="Add Chapter"
+                        onClick={() => onOpenAddChapter(sub.id)}
                       >
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
-                    </button>
-                    <button
-                      class={styles.iconBtn}
-                      title="Rename Subject"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRenameSubject(sub);
-                      }}
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2.2}
-                        width="11"
-                        height="11"
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.2}
+                          width="12"
+                          height="12"
+                        >
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                      </button>
+                      <button
+                        class={styles.iconBtn}
+                        title="Rename Subject"
+                        onClick={() => onRenameSubject(sub)}
                       >
-                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                      </svg>
-                    </button>
-                    <button
-                      class={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-                      title="Delete Subject"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteSubject(sub);
-                      }}
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2.2}
-                        width="11"
-                        height="11"
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.2}
+                          width="11"
+                          height="11"
+                        >
+                          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                        </svg>
+                      </button>
+                      <button
+                        class={`${styles.iconBtn} ${styles.iconBtnDanger}`}
+                        title="Delete Subject"
+                        onClick={() => onDeleteSubject(sub)}
                       >
-                        <path d="M3 6h18" />
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      </svg>
-                    </button>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.2}
+                          width="11"
+                          height="11"
+                        >
+                          <path d="M3 6h18" />
+                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                        </svg>
+                      </button>
+                    </div>
+                    <span class={styles.badge}>{subTasksCount}</span>
                   </div>
                 </div>
 
@@ -306,53 +321,72 @@ export const Sidebar = ({
                               };
                             }}
                           >
-                            <span class={styles.chapterName}>{chap.name}</span>
-                            <span
-                              class={styles.badge}
-                              style={{ fontSize: '10px', padding: '1px 5px' }}
-                            >
-                              {chapTasksCount}
-                            </span>
-                            <div class={styles.chapterActions}>
-                              <button
-                                class={styles.iconBtn}
-                                title="Rename Chapter"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onRenameChapter(chap);
+                            <div class={styles.chapterLeft}>
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                width="14"
+                                height="14"
+                                style={{
+                                  color: isChapActive
+                                    ? 'var(--accent-primary)'
+                                    : 'var(--text-muted)',
+                                  flexShrink: 0,
                                 }}
                               >
-                                <svg
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth={2.2}
-                                  width="10"
-                                  height="10"
-                                >
-                                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                                </svg>
-                              </button>
-                              <button
-                                class={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-                                title="Delete Chapter"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onDeleteChapter(chap);
-                                }}
+                                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                                <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                              </svg>
+                              <span class={styles.chapterName}>{chap.name}</span>
+                            </div>
+
+                            <div class={styles.chapterRight}>
+                              <div
+                                class={styles.chapterActions}
+                                onClick={(e) => e.stopPropagation()}
                               >
-                                <svg
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth={2.2}
-                                  width="10"
-                                  height="10"
+                                <button
+                                  class={styles.iconBtn}
+                                  title="Rename Chapter"
+                                  onClick={() => onRenameChapter(chap)}
                                 >
-                                  <path d="M3 6h18" />
-                                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                </svg>
-                              </button>
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth={2.2}
+                                    width="10"
+                                    height="10"
+                                  >
+                                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                  </svg>
+                                </button>
+                                <button
+                                  class={`${styles.iconBtn} ${styles.iconBtnDanger}`}
+                                  title="Delete Chapter"
+                                  onClick={() => onDeleteChapter(chap)}
+                                >
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth={2.2}
+                                    width="10"
+                                    height="10"
+                                  >
+                                    <path d="M3 6h18" />
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                  </svg>
+                                </button>
+                              </div>
+                              <span
+                                class={styles.badge}
+                                style={{ fontSize: '10px', padding: '1px 6px' }}
+                              >
+                                {chapTasksCount}
+                              </span>
                             </div>
                           </div>
                         );
