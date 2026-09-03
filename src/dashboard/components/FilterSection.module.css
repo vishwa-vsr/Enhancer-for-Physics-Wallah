@@ -61,7 +61,6 @@
 
 .tagChip:hover {
   background-color: var(--bg-control-hover);
-  transform: translateY(-1px);
 }
 
 .tagChipSelected {
