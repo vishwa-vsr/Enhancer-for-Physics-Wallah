@@ -39,7 +39,6 @@ export const TaskItem = ({ task }: TaskItemProps) => {
       <button
         class={`${styles.checkbox} ${task.completed ? styles.checkboxChecked : ''}`}
         onClick={() => toggleTask(task.id)}
-        title={task.completed ? 'Mark uncompleted' : 'Mark completed'}
       >
         {task.completed && (
           <svg
@@ -114,7 +113,7 @@ export const TaskItem = ({ task }: TaskItemProps) => {
       </div>
 
       {/* Delete button */}
-      <button class={styles.deleteBtn} onClick={() => deleteTask(task.id)} title="Delete task">
+      <button class={styles.deleteBtn} onClick={() => deleteTask(task.id)}>
         <svg
           viewBox="0 0 24 24"
           fill="none"

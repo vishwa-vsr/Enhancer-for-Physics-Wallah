@@ -82,9 +82,6 @@ export const SettingsView = () => {
       <div class={styles.card}>
         <div class={styles.cardHeader}>
           <h2 class={styles.cardTitle}>Study Tags</h2>
-          <p class={styles.cardDesc}>
-            Manage and customize the tags used to organize tasks across your chapters
-          </p>
         </div>
 
         {/* Existing Tags */}
@@ -95,7 +92,6 @@ export const SettingsView = () => {
               <span class={styles.tagName}>{tag.name}</span>
               <button
                 class={styles.deleteTagBtn}
-                title={`Delete ${tag.name}`}
                 onClick={() => handleDelete(tag.name)}
               >
                 ×
@@ -110,7 +106,7 @@ export const SettingsView = () => {
             <input
               type="text"
               class={styles.tagInput}
-              placeholder="Enter new tag name (e.g. Formula Sheet, PYQ, Mock Test)..."
+              placeholder="Enter tag name..."
               value={newTagName}
               onInput={(e) => {
                 setNewTagName((e.target as HTMLInputElement).value);
@@ -125,7 +121,6 @@ export const SettingsView = () => {
                   key={c}
                   class={`${styles.colorCircle} ${selectedColor === c ? styles.colorCircleSelected : ''}`}
                   onClick={() => setSelectedColor(c)}
-                  title={`Color ${c}`}
                 >
                   <span
                     style={{

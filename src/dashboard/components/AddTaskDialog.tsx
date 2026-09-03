@@ -133,7 +133,7 @@ export const AddTaskDialog = ({
             <input
               type="text"
               class={styles.input}
-              placeholder="e.g. Complete HC Verma Q1-15, Solve DPP 3"
+              placeholder="Enter task title..."
               value={title}
               onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
               required

@@ -40,7 +40,7 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
         <div class={styles.brandTextWrapper}>
           <h2 class={styles.brandTitle}>Padhle</h2>
           {trimmedName && (
-            <span class={styles.brandUserName} title={trimmedName}>
+            <span class={styles.brandUserName}>
               • {displayName}
             </span>
           )}
@@ -107,7 +107,7 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
       <div class={styles.subjectsSection}>
         <div class={styles.sectionHeader}>
           <span class={styles.sectionTitle}>Subjects</span>
-          <button class={styles.addBtnSmall} onClick={onOpenAddSubject} title="Create New Subject">
+          <button class={styles.addBtnSmall} onClick={onOpenAddSubject}>
             <svg
               viewBox="0 0 24 24"
               fill="none"

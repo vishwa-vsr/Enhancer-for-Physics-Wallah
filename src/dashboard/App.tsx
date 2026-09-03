@@ -154,7 +154,6 @@ export const App = () => {
                         <span class={styles.viewBreadcrumb}>{activeSubject.name}</span>
                         <button
                           class={styles.headerIconBtn}
-                          title={`Rename Subject (${activeSubject.name})`}
                           onClick={() => handleRenameSubject(activeSubject)}
                         >
                           <svg
@@ -170,7 +169,6 @@ export const App = () => {
                         </button>
                         <button
                           class={styles.headerIconBtnDanger}
-                          title={`Delete Subject (${activeSubject.name})`}
                           onClick={() => handleDeleteSubject(activeSubject)}
                         >
                           <svg
@@ -195,7 +193,6 @@ export const App = () => {
                       <button
                         class={styles.headerActionBtn}
                         onClick={() => handleOpenAddChapter(activeSubject.id)}
-                        title="Add new chapter to this subject"
                       >
                         <svg
                           viewBox="0 0 24 24"
@@ -213,7 +210,6 @@ export const App = () => {
                       <button
                         class={styles.headerActionBtnPrimary}
                         onClick={() => setTaskModalOpen(true)}
-                        title="Add new task to this chapter"
                       >
                         <svg
                           viewBox="0 0 24 24"
@@ -231,7 +227,6 @@ export const App = () => {
                       <button
                         class={styles.headerActionBtn}
                         onClick={() => handleRenameChapter(activeChapter)}
-                        title="Rename this chapter"
                       >
                         <svg
                           viewBox="0 0 24 24"
@@ -248,7 +243,6 @@ export const App = () => {
                       <button
                         class={styles.headerActionBtnDanger}
                         onClick={() => handleDeleteChapter(activeChapter)}
-                        title="Delete this chapter"
                       >
                         <svg
                           viewBox="0 0 24 24"
@@ -278,7 +272,7 @@ export const App = () => {
 
         {/* Floating Add Task Circular Button */}
         {currentView.type !== 'settings' && (
-          <button class={styles.fab} onClick={handleFabClick} title="Add Task">
+          <button class={styles.fab} onClick={handleFabClick}>
             <svg
               viewBox="0 0 24 24"
               fill="none"

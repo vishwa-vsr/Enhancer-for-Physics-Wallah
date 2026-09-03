@@ -22,7 +22,6 @@ export const Header = () => {
         <button
           onClick={toggleTheme}
           class={styles.themeToggleCircle}
-          title="Toggle Light / AMOLED Dark Theme"
         >
           {isLightTheme.value ? <MoonIcon /> : <SunIcon />}
         </button>
