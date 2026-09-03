@@ -7,7 +7,6 @@ import {
   tasks,
   activeView,
   filteredTasks,
-  selectedTags,
   deleteSubject,
   deleteChapter,
 } from './store';
@@ -15,7 +14,6 @@ import { Subject, Chapter } from './types';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { StatsCards } from './components/StatsCards';
-import { FilterSection } from './components/FilterSection';
 import { TaskItem } from './components/TaskItem';
 import { AddTaskDialog } from './components/AddTaskDialog';
 import { AddSubjectModal } from './components/AddSubjectModal';
@@ -56,18 +54,12 @@ export const App = () => {
     title = 'Today Tasks';
   } else if (currentView.type === 'upcoming') {
     title = 'Upcoming Tasks';
-  } else if (currentView.type === 'completed') {
-    title = 'Completed Tasks';
-  } else if (currentView.type === 'all') {
-    title = 'All Tasks';
   } else if (currentView.type === 'chapter') {
     const sub = subjects.value.find((s) => s.id === currentView.subjectId);
     const chap = chapters.value.find((c) => c.id === currentView.chapterId);
     title = chap ? `${chap.name} Tasks` : 'Chapter Tasks';
     breadcrumb = sub ? `${sub.name} / ` : '';
   }
-
-  const isFiltered = selectedTags.value.length > 0;
 
   const handleOpenAddSubject = () => {
     setEditingSubject(null);
@@ -152,36 +144,10 @@ export const App = () => {
           <div class={styles.contentMaxWidth}>
             {currentView.type === 'settings' ? (
               <SettingsView />
-            ) : subjects.value.length === 0 ? (
-              /* Blank Canvas Prompt */
-              <div class={styles.emptyState}>
-                <div class={styles.emptyIconCircle}>
-                  <span>✨</span>
-                </div>
-                <h3
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: 600,
-                    color: 'var(--text-primary)',
-                    margin: '0 0 6px 0',
-                  }}
-                >
-                  No tasks to show
-                </h3>
-                <p class={styles.emptyText}>
-                  Start by creating your first subject to organize your studies.
-                </p>
-                <button class={styles.emptyButton} onClick={handleOpenAddSubject}>
-                  + Create First Subject
-                </button>
-              </div>
             ) : (
               <>
                 {/* Stats Section */}
                 <StatsCards />
-
-                {/* Filter Section */}
-                <FilterSection />
 
                 {/* Tasks Section Header */}
                 <div class={styles.viewHeader}>
@@ -191,46 +157,11 @@ export const App = () => {
                   </h2>
                   <p class={styles.taskCountLabel}>
                     {taskList.length} {taskList.length === 1 ? 'task' : 'tasks'}
-                    {isFiltered && <span class={styles.filteredBadge}>(filtered)</span>}
                   </p>
                 </div>
 
-                {/* Task List */}
-                {taskList.length === 0 ? (
-                  <div class={styles.emptyState}>
-                    <div class={styles.emptyIconCircle}>
-                      <span>{isFiltered ? '🔍' : '✨'}</span>
-                    </div>
-                    <p class={styles.emptyText}>
-                      {isFiltered
-                        ? 'No tasks match your filters'
-                        : currentView.type === 'completed'
-                          ? 'No completed tasks yet'
-                          : 'No tasks to show'}
-                    </p>
-                    {isFiltered ? (
-                      <button
-                        onClick={() => {
-                          selectedTags.value = [];
-                        }}
-                        style={{
-                          color: '#6b7fd7',
-                          background: 'transparent',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          textDecoration: 'underline',
-                        }}
-                      >
-                        Clear all filters
-                      </button>
-                    ) : (
-                      <button class={styles.emptyButton} onClick={handleFabClick}>
-                        + Add Task
-                      </button>
-                    )}
-                  </div>
-                ) : (
+                {/* Task List: completely clean without star or 'no tasks' text */}
+                {taskList.length === 0 ? null : (
                   taskList.map((task) => <TaskItem key={task.id} task={task} />)
                 )}
               </>
@@ -238,7 +169,7 @@ export const App = () => {
           </div>
         </main>
 
-        {/* Floating Add Task Circular Button: exact Figma AddTaskButton */}
+        {/* Floating Add Task Circular Button */}
         {currentView.type !== 'settings' && (
           <button class={styles.fab} onClick={handleFabClick} title="Add Task">
             <svg

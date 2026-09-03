@@ -31,8 +31,6 @@ export const Sidebar = ({
   // Counts for top views
   const todayCount = tasks.value.filter((t) => !t.completed).length;
   const upcomingCount = tasks.value.filter((t) => !t.completed).length;
-  const completedCount = tasks.value.filter((t) => t.completed).length;
-  const allCount = tasks.value.length;
 
   const logoUrl =
     typeof chrome !== 'undefined' && chrome.runtime?.getURL
@@ -100,53 +98,6 @@ export const Sidebar = ({
             <span>Upcoming</span>
           </div>
           <span class={styles.badge}>{upcomingCount}</span>
-        </button>
-
-        <button
-          class={`${styles.navItem} ${currentView.type === 'completed' ? styles.navItemActive : ''}`}
-          onClick={() => {
-            activeView.value = { type: 'completed' };
-          }}
-        >
-          <div class={styles.navLeft}>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              width="18"
-              height="18"
-            >
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-            <span>Completed</span>
-          </div>
-          <span class={styles.badge}>{completedCount}</span>
-        </button>
-
-        <button
-          class={`${styles.navItem} ${currentView.type === 'all' ? styles.navItemActive : ''}`}
-          onClick={() => {
-            activeView.value = { type: 'all' };
-          }}
-        >
-          <div class={styles.navLeft}>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              width="18"
-              height="18"
-            >
-              <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
-              <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
-              <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
-            </svg>
-            <span>All Tasks</span>
-          </div>
-          <span class={styles.badge}>{allCount}</span>
         </button>
       </nav>
 

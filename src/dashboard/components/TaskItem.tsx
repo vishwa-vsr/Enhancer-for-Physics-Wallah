@@ -1,5 +1,5 @@
 import { Task } from '../types';
-import { subjects, chapters, toggleTask, deleteTask, activeView } from '../store';
+import { subjects, chapters, toggleTask, deleteTask, activeView, customTags } from '../store';
 import styles from './TaskItem.module.css';
 
 interface TaskItemProps {
@@ -118,22 +118,25 @@ export const TaskItem = ({ task }: TaskItemProps) => {
           </div>
 
           {/* Tags */}
-          {task.tags.map((tag) => (
-            <span key={tag} class={styles.tagPill}>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                width="11"
-                height="11"
-              >
-                <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
-                <path d="M7 7h.01" />
-              </svg>
-              <span>{tag}</span>
-            </span>
-          ))}
+          {task.tags.map((tag) => {
+            const tagObj = customTags.value.find((t) => t.name === tag);
+            const tagColor = tagObj ? tagObj.color : '#6b7fd7';
+            return (
+              <span key={tag} class={styles.tagPill}>
+                <span
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: tagColor,
+                    display: 'inline-block',
+                    marginRight: '5px',
+                  }}
+                />
+                <span>{tag}</span>
+              </span>
+            );
+          })}
         </div>
       </div>
 

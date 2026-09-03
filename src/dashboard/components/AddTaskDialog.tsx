@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
-import { subjects, chapters, addTask, activeView } from '../store';
+import { subjects, chapters, addTask, activeView, customTags } from '../store';
 import { Priority } from '../types';
 import styles from './AddTaskDialog.module.css';
 
@@ -9,8 +9,6 @@ interface AddTaskDialogProps {
   defaultSubjectId?: string;
   defaultChapterId?: string;
 }
-
-const COMMON_TAGS = ['Lecture', 'DPP', 'Revision', 'Notes', 'NCERT', 'Test', 'Urgent'];
 
 export const AddTaskDialog = ({
   open,
@@ -204,7 +202,8 @@ export const AddTaskDialog = ({
               onInput={(e) => setTagsInput((e.target as HTMLInputElement).value)}
             />
             <div class={styles.tagSuggestions}>
-              {COMMON_TAGS.map((t) => {
+              {customTags.value.map((tagObj) => {
+                const t = tagObj.name;
                 const isActive = selectedPillTags.includes(t);
                 return (
                   <button

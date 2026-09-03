@@ -1,5 +1,10 @@
 export type Priority = 'low' | 'medium' | 'high';
 
+export interface TagItem {
+  name: string;
+  color: string;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -26,7 +31,7 @@ export interface Subject {
   createdAt: number;
 }
 
-export type ViewType = 'today' | 'upcoming' | 'completed' | 'all' | 'chapter' | 'settings';
+export type ViewType = 'today' | 'upcoming' | 'chapter' | 'settings';
 
 export interface ActiveView {
   type: ViewType;
@@ -38,4 +43,5 @@ export interface StudyPlannerData {
   subjects: Subject[];
   chapters: Chapter[];
   tasks: Task[];
+  tags?: TagItem[];
 }

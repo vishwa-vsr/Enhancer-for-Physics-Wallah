@@ -1,17 +1,62 @@
 import { signal, computed } from '@preact/signals';
-import { Task, Chapter, Subject, ActiveView, StudyPlannerData } from './types';
+import { Task, Chapter, Subject, ActiveView, StudyPlannerData, TagItem } from './types';
 
 const STORAGE_KEY = 'pw_study_planner_data';
+
+export const DEFAULT_TAGS: TagItem[] = [
+  { name: 'Lecture', color: '#6b7fd7' },
+  { name: 'DPP', color: '#10b981' },
+  { name: 'Revision', color: '#f59e0b' },
+  { name: 'Notes', color: '#8b5cf6' },
+  { name: 'NCERT', color: '#06b6d4' },
+  { name: 'Test', color: '#ec4899' },
+  { name: 'Urgent', color: '#ef4444' },
+];
+
+const DEFAULT_SUBJECTS_DATA = [
+  { name: 'Maths', color: '#f59e0b' },
+  { name: 'Physics', color: '#6b7fd7' },
+  { name: 'Chemistry', color: '#10b981' },
+  { name: 'Bio', color: '#ec4899' },
+];
 
 export const subjects = signal<Subject[]>([]);
 export const chapters = signal<Chapter[]>([]);
 export const tasks = signal<Task[]>([]);
+export const customTags = signal<TagItem[]>(DEFAULT_TAGS);
 export const activeView = signal<ActiveView>({ type: 'today' });
-export const selectedTags = signal<string[]>([]);
 export const expandedSubjects = signal<Record<string, boolean>>({});
 export const isLoaded = signal<boolean>(false);
 
-// Auto-expand newly created subjects or first subject
+function initializeDefaultSubjects(): void {
+  const defaultSubs: Subject[] = [];
+  const defaultChaps: Chapter[] = [];
+  const now = Date.now();
+
+  DEFAULT_SUBJECTS_DATA.forEach((s, idx) => {
+    const subId = `sub_default_${s.name.toLowerCase()}`;
+    const chapId = `chap_default_${s.name.toLowerCase()}_1`;
+    defaultSubs.push({
+      id: subId,
+      name: s.name,
+      color: s.color,
+      createdAt: now + idx,
+    });
+    defaultChaps.push({
+      id: chapId,
+      name: 'Chapter 1',
+      subjectId: subId,
+      createdAt: now + idx,
+    });
+  });
+
+  subjects.value = defaultSubs;
+  chapters.value = defaultChaps;
+  expandedSubjects.value = {
+    [defaultSubs[0].id]: true,
+  };
+}
+
 export function toggleSubjectExpanded(subjectId: string): void {
   expandedSubjects.value = {
     ...expandedSubjects.value,
@@ -22,22 +67,31 @@ export function toggleSubjectExpanded(subjectId: string): void {
 // Storage persistence
 export async function loadPlannerData(): Promise<void> {
   try {
+    let loadedData: StudyPlannerData | undefined;
+
     if (typeof chrome !== 'undefined' && chrome.storage?.local) {
       const res = await chrome.storage.local.get(STORAGE_KEY);
-      const data = res[STORAGE_KEY] as StudyPlannerData | undefined;
-      if (data) {
-        subjects.value = data.subjects || [];
-        chapters.value = data.chapters || [];
-        tasks.value = data.tasks || [];
-      }
+      loadedData = res[STORAGE_KEY] as StudyPlannerData | undefined;
     } else {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        const data: StudyPlannerData = JSON.parse(raw);
-        subjects.value = data.subjects || [];
-        chapters.value = data.chapters || [];
-        tasks.value = data.tasks || [];
+        loadedData = JSON.parse(raw);
       }
+    }
+
+    if (loadedData) {
+      subjects.value = loadedData.subjects || [];
+      chapters.value = loadedData.chapters || [];
+      tasks.value = loadedData.tasks || [];
+      if (loadedData.tags && loadedData.tags.length > 0) {
+        customTags.value = loadedData.tags;
+      }
+    }
+
+    // If no subjects exist, initialize with Maths, Physics, Chemistry, Bio + Chapter 1
+    if (subjects.value.length === 0) {
+      initializeDefaultSubjects();
+      await persistData();
     }
   } catch (err) {
     // eslint-disable-next-line no-console
@@ -52,6 +106,7 @@ async function persistData(): Promise<void> {
     subjects: subjects.value,
     chapters: chapters.value,
     tasks: tasks.value,
+    tags: customTags.value,
   };
 
   try {
@@ -75,7 +130,6 @@ export async function addSubject(name: string, color?: string): Promise<Subject>
     createdAt: Date.now(),
   };
   subjects.value = [...subjects.value, newSubject];
-  // Auto-expand this subject
   expandedSubjects.value = {
     ...expandedSubjects.value,
     [newSubject.id]: true,
@@ -90,7 +144,6 @@ export async function renameSubject(id: string, newName: string): Promise<void> 
 }
 
 export async function deleteSubject(id: string): Promise<void> {
-  // Delete subject, all its chapters, and all associated tasks
   const chapterIdsToDelete = chapters.value.filter((c) => c.subjectId === id).map((c) => c.id);
   subjects.value = subjects.value.filter((s) => s.id !== id);
   chapters.value = chapters.value.filter((c) => c.subjectId !== id);
@@ -98,7 +151,6 @@ export async function deleteSubject(id: string): Promise<void> {
     (t) => t.subjectId !== id && !chapterIdsToDelete.includes(t.chapterId),
   );
 
-  // If active view was this subject or one of its chapters, reset to 'today'
   if (
     activeView.value.subjectId === id ||
     (activeView.value.chapterId && chapterIdsToDelete.includes(activeView.value.chapterId))
@@ -117,12 +169,10 @@ export async function addChapter(subjectId: string, name: string): Promise<Chapt
     createdAt: Date.now(),
   };
   chapters.value = [...chapters.value, newChapter];
-  // Make sure parent subject is expanded
   expandedSubjects.value = {
     ...expandedSubjects.value,
     [subjectId]: true,
   };
-  // Automatically select this chapter
   activeView.value = {
     type: 'chapter',
     subjectId,
@@ -174,45 +224,35 @@ export async function updateTask(id: string, updates: Partial<Task>): Promise<vo
   await persistData();
 }
 
-// Tag filtering
-export function toggleTag(tag: string): void {
-  if (selectedTags.value.includes(tag)) {
-    selectedTags.value = selectedTags.value.filter((t) => t !== tag);
-  } else {
-    selectedTags.value = [...selectedTags.value, tag];
+// Tag Management (used in Settings)
+export async function addCustomTag(name: string, color: string): Promise<boolean> {
+  const trimmed = name.trim();
+  if (!trimmed) return false;
+  if (customTags.value.some((t) => t.name.toLowerCase() === trimmed.toLowerCase())) {
+    return false;
   }
+  customTags.value = [...customTags.value, { name: trimmed, color: color || '#6b7fd7' }];
+  await persistData();
+  return true;
 }
 
-export function clearSelectedTags(): void {
-  selectedTags.value = [];
+export async function deleteCustomTag(name: string): Promise<void> {
+  customTags.value = customTags.value.filter((t) => t.name !== name);
+  await persistData();
 }
 
 // Computed helpers
-export const availableTags = computed(() => {
-  const set = new Set<string>();
-  tasks.value.forEach((t) => t.tags.forEach((tag) => set.add(tag)));
-  return Array.from(set).sort();
-});
-
 export const filteredTasks = computed(() => {
   let list = tasks.value;
   const view = activeView.value;
 
   if (view.type === 'chapter' && view.chapterId) {
     list = list.filter((t) => t.chapterId === view.chapterId);
-  } else if (view.type === 'completed') {
-    list = list.filter((t) => t.completed);
   } else if (view.type === 'today') {
-    // Today: Active tasks or tasks marked today
     const todayStr = new Date().toISOString().split('T')[0];
     list = list.filter((t) => !t.completed || t.dueDate === todayStr);
   } else if (view.type === 'upcoming') {
     list = list.filter((t) => !t.completed);
-  }
-  // 'all' includes everything
-
-  if (selectedTags.value.length > 0) {
-    list = list.filter((t) => selectedTags.value.some((tag) => t.tags.includes(tag)));
   }
 
   return list;

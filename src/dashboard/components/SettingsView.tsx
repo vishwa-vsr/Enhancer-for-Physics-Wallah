@@ -1,83 +1,152 @@
-import { activeView } from '../store';
+import { useState } from 'preact/hooks';
+import { activeView, customTags, addCustomTag, deleteCustomTag } from '../store';
+import { isLightTheme, toggleTheme } from '@shared/theme';
+import { Toggle } from '@shared/components/Toggle';
+import styles from './SettingsView.module.css';
+
+const PRESET_COLORS = [
+  '#6b7fd7', // Purple/Blue
+  '#10b981', // Emerald
+  '#f59e0b', // Amber
+  '#ec4899', // Pink
+  '#8b5cf6', // Violet
+  '#06b6d4', // Cyan
+  '#ef4444', // Red
+];
 
 export const SettingsView = () => {
+  const [newTagName, setNewTagName] = useState('');
+  const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[0]);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleAddTag = async (e: Event) => {
+    e.preventDefault();
+    setErrorMsg('');
+
+    const trimmed = newTagName.trim();
+    if (!trimmed) return;
+
+    const success = await addCustomTag(trimmed, selectedColor);
+    if (!success) {
+      setErrorMsg('A tag with this name already exists.');
+      return;
+    }
+
+    setNewTagName('');
+  };
+
+  const handleDelete = async (name: string) => {
+    await deleteCustomTag(name);
+  };
+
   return (
-    <div
-      style={{
-        maxWidth: '600px',
-        margin: '60px auto',
-        backgroundColor: 'var(--bg-card)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '40px 32px',
-        textAlign: 'center',
-        boxShadow: 'var(--card-shadow)',
-      }}
-    >
-      <div
-        style={{
-          width: '56px',
-          height: '56px',
-          borderRadius: '16px',
-          backgroundColor: 'var(--accent-dim)',
-          color: 'var(--accent-primary)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 20px auto',
-        }}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          width="28"
-          height="28"
+    <div class={styles.container}>
+      {/* Header */}
+      <div class={styles.headerRow}>
+        <h1 class={styles.title}>Settings</h1>
+        <button
+          class={styles.backBtn}
+          onClick={() => {
+            activeView.value = { type: 'today' };
+          }}
         >
-          <circle cx="12" cy="12" r="3" />
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-        </svg>
+          ← Back to Study Tasks
+        </button>
       </div>
 
-      <h2
-        style={{
-          fontSize: '20px',
-          fontWeight: '700',
-          color: 'var(--text-primary)',
-          margin: '0 0 8px 0',
-        }}
-      >
-        Settings Placeholder
-      </h2>
-      <p
-        style={{
-          fontSize: '13.5px',
-          color: 'var(--text-muted)',
-          lineHeight: '1.6',
-          margin: '0 0 24px 0',
-        }}
-      >
-        We have kept settings empty for now as requested. We will add export/import, sync, and
-        custom planner preferences here later!
-      </p>
+      {/* Appearance Section */}
+      <div class={styles.card}>
+        <div class={styles.cardHeader}>
+          <h2 class={styles.cardTitle}>Appearance</h2>
+          <p class={styles.cardDesc}>Customize the look and feel of your study planner</p>
+        </div>
 
-      <button
-        onClick={() => {
-          activeView.value = { type: 'today' };
-        }}
-        style={{
-          padding: '10px 20px',
-          borderRadius: 'var(--radius-md)',
-          backgroundColor: 'var(--accent-primary)',
-          color: '#ffffff',
-          border: 'none',
-          fontSize: '13.5px',
-          fontWeight: '600',
-          cursor: 'pointer',
-        }}
-      >
-        ← Back to Study Tasks
-      </button>
+        <div class={styles.settingRow}>
+          <div class={styles.settingInfo}>
+            <span class={styles.settingLabel}>Theme Mode</span>
+            <span class={styles.settingSublabel}>
+              {isLightTheme.value ? 'Light Theme' : 'AMOLED Pitch Black'}
+            </span>
+          </div>
+          <Toggle
+            checked={isLightTheme.value}
+            onChange={() => toggleTheme()}
+            ariaLabel="Toggle theme"
+          />
+        </div>
+      </div>
+
+      {/* Tag Management Section */}
+      <div class={styles.card}>
+        <div class={styles.cardHeader}>
+          <h2 class={styles.cardTitle}>Study Tags</h2>
+          <p class={styles.cardDesc}>
+            Manage and customize the tags used to organize tasks across your chapters
+          </p>
+        </div>
+
+        {/* Existing Tags */}
+        <div class={styles.tagList}>
+          {customTags.value.map((tag) => (
+            <div key={tag.name} class={styles.tagBadge}>
+              <span class={styles.tagDot} style={{ backgroundColor: tag.color }} />
+              <span>{tag.name}</span>
+              <button
+                type="button"
+                class={styles.deleteTagBtn}
+                title={`Delete ${tag.name}`}
+                onClick={() => handleDelete(tag.name)}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Add Tag Form */}
+        <form onSubmit={handleAddTag} class={styles.addTagForm}>
+          <div class={styles.formRow}>
+            <input
+              type="text"
+              class={styles.tagInput}
+              placeholder="Enter new tag name (e.g. Formula Sheet, PYQ, Mock Test)..."
+              value={newTagName}
+              onInput={(e) => {
+                setNewTagName((e.target as HTMLInputElement).value);
+                if (errorMsg) setErrorMsg('');
+              }}
+            />
+
+            <div class={styles.colorPickerRow}>
+              {PRESET_COLORS.map((c) => (
+                <button
+                  type="button"
+                  key={c}
+                  class={`${styles.colorCircle} ${selectedColor === c ? styles.colorCircleSelected : ''}`}
+                  onClick={() => setSelectedColor(c)}
+                  title={`Color ${c}`}
+                >
+                  <span
+                    style={{
+                      width: '14px',
+                      height: '14px',
+                      borderRadius: '50%',
+                      backgroundColor: c,
+                      display: 'block',
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+
+            <button type="submit" class={styles.addTagBtn} disabled={!newTagName.trim()}>
+              + Add Tag
+            </button>
+          </div>
+
+          {errorMsg && <p class={styles.errorMsg}>{errorMsg}</p>}
+        </form>
+      </div>
     </div>
   );
 };
