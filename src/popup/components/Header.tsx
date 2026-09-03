@@ -39,20 +39,19 @@ const MoonIcon = () => (
   </svg>
 );
 
-const PlannerIcon = () => (
+const DoubleArrowIcon = () => (
   <svg
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth={2.2}
+    strokeWidth={2.6}
     strokeLinecap="round"
     strokeLinejoin="round"
-    width="16"
-    height="16"
+    width="15"
+    height="15"
   >
-    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-    <path d="m9 14 2 2 4-4" />
+    <polyline points="13 17 18 12 13 7" />
+    <polyline points="6 17 11 12 6 7" />
   </svg>
 );
 
@@ -79,12 +78,8 @@ export const Header = () => {
         <h1 class={styles.title}>Enhancer for PW</h1>
       </div>
       <div class={styles.actions}>
-        <button
-          onClick={openDashboard}
-          class={styles.actionBtn}
-          title="Open Study Planner Dashboard"
-        >
-          <PlannerIcon />
+        <button onClick={openDashboard} class={styles.actionBtn} title="Padhle Dashboard">
+          <DoubleArrowIcon />
         </button>
         <button onClick={toggleTheme} class={styles.themeBtn} title="Toggle Theme">
           {isLightTheme.value ? <MoonIcon /> : <SunIcon />}

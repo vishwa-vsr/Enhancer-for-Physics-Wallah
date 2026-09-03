@@ -10,7 +10,8 @@
   border-radius: var(--radius-xl);
   padding: 20px;
   box-shadow: var(--card-shadow);
-  border: 1px solid var(--border-subtle);
+  border: none;
+  outline: none;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;

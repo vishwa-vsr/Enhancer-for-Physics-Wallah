@@ -36,8 +36,23 @@ export const Sidebar = ({
 
   return (
     <aside class={styles.sidebar}>
-      {/* Brand: just "Padhle" */}
+      {/* Brand: just "Padhle" with the two-arrow logo */}
       <div class={styles.brand}>
+        <div class={styles.brandLogo}>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={3}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            width="20"
+            height="20"
+          >
+            <polyline points="13 17 18 12 13 7" />
+            <polyline points="6 17 11 12 6 7" />
+          </svg>
+        </div>
         <h2 class={styles.brandTitle}>Padhle</h2>
       </div>
 

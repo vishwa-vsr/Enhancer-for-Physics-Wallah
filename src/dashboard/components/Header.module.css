@@ -29,25 +29,26 @@
 }
 
 .themeToggleCircle {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6b7fd7, #8b95e8);
+  background-color: var(--bg-control);
   border: none;
-  color: #ffffff;
+  outline: none;
+  color: var(--text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(107, 127, 215, 0.35);
-  transition:
-    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .themeToggleCircle:hover {
-  transform: scale(1.06);
-  box-shadow: 0 6px 18px rgba(107, 127, 215, 0.45);
+  transform: scale(1.05);
+  color: var(--accent-primary);
+  background-color: var(--bg-control-hover);
+  border: none;
+  outline: none;
 }
 
 .themeToggleCircle:active {

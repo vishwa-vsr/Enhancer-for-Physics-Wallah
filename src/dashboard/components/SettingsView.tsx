@@ -7,7 +7,6 @@ export const SettingsView = () => {
         maxWidth: '600px',
         margin: '60px auto',
         backgroundColor: 'var(--bg-card)',
-        border: '1px solid var(--border-subtle)',
         borderRadius: 'var(--radius-lg)',
         padding: '40px 32px',
         textAlign: 'center',

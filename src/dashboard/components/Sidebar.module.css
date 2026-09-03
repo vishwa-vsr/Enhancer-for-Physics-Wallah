@@ -13,6 +13,16 @@
 
 .brand {
   padding: 24px 24px 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brandLogo {
+  color: #6b7fd7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .brandTitle {

@@ -44,7 +44,8 @@
   height: 32px;
   border-radius: 50%;
   background-color: var(--bg-control);
-  border: 1px solid var(--border-subtle);
+  border: none;
+  outline: none;
   color: var(--text-muted);
   cursor: pointer;
   display: flex;
@@ -57,7 +58,9 @@
 .themeBtn:hover {
   transform: scale(1.05);
   color: var(--accent-primary);
-  border-color: var(--accent-primary);
+  background-color: var(--bg-control-hover);
+  border: none;
+  outline: none;
 }
 
 .actionBtn:active,
