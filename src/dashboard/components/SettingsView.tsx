@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
-import { activeView, customTags, addCustomTag, deleteCustomTag, userName, setUserName } from '../store';
-import { isLightTheme, toggleTheme } from '@shared/theme';
-import { Toggle } from '@shared/components/Toggle';
+import { customTags, addCustomTag, deleteCustomTag, userName, setUserName } from '../store';
 import styles from './SettingsView.module.css';
 
 const PRESET_COLORS = [
@@ -41,11 +39,12 @@ export const SettingsView = () => {
 
     const success = await addCustomTag(trimmed, selectedColor);
     if (!success) {
-      setErrorMsg('A tag with this name already exists.');
+      setErrorMsg(`Tag "${trimmed}" already exists.`);
       return;
     }
 
     setNewTagName('');
+    setSelectedColor(PRESET_COLORS[0]);
   };
 
   const handleDelete = async (name: string) => {
@@ -57,20 +56,12 @@ export const SettingsView = () => {
       {/* Header */}
       <div class={styles.headerRow}>
         <h1 class={styles.title}>Settings</h1>
-        <button
-          class={styles.backBtn}
-          onClick={() => {
-            activeView.value = { type: 'today' };
-          }}
-        >
-          ← Back to Study Tasks
-        </button>
       </div>
 
-      {/* Profile Section */}
+      {/* Profile Name Section */}
       <div class={styles.card}>
         <div class={styles.cardHeader}>
-          <h2 class={styles.cardTitle}>Profile</h2>
+          <h2 class={styles.cardTitle}>Profile Name</h2>
         </div>
 
         <form onSubmit={handleSaveProfile} class={styles.formRow}>
@@ -87,28 +78,6 @@ export const SettingsView = () => {
         </form>
       </div>
 
-      {/* Appearance Section */}
-      <div class={styles.card}>
-        <div class={styles.cardHeader}>
-          <h2 class={styles.cardTitle}>Appearance</h2>
-          <p class={styles.cardDesc}>Customize the look and feel of your study planner</p>
-        </div>
-
-        <div class={styles.settingRow}>
-          <div class={styles.settingInfo}>
-            <span class={styles.settingLabel}>Theme Mode</span>
-            <span class={styles.settingSublabel}>
-              {isLightTheme.value ? 'Light Theme' : 'AMOLED Pitch Black'}
-            </span>
-          </div>
-          <Toggle
-            checked={isLightTheme.value}
-            onChange={() => toggleTheme()}
-            ariaLabel="Toggle theme"
-          />
-        </div>
-      </div>
-
       {/* Tag Management Section */}
       <div class={styles.card}>
         <div class={styles.cardHeader}>
@@ -123,9 +92,8 @@ export const SettingsView = () => {
           {customTags.value.map((tag) => (
             <div key={tag.name} class={styles.tagBadge}>
               <span class={styles.tagDot} style={{ backgroundColor: tag.color }} />
-              <span>{tag.name}</span>
+              <span class={styles.tagName}>{tag.name}</span>
               <button
-                type="button"
                 class={styles.deleteTagBtn}
                 title={`Delete ${tag.name}`}
                 onClick={() => handleDelete(tag.name)}

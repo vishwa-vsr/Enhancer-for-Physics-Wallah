@@ -21,25 +21,6 @@
   letter-spacing: -0.02em;
 }
 
-.backBtn {
-  padding: 8px 14px;
-  border-radius: var(--radius-md);
-  background-color: var(--bg-control);
-  color: var(--text-secondary);
-  border: none;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.backBtn:hover {
-  background-color: var(--bg-control-hover);
-  color: var(--text-primary);
-}
-
 .card {
   background-color: var(--bg-card);
   border-radius: var(--radius-xl);
@@ -63,30 +44,6 @@
   color: var(--text-muted);
   margin: 0;
   line-height: 1.5;
-}
-
-.settingRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 0;
-}
-
-.settingInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.settingLabel {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.settingSublabel {
-  font-size: 12.5px;
-  color: var(--text-muted);
 }
 
 .tagList {
