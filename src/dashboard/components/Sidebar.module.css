@@ -195,29 +195,16 @@
 .subjectLeft {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex: 1;
   min-width: 0;
 }
 
-.chevronWrapper {
-  width: 14px;
-  height: 14px;
-  min-width: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.subjectIcon {
+.subjectBookIcon {
   width: 18px;
   height: 18px;
   min-width: 18px;
   color: var(--accent-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
 }
 
@@ -227,13 +214,6 @@
   text-overflow: ellipsis;
   font-size: 14px;
   font-weight: 500;
-}
-
-.subjectRight {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-shrink: 0;
 }
 
 .chaptersList {

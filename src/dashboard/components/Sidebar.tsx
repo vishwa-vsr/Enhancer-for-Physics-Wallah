@@ -16,7 +16,7 @@ interface SidebarProps {
 export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
   const currentView = activeView.value;
 
-  // Counts for top views
+  // Counts for top views only
   const todayCount = tasks.value.filter((t) => !t.completed).length;
   const upcomingCount = tasks.value.filter((t) => !t.completed).length;
 
@@ -24,6 +24,11 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
     typeof chrome !== 'undefined' && chrome.runtime?.getURL
       ? chrome.runtime.getURL('icons/icon48.png')
       : '/icons/icon48.png';
+
+  // Truncate name in sidebar to max 8 characters as requested
+  const trimmedName = userName.value.trim();
+  const displayName =
+    trimmedName.length > 8 ? trimmedName.slice(0, 8) + '...' : trimmedName;
 
   return (
     <aside class={styles.sidebar}>
@@ -34,7 +39,7 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
         </div>
         <h2 class={styles.brandTitle}>
           Padhle
-          {userName.value && <span class={styles.brandUserName}> • {userName.value}</span>}
+          {displayName && <span class={styles.brandUserName}> • {displayName}</span>}
         </h2>
       </div>
 
@@ -124,10 +129,10 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
           subjects.value.map((sub) => {
             const isExpanded = !!expandedSubjects.value[sub.id];
             const subChapters = chapters.value.filter((c) => c.subjectId === sub.id);
-            const subTasksCount = tasks.value.filter((t) => t.subjectId === sub.id).length;
 
             return (
               <div key={sub.id} class={styles.subjectGroup}>
+                {/* Subject Item: Arrow completely removed, Book icon aligns with Calendar icon */}
                 <div
                   class={styles.subjectItem}
                   onClick={() => {
@@ -144,43 +149,20 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
                   }}
                 >
                   <div class={styles.subjectLeft}>
-                    <div class={styles.chevronWrapper}>
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2.4}
-                        width="12"
-                        height="12"
-                        style={{
-                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                          color: 'var(--text-muted)',
-                        }}
-                      >
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
-                    </div>
-
-                    <div class={styles.subjectIcon}>
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        width="17"
-                        height="17"
-                      >
-                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
-                        <path d="M6 6h10" />
-                        <path d="M6 10h10" />
-                      </svg>
-                    </div>
-
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      width="18"
+                      height="18"
+                      class={styles.subjectBookIcon}
+                    >
+                      <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                      <path d="M6 6h10" />
+                      <path d="M6 10h10" />
+                    </svg>
                     <span class={styles.subjectName}>{sub.name}</span>
-                  </div>
-
-                  <div class={styles.subjectRight}>
-                    <span class={styles.badge}>{subTasksCount}</span>
                   </div>
                 </div>
 
@@ -197,9 +179,6 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
                       subChapters.map((chap) => {
                         const isChapActive =
                           currentView.type === 'chapter' && currentView.chapterId === chap.id;
-                        const chapTasksCount = tasks.value.filter(
-                          (t) => t.chapterId === chap.id,
-                        ).length;
 
                         return (
                           <div
@@ -233,15 +212,6 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
                                 </svg>
                               </div>
                               <span class={styles.chapterName}>{chap.name}</span>
-                            </div>
-
-                            <div class={styles.chapterRight}>
-                              <span
-                                class={styles.badge}
-                                style={{ fontSize: '10px', padding: '1px 6px' }}
-                              >
-                                {chapTasksCount}
-                              </span>
                             </div>
                           </div>
                         );

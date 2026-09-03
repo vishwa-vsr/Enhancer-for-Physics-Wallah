@@ -71,7 +71,6 @@ export const SettingsView = () => {
       <div class={styles.card}>
         <div class={styles.cardHeader}>
           <h2 class={styles.cardTitle}>Profile</h2>
-          <p class={styles.cardDesc}>Personalize your dashboard greeting and sidebar brand</p>
         </div>
 
         <form onSubmit={handleSaveProfile} class={styles.formRow}>
