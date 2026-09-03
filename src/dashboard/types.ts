@@ -44,4 +44,5 @@ export interface StudyPlannerData {
   chapters: Chapter[];
   tasks: Task[];
   tags?: TagItem[];
+  userName?: string;
 }

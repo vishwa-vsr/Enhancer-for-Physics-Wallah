@@ -188,9 +188,6 @@ export const App = () => {
                       </div>
                     )}
                     <h2 class={styles.viewTitle}>{title}</h2>
-                    <p class={styles.taskCountLabel}>
-                      {taskList.length} {taskList.length === 1 ? 'task' : 'tasks'}
-                    </p>
                   </div>
 
                   {activeChapter && activeSubject && (

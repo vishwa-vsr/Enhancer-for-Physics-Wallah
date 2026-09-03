@@ -3,6 +3,7 @@ import {
   chapters,
   tasks,
   activeView,
+  userName,
   expandedSubjects,
   toggleSubjectExpanded,
 } from '../store';
@@ -31,7 +32,10 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
         <div class={styles.brandLogo}>
           <img src={logoUrl} alt="PW Logo" class={styles.brandLogoImg} width={28} height={28} />
         </div>
-        <h2 class={styles.brandTitle}>Padhle</h2>
+        <h2 class={styles.brandTitle}>
+          Padhle
+          {userName.value && <span class={styles.brandUserName}> • {userName.value}</span>}
+        </h2>
       </div>
 
       {/* Navigation Quick Views */}
@@ -126,7 +130,18 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
               <div key={sub.id} class={styles.subjectGroup}>
                 <div
                   class={styles.subjectItem}
-                  onClick={() => toggleSubjectExpanded(sub.id)}
+                  onClick={() => {
+                    toggleSubjectExpanded(sub.id);
+                    if (activeView.value.type === 'settings' || activeView.value.subjectId !== sub.id) {
+                      if (subChapters.length > 0) {
+                        activeView.value = {
+                          type: 'chapter',
+                          subjectId: sub.id,
+                          chapterId: subChapters[0].id,
+                        };
+                      }
+                    }
+                  }}
                 >
                   <div class={styles.subjectLeft}>
                     <div class={styles.chevronWrapper}>

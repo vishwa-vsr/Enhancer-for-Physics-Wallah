@@ -1,5 +1,5 @@
-import { useState } from 'preact/hooks';
-import { activeView, customTags, addCustomTag, deleteCustomTag } from '../store';
+import { useState, useEffect } from 'preact/hooks';
+import { activeView, customTags, addCustomTag, deleteCustomTag, userName, setUserName } from '../store';
 import { isLightTheme, toggleTheme } from '@shared/theme';
 import { Toggle } from '@shared/components/Toggle';
 import styles from './SettingsView.module.css';
@@ -15,9 +15,22 @@ const PRESET_COLORS = [
 ];
 
 export const SettingsView = () => {
+  const [profileName, setProfileName] = useState(userName.value);
+  const [nameSaved, setNameSaved] = useState(false);
   const [newTagName, setNewTagName] = useState('');
   const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[0]);
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    setProfileName(userName.value);
+  }, [userName.value]);
+
+  const handleSaveProfile = async (e: Event) => {
+    e.preventDefault();
+    await setUserName(profileName);
+    setNameSaved(true);
+    setTimeout(() => setNameSaved(false), 2000);
+  };
 
   const handleAddTag = async (e: Event) => {
     e.preventDefault();
@@ -52,6 +65,27 @@ export const SettingsView = () => {
         >
           ← Back to Study Tasks
         </button>
+      </div>
+
+      {/* Profile Section */}
+      <div class={styles.card}>
+        <div class={styles.cardHeader}>
+          <h2 class={styles.cardTitle}>Profile</h2>
+          <p class={styles.cardDesc}>Personalize your dashboard greeting and sidebar brand</p>
+        </div>
+
+        <form onSubmit={handleSaveProfile} class={styles.formRow}>
+          <input
+            type="text"
+            class={styles.tagInput}
+            placeholder="Enter your name (e.g. Vishal)..."
+            value={profileName}
+            onInput={(e) => setProfileName((e.target as HTMLInputElement).value)}
+          />
+          <button type="submit" class={styles.addTagBtn}>
+            {nameSaved ? 'Saved! ✓' : 'Save Name'}
+          </button>
+        </form>
       </div>
 
       {/* Appearance Section */}

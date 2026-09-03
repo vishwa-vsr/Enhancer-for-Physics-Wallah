@@ -24,6 +24,7 @@ export const subjects = signal<Subject[]>([]);
 export const chapters = signal<Chapter[]>([]);
 export const tasks = signal<Task[]>([]);
 export const customTags = signal<TagItem[]>(DEFAULT_TAGS);
+export const userName = signal<string>('');
 export const activeView = signal<ActiveView>({ type: 'today' });
 export const expandedSubjects = signal<Record<string, boolean>>({});
 export const isLoaded = signal<boolean>(false);
@@ -86,6 +87,9 @@ export async function loadPlannerData(): Promise<void> {
       if (loadedData.tags && loadedData.tags.length > 0) {
         customTags.value = loadedData.tags;
       }
+      if (loadedData.userName) {
+        userName.value = loadedData.userName;
+      }
     }
 
     // If no subjects exist, initialize with Maths, Physics, Chemistry, Bio + Chapter 1
@@ -107,6 +111,7 @@ async function persistData(): Promise<void> {
     chapters: chapters.value,
     tasks: tasks.value,
     tags: customTags.value,
+    userName: userName.value,
   };
 
   try {
@@ -238,6 +243,11 @@ export async function addCustomTag(name: string, color: string): Promise<boolean
 
 export async function deleteCustomTag(name: string): Promise<void> {
   customTags.value = customTags.value.filter((t) => t.name !== name);
+  await persistData();
+}
+
+export async function setUserName(name: string): Promise<void> {
+  userName.value = name.trim();
   await persistData();
 }
 

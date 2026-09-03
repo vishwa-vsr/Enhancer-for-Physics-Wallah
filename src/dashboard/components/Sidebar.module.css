@@ -45,6 +45,17 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.brandUserName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  -webkit-text-fill-color: var(--text-muted);
+  letter-spacing: normal;
 }
 
 .navSection {

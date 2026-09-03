@@ -1,5 +1,6 @@
 import { isLightTheme, toggleTheme } from '@shared/theme';
 import { SunIcon, MoonIcon } from '@shared/components/ThemeIcons';
+import { userName } from '../store';
 import styles from './Header.module.css';
 
 export const Header = () => {
@@ -13,7 +14,7 @@ export const Header = () => {
   return (
     <header class={styles.header}>
       <div class={styles.greetingSection}>
-        <h1>Good day! 👋</h1>
+        <h1>Good day{userName.value ? `, ${userName.value}` : ''}! 👋</h1>
         <p>{currentDate}</p>
       </div>
 
