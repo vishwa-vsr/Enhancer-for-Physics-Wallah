@@ -37,10 +37,14 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
         <div class={styles.brandLogo}>
           <img src={logoUrl} alt="PW Logo" class={styles.brandLogoImg} width={28} height={28} />
         </div>
-        <h2 class={styles.brandTitle}>
-          Padhle
-          {displayName && <span class={styles.brandUserName}> • {displayName}</span>}
-        </h2>
+        <div class={styles.brandTextWrapper}>
+          <h2 class={styles.brandTitle}>Padhle</h2>
+          {trimmedName && (
+            <span class={styles.brandUserName} title={trimmedName}>
+              • {displayName}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Navigation Quick Views */}

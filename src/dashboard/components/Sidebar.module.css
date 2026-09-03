@@ -12,10 +12,13 @@
 }
 
 .brand {
-  padding: 24px 24px 16px 24px;
+  padding: 24px 20px 16px 20px;
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .brandLogo {
@@ -37,25 +40,40 @@
   display: block;
 }
 
+.brandTextWrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1;
+}
+
 .brandTitle {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.02em;
   background: linear-gradient(to right, #6b7fd7, #8b95e8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .brandUserName {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
   color: var(--text-muted);
   -webkit-text-fill-color: var(--text-muted);
   letter-spacing: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 85px;
+  display: inline-block;
+  line-height: 1;
 }
 
 .navSection {
