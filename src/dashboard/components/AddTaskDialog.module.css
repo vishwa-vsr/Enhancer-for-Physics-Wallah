@@ -114,69 +114,22 @@
   color: var(--text-primary);
 }
 
-.priorityGroup {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.priorityBtn {
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  background-color: var(--bg-control);
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all var(--transition-fast);
-}
-
-.priorityBtn:hover {
-  background-color: var(--bg-control-hover);
-}
-
-.prioritySelectedLow {
-  border-color: #10b981 !important;
-  background-color: #10b981 !important;
-  color: #ffffff !important;
-  font-weight: 600;
-}
-
-.prioritySelectedMedium {
-  border-color: #f59e0b !important;
-  background-color: #f59e0b !important;
-  color: #ffffff !important;
-  font-weight: 600;
-}
-
-.prioritySelectedHigh {
-  border-color: #ef4444 !important;
-  background-color: #ef4444 !important;
-  color: #ffffff !important;
-  font-weight: 600;
-}
-
 .tagSuggestions {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .tagPill {
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: var(--radius-full);
-  font-size: 12px;
+  font-size: 12.5px;
+  font-weight: 500;
   background-color: var(--bg-control);
   border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all var(--transition-fast);
 }
 
 .tagPill:hover,

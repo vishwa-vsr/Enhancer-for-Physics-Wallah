@@ -218,53 +218,11 @@
   font-weight: 500;
 }
 
-/* Fixed width container so right-side actions NEVER push the text or icon */
 .subjectRight {
-  position: relative;
-  width: 68px;
-  min-width: 68px;
-  height: 24px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   flex-shrink: 0;
-}
-
-.subjectActions {
-  display: none;
-  align-items: center;
-  gap: 2px;
-}
-
-.subjectItem:hover .subjectActions {
-  display: flex;
-}
-
-.subjectItem:hover .badge {
-  display: none;
-}
-
-.iconBtn {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.iconBtn:hover {
-  color: var(--text-primary);
-  background-color: var(--bg-control);
-}
-
-.iconBtnDanger:hover {
-  color: #ef4444;
-  background-color: rgba(239, 68, 68, 0.1);
 }
 
 .chaptersList {
@@ -299,14 +257,10 @@
   color: var(--text-primary);
 }
 
-.chapterItem:hover .badge {
-  display: none;
-}
-
 .chapterItemActive {
   background-color: var(--accent-dim) !important;
   color: var(--accent-primary) !important;
-  font-weight: 500 !important; /* Keep font-weight 500 so text never gets bold or jumps */
+  font-weight: 500 !important;
 }
 
 .chapterItemActive .badge {
@@ -340,24 +294,10 @@
 }
 
 .chapterRight {
-  position: relative;
-  width: 54px;
-  min-width: 54px;
-  height: 20px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   flex-shrink: 0;
-}
-
-.chapterActions {
-  display: none;
-  align-items: center;
-  gap: 2px;
-}
-
-.chapterItem:hover .chapterActions {
-  display: flex;
 }
 
 .emptyPrompt {

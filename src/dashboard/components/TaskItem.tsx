@@ -6,20 +6,12 @@ interface TaskItemProps {
   task: Task;
 }
 
-const PRIORITY_COLORS = {
-  low: '#10b981',
-  medium: '#f59e0b',
-  high: '#ef4444',
-};
-
 export const TaskItem = ({ task }: TaskItemProps) => {
   const currentView = activeView.value;
 
   const subject = subjects.value.find((s) => s.id === task.subjectId);
   const chapter = chapters.value.find((c) => c.id === task.chapterId);
   const showOrigin = currentView.type !== 'chapter';
-
-  const priorityColor = PRIORITY_COLORS[task.priority] || '#10b981';
 
   // Format date like "Dec 14, 2024" as in Figma
   const formattedDate = task.dueDate
@@ -97,25 +89,6 @@ export const TaskItem = ({ task }: TaskItemProps) => {
               <span>{formattedDate}</span>
             </div>
           )}
-
-          {/* Priority */}
-          <div class={styles.metaItem}>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.2}
-              width="14"
-              height="14"
-              style={{ color: priorityColor }}
-            >
-              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-              <line x1="4" x2="4" y1="22" />
-            </svg>
-            <span style={{ color: priorityColor, textTransform: 'capitalize' }}>
-              {task.priority}
-            </span>
-          </div>
 
           {/* Tags */}
           {task.tags.map((tag) => {

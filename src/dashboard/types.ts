@@ -10,7 +10,7 @@ export interface Task {
   title: string;
   completed: boolean;
   dueDate?: string;
-  priority: Priority;
+  priority?: Priority;
   tags: string[];
   subjectId: string;
   chapterId: string;

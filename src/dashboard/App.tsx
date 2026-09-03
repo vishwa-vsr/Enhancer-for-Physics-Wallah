@@ -46,19 +46,23 @@ export const App = () => {
   const currentView = activeView.value;
   const taskList = filteredTasks.value;
 
-  // View title and breadcrumbs calculation
-  let title = 'Today';
-  let breadcrumb = '';
+  const activeSubject =
+    currentView.type === 'chapter'
+      ? subjects.value.find((s) => s.id === currentView.subjectId)
+      : null;
+  const activeChapter =
+    currentView.type === 'chapter'
+      ? chapters.value.find((c) => c.id === currentView.chapterId)
+      : null;
 
+  // View title calculation
+  let title = 'Today';
   if (currentView.type === 'today') {
     title = 'Today Tasks';
   } else if (currentView.type === 'upcoming') {
     title = 'Upcoming Tasks';
   } else if (currentView.type === 'chapter') {
-    const sub = subjects.value.find((s) => s.id === currentView.subjectId);
-    const chap = chapters.value.find((c) => c.id === currentView.chapterId);
-    title = chap ? `${chap.name} Tasks` : 'Chapter Tasks';
-    breadcrumb = sub ? `${sub.name} / ` : '';
+    title = activeChapter ? `${activeChapter.name} Tasks` : 'Chapter Tasks';
   }
 
   const handleOpenAddSubject = () => {
@@ -127,14 +131,7 @@ export const App = () => {
   return (
     <div class={styles.dashboardContainer}>
       {/* Left Sidebar */}
-      <Sidebar
-        onOpenAddSubject={handleOpenAddSubject}
-        onOpenAddChapter={handleOpenAddChapter}
-        onRenameSubject={handleRenameSubject}
-        onDeleteSubject={handleDeleteSubject}
-        onRenameChapter={handleRenameChapter}
-        onDeleteChapter={handleDeleteChapter}
-      />
+      <Sidebar onOpenAddSubject={handleOpenAddSubject} />
 
       {/* Main Area */}
       <div class={styles.mainWrapper}>
@@ -149,18 +146,113 @@ export const App = () => {
                 {/* Stats Section */}
                 <StatsCards />
 
-                {/* Tasks Section Header */}
+                {/* Tasks Section Header with Action Icons */}
                 <div class={styles.viewHeader}>
-                  <h2 class={styles.viewTitle}>
-                    {breadcrumb && <span class={styles.viewBreadcrumb}>{breadcrumb}</span>}
-                    <span>{title}</span>
-                  </h2>
-                  <p class={styles.taskCountLabel}>
-                    {taskList.length} {taskList.length === 1 ? 'task' : 'tasks'}
-                  </p>
+                  <div class={styles.viewHeaderLeft}>
+                    {activeSubject && (
+                      <div class={styles.viewBreadcrumbsRow}>
+                        <span class={styles.viewBreadcrumb}>{activeSubject.name}</span>
+                        <button
+                          class={styles.headerIconBtn}
+                          title={`Rename Subject (${activeSubject.name})`}
+                          onClick={() => handleRenameSubject(activeSubject)}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            width="12"
+                            height="12"
+                          >
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                          </svg>
+                        </button>
+                        <button
+                          class={styles.headerIconBtnDanger}
+                          title={`Delete Subject (${activeSubject.name})`}
+                          onClick={() => handleDeleteSubject(activeSubject)}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            width="12"
+                            height="12"
+                          >
+                            <path d="M3 6h18" />
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                    <h2 class={styles.viewTitle}>{title}</h2>
+                    <p class={styles.taskCountLabel}>
+                      {taskList.length} {taskList.length === 1 ? 'task' : 'tasks'}
+                    </p>
+                  </div>
+
+                  {activeChapter && activeSubject && (
+                    <div class={styles.headerActionGroup}>
+                      <button
+                        class={styles.headerActionBtn}
+                        onClick={() => handleOpenAddChapter(activeSubject.id)}
+                        title="Add new chapter to this subject"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                          width="12"
+                          height="12"
+                        >
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Add Chapter
+                      </button>
+                      <button
+                        class={styles.headerActionBtn}
+                        onClick={() => handleRenameChapter(activeChapter)}
+                        title="Rename this chapter"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          width="12"
+                          height="12"
+                        >
+                          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                        </svg>
+                        Rename
+                      </button>
+                      <button
+                        class={styles.headerActionBtnDanger}
+                        onClick={() => handleDeleteChapter(activeChapter)}
+                        title="Delete this chapter"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          width="12"
+                          height="12"
+                        >
+                          <path d="M3 6h18" />
+                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                        </svg>
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
 
-                {/* Task List: completely clean without star or 'no tasks' text */}
+                {/* Task List */}
                 {taskList.length === 0 ? null : (
                   taskList.map((task) => <TaskItem key={task.id} task={task} />)
                 )}

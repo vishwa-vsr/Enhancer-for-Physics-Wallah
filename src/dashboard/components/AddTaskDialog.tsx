@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
 import { subjects, chapters, addTask, activeView, customTags } from '../store';
-import { Priority } from '../types';
 import styles from './AddTaskDialog.module.css';
 
 interface AddTaskDialogProps {
@@ -29,8 +28,6 @@ export const AddTaskDialog = ({
 
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [priority, setPriority] = useState<Priority>('medium');
-  const [tagsInput, setTagsInput] = useState('');
   const [selectedPillTags, setSelectedPillTags] = useState<string[]>([]);
 
   useEffect(() => {
@@ -52,18 +49,11 @@ export const AddTaskDialog = ({
     e.preventDefault();
     if (!title.trim() || !selectedSubjectId || !selectedChapterId) return;
 
-    const typedTags = tagsInput
-      .split(',')
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-    const combinedTags = Array.from(new Set([...selectedPillTags, ...typedTags]));
-
     await addTask({
       title: title.trim(),
       completed: false,
       dueDate: dueDate || undefined,
-      priority,
-      tags: combinedTags,
+      tags: selectedPillTags,
       subjectId: selectedSubjectId,
       chapterId: selectedChapterId,
     });
@@ -107,7 +97,6 @@ export const AddTaskDialog = ({
                 class={styles.select}
                 value={selectedSubjectId}
                 onChange={(e) => setSelectedSubjectId((e.target as HTMLSelectElement).value)}
-                required
               >
                 {subjects.value.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -123,10 +112,10 @@ export const AddTaskDialog = ({
                 class={styles.select}
                 value={selectedChapterId}
                 onChange={(e) => setSelectedChapterId((e.target as HTMLSelectElement).value)}
-                required
+                disabled={availableChapters.length === 0}
               >
                 {availableChapters.length === 0 ? (
-                  <option value="">No chapters in subject</option>
+                  <option value="">No chapters</option>
                 ) : (
                   availableChapters.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -138,13 +127,13 @@ export const AddTaskDialog = ({
             </div>
           </div>
 
-          {/* Task Title */}
+          {/* Title */}
           <div class={styles.formGroup}>
             <label class={styles.label}>Task Title</label>
             <input
               type="text"
               class={styles.input}
-              placeholder="Enter task title..."
+              placeholder="e.g. Complete HC Verma Q1-15, Solve DPP 3"
               value={title}
               onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
               required
@@ -163,44 +152,9 @@ export const AddTaskDialog = ({
             />
           </div>
 
-          {/* Priority */}
-          <div class={styles.formGroup}>
-            <label class={styles.label}>Priority</label>
-            <div class={styles.priorityGroup}>
-              <button
-                type="button"
-                class={`${styles.priorityBtn} ${priority === 'low' ? styles.prioritySelectedLow : ''}`}
-                onClick={() => setPriority('low')}
-              >
-                Low
-              </button>
-              <button
-                type="button"
-                class={`${styles.priorityBtn} ${priority === 'medium' ? styles.prioritySelectedMedium : ''}`}
-                onClick={() => setPriority('medium')}
-              >
-                Medium
-              </button>
-              <button
-                type="button"
-                class={`${styles.priorityBtn} ${priority === 'high' ? styles.prioritySelectedHigh : ''}`}
-                onClick={() => setPriority('high')}
-              >
-                High
-              </button>
-            </div>
-          </div>
-
-          {/* Tags */}
+          {/* Tags from Settings */}
           <div class={styles.formGroup}>
             <label class={styles.label}>Tags</label>
-            <input
-              type="text"
-              class={styles.input}
-              placeholder="Add custom tags (comma separated)..."
-              value={tagsInput}
-              onInput={(e) => setTagsInput((e.target as HTMLInputElement).value)}
-            />
             <div class={styles.tagSuggestions}>
               {customTags.value.map((tagObj) => {
                 const t = tagObj.name;
@@ -212,7 +166,7 @@ export const AddTaskDialog = ({
                     class={`${styles.tagPill} ${isActive ? styles.tagPillActive : ''}`}
                     onClick={() => toggleTagPill(t)}
                   >
-                    {isActive ? `✓ ${t}` : `+ ${t}`}
+                    {t}
                   </button>
                 );
               })}
