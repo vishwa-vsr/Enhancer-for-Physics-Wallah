@@ -1,12 +1,13 @@
 /* tokens.css */
 :root {
-  /* Dark theme variables (Default) */
-  --bg-main: #101319;
-  --bg-card: #191e28;
-  --bg-card-hover: #1f2532;
-  --bg-control: #232a37;
-  --bg-control-hover: #2c3444;
-  --divider-color: rgba(255, 255, 255, 0.05);
+  /* AMOLED Dark theme variables (Default) */
+  --bg-main: #000000;
+  --bg-card: #0f1015;
+  --bg-card-hover: #171820;
+  --bg-control: #1a1b23;
+  --bg-control-hover: #242632;
+  --divider-color: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.08);
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
   --text-muted: #8e9bb0;
@@ -16,20 +17,20 @@
   --accent-active: #5b52f0;
   --accent-dim: rgba(108, 99, 255, 0.15);
   --accent-focus: #8b85ff;
-  --tab-nav-bg: #191e28;
+  --tab-nav-bg: #0f1015;
   --tab-btn-fg: #8e9bb0;
   --tab-btn-fg-active: #ffffff;
-  --tab-indicator-bg: #232a37;
-  --tab-indicator-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  --slider-track-bg: #242b38;
+  --tab-indicator-bg: #1a1b23;
+  --tab-indicator-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  --slider-track-bg: #1a1b23;
   --slider-thumb-bg: #ffffff;
   --slider-thumb-border: var(--accent-primary);
-  --switch-bg-off: #2c3444;
+  --switch-bg-off: #242632;
   --switch-bg-on: var(--accent-primary);
   --switch-thumb-bg: #ffffff;
-  --input-bg: #232a37;
+  --input-bg: #1a1b23;
   --input-fg: #9b95ff;
-  --card-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 
   /* Shared variables */
   --space-1: 4px;
@@ -47,8 +48,11 @@
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-full: 9999px;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "Space Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, Helvetica, Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'Space Mono', Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
   --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
   --transition-normal: 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -60,6 +64,7 @@ body.light-theme {
   --bg-control: #edf1f6;
   --bg-control-hover: #dfe5ee;
   --divider-color: #f0f3f7;
+  --border-subtle: rgba(0, 0, 0, 0.08);
   --text-primary: #181d27;
   --text-secondary: #4b5565;
   --text-muted: #717d96;

@@ -147,7 +147,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
       updateSliderBackground(slider, val);
       saveSpeed(val);
     },
-    { passive: false }
+    { passive: false },
   );
 }
 

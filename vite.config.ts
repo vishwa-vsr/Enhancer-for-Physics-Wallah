@@ -54,6 +54,10 @@ function copyExtensionAssetsPlugin(): Plugin {
         if (fs.existsSync(resolve(distDir, 'src/popup'))) {
           copyDir(resolve(distDir, 'src/popup'), resolve(targetDir, 'src/popup'));
         }
+        // Copy dashboard HTML
+        if (fs.existsSync(resolve(distDir, 'src/dashboard'))) {
+          copyDir(resolve(distDir, 'src/dashboard'), resolve(targetDir, 'src/dashboard'));
+        }
         // Copy icons
         if (fs.existsSync(resolve(srcDir, 'icons'))) {
           copyDir(resolve(srcDir, 'icons'), resolve(targetDir, 'icons'));
@@ -134,6 +138,7 @@ export default defineConfig({
     alias: {
       '@shared': resolve(__dirname, 'src/shared'),
       '@popup': resolve(__dirname, 'src/popup'),
+      '@dashboard': resolve(__dirname, 'src/dashboard'),
     },
   },
   base: './',
@@ -144,6 +149,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'src/popup/index.html'),
+        dashboard: resolve(__dirname, 'src/dashboard/index.html'),
       },
       output: {
         entryFileNames: 'assets/[name].js',

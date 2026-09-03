@@ -30,7 +30,7 @@
   border-radius: 9999px;
 }
 .popupContent:hover::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .loadingOverlay {
@@ -63,8 +63,14 @@
 }
 
 @keyframes panelFadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .tabPanel {

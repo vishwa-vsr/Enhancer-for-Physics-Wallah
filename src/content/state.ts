@@ -145,7 +145,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         } catch (_e) {
           // Ignored: extension context invalidated
         }
-      }
+      },
     );
   } catch (_err) {
     // Ignored: chrome runtime unavailable
@@ -204,11 +204,7 @@ export function initState(onLoaded?: () => void): void {
     state.keySlowDown = result.keySlowDown || 'j';
     state.keyReset = result.keyReset || 'l';
 
-    if (
-      result.snapPoints &&
-      Array.isArray(result.snapPoints) &&
-      result.snapPoints.length === 4
-    ) {
+    if (result.snapPoints && Array.isArray(result.snapPoints) && result.snapPoints.length === 4) {
       state.snapPoints = sanitizeSnapPoints(result.snapPoints);
     }
 
@@ -218,16 +214,12 @@ export function initState(onLoaded?: () => void): void {
         ? parseFloat(result.skipSilenceSilenceSpeed)
         : 3.0;
     state.skipSilenceThreshold =
-      result.skipSilenceThreshold !== undefined
-        ? parseInt(result.skipSilenceThreshold, 10)
-        : -40;
+      result.skipSilenceThreshold !== undefined ? parseInt(result.skipSilenceThreshold, 10) : -40;
     state.skipSilenceDynamicThreshold = result.skipSilenceDynamicThreshold !== false;
     state.skipSilenceMute = !!result.skipSilenceMute;
     state.skipSilenceTimeSaved = result.skipSilenceTimeSaved || 0;
     state.skipSilenceMinDuration =
-      result.skipSilenceMinDuration !== undefined
-        ? parseFloat(result.skipSilenceMinDuration)
-        : 0.5;
+      result.skipSilenceMinDuration !== undefined ? parseFloat(result.skipSilenceMinDuration) : 0.5;
 
     state.showFinishTime = result.showFinishTime !== false;
     state.finishTimeFormat = result.finishTimeFormat || 'minimal';

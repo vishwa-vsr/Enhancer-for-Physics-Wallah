@@ -32,12 +32,19 @@
   margin: 0;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actionBtn,
 .themeBtn {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   background-color: var(--bg-control);
-  border: none;
+  border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   cursor: pointer;
   display: flex;
@@ -46,11 +53,14 @@
   transition: all 0.2s ease;
 }
 
+.actionBtn:hover,
 .themeBtn:hover {
   transform: scale(1.05);
   color: var(--accent-primary);
+  border-color: var(--accent-primary);
 }
 
+.actionBtn:active,
 .themeBtn:active {
   transform: scale(0.95);
 }

@@ -73,7 +73,9 @@ export function applyDistractorsState(): void {
 
         // Find settings button index in the native buttons list
         const settingsIdx = nativeButtons.findIndex((el) => {
-          return el === settingsBtn || el.id === 'setting-icon' || el.querySelector('#setting-icon');
+          return (
+            el === settingsBtn || el.id === 'setting-icon' || el.querySelector('#setting-icon')
+          );
         });
 
         if (settingsIdx !== -1) {

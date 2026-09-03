@@ -1,6 +1,10 @@
 import { state, initState, subscribeState } from './state';
 import { applySpeedToActiveVideo, setVideoPlaybackRate } from './modules/video/controller';
-import { applySettingsHTML, applyDistractorsState, classMap } from './modules/distractions/focus-css';
+import {
+  applySettingsHTML,
+  applyDistractorsState,
+  classMap,
+} from './modules/distractions/focus-css';
 import { applyAlwaysExpandState, updatePlayerTicks } from './modules/ui/speed-hud';
 import { injectFinishTimeBadge, updateFinishTime } from './modules/ui/finish-time';
 import {

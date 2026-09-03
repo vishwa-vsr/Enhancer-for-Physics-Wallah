@@ -1,0 +1,159 @@
+.dashboardContainer {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-main);
+  overflow: hidden;
+  font-family: var(--font-sans);
+}
+
+.mainWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.scrollArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 40px 100px 40px;
+}
+
+.scrollArea::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollArea::-webkit-scrollbar-thumb {
+  background-color: var(--border-subtle);
+  border-radius: 6px;
+}
+
+.contentMaxWidth {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.viewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.viewTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.viewBreadcrumb {
+  font-size: 15px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.taskCountLabel {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.emptyState {
+  background-color: var(--bg-card);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 48px 24px;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.emptyIcon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: var(--accent-dim);
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.emptyTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 6px 0;
+}
+
+.emptySubtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 20px 0;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+.primaryActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  background-color: var(--accent-primary);
+  color: #ffffff;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(108, 99, 255, 0.35);
+  transition: all var(--transition-fast);
+}
+
+.primaryActionBtn:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.primaryActionBtn:active {
+  transform: translateY(0);
+}
+
+/* Floating Add Task Button */
+.fab {
+  position: fixed;
+  bottom: 32px;
+  right: 40px;
+  height: 50px;
+  padding: 0 22px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent-primary), #8b95e8);
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+  transition: all var(--transition-fast);
+  z-index: 100;
+}
+
+.fab:hover {
+  transform: scale(1.04) translateY(-2px);
+  box-shadow: 0 8px 24px rgba(108, 99, 255, 0.5);
+}
+
+.fab:active {
+  transform: scale(0.98);
+}

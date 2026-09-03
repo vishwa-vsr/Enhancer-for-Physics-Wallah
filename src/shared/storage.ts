@@ -1,6 +1,7 @@
 import { PopupSettings, DEFAULT_SETTINGS } from './types';
 
-const isChromeStorageAvailable = typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
+const isChromeStorageAvailable =
+  typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
 
 let memoryStorage: Partial<PopupSettings> = {};
 

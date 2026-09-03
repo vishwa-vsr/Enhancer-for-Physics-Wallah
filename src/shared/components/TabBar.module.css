@@ -65,7 +65,9 @@
   stroke: currentColor;
   fill: none;
   flex-shrink: 0;
-  transition: color var(--transition-fast), transform var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;

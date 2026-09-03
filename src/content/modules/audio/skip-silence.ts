@@ -129,7 +129,10 @@ export function manualThresholdToDb(val: number): number {
 }
 
 // Calculate effective thresholds with 3dB Hysteresis (Schmitt Trigger)
-export function getEffectiveThresholds(): { silenceThresholdDb: number; speechThresholdDb: number } {
+export function getEffectiveThresholds(): {
+  silenceThresholdDb: number;
+  speechThresholdDb: number;
+} {
   let baseDb: number;
   if (state.skipSilenceDynamicThreshold) {
     baseDb = ssCalculatedNoiseFloorDb;

@@ -1,0 +1,52 @@
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-fast);
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(108, 99, 255, 0.3);
+}
+
+.statLabel {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 6px 0 0 0;
+  letter-spacing: -0.02em;
+}
+
+.totalCard .statValue {
+  color: var(--accent-primary);
+}
+
+.activeCard .statValue {
+  color: #f59e0b;
+}
+
+.completedCard .statValue {
+  color: #10b981;
+}

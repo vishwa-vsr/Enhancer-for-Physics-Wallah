@@ -10,7 +10,10 @@ export function ReviewModal() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (reviewPromptStatus.value === 'reviewed' || reviewPromptStatus.value === 'dismissed_permanently') {
+    if (
+      reviewPromptStatus.value === 'reviewed' ||
+      reviewPromptStatus.value === 'dismissed_permanently'
+    ) {
       return;
     }
     const now = Date.now();
@@ -39,11 +42,13 @@ export function ReviewModal() {
   }, [installDate.value, reviewPromptStatus.value, reviewPromptNextShowTime.value, visible]);
 
   const handleLeaveReview = () => {
-    let url = 'https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj/reviews';
+    let url =
+      'https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj/reviews';
     if (navigator.userAgent.includes('Firefox')) {
       url = 'https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/';
     } else if (navigator.userAgent.includes('Edg/')) {
-      url = 'https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan';
+      url =
+        'https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan';
     }
     window.open(url, '_blank');
     reviewPromptStatus.value = 'reviewed';

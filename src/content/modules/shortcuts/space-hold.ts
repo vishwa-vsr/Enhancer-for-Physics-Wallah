@@ -59,7 +59,7 @@ export function initSpaceHold(): void {
         }
       }
     },
-    true
+    true,
   );
 
   document.addEventListener(
@@ -89,7 +89,7 @@ export function initSpaceHold(): void {
         }
       }
     },
-    true
+    true,
   );
 
   window.addEventListener('blur', cancelSpaceHold);

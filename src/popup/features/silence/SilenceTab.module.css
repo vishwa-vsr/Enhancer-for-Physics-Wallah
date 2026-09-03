@@ -215,7 +215,9 @@
 .resetIcon {
   width: 14px;
   height: 14px;
-  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), color 200ms ease;
+  transition:
+    transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 200ms ease;
   display: block;
 }
 
