@@ -9,13 +9,6 @@ const TAG_COLORS: Record<string, string> = {
   NCERT: '#06b6d4',
   Test: '#ec4899',
   Urgent: '#ef4444',
-  Work: '#6b7fd7',
-  Personal: '#8b95e8',
-  Development: '#10b981',
-  Design: '#ec4899',
-  Review: '#8b5cf6',
-  Planning: '#06b6d4',
-  Meeting: '#f59e0b',
 };
 
 const DEFAULT_SUGGESTED_TAGS = ['Lecture', 'DPP', 'Revision', 'Notes', 'NCERT', 'Test', 'Urgent'];
