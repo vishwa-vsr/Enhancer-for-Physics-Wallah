@@ -19,10 +19,22 @@
 }
 
 .brandLogo {
-  color: #6b7fd7;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #000;
+  flex-shrink: 0;
+}
+
+.brandLogoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .brandTitle {

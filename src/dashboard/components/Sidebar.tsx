@@ -34,24 +34,17 @@ export const Sidebar = ({
   const completedCount = tasks.value.filter((t) => t.completed).length;
   const allCount = tasks.value.length;
 
+  const logoUrl =
+    typeof chrome !== 'undefined' && chrome.runtime?.getURL
+      ? chrome.runtime.getURL('icons/icon48.png')
+      : '/icons/icon48.png';
+
   return (
     <aside class={styles.sidebar}>
-      {/* Brand: just "Padhle" with the two-arrow logo */}
+      {/* Brand: "Padhle" with the extension logo */}
       <div class={styles.brand}>
         <div class={styles.brandLogo}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={4.2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            width="22"
-            height="22"
-          >
-            <polyline points="13 17 18 12 13 7" />
-            <polyline points="6 17 11 12 6 7" />
-          </svg>
+          <img src={logoUrl} alt="PW Logo" class={styles.brandLogoImg} width={28} height={28} />
         </div>
         <h2 class={styles.brandTitle}>Padhle</h2>
       </div>
