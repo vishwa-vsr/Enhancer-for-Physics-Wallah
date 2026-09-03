@@ -22,7 +22,6 @@ export const AddTaskDialog = ({
 
   const currentView = activeView.value;
 
-  // Determine initial subject & chapter
   const initialSubId = defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(initialSubId);
 
@@ -36,7 +35,6 @@ export const AddTaskDialog = ({
   const [tagsInput, setTagsInput] = useState('');
   const [selectedPillTags, setSelectedPillTags] = useState<string[]>([]);
 
-  // Update chapter list when subject changes
   useEffect(() => {
     const chaps = chapters.value.filter((c) => c.subjectId === selectedSubjectId);
     if (chaps.length > 0 && !chaps.some((c) => c.id === selectedChapterId)) {
@@ -56,7 +54,6 @@ export const AddTaskDialog = ({
     e.preventDefault();
     if (!title.trim() || !selectedSubjectId || !selectedChapterId) return;
 
-    // Combine typed tags with pill tags
     const typedTags = tagsInput
       .split(',')
       .map((t) => t.trim())
@@ -80,7 +77,7 @@ export const AddTaskDialog = ({
     <div class={styles.modalOverlay} onClick={onClose}>
       <div class={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div class={styles.modalHeader}>
-          <h2>Add New Study Task</h2>
+          <h2>Add New Task</h2>
           <button class={styles.closeBtn} onClick={onClose}>
             <svg
               viewBox="0 0 24 24"
@@ -149,7 +146,7 @@ export const AddTaskDialog = ({
             <input
               type="text"
               class={styles.input}
-              placeholder="e.g. Watch Lecture 03 - Projectile Motion"
+              placeholder="Enter task title..."
               value={title}
               onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
               required
@@ -159,7 +156,7 @@ export const AddTaskDialog = ({
 
           {/* Due Date */}
           <div class={styles.formGroup}>
-            <label class={styles.label}>Due Date (Optional)</label>
+            <label class={styles.label}>Due Date</label>
             <input
               type="date"
               class={styles.input}
@@ -170,39 +167,39 @@ export const AddTaskDialog = ({
 
           {/* Priority */}
           <div class={styles.formGroup}>
-            <label class={styles.label}>Priority Level</label>
+            <label class={styles.label}>Priority</label>
             <div class={styles.priorityGroup}>
               <button
                 type="button"
                 class={`${styles.priorityBtn} ${priority === 'low' ? styles.prioritySelectedLow : ''}`}
                 onClick={() => setPriority('low')}
               >
-                <span style={{ color: '#10b981' }}>●</span> Low
+                Low
               </button>
               <button
                 type="button"
                 class={`${styles.priorityBtn} ${priority === 'medium' ? styles.prioritySelectedMedium : ''}`}
                 onClick={() => setPriority('medium')}
               >
-                <span style={{ color: '#f59e0b' }}>●</span> Medium
+                Medium
               </button>
               <button
                 type="button"
                 class={`${styles.priorityBtn} ${priority === 'high' ? styles.prioritySelectedHigh : ''}`}
                 onClick={() => setPriority('high')}
               >
-                <span style={{ color: '#ef4444' }}>●</span> High
+                High
               </button>
             </div>
           </div>
 
           {/* Tags */}
           <div class={styles.formGroup}>
-            <label class={styles.label}>Tags (Optional)</label>
+            <label class={styles.label}>Tags</label>
             <input
               type="text"
               class={styles.input}
-              placeholder="Type custom tags separated by comma"
+              placeholder="Add custom tags (comma separated)..."
               value={tagsInput}
               onInput={(e) => setTagsInput((e.target as HTMLInputElement).value)}
             />

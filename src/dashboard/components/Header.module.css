@@ -2,21 +2,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 32px;
+  padding: 20px 32px;
   background-color: var(--bg-card);
   border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-sans);
 }
 
 .greetingSection h1 {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 600;
   color: var(--text-primary);
   margin: 0;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .greetingSection p {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-muted);
   margin: 4px 0 0 0;
 }
@@ -24,30 +25,31 @@
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
-.themeToggleBtn {
-  width: 38px;
-  height: 38px;
+.themeToggleCircle {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background-color: var(--bg-control);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
+  background: linear-gradient(135deg, #6b7fd7, #8b95e8);
+  border: none;
+  color: #ffffff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(107, 127, 215, 0.35);
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s ease;
 }
 
-.themeToggleBtn:hover {
-  background-color: var(--accent-dim);
-  color: var(--accent-primary);
-  border-color: var(--accent-primary);
-  transform: scale(1.05);
+.themeToggleCircle:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 18px rgba(107, 127, 215, 0.45);
 }
 
-.themeToggleBtn:active {
+.themeToggleCircle:active {
   transform: scale(0.95);
 }

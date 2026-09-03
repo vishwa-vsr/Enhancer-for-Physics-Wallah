@@ -7,6 +7,7 @@ import {
   tasks,
   activeView,
   filteredTasks,
+  selectedTags,
   deleteSubject,
   deleteChapter,
 } from './store';
@@ -24,17 +25,14 @@ import { SettingsView } from './components/SettingsView';
 import styles from './App.module.css';
 
 export const App = () => {
-  // Modals state
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [subjectModalOpen, setSubjectModalOpen] = useState(false);
   const [chapterModalOpen, setChapterModalOpen] = useState(false);
   const [chapterModalSubjectId, setChapterModalSubjectId] = useState('');
 
-  // Editing state
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [editingChapter, setEditingChapter] = useState<Chapter | null>(null);
 
-  // Deletion confirm state
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState<{
     title: string;
@@ -55,21 +53,22 @@ export const App = () => {
   let breadcrumb = '';
 
   if (currentView.type === 'today') {
-    title = "Today's Tasks";
+    title = 'Today Tasks';
   } else if (currentView.type === 'upcoming') {
     title = 'Upcoming Tasks';
   } else if (currentView.type === 'completed') {
     title = 'Completed Tasks';
   } else if (currentView.type === 'all') {
-    title = 'All Study Tasks';
+    title = 'All Tasks';
   } else if (currentView.type === 'chapter') {
     const sub = subjects.value.find((s) => s.id === currentView.subjectId);
     const chap = chapters.value.find((c) => c.id === currentView.chapterId);
-    title = chap ? chap.name : 'Chapter Tasks';
-    breadcrumb = sub ? sub.name : '';
+    title = chap ? `${chap.name} Tasks` : 'Chapter Tasks';
+    breadcrumb = sub ? `${sub.name} / ` : '';
   }
 
-  // Handlers for subject/chapter creation and editing
+  const isFiltered = selectedTags.value.length > 0;
+
   const handleOpenAddSubject = () => {
     setEditingSubject(null);
     setSubjectModalOpen(true);
@@ -91,8 +90,8 @@ export const App = () => {
     const subChaps = chapters.value.filter((c) => c.subjectId === sub.id);
 
     setConfirmConfig({
-      title: `Delete Subject '${sub.name}'?`,
-      message: `This will permanently delete '${sub.name}' along with its ${subChaps.length} chapter(s) and ${subTasks.length} task(s). Are you sure?`,
+      title: `Delete '${sub.name}'?`,
+      message: `This will delete '${sub.name}' along with its ${subChaps.length} chapter(s) and ${subTasks.length} task(s). Continue?`,
       action: async () => {
         await deleteSubject(sub.id);
       },
@@ -110,8 +109,8 @@ export const App = () => {
     const chapTasks = tasks.value.filter((t) => t.chapterId === chap.id);
 
     setConfirmConfig({
-      title: `Delete Chapter '${chap.name}'?`,
-      message: `This will permanently delete '${chap.name}' and its ${chapTasks.length} task(s). Are you sure?`,
+      title: `Delete '${chap.name}'?`,
+      message: `This will delete '${chap.name}' and its ${chapTasks.length} task(s). Continue?`,
       action: async () => {
         await deleteChapter(chap.id);
       },
@@ -119,7 +118,6 @@ export const App = () => {
     setConfirmModalOpen(true);
   };
 
-  // Check if we can add tasks (needs at least 1 subject and 1 chapter)
   const canAddTask = subjects.value.length > 0 && chapters.value.length > 0;
 
   const handleFabClick = () => {
@@ -136,7 +134,7 @@ export const App = () => {
 
   return (
     <div class={styles.dashboardContainer}>
-      {/* Sidebar */}
+      {/* Left Sidebar */}
       <Sidebar
         onOpenAddSubject={handleOpenAddSubject}
         onOpenAddChapter={handleOpenAddChapter}
@@ -157,73 +155,77 @@ export const App = () => {
             ) : subjects.value.length === 0 ? (
               /* Blank Canvas Prompt */
               <div class={styles.emptyState}>
-                <div class={styles.emptyIcon}>
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    width="28"
-                    height="28"
-                  >
-                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
-                    <path d="M6 6h10" />
-                    <path d="M6 10h10" />
-                  </svg>
+                <div class={styles.emptyIconCircle}>
+                  <span>✨</span>
                 </div>
-                <h2 class={styles.emptyTitle}>Welcome to your PW Study Planner!</h2>
-                <p class={styles.emptySubtitle}>
-                  Keep your lectures, DPPs, and revision completely organized. Start by creating
-                  your first Subject (e.g. Physics, Chemistry, Maths).
+                <h3
+                  style={{
+                    fontSize: '18px',
+                    fontWeight: 600,
+                    color: 'var(--text-primary)',
+                    margin: '0 0 6px 0',
+                  }}
+                >
+                  No tasks to show
+                </h3>
+                <p class={styles.emptyText}>
+                  Start by creating your first subject to organize your studies.
                 </p>
-                <button class={styles.primaryActionBtn} onClick={handleOpenAddSubject}>
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                    width="16"
-                    height="16"
-                  >
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                  <span>Create Your First Subject</span>
+                <button class={styles.emptyButton} onClick={handleOpenAddSubject}>
+                  + Create First Subject
                 </button>
               </div>
             ) : (
               <>
-                {/* View Title */}
+                {/* Stats Section */}
+                <StatsCards />
+
+                {/* Filter Section */}
+                <FilterSection />
+
+                {/* Tasks Section Header */}
                 <div class={styles.viewHeader}>
                   <h2 class={styles.viewTitle}>
-                    {breadcrumb && <span class={styles.viewBreadcrumb}>{breadcrumb} / </span>}
+                    {breadcrumb && <span class={styles.viewBreadcrumb}>{breadcrumb}</span>}
                     <span>{title}</span>
                   </h2>
                   <p class={styles.taskCountLabel}>
                     {taskList.length} {taskList.length === 1 ? 'task' : 'tasks'}
+                    {isFiltered && <span class={styles.filteredBadge}>(filtered)</span>}
                   </p>
                 </div>
-
-                {/* Stats */}
-                <StatsCards />
-
-                {/* Tag Filters */}
-                <FilterSection />
 
                 {/* Task List */}
                 {taskList.length === 0 ? (
                   <div class={styles.emptyState}>
-                    <div class={styles.emptyIcon}>
-                      <span style={{ fontSize: '24px' }}>✨</span>
+                    <div class={styles.emptyIconCircle}>
+                      <span>{isFiltered ? '🔍' : '✨'}</span>
                     </div>
-                    <h3 class={styles.emptyTitle}>No tasks here yet</h3>
-                    <p class={styles.emptySubtitle}>
-                      {currentView.type === 'completed'
-                        ? "You haven't completed any tasks in this view yet."
-                        : 'Ready to study? Add your first task like watching a lecture or solving a DPP.'}
+                    <p class={styles.emptyText}>
+                      {isFiltered
+                        ? 'No tasks match your filters'
+                        : currentView.type === 'completed'
+                          ? 'No completed tasks yet'
+                          : 'No tasks to show'}
                     </p>
-                    {currentView.type !== 'completed' && (
-                      <button class={styles.primaryActionBtn} onClick={handleFabClick}>
+                    {isFiltered ? (
+                      <button
+                        onClick={() => {
+                          selectedTags.value = [];
+                        }}
+                        style={{
+                          color: '#6b7fd7',
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        Clear all filters
+                      </button>
+                    ) : (
+                      <button class={styles.emptyButton} onClick={handleFabClick}>
                         + Add Task
                       </button>
                     )}
@@ -236,21 +238,20 @@ export const App = () => {
           </div>
         </main>
 
-        {/* Floating Add Task Button */}
+        {/* Floating Add Task Circular Button: exact Figma AddTaskButton */}
         {currentView.type !== 'settings' && (
-          <button class={styles.fab} onClick={handleFabClick} title="Add New Task">
+          <button class={styles.fab} onClick={handleFabClick} title="Add Task">
             <svg
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth={2.5}
-              width="18"
-              height="18"
+              width="24"
+              height="24"
             >
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            <span>Add Task</span>
           </button>
         )}
       </div>

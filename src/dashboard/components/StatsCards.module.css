@@ -7,46 +7,31 @@
 
 .statCard {
   background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 18px 20px;
+  border-radius: var(--radius-xl);
+  padding: 20px;
   box-shadow: var(--card-shadow);
-  display: flex;
-  flex-direction: column;
-  transition: all var(--transition-fast);
+  border: 1px solid var(--border-subtle);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .statCard:hover {
   transform: translateY(-2px);
-  border-color: rgba(108, 99, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .statLabel {
-  font-size: 12.5px;
-  font-weight: 500;
+  font-size: 14px;
   color: var(--text-muted);
   margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  font-weight: 400;
 }
 
 .statValue {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 30px;
+  font-weight: 600;
   color: var(--text-primary);
-  margin: 6px 0 0 0;
+  margin: 4px 0 0 0;
   letter-spacing: -0.02em;
-}
-
-.totalCard .statValue {
-  color: var(--accent-primary);
-}
-
-.activeCard .statValue {
-  color: #f59e0b;
-}
-
-.completedCard .statValue {
-  color: #10b981;
 }

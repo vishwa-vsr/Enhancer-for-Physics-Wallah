@@ -2,34 +2,34 @@
 :root {
   /* AMOLED Dark theme variables (Default) */
   --bg-main: #000000;
-  --bg-card: #0f1015;
-  --bg-card-hover: #171820;
-  --bg-control: #1a1b23;
-  --bg-control-hover: #242632;
+  --bg-card: #0d0e12;
+  --bg-card-hover: #14151b;
+  --bg-control: #181920;
+  --bg-control-hover: #22232c;
   --divider-color: rgba(255, 255, 255, 0.08);
   --border-subtle: rgba(255, 255, 255, 0.08);
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
   --text-muted: #8e9bb0;
   --text-subtle: #64748b;
-  --accent-primary: #6c63ff;
-  --accent-hover: #7e77ff;
-  --accent-active: #5b52f0;
-  --accent-dim: rgba(108, 99, 255, 0.15);
-  --accent-focus: #8b85ff;
-  --tab-nav-bg: #0f1015;
+  --accent-primary: #6b7fd7;
+  --accent-hover: #7b8fe8;
+  --accent-active: #5b6ec8;
+  --accent-dim: rgba(107, 127, 215, 0.18);
+  --accent-focus: #8b95e8;
+  --tab-nav-bg: #0d0e12;
   --tab-btn-fg: #8e9bb0;
   --tab-btn-fg-active: #ffffff;
-  --tab-indicator-bg: #1a1b23;
+  --tab-indicator-bg: #181920;
   --tab-indicator-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-  --slider-track-bg: #1a1b23;
+  --slider-track-bg: #181920;
   --slider-thumb-bg: #ffffff;
   --slider-thumb-border: var(--accent-primary);
-  --switch-bg-off: #242632;
+  --switch-bg-off: #22232c;
   --switch-bg-on: var(--accent-primary);
   --switch-thumb-bg: #ffffff;
-  --input-bg: #1a1b23;
-  --input-fg: #9b95ff;
+  --input-bg: #181920;
+  --input-fg: #8b95e8;
   --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 
   /* Shared variables */
@@ -44,50 +44,48 @@
   --font-size-md: 15px;
   --font-size-lg: 17px;
   --font-size-xl: 20px;
-  --radius-sm: 6px;
+  --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 14px;
+  --radius-xl: 16px;
   --radius-full: 9999px;
-  --font-sans:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, Helvetica, Arial, sans-serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, 'Space Mono', Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'Space Mono', Menlo, Monaco, Consolas, monospace;
   --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
   --transition-normal: 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body.light-theme {
-  --bg-main: #e6ebf2;
+  --bg-main: #f8f9fd;
   --bg-card: #ffffff;
-  --bg-card-hover: #fafbfc;
-  --bg-control: #edf1f6;
-  --bg-control-hover: #dfe5ee;
-  --divider-color: #f0f3f7;
-  --border-subtle: rgba(0, 0, 0, 0.08);
-  --text-primary: #181d27;
-  --text-secondary: #4b5565;
-  --text-muted: #717d96;
+  --bg-card-hover: #ffffff;
+  --bg-control: #f8f9fa;
+  --bg-control-hover: #e8eaf6;
+  --divider-color: rgba(203, 213, 225, 0.3);
+  --border-subtle: rgba(203, 213, 225, 0.4);
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
   --text-subtle: #9aa4b2;
-  --accent-primary: #5a55ea;
-  --accent-hover: #4e48d6;
-  --accent-active: #433dbe;
-  --accent-dim: rgba(90, 85, 234, 0.1);
-  --accent-focus: #5a55ea;
-  --tab-nav-bg: #dbe1ec;
+  --accent-primary: #6b7fd7;
+  --accent-hover: #5b6ec8;
+  --accent-active: #4a5db7;
+  --accent-dim: #e8eaf6;
+  --accent-focus: #6b7fd7;
+  --tab-nav-bg: #e8eaf6;
   --tab-btn-fg: #697586;
   --tab-btn-fg-active: #181d27;
   --tab-indicator-bg: #ffffff;
   --tab-indicator-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --slider-track-bg: #dbe1ec;
+  --slider-track-bg: #e8eaf6;
   --slider-thumb-bg: #ffffff;
   --slider-thumb-border: var(--accent-primary);
   --switch-bg-off: #d5d9e0;
   --switch-bg-on: var(--accent-primary);
   --switch-thumb-bg: #ffffff;
-  --input-bg: #edf1f6;
+  --input-bg: #f8f9fa;
   --input-fg: var(--accent-primary);
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 * {

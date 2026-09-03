@@ -18,7 +18,7 @@
 .scrollArea {
   flex: 1;
   overflow-y: auto;
-  padding: 32px 40px 100px 40px;
+  padding: 24px 32px 100px 32px;
 }
 
 .scrollArea::-webkit-scrollbar {
@@ -30,7 +30,7 @@
 }
 
 .contentMaxWidth {
-  max-width: 860px;
+  max-width: 896px; /* max-w-4xl in Tailwind */
   margin: 0 auto;
 }
 
@@ -38,122 +38,104 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .viewTitle {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  text-transform: capitalize;
 }
 
 .viewBreadcrumb {
   font-size: 15px;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .taskCountLabel {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-muted);
   margin: 0;
 }
 
-.emptyState {
-  background-color: var(--bg-card);
-  border: 1px dashed var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 48px 24px;
-  text-align: center;
-  margin-top: 24px;
+.filteredBadge {
+  margin-left: 4px;
+  color: var(--accent-primary);
 }
 
-.emptyIcon {
-  width: 54px;
-  height: 54px;
+.emptyState {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.emptyIconCircle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   background-color: var(--accent-dim);
   color: var(--accent-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px auto;
+  margin-bottom: 16px;
+  font-size: 26px;
 }
 
-.emptyTitle {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 6px 0;
-}
-
-.emptySubtitle {
-  font-size: 13px;
+.emptyText {
   color: var(--text-muted);
-  margin: 0 0 20px 0;
-  max-width: 360px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.5;
+  font-size: 14px;
+  margin: 0 0 16px 0;
 }
 
-.primaryActionBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+.emptyButton {
+  padding: 9px 18px;
   border-radius: var(--radius-md);
-  background-color: var(--accent-primary);
+  background: linear-gradient(135deg, #6b7fd7, #8b95e8);
   color: #ffffff;
   border: none;
   font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(108, 99, 255, 0.35);
+  box-shadow: 0 4px 12px rgba(107, 127, 215, 0.35);
   transition: all var(--transition-fast);
 }
 
-.primaryActionBtn:hover {
-  background-color: var(--accent-hover);
+.emptyButton:hover {
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(107, 127, 215, 0.45);
 }
 
-.primaryActionBtn:active {
-  transform: translateY(0);
-}
-
-/* Floating Add Task Button */
+/* Floating Action Button (+): Circular 56px matching Figma exactly */
 .fab {
   position: fixed;
   bottom: 32px;
-  right: 40px;
-  height: 50px;
-  padding: 0 22px;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--accent-primary), #8b95e8);
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6b7fd7, #8b95e8);
   color: #ffffff;
   border: none;
-  font-size: 14px;
-  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
-  transition: all var(--transition-fast);
-  z-index: 100;
+  justify-content: center;
+  box-shadow: 0 8px 25px rgba(107, 127, 215, 0.4);
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s ease;
+  z-index: 50;
 }
 
 .fab:hover {
-  transform: scale(1.04) translateY(-2px);
-  box-shadow: 0 8px 24px rgba(108, 99, 255, 0.5);
+  transform: scale(1.08);
+  box-shadow: 0 10px 28px rgba(107, 127, 215, 0.55);
 }
 
 .fab:active {
-  transform: scale(0.98);
+  transform: scale(0.95);
 }

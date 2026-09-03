@@ -4,8 +4,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,14 +14,15 @@
 }
 
 .modalContent {
-  width: 480px;
+  width: 440px;
   max-width: 92vw;
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.18s ease-out;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+  animation: slideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: var(--font-sans);
 }
 
 @keyframes fadeIn {
@@ -36,7 +37,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.98);
+    transform: translateY(12px) scale(0.97);
   }
   to {
     opacity: 1;
@@ -53,7 +54,7 @@
 
 .modalHeader h2 {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   margin: 0;
 }
@@ -64,16 +65,16 @@
   color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
-  border-radius: 4px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .closeBtn:hover {
   color: var(--text-primary);
-  background-color: var(--bg-control);
+  background-color: var(--bg-control-hover);
 }
 
 .formGroup {
@@ -82,8 +83,8 @@
 
 .label {
   display: block;
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--text-secondary);
   margin-bottom: 6px;
 }
@@ -96,7 +97,8 @@
   border: 1px solid var(--border-subtle);
   background-color: var(--bg-control);
   color: var(--text-primary);
-  font-size: 13.5px;
+  font-size: 14px;
+  font-family: var(--font-sans);
   outline: none;
   box-sizing: border-box;
   transition: border-color var(--transition-fast);
@@ -135,27 +137,27 @@
 }
 
 .priorityBtn:hover {
-  border-color: var(--accent-primary);
+  background-color: var(--bg-control-hover);
 }
 
 .prioritySelectedLow {
   border-color: #10b981 !important;
-  background-color: rgba(16, 185, 129, 0.15) !important;
-  color: #10b981 !important;
+  background-color: #10b981 !important;
+  color: #ffffff !important;
   font-weight: 600;
 }
 
 .prioritySelectedMedium {
   border-color: #f59e0b !important;
-  background-color: rgba(245, 158, 11, 0.15) !important;
-  color: #f59e0b !important;
+  background-color: #f59e0b !important;
+  color: #ffffff !important;
   font-weight: 600;
 }
 
 .prioritySelectedHigh {
   border-color: #ef4444 !important;
-  background-color: rgba(239, 68, 68, 0.15) !important;
-  color: #ef4444 !important;
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
   font-weight: 600;
 }
 
@@ -167,9 +169,9 @@
 }
 
 .tagPill {
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
-  font-size: 11px;
+  font-size: 12px;
   background-color: var(--bg-control);
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
@@ -193,37 +195,38 @@
 }
 
 .cancelBtn {
-  padding: 9px 16px;
+  padding: 9px 18px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background: transparent;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .cancelBtn:hover {
-  background-color: var(--bg-control);
+  background-color: var(--bg-control-hover);
   color: var(--text-primary);
 }
 
 .submitBtn {
-  padding: 9px 18px;
+  padding: 9px 20px;
   border-radius: var(--radius-md);
   border: none;
-  background-color: var(--accent-primary);
+  background: linear-gradient(135deg, #6b7fd7, #8b95e8);
   color: #ffffff;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(107, 127, 215, 0.35);
   transition: all var(--transition-fast);
 }
 
 .submitBtn:hover {
-  background-color: var(--accent-hover);
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(107, 127, 215, 0.45);
 }
 
 .submitBtn:disabled {

@@ -36,11 +36,7 @@ const MoonIcon = () => (
 );
 
 export const Header = () => {
-  const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? 'Good morning! ☀️' : hour < 18 ? 'Good afternoon! 🌤️' : 'Good evening! 🌙';
-
-  const dateStr = new Date().toLocaleDateString('en-US', {
+  const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -50,14 +46,14 @@ export const Header = () => {
   return (
     <header class={styles.header}>
       <div class={styles.greetingSection}>
-        <h1>{greeting}</h1>
-        <p>{dateStr}</p>
+        <h1>Good day! 👋</h1>
+        <p>{currentDate}</p>
       </div>
 
       <div class={styles.headerActions}>
         <button
           onClick={toggleTheme}
-          class={styles.themeToggleBtn}
+          class={styles.themeToggleCircle}
           title="Toggle Light / AMOLED Dark Theme"
         >
           {isLightTheme.value ? <MoonIcon /> : <SunIcon />}
