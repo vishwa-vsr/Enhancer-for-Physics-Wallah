@@ -13,6 +13,7 @@ import {
   resetSSSessionSaved,
 } from '../audio/skip-silence';
 import { isUserHoldingSpace } from '../shortcuts/space-hold';
+import { autoApplyPreferredQuality } from './quality-controller';
 
 let activeVideo: HTMLVideoElement | null = null;
 let isSettingRate = false;
@@ -111,6 +112,9 @@ export function setupVideoListeners(video: HTMLVideoElement): void {
   activeVideo.addEventListener('durationchange', updateFinishTime);
   activeVideo.addEventListener('seeking', updateFinishTime);
   activeVideo.addEventListener('seeked', updateFinishTime);
+
+  // Auto-apply preferred quality when video is loaded/switched
+  autoApplyPreferredQuality();
 }
 
 // Update speed UI when speed changes (syncs with native controls)
@@ -137,6 +141,7 @@ export function onRateChange(): void {
 export function onVideoPlay(): void {
   setTimeout(() => {
     applySpeedToActiveVideo();
+    autoApplyPreferredQuality();
     if (state.skipSilenceEnabled && !isSSEngineRunning()) {
       ssInit();
     }

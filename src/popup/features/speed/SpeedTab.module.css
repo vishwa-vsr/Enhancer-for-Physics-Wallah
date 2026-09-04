@@ -382,6 +382,13 @@
   border-top: 1px solid var(--divider-color);
 }
 
+.disabledRow {
+  opacity: 0.42;
+  pointer-events: none;
+  filter: grayscale(0.5);
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
 .hudFooterTitle {
   font-size: var(--font-size-base);
   font-weight: 500;
@@ -418,6 +425,7 @@
   box-shadow: 0 0 0 2px var(--accent-primary);
 }
 
+.newBadge,
 .betaBadge {
   display: inline-block;
   font-size: 9.5px;
@@ -434,6 +442,7 @@
   margin-left: 6px;
 }
 
+:global(body:not(.light-theme)) .newBadge,
 :global(body:not(.light-theme)) .betaBadge {
   color: #a78bfa;
   background: rgba(167, 139, 250, 0.15);

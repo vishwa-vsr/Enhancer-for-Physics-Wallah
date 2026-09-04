@@ -2,11 +2,14 @@
 export type ThemeMode = 'light' | 'dark';
 export type FinishTimeFormat = 'minimal' | 'clock' | 'full';
 export type ReviewPromptStatus = 'pending' | 'reviewed' | 'dismissed_permanently';
+export type VideoQuality = 'auto' | '720p' | '480p' | '360p' | '240p';
 
 // ===== All chrome.storage keys used by the popup =====
 export interface PopupSettings {
   // Speed controls
   preferredSpeed: number;
+  constantVideoQuality: boolean;
+  preferredQuality: VideoQuality;
   snapPoints: number[]; // Array of 4 snap point values, e.g. [1.0, 2.0, 3.0, 4.0]
 
   // Focus toggles (hide UI elements on PW)
@@ -16,6 +19,7 @@ export interface PopupSettings {
   hideNotes: boolean;
   hideNoteTimeline: boolean;
   hideSpeed: boolean;
+  hideQuality: boolean;
   hideSetting: boolean;
   hideTimeLine: boolean;
   hideTimeText: boolean;
@@ -56,6 +60,8 @@ export interface PopupSettings {
 // ===== Defaults matching existing popup.js behavior =====
 export const DEFAULT_SETTINGS: PopupSettings = {
   preferredSpeed: 1.0,
+  constantVideoQuality: false,
+  preferredQuality: '720p',
   snapPoints: [1.0, 2.0, 3.0, 4.0],
 
   hideAskAI: false,
@@ -64,6 +70,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   hideNotes: false,
   hideNoteTimeline: false,
   hideSpeed: false,
+  hideQuality: true,
   hideSetting: false,
   hideTimeLine: false,
   hideTimeText: false,

@@ -1,4 +1,4 @@
-import { ContentState, HideSettings, StateChangeListener } from './types';
+import { ContentState, HideSettings, StateChangeListener, VideoQuality } from './types';
 
 export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideAskAI: false,
@@ -7,6 +7,7 @@ export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideNotes: false,
   hideNoteTimeline: false,
   hideSpeed: false,
+  hideQuality: true,
   hideSetting: false,
   hideTimeLine: false,
   hideTimeText: false,
@@ -14,6 +15,8 @@ export const DEFAULT_HIDE_SETTINGS: HideSettings = {
 
 export const DEFAULT_CONTENT_STATE: ContentState = {
   currentSpeed: 1.0,
+  constantVideoQuality: false,
+  preferredQuality: '720p',
   snapPoints: [1.0, 2.0, 3.0, 4.0],
 
   hideSettings: { ...DEFAULT_HIDE_SETTINGS },
@@ -106,12 +109,15 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
     chrome.storage.local.get(
       [
         'preferredSpeed',
+        'constantVideoQuality',
+        'preferredQuality',
         'hideAskAI',
         'hideDoubt',
         'hideChat',
         'hideNotes',
         'hideNoteTimeline',
         'hideSpeed',
+        'hideQuality',
         'hideSetting',
         'hideTimeLine',
         'hideTimeText',
@@ -186,6 +192,10 @@ export function initState(onLoaded?: () => void): void {
     if (result.preferredSpeed) {
       state.currentSpeed = parseFloat(result.preferredSpeed);
     }
+    state.constantVideoQuality = !!result.constantVideoQuality;
+    if (result.preferredQuality) {
+      state.preferredQuality = result.preferredQuality;
+    }
     const hideKeys = Object.keys(DEFAULT_HIDE_SETTINGS) as (keyof HideSettings)[];
     for (const key of hideKeys) {
       if (Object.prototype.hasOwnProperty.call(result, key)) {
@@ -257,6 +267,14 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'extensionEnabled')) {
               state.extensionEnabled = changes.extensionEnabled.newValue !== false;
               changedKeys.push('extensionEnabled');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'preferredQuality')) {
+              state.preferredQuality = (changes.preferredQuality.newValue as VideoQuality) || '720p';
+              changedKeys.push('preferredQuality');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'constantVideoQuality')) {
+              state.constantVideoQuality = !!changes.constantVideoQuality.newValue;
+              changedKeys.push('constantVideoQuality');
             }
 
             const hideKeys = Object.keys(DEFAULT_HIDE_SETTINGS) as (keyof HideSettings)[];

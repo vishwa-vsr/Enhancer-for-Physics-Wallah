@@ -99,12 +99,31 @@ function copyExtensionAssetsPlugin(): Plugin {
           }
         }
 
+        // Bundle TypeScript engine bridge into target engine-bridge.js
+        const bridgeEntry = resolve(srcDir, 'content/engine-bridge.ts');
+        if (fs.existsSync(bridgeEntry)) {
+          buildSync({
+            entryPoints: [bridgeEntry],
+            bundle: true,
+            minify: true,
+            target: 'chrome90',
+            outfile: resolve(targetDir, 'engine-bridge.js'),
+            format: 'iife',
+          });
+        }
+
         // Adjust manifest for target
         const targetManifest = JSON.parse(JSON.stringify(baseManifest));
         if (target === 'firefox') {
           if (targetManifest.background && targetManifest.background.service_worker) {
             targetManifest.background.scripts = [targetManifest.background.service_worker];
             delete targetManifest.background.service_worker;
+          }
+          // Filter out world: MAIN for older Firefox engine compatibility
+          if (Array.isArray(targetManifest.content_scripts)) {
+            targetManifest.content_scripts = targetManifest.content_scripts.filter(
+              (cs: any) => cs.world !== 'MAIN'
+            );
           }
           targetManifest.browser_specific_settings = {
             gecko: {
@@ -116,12 +135,18 @@ function copyExtensionAssetsPlugin(): Plugin {
         fs.writeFileSync(resolve(targetDir, 'manifest.json'), JSON.stringify(targetManifest, null, 2));
       }
 
-      // 3. Clean up loose Vite build files from the root of dist/ so only target folders remain
-      const itemsToClean = ['assets', 'src', 'icons', 'manifest.json', 'content.js', 'content.css', 'background.js'];
-      for (const item of itemsToClean) {
-        const p = resolve(distDir, item);
-        if (fs.existsSync(p)) {
-          fs.rmSync(p, { recursive: true, force: true });
+      // 3. Mirror dist/chrome into the root of dist/ so whether the user loaded dist/ or dist/chrome/, it works
+      const chromeDir = resolve(distDir, 'chrome');
+      if (fs.existsSync(chromeDir)) {
+        const entries = fs.readdirSync(chromeDir, { withFileTypes: true });
+        for (const entry of entries) {
+          const srcPath = resolve(chromeDir, entry.name);
+          const destPath = resolve(distDir, entry.name);
+          if (entry.isDirectory()) {
+            copyDir(srcPath, destPath);
+          } else {
+            fs.copyFileSync(srcPath, destPath);
+          }
         }
       }
     },

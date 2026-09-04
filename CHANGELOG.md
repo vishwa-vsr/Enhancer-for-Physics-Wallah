@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.0.8.2] - 2026-09-02
 
+### Added & Improved
+- **Constant Video Quality**: Automatically starts lectures in your preferred resolution (like 720p HD) with no initial blurriness. Includes an option to hide or show the on-player quality button.
+
 ### Performance & UI Polish
 - **Faster & Lighter Popup**: Completely rebuilt the popup interface to open instantly and use less browser memory.
 - **Smoother Animations**: Butter-smooth animations when opening speed settings and adjusting playback controls.

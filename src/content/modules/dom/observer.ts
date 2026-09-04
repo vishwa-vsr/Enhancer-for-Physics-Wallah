@@ -2,6 +2,7 @@ import { state } from '../../state';
 import { getActiveVideo, getCachedVideo } from '../video/detector';
 import { getActiveVideoElement, setupVideoListeners } from '../video/controller';
 import { injectSpeedControl } from '../ui/speed-hud';
+import { injectQualityControl } from '../ui/quality-hud';
 import { injectSkipSilenceButton } from '../ui/silence-hud';
 import { injectInstantHideButton } from '../ui/focus-mode';
 import { injectFinishTimeBadge } from '../ui/finish-time';
@@ -47,6 +48,7 @@ export function monitor(): void {
     isModifyingDOM = true;
     try {
       injectSpeedControl();
+      injectQualityControl();
       injectSkipSilenceButton();
       injectInstantHideButton();
       injectFinishTimeBadge();

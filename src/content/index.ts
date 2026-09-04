@@ -1,5 +1,6 @@
 import { state, initState, subscribeState } from './state';
 import { applySpeedToActiveVideo, setVideoPlaybackRate } from './modules/video/controller';
+import { initQualityController, applyQuality, syncConstantQuality } from './modules/video/quality-controller';
 import { applySettingsHTML, applyDistractorsState, classMap } from './modules/distractions/focus-css';
 import { applyAlwaysExpandState, updatePlayerTicks } from './modules/ui/speed-hud';
 import { injectFinishTimeBadge, updateFinishTime } from './modules/ui/finish-time';
@@ -31,6 +32,10 @@ function init(): void {
       applySettingsHTML(currentState.hideSettings);
       applyDistractorsState();
       applySpeedToActiveVideo();
+      syncConstantQuality(currentState.constantVideoQuality);
+      if (currentState.constantVideoQuality) {
+        applyQuality(currentState.preferredQuality);
+      }
       if (currentState.skipSilenceEnabled) {
         ssInit();
       }
@@ -102,6 +107,20 @@ function init(): void {
       applySpeedToActiveVideo();
     }
 
+    if (changedKeys.includes('constantVideoQuality')) {
+      syncConstantQuality(currentState.constantVideoQuality);
+      if (currentState.constantVideoQuality) {
+        applyQuality(currentState.preferredQuality);
+      }
+      focusChanged = true;
+    }
+
+    if (changedKeys.includes('preferredQuality')) {
+      if (currentState.constantVideoQuality) {
+        applyQuality(currentState.preferredQuality);
+      }
+    }
+
     if (focusChanged) {
       applySettingsHTML(currentState.hideSettings);
       applyDistractorsState();
@@ -111,15 +130,18 @@ function init(): void {
     }
   });
 
-  // 2. Initialize state from storage
+  // 2. Initialize quality controller & bridge listener
+  initQualityController();
+
+  // 3. Initialize state from storage
   initState();
 
-  // 3. Register user interactions & global listeners
+  // 4. Register user interactions & global listeners
   initKeyboardShortcuts();
   initSpaceHold();
   initAutoPause();
 
-  // 4. Start DOM observer for dynamic injections
+  // 5. Start DOM observer for dynamic injections
   startDomObserver();
 }
 

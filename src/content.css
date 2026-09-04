@@ -222,6 +222,11 @@ html.pwc-hide-speed #pwc-speed-control {
   display: none !important;
 }
 
+/* --- Hide Quality Widget: our injected quality control badge and menu --- */
+html.pwc-hide-quality #pwc-quality-control {
+  display: none !important;
+}
+
 /* --- Hide Settings Icon: VideoJS setting icon or any gear/quality controls --- */
 html.pwc-hide-setting #setting-icon,
 html.pwc-hide-setting [id*="setting-icon"],
@@ -464,3 +469,144 @@ html.pwc-collapsed-state * {
   color: #B5BBC5;
   font-weight: 500;
 }
+
+/* ==========================================================================
+   PW Control Quality Quick-Switch Widget & Options Popup
+   ========================================================================== */
+
+.pwc-quality-container {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin: 0 4px;
+  font-family: 'RedditSans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+}
+
+.pwc-quality-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 100%;
+  outline: none;
+  transition: color 0.2s ease;
+}
+
+.pwc-quality-btn:hover {
+  color: #ffffff;
+}
+
+.pwc-quality-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  transition: transform 0.2s ease;
+}
+
+.pwc-quality-btn:hover svg {
+  transform: scale(1.1);
+}
+
+.pwc-quality-badge {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease;
+}
+
+.pwc-quality-btn:hover .pwc-quality-badge {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Quality Options Popup Menu */
+.pwc-quality-menu {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  min-width: 165px;
+  background: rgba(22, 26, 29, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2000;
+}
+
+.pwc-quality-container.pwc-menu-open .pwc-quality-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.pwc-quality-menu-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 4px 8px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 4px;
+}
+
+.pwc-quality-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+  font-family: inherit;
+}
+
+.pwc-quality-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.pwc-quality-item.pwc-active-quality {
+  background: rgba(90, 75, 218, 0.25);
+  color: #a496ff;
+  font-weight: 700;
+}
+
+.pwc-quality-item-check {
+  opacity: 0;
+  font-size: 12px;
+  font-weight: bold;
+  color: #a496ff;
+}
+
+.pwc-quality-item.pwc-active-quality .pwc-quality-item-check {
+  opacity: 1;
+}
+

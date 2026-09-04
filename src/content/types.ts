@@ -2,6 +2,7 @@
 export type ThemeMode = 'light' | 'dark';
 export type FinishTimeFormat = 'minimal' | 'clock' | 'full';
 export type SilenceState = 'idle' | 'speech' | 'silence';
+export type VideoQuality = 'auto' | '720p' | '480p' | '360p' | '240p';
 
 // ===== Hide / Focus Settings =====
 export interface HideSettings {
@@ -11,6 +12,7 @@ export interface HideSettings {
   hideNotes: boolean;
   hideNoteTimeline: boolean;
   hideSpeed: boolean;
+  hideQuality: boolean;
   hideSetting: boolean;
   hideTimeLine: boolean;
   hideTimeText: boolean;
@@ -18,8 +20,10 @@ export interface HideSettings {
 
 // ===== Full Content Script State =====
 export interface ContentState {
-  // Speed controls
+  // Speed & Quality controls
   currentSpeed: number;
+  constantVideoQuality: boolean;
+  preferredQuality: VideoQuality;
   snapPoints: number[];
 
   // Focus & Distraction toggles

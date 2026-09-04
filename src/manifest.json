@@ -31,6 +31,20 @@
         "*://*.pwnet.in/*"
       ],
       "js": [
+        "engine-bridge.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://*.pw.live/*",
+        "*://*.penpencil.co/*",
+        "*://*.penpencil.xyz/*",
+        "*://*.pwnet.in/*"
+      ],
+      "js": [
         "content.js"
       ],
       "css": [
@@ -38,6 +52,19 @@
       ],
       "run_at": "document_start",
       "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "engine-bridge.js"
+      ],
+      "matches": [
+        "*://*.pw.live/*",
+        "*://*.penpencil.co/*",
+        "*://*.penpencil.xyz/*",
+        "*://*.pwnet.in/*"
+      ]
     }
   ]
 }

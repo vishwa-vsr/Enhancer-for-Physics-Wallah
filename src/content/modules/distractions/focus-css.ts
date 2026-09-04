@@ -21,6 +21,7 @@ export const classMap: Record<keyof HideSettings, string> = {
   hideNotes: 'pwc-hide-notes',
   hideNoteTimeline: 'pwc-hide-notetimeline',
   hideSpeed: 'pwc-hide-speed',
+  hideQuality: 'pwc-hide-quality',
   hideSetting: 'pwc-hide-setting',
   hideTimeLine: 'pwc-hide-timeline',
   hideTimeText: 'pwc-hide-timetext',
@@ -156,6 +157,12 @@ export function applyDistractorsState(): void {
         setHidden(el, false);
       }
     }
+  }
+
+  // Handle quality widget hiding
+  const qualityContainer = document.getElementById('pwc-quality-control');
+  if (qualityContainer) {
+    setHidden(qualityContainer, !state.extensionEnabled || !state.constantVideoQuality || activeSettings.hideQuality);
   }
 
   // Handle timeline hiding
