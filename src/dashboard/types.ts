@@ -5,6 +5,8 @@ export interface TagItem {
   color: string;
 }
 
+export type ChainStage = 'lecture' | 'dpp' | 'notes' | 'revision' | 'custom';
+
 export interface Task {
   id: string;
   title: string;
@@ -15,6 +17,13 @@ export interface Task {
   subjectId: string;
   chapterId: string;
   createdAt: number;
+  chainId?: string;
+  chainType?: ChainStage;
+  nextTaskId?: string;
+  prevTaskId?: string;
+  orderIndex?: number;
+  duration?: string;
+  lectureDate?: string;
 }
 
 export interface Chapter {
@@ -34,11 +43,13 @@ export interface Subject {
 }
 
 export type ViewType = 'today' | 'upcoming' | 'chapter' | 'settings';
+export type DisplayMode = 'list' | 'flow';
 
 export interface ActiveView {
   type: ViewType;
   subjectId?: string;
   chapterId?: string;
+  displayMode?: DisplayMode;
 }
 
 export interface StudyPlannerData {

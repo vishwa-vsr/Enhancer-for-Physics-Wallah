@@ -110,6 +110,20 @@ export async function loadPlannerData(): Promise<void> {
       initializeDefaultSubjects();
       await persistData();
     }
+
+    // Auto-update dashboard if synced from popup or another tab
+    if (typeof chrome !== 'undefined' && chrome.storage?.onChanged) {
+      chrome.storage.onChanged.addListener((changes, areaName) => {
+        if (areaName === 'local' && changes[STORAGE_KEY]?.newValue) {
+          const updated = changes[STORAGE_KEY].newValue as StudyPlannerData;
+          if (updated.subjects) subjects.value = updated.subjects;
+          if (updated.chapters) chapters.value = updated.chapters;
+          if (updated.tasks) tasks.value = updated.tasks;
+          if (updated.tags) customTags.value = updated.tags;
+          if (updated.userName) userName.value = updated.userName;
+        }
+      });
+    }
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('Failed to load planner data:', err);
@@ -282,6 +296,181 @@ export async function updateTask(id: string, updates: Partial<Task>): Promise<vo
   tasks.value = tasks.value.map((t) => (t.id === id ? { ...t, ...updates } : t));
   await persistData();
 }
+
+// Display Mode Actions (List vs Flow)
+export function setDisplayMode(mode: 'list' | 'flow'): void {
+  activeView.value = {
+    ...activeView.value,
+    displayMode: mode,
+  };
+}
+
+// Connected Flow Chain Actions
+export interface CreateChainParams {
+  subjectId: string;
+  chapterId: string;
+  lectureTitle: string;
+  duration?: string;
+  hasDpp?: boolean;
+  dppTitle?: string;
+  hasNotes?: boolean;
+  hasRevision?: boolean;
+  dueDate?: string;
+}
+
+export async function addConnectedChain(params: CreateChainParams): Promise<Task[]> {
+  const chainId = 'chain_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+  const now = Date.now();
+  const createdTasks: Task[] = [];
+
+  // 1. Lecture Task
+  const lectureTask: Task = {
+    id: 'task_' + now + '_lec_' + Math.random().toString(36).substring(2, 6),
+    title: params.lectureTitle,
+    completed: false,
+    subjectId: params.subjectId,
+    chapterId: params.chapterId,
+    tags: ['Lecture'],
+    createdAt: now,
+    chainId,
+    chainType: 'lecture',
+    orderIndex: 0,
+    dueDate: params.dueDate,
+    duration: params.duration,
+  };
+  createdTasks.push(lectureTask);
+
+  let prevTask = lectureTask;
+
+  // 2. DPP Task (if applicable)
+  if (params.hasDpp !== false) {
+    const dppTask: Task = {
+      id: 'task_' + (now + 1) + '_dpp_' + Math.random().toString(36).substring(2, 6),
+      title: params.dppTitle || `${params.lectureTitle.replace(/lecture/i, 'DPP').trim() || 'DPP Practice'}`,
+      completed: false,
+      subjectId: params.subjectId,
+      chapterId: params.chapterId,
+      tags: ['DPP'],
+      createdAt: now + 1,
+      chainId,
+      chainType: 'dpp',
+      orderIndex: 1,
+      prevTaskId: prevTask.id,
+      dueDate: params.dueDate,
+    };
+    prevTask.nextTaskId = dppTask.id;
+    createdTasks.push(dppTask);
+    prevTask = dppTask;
+  }
+
+  // 3. Notes Task (if requested, default false for cleaner pipelines, or revision)
+  if (params.hasNotes) {
+    const notesTask: Task = {
+      id: 'task_' + (now + 2) + '_notes_' + Math.random().toString(36).substring(2, 6),
+      title: `Notes: ${params.lectureTitle}`,
+      completed: false,
+      subjectId: params.subjectId,
+      chapterId: params.chapterId,
+      tags: ['Notes'],
+      createdAt: now + 2,
+      chainId,
+      chainType: 'notes',
+      orderIndex: createdTasks.length,
+      prevTaskId: prevTask.id,
+    };
+    prevTask.nextTaskId = notesTask.id;
+    createdTasks.push(notesTask);
+    prevTask = notesTask;
+  }
+
+  // 4. Revision Task (default connected to wrap up the learning loop)
+  if (params.hasRevision !== false) {
+    const revTask: Task = {
+      id: 'task_' + (now + 3) + '_rev_' + Math.random().toString(36).substring(2, 6),
+      title: `Revision: ${params.lectureTitle}`,
+      completed: false,
+      subjectId: params.subjectId,
+      chapterId: params.chapterId,
+      tags: ['Revision'],
+      createdAt: now + 3,
+      chainId,
+      chainType: 'revision',
+      orderIndex: createdTasks.length,
+      prevTaskId: prevTask.id,
+    };
+    prevTask.nextTaskId = revTask.id;
+    createdTasks.push(revTask);
+  }
+
+  tasks.value = [...createdTasks, ...tasks.value];
+  await persistData();
+  return createdTasks;
+}
+
+export async function addCustomFlowStep(parentTaskId: string, title: string): Promise<Task | null> {
+  const parent = tasks.value.find((t) => t.id === parentTaskId);
+  if (!parent) return null;
+
+  const now = Date.now();
+  const newTask: Task = {
+    id: 'task_' + now + '_cust_' + Math.random().toString(36).substring(2, 6),
+    title: title.trim(),
+    completed: false,
+    subjectId: parent.subjectId,
+    chapterId: parent.chapterId,
+    tags: ['Bonus'],
+    createdAt: now,
+    chainId: parent.chainId,
+    chainType: 'custom',
+    orderIndex: (parent.orderIndex || 0) + 1,
+    prevTaskId: parent.id,
+  };
+
+  // Link parent to new task
+  const oldNextId = parent.nextTaskId;
+  parent.nextTaskId = newTask.id;
+  if (oldNextId) {
+    newTask.nextTaskId = oldNextId;
+    const oldNext = tasks.value.find((t) => t.id === oldNextId);
+    if (oldNext) oldNext.prevTaskId = newTask.id;
+  }
+
+  tasks.value = [newTask, ...tasks.value];
+  await persistData();
+  return newTask;
+}
+
+export async function connectTasks(fromTaskId: string, toTaskId: string): Promise<void> {
+  tasks.value = tasks.value.map((t) => {
+    if (t.id === fromTaskId) {
+      return { ...t, nextTaskId: toTaskId };
+    }
+    if (t.id === toTaskId) {
+      return { ...t, prevTaskId: fromTaskId };
+    }
+    return t;
+  });
+  await persistData();
+}
+
+export async function disconnectTasks(fromTaskId: string): Promise<void> {
+  const fromTask = tasks.value.find((t) => t.id === fromTaskId);
+  if (!fromTask || !fromTask.nextTaskId) return;
+
+  const toTaskId = fromTask.nextTaskId;
+  tasks.value = tasks.value.map((t) => {
+    if (t.id === fromTaskId) {
+      return { ...t, nextTaskId: undefined };
+    }
+    if (t.id === toTaskId) {
+      return { ...t, prevTaskId: undefined };
+    }
+    return t;
+  });
+  await persistData();
+}
+
+
 
 // Tag Management (used in Settings)
 export async function addCustomTag(name: string, color: string): Promise<boolean> {

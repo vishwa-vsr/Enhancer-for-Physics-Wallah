@@ -20,6 +20,7 @@ import { AddSubjectModal } from './components/AddSubjectModal';
 import { AddChapterModal } from './components/AddChapterModal';
 import { ConfirmModal } from './components/ConfirmModal';
 import { SettingsView } from './components/SettingsView';
+import { FlowView } from './components/FlowView';
 import styles from './App.module.css';
 
 export const App = () => {
@@ -147,7 +148,7 @@ export const App = () => {
         />
 
         <main class={styles.scrollArea}>
-          <div class={styles.contentMaxWidth}>
+          <div class={currentView.type === 'chapter' ? styles.flowFullWidth : styles.contentMaxWidth}>
             {currentView.type === 'settings' ? (
               <SettingsView />
             ) : (
@@ -162,8 +163,13 @@ export const App = () => {
                   </div>
                 )}
 
-                {/* Task List */}
-                {taskList.length === 0 ? null : (
+                {/* Chapters are exclusively Flow View */}
+                {currentView.type === 'chapter' && currentView.chapterId ? (
+                  <FlowView
+                    chapterId={currentView.chapterId}
+                    subjectId={currentView.subjectId || ''}
+                  />
+                ) : taskList.length === 0 ? null : (
                   taskList.map((task) => <TaskItem key={task.id} task={task} />)
                 )}
               </>

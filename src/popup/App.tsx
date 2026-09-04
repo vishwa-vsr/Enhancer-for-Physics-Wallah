@@ -16,6 +16,7 @@ import { SpeedTab } from './features/speed/SpeedTab';
 import { FocusTab } from './features/focus/FocusTab';
 import { SilenceTab } from './features/silence/SilenceTab';
 import { ReviewModal } from './features/review/ReviewModal';
+import { SyncBanner } from './features/sync/SyncBanner';
 
 const tabs = [
   {
@@ -87,6 +88,7 @@ export const App = () => {
     <div class={styles.popupContainer}>
       {isLoading.value && <LoadingOverlay />}
       <Header />
+      <SyncBanner />
       <TabBar
         tabs={tabs}
         activeTab={activeTab.value}
