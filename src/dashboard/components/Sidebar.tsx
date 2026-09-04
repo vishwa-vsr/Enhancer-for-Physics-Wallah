@@ -7,6 +7,7 @@ import {
   expandedSubjects,
   toggleSubjectExpanded,
 } from '../store';
+import { StudyIcon } from '@shared/components/StudyIcons';
 import styles from './Sidebar.module.css';
 
 interface SidebarProps {
@@ -153,19 +154,12 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
                   }}
                 >
                   <div class={styles.subjectLeft}>
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      width="18"
-                      height="18"
+                    <StudyIcon
+                      name={sub.icon || 'book'}
+                      size={18}
+                      color={sub.color || 'var(--accent-primary)'}
                       class={styles.subjectBookIcon}
-                    >
-                      <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
-                      <path d="M6 6h10" />
-                      <path d="M6 10h10" />
-                    </svg>
+                    />
                     <span class={styles.subjectName}>{sub.name}</span>
                   </div>
                 </div>
@@ -197,24 +191,16 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
                             }}
                           >
                             <div class={styles.chapterLeft}>
-                              <div class={styles.chapterIcon}>
-                                <svg
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth={2}
-                                  width="14"
-                                  height="14"
-                                  style={{
-                                    color: isChapActive
-                                      ? 'var(--accent-primary)'
-                                      : 'var(--text-muted)',
-                                  }}
-                                >
-                                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-                                  <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-                                </svg>
-                              </div>
+                              <StudyIcon
+                                name={chap.icon || 'file-text'}
+                                size={14}
+                                color={
+                                  isChapActive
+                                    ? 'var(--accent-primary)'
+                                    : 'var(--text-muted)'
+                                }
+                                class={styles.chapterIcon}
+                              />
                               <span class={styles.chapterName}>{chap.name}</span>
                             </div>
                           </div>

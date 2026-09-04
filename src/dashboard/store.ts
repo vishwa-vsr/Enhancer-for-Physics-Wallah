@@ -14,10 +14,10 @@ export const DEFAULT_TAGS: TagItem[] = [
 ];
 
 const DEFAULT_SUBJECTS_DATA = [
-  { name: 'Maths', color: '#f59e0b' },
-  { name: 'Physics', color: '#6b7fd7' },
-  { name: 'Chemistry', color: '#10b981' },
-  { name: 'Bio', color: '#ec4899' },
+  { name: 'Maths', color: '#6366f1', icon: 'calculator' },
+  { name: 'Physics', color: '#3b82f6', icon: 'atom' },
+  { name: 'Chemistry', color: '#10b981', icon: 'flask' },
+  { name: 'Bio', color: '#ec4899', icon: 'dna' },
 ];
 
 export const subjects = signal<Subject[]>([]);
@@ -41,12 +41,14 @@ function initializeDefaultSubjects(): void {
       id: subId,
       name: s.name,
       color: s.color,
+      icon: s.icon,
       createdAt: now + idx,
     });
     defaultChaps.push({
       id: chapId,
       name: 'Chapter 1',
       subjectId: subId,
+      icon: 'file-text',
       createdAt: now + idx,
     });
   });
@@ -81,8 +83,19 @@ export async function loadPlannerData(): Promise<void> {
     }
 
     if (loadedData) {
-      subjects.value = loadedData.subjects || [];
-      chapters.value = loadedData.chapters || [];
+      subjects.value = (loadedData.subjects || []).map((s) => {
+        if (!s.icon) {
+          const match = DEFAULT_SUBJECTS_DATA.find(
+            (d) => d.name.toLowerCase() === s.name.toLowerCase(),
+          );
+          return { ...s, icon: match ? match.icon : 'book' };
+        }
+        return s;
+      });
+      chapters.value = (loadedData.chapters || []).map((c) => ({
+        ...c,
+        icon: c.icon || 'file-text',
+      }));
       tasks.value = loadedData.tasks || [];
       if (loadedData.tags && loadedData.tags.length > 0) {
         customTags.value = loadedData.tags;
@@ -127,11 +140,16 @@ async function persistData(): Promise<void> {
 }
 
 // Subject actions
-export async function addSubject(name: string, color?: string): Promise<Subject> {
+export async function addSubject(
+  name: string,
+  color?: string,
+  icon?: string,
+): Promise<Subject> {
   const newSubject: Subject = {
     id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
     name: name.trim(),
-    color: color || '#6c63ff',
+    color: color || '#6366f1',
+    icon: icon || 'book',
     createdAt: Date.now(),
   };
   subjects.value = [...subjects.value, newSubject];
@@ -143,9 +161,25 @@ export async function addSubject(name: string, color?: string): Promise<Subject>
   return newSubject;
 }
 
-export async function renameSubject(id: string, newName: string): Promise<void> {
-  subjects.value = subjects.value.map((s) => (s.id === id ? { ...s, name: newName.trim() } : s));
+export async function updateSubject(
+  id: string,
+  updates: { name?: string; color?: string; icon?: string },
+): Promise<void> {
+  subjects.value = subjects.value.map((s) =>
+    s.id === id
+      ? {
+          ...s,
+          name: updates.name !== undefined ? updates.name.trim() : s.name,
+          color: updates.color !== undefined ? updates.color : s.color,
+          icon: updates.icon !== undefined ? updates.icon : s.icon,
+        }
+      : s,
+  );
   await persistData();
+}
+
+export async function renameSubject(id: string, newName: string): Promise<void> {
+  await updateSubject(id, { name: newName });
 }
 
 export async function deleteSubject(id: string): Promise<void> {
@@ -166,11 +200,16 @@ export async function deleteSubject(id: string): Promise<void> {
 }
 
 // Chapter actions
-export async function addChapter(subjectId: string, name: string): Promise<Chapter> {
+export async function addChapter(
+  subjectId: string,
+  name: string,
+  icon?: string,
+): Promise<Chapter> {
   const newChapter: Chapter = {
     id: 'chap_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
     name: name.trim(),
     subjectId,
+    icon: icon || 'file-text',
     createdAt: Date.now(),
   };
   chapters.value = [...chapters.value, newChapter];
@@ -187,9 +226,24 @@ export async function addChapter(subjectId: string, name: string): Promise<Chapt
   return newChapter;
 }
 
-export async function renameChapter(id: string, newName: string): Promise<void> {
-  chapters.value = chapters.value.map((c) => (c.id === id ? { ...c, name: newName.trim() } : c));
+export async function updateChapter(
+  id: string,
+  updates: { name?: string; icon?: string },
+): Promise<void> {
+  chapters.value = chapters.value.map((c) =>
+    c.id === id
+      ? {
+          ...c,
+          name: updates.name !== undefined ? updates.name.trim() : c.name,
+          icon: updates.icon !== undefined ? updates.icon : c.icon,
+        }
+      : c,
+  );
   await persistData();
+}
+
+export async function renameChapter(id: string, newName: string): Promise<void> {
+  await updateChapter(id, { name: newName });
 }
 
 export async function deleteChapter(id: string): Promise<void> {

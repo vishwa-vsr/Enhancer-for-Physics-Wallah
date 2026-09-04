@@ -187,3 +187,90 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* Color & Icon Pickers */
+.colorGrid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.colorBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.colorBtnSelected {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--bg-card);
+}
+
+.colorInner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: block;
+}
+
+.iconGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  max-height: 140px;
+  overflow-y: auto;
+  padding: 4px;
+  background-color: var(--bg-control);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.iconBtn {
+  height: 38px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.iconBtn:hover {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.iconBtnSelected {
+  background-color: var(--accent-dim) !important;
+  border-color: var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
+}
+
+.deleteActionBtn {
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.deleteActionBtn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}

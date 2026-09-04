@@ -21,6 +21,7 @@ export interface Chapter {
   id: string;
   name: string;
   subjectId: string;
+  icon?: string;
   createdAt: number;
 }
 
@@ -28,6 +29,7 @@ export interface Subject {
   id: string;
   name: string;
   color?: string;
+  icon?: string;
   createdAt: number;
 }
 
