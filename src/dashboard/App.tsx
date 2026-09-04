@@ -131,7 +131,10 @@ export const App = () => {
   return (
     <div class={styles.dashboardContainer}>
       {/* Left Sidebar */}
-      <Sidebar onOpenAddSubject={handleOpenAddSubject} />
+      <Sidebar
+        onOpenAddSubject={handleOpenAddSubject}
+        onRenameSubject={handleRenameSubject}
+      />
 
       {/* Main Area */}
       <div class={styles.mainWrapper}>

@@ -26,10 +26,19 @@ export const AddChapterModal = ({
   const [icon, setIcon] = useState(
     editingChapter && editingChapter.icon ? editingChapter.icon : 'file-text',
   );
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+
+  const categories = ['All', 'Math', 'Physics', 'Chemistry & Biology', 'Tech & Code', 'Study & General'];
+
+  const displayedIcons =
+    selectedCategory === 'All'
+      ? STUDY_ICONS_LIST
+      : STUDY_ICONS_LIST.filter((i) => i.category === selectedCategory);
 
   useEffect(() => {
     setName(editingChapter ? editingChapter.name : '');
     setIcon(editingChapter && editingChapter.icon ? editingChapter.icon : 'file-text');
+    setSelectedCategory('All');
   }, [editingChapter, open]);
 
   const handleSubmit = async (e: Event) => {
@@ -99,9 +108,28 @@ export const AddChapterModal = ({
 
           {/* Chapter Icon */}
           <div class={styles.formGroup}>
-            <label class={styles.label}>Chapter Icon</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label class={styles.label} style={{ margin: 0 }}>Chapter Icon</label>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                {STUDY_ICONS_LIST.find((i) => i.id === icon)?.label || icon}
+              </span>
+            </div>
+
+            <div class={styles.iconCategoryBar}>
+              {categories.map((cat) => (
+                <button
+                  type="button"
+                  key={cat}
+                  class={`${styles.iconCategoryChip} ${selectedCategory === cat ? styles.iconCategoryChipActive : ''}`}
+                  onClick={() => setSelectedCategory(cat)}
+                >
+                  {cat === 'Chemistry & Biology' ? 'Chem & Bio' : cat === 'Study & General' ? 'General' : cat}
+                </button>
+              ))}
+            </div>
+
             <div class={styles.iconGrid}>
-              {STUDY_ICONS_LIST.map((item) => (
+              {displayedIcons.map((item) => (
                 <button
                   type="button"
                   key={item.id}

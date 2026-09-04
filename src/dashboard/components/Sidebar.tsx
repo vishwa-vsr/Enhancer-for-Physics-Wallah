@@ -7,14 +7,16 @@ import {
   expandedSubjects,
   toggleSubjectExpanded,
 } from '../store';
+import { Subject } from '../types';
 import { StudyIcon } from '@shared/components/StudyIcons';
 import styles from './Sidebar.module.css';
 
 interface SidebarProps {
   onOpenAddSubject: () => void;
+  onRenameSubject: (subject: Subject) => void;
 }
 
-export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
+export const Sidebar = ({ onOpenAddSubject, onRenameSubject }: SidebarProps) => {
   const currentView = activeView.value;
 
   // Counts for top views only
@@ -134,12 +136,14 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
           subjects.value.map((sub) => {
             const isExpanded = !!expandedSubjects.value[sub.id];
             const subChapters = chapters.value.filter((c) => c.subjectId === sub.id);
+            const isSubActive =
+              currentView.type === 'chapter' && currentView.subjectId === sub.id;
 
             return (
               <div key={sub.id} class={styles.subjectGroup}>
-                {/* Subject Item: Arrow completely removed, Book icon aligns with Calendar icon */}
+                {/* Subject Item: Arrow completely removed, Book icon aligns with Calendar icon, ••• on right */}
                 <div
-                  class={styles.subjectItem}
+                  class={`${styles.subjectItem} ${isSubActive ? styles.subjectItemActive : ''}`}
                   onClick={() => {
                     toggleSubjectExpanded(sub.id);
                     if (activeView.value.type === 'settings' || activeView.value.subjectId !== sub.id) {
@@ -162,6 +166,22 @@ export const Sidebar = ({ onOpenAddSubject }: SidebarProps) => {
                     />
                     <span class={styles.subjectName}>{sub.name}</span>
                   </div>
+
+                  <button
+                    type="button"
+                    class={styles.subjectMenuBtn}
+                    aria-label={`Options for ${sub.name}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRenameSubject(sub);
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                      <circle cx="5" cy="12" r="2.2" />
+                      <circle cx="12" cy="12" r="2.2" />
+                      <circle cx="19" cy="12" r="2.2" />
+                    </svg>
+                  </button>
                 </div>
 
                 {isExpanded && (
