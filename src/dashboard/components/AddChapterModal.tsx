@@ -2,6 +2,7 @@ import { useState, useEffect } from 'preact/hooks';
 import { addChapter, updateChapter, subjects } from '../store';
 import { Chapter } from '../types';
 import { StudyIcon, STUDY_ICONS_LIST } from '@shared/components/StudyIcons';
+import { getAlphaColor } from '@shared/theme';
 import styles from './AddTaskDialog.module.css';
 
 interface AddChapterModalProps {
@@ -129,24 +130,33 @@ export const AddChapterModal = ({
             </div>
 
             <div class={styles.iconGrid}>
-              {displayedIcons.map((item) => (
-                <button
-                  type="button"
-                  key={item.id}
-                  class={`${styles.iconBtn} ${icon === item.id ? styles.iconBtnSelected : ''}`}
-                  onClick={() => setIcon(item.id)}
-                >
-                  <StudyIcon
-                    name={item.id}
-                    size={18}
-                    color={
-                      icon === item.id
-                        ? 'var(--accent-primary)'
-                        : 'var(--text-secondary)'
+              {displayedIcons.map((item) => {
+                const isSelected = icon === item.id;
+                const subjectColor = subject?.color || 'var(--accent-primary)';
+                return (
+                  <button
+                    type="button"
+                    key={item.id}
+                    class={`${styles.iconBtn} ${isSelected ? styles.iconBtnSelected : ''}`}
+                    style={
+                      isSelected && subject?.color
+                        ? {
+                            borderColor: subject.color,
+                            backgroundColor: getAlphaColor(subject.color, 0.16),
+                            color: subject.color,
+                          }
+                        : undefined
                     }
-                  />
-                </button>
-              ))}
+                    onClick={() => setIcon(item.id)}
+                  >
+                    <StudyIcon
+                      name={item.id}
+                      size={18}
+                      color={isSelected ? subjectColor : 'var(--text-secondary)'}
+                    />
+                  </button>
+                );
+              })}
             </div>
           </div>
 

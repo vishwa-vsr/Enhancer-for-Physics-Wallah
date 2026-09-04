@@ -263,13 +263,17 @@
 .iconGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  align-content: start;
   gap: 6px;
+  height: 160px;
+  min-height: 160px;
   max-height: 160px;
   overflow-y: auto;
   padding: 6px;
   background-color: var(--bg-control);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
+  box-sizing: border-box;
 }
 
 .iconGrid::-webkit-scrollbar {

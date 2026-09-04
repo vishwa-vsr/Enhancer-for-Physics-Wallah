@@ -2,6 +2,7 @@ import { useState, useEffect } from 'preact/hooks';
 import { addSubject, updateSubject } from '../store';
 import { Subject } from '../types';
 import { StudyIcon, STUDY_ICONS_LIST } from '@shared/components/StudyIcons';
+import { getAlphaColor } from '@shared/theme';
 import styles from './AddTaskDialog.module.css';
 
 interface AddSubjectModalProps {
@@ -155,20 +156,32 @@ export const AddSubjectModal = ({
             </div>
 
             <div class={styles.iconGrid}>
-              {displayedIcons.map((item) => (
-                <button
-                  type="button"
-                  key={item.id}
-                  class={`${styles.iconBtn} ${icon === item.id ? styles.iconBtnSelected : ''}`}
-                  onClick={() => setIcon(item.id)}
-                >
-                  <StudyIcon
-                    name={item.id}
-                    size={20}
-                    color={icon === item.id ? color : 'var(--text-secondary)'}
-                  />
-                </button>
-              ))}
+              {displayedIcons.map((item) => {
+                const isSelected = icon === item.id;
+                return (
+                  <button
+                    type="button"
+                    key={item.id}
+                    class={`${styles.iconBtn} ${isSelected ? styles.iconBtnSelected : ''}`}
+                    style={
+                      isSelected
+                        ? {
+                            borderColor: color,
+                            backgroundColor: getAlphaColor(color, 0.16),
+                            color,
+                          }
+                        : undefined
+                    }
+                    onClick={() => setIcon(item.id)}
+                  >
+                    <StudyIcon
+                      name={item.id}
+                      size={20}
+                      color={isSelected ? color : 'var(--text-secondary)'}
+                    />
+                  </button>
+                );
+              })}
             </div>
           </div>
 

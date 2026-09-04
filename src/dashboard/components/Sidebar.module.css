@@ -300,9 +300,9 @@
 }
 
 .chapterItemActive {
-  background-color: var(--accent-dim) !important;
-  color: var(--accent-primary) !important;
-  font-weight: 500 !important;
+  background-color: var(--accent-dim);
+  color: var(--accent-primary);
+  font-weight: 500;
 }
 
 .chapterItemActive .badge {

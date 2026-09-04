@@ -9,6 +9,7 @@ import {
 } from '../store';
 import { Subject } from '../types';
 import { StudyIcon } from '@shared/components/StudyIcons';
+import { getLightShade, getAlphaColor } from '@shared/theme';
 import styles from './Sidebar.module.css';
 
 interface SidebarProps {
@@ -138,6 +139,9 @@ export const Sidebar = ({ onOpenAddSubject, onRenameSubject }: SidebarProps) => 
             const subChapters = chapters.value.filter((c) => c.subjectId === sub.id);
             const isSubActive =
               currentView.type === 'chapter' && currentView.subjectId === sub.id;
+            const subColor = sub.color || '#6366f1';
+            const chapterIconLightColor = getLightShade(subColor, 30);
+            const chapterActiveBg = getAlphaColor(subColor, 0.14);
 
             return (
               <div key={sub.id} class={styles.subjectGroup}>
@@ -202,6 +206,14 @@ export const Sidebar = ({ onOpenAddSubject, onRenameSubject }: SidebarProps) => 
                           <div
                             key={chap.id}
                             class={`${styles.chapterItem} ${isChapActive ? styles.chapterItemActive : ''}`}
+                            style={
+                              isChapActive
+                                ? {
+                                    backgroundColor: chapterActiveBg,
+                                    color: subColor,
+                                  }
+                                : undefined
+                            }
                             onClick={() => {
                               activeView.value = {
                                 type: 'chapter',
@@ -214,11 +226,7 @@ export const Sidebar = ({ onOpenAddSubject, onRenameSubject }: SidebarProps) => 
                               <StudyIcon
                                 name={chap.icon || 'file-text'}
                                 size={14}
-                                color={
-                                  isChapActive
-                                    ? 'var(--accent-primary)'
-                                    : 'var(--text-muted)'
-                                }
+                                color={isChapActive ? subColor : chapterIconLightColor}
                                 class={styles.chapterIcon}
                               />
                               <span class={styles.chapterName}>{chap.name}</span>
