@@ -137,17 +137,14 @@ export const Sidebar = ({ onOpenAddSubject, onRenameSubject }: SidebarProps) => 
           subjects.value.map((sub) => {
             const isExpanded = !!expandedSubjects.value[sub.id];
             const subChapters = chapters.value.filter((c) => c.subjectId === sub.id);
-            const isSubActive =
-              currentView.type === 'chapter' && currentView.subjectId === sub.id;
             const subColor = sub.color || '#6366f1';
             const chapterIconLightColor = getLightShade(subColor, 30);
             const chapterActiveBg = getAlphaColor(subColor, 0.14);
 
             return (
               <div key={sub.id} class={styles.subjectGroup}>
-                {/* Subject Item: Arrow completely removed, Book icon aligns with Calendar icon, ••• on right */}
                 <div
-                  class={`${styles.subjectItem} ${isSubActive ? styles.subjectItemActive : ''}`}
+                  class={styles.subjectItem}
                   onClick={() => {
                     toggleSubjectExpanded(sub.id);
                     if (activeView.value.type === 'settings' || activeView.value.subjectId !== sub.id) {

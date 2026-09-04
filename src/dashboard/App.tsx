@@ -146,8 +146,8 @@ export const App = () => {
               <SettingsView />
             ) : (
               <>
-                {/* Stats Section */}
-                <StatsCards />
+                {/* Stats Section: only in Today tab */}
+                {currentView.type === 'today' && <StatsCards />}
 
                 {/* Tasks Section Header with Action Icons */}
                 <div class={styles.viewHeader}>
@@ -220,24 +220,7 @@ export const App = () => {
                         >
                           <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                         </svg>
-                        Rename
-                      </button>
-                      <button
-                        class={styles.headerActionBtnDanger}
-                        onClick={() => handleDeleteChapter(activeChapter)}
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          width="12"
-                          height="12"
-                        >
-                          <path d="M3 6h18" />
-                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                        </svg>
-                        Delete
+                        Edit
                       </button>
                     </div>
                   )}

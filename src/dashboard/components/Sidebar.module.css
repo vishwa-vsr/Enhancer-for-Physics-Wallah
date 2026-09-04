@@ -211,11 +211,6 @@
   color: var(--text-primary);
 }
 
-.subjectItemActive {
-  background-color: var(--bg-control);
-  color: var(--text-primary);
-}
-
 .subjectMenuBtn {
   display: flex;
   align-items: center;
@@ -233,8 +228,7 @@
   margin-left: 6px;
 }
 
-.subjectItem:hover .subjectMenuBtn,
-.subjectItemActive .subjectMenuBtn {
+.subjectItem:hover .subjectMenuBtn {
   opacity: 1;
 }
 
