@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
-import { subjects, chapters, addTask, activeView, customTags } from '../store';
+import { subjects, chapters, addTask, activeView } from '../store';
 import styles from './AddTaskDialog.module.css';
 
 interface AddTaskDialogProps {
@@ -28,7 +28,6 @@ export const AddTaskDialog = ({
 
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [selectedPillTags, setSelectedPillTags] = useState<string[]>([]);
 
   useEffect(() => {
     const chaps = chapters.value.filter((c) => c.subjectId === selectedSubjectId);
@@ -36,14 +35,6 @@ export const AddTaskDialog = ({
       setSelectedChapterId(chaps[0].id);
     }
   }, [selectedSubjectId]);
-
-  const toggleTagPill = (tag: string) => {
-    if (selectedPillTags.includes(tag)) {
-      setSelectedPillTags(selectedPillTags.filter((t) => t !== tag));
-    } else {
-      setSelectedPillTags([...selectedPillTags, tag]);
-    }
-  };
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -53,7 +44,7 @@ export const AddTaskDialog = ({
       title: title.trim(),
       completed: false,
       dueDate: dueDate || undefined,
-      tags: selectedPillTags,
+      tags: [],
       subjectId: selectedSubjectId,
       chapterId: selectedChapterId,
     });
@@ -150,27 +141,6 @@ export const AddTaskDialog = ({
               value={dueDate}
               onInput={(e) => setDueDate((e.target as HTMLInputElement).value)}
             />
-          </div>
-
-          {/* Tags from Settings */}
-          <div class={styles.formGroup}>
-            <label class={styles.label}>Tags</label>
-            <div class={styles.tagSuggestions}>
-              {customTags.value.map((tagObj) => {
-                const t = tagObj.name;
-                const isActive = selectedPillTags.includes(t);
-                return (
-                  <button
-                    type="button"
-                    key={t}
-                    class={`${styles.tagPill} ${isActive ? styles.tagPillActive : ''}`}
-                    onClick={() => toggleTagPill(t)}
-                  >
-                    {t}
-                  </button>
-                );
-              })}
-            </div>
           </div>
 
           {/* Modal Footer */}

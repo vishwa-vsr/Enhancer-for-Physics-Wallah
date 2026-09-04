@@ -134,11 +134,17 @@ export const App = () => {
       <Sidebar
         onOpenAddSubject={handleOpenAddSubject}
         onRenameSubject={handleRenameSubject}
+        onOpenAddChapter={handleOpenAddChapter}
       />
 
       {/* Main Area */}
       <div class={styles.mainWrapper}>
-        <Header />
+        <Header
+          onOpenAddChapter={handleOpenAddChapter}
+          onOpenAddTask={() => setTaskModalOpen(true)}
+          onEditChapter={handleRenameChapter}
+          onEditSubject={handleRenameSubject}
+        />
 
         <main class={styles.scrollArea}>
           <div class={styles.contentMaxWidth}>
@@ -149,82 +155,12 @@ export const App = () => {
                 {/* Stats Section: only in Today tab */}
                 {currentView.type === 'today' && <StatsCards />}
 
-                {/* Tasks Section Header with Action Icons */}
-                <div class={styles.viewHeader}>
-                  <div class={styles.viewHeaderLeft}>
-                    {activeSubject && (
-                      <div class={styles.viewBreadcrumbsRow}>
-                        <span class={styles.viewBreadcrumb}>{activeSubject.name}</span>
-                        <button
-                          class={styles.headerIconBtn}
-                          onClick={() => handleRenameSubject(activeSubject)}
-                        >
-                          <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
-                            <circle cx="5" cy="12" r="2.2" />
-                            <circle cx="12" cy="12" r="2.2" />
-                            <circle cx="19" cy="12" r="2.2" />
-                          </svg>
-                        </button>
-                      </div>
-                    )}
+                {/* Tasks Section Header: only in Today / Upcoming */}
+                {currentView.type !== 'chapter' && (
+                  <div class={styles.viewHeader}>
                     <h2 class={styles.viewTitle}>{title}</h2>
                   </div>
-
-                  {activeChapter && activeSubject && (
-                    <div class={styles.headerActionGroup}>
-                      <button
-                        class={styles.headerActionBtn}
-                        onClick={() => handleOpenAddChapter(activeSubject.id)}
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2.5}
-                          width="12"
-                          height="12"
-                        >
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        Add Chapter
-                      </button>
-                      <button
-                        class={styles.headerActionBtnPrimary}
-                        onClick={() => setTaskModalOpen(true)}
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2.5}
-                          width="12"
-                          height="12"
-                        >
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        Add Task
-                      </button>
-                      <button
-                        class={styles.headerActionBtn}
-                        onClick={() => handleRenameChapter(activeChapter)}
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          width="12"
-                          height="12"
-                        >
-                          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                        </svg>
-                        Edit
-                      </button>
-                    </div>
-                  )}
-                </div>
+                )}
 
                 {/* Task List */}
                 {taskList.length === 0 ? null : (

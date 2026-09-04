@@ -114,30 +114,6 @@
   color: var(--text-primary);
 }
 
-.tagSuggestions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.tagPill {
-  padding: 5px 12px;
-  border-radius: var(--radius-full);
-  font-size: 12.5px;
-  font-weight: 500;
-  background-color: var(--bg-control);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  cursor: pointer;
-}
-
-.tagPill:hover,
-.tagPillActive {
-  background-color: var(--accent-dim);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-}
 
 .modalFooter {
   display: flex;

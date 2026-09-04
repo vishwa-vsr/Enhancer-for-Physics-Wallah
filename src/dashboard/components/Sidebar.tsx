@@ -15,9 +15,14 @@ import styles from './Sidebar.module.css';
 interface SidebarProps {
   onOpenAddSubject: () => void;
   onRenameSubject: (subject: Subject) => void;
+  onOpenAddChapter?: (subjectId: string) => void;
 }
 
-export const Sidebar = ({ onOpenAddSubject, onRenameSubject }: SidebarProps) => {
+export const Sidebar = ({
+  onOpenAddSubject,
+  onRenameSubject,
+  onOpenAddChapter,
+}: SidebarProps) => {
   const currentView = activeView.value;
 
   // Counts for top views only
@@ -148,13 +153,11 @@ export const Sidebar = ({ onOpenAddSubject, onRenameSubject }: SidebarProps) => 
                   onClick={() => {
                     toggleSubjectExpanded(sub.id);
                     if (activeView.value.type === 'settings' || activeView.value.subjectId !== sub.id) {
-                      if (subChapters.length > 0) {
-                        activeView.value = {
-                          type: 'chapter',
-                          subjectId: sub.id,
-                          chapterId: subChapters[0].id,
-                        };
-                      }
+                      activeView.value = {
+                        type: 'chapter',
+                        subjectId: sub.id,
+                        chapterId: subChapters.length > 0 ? subChapters[0].id : '',
+                      };
                     }
                   }}
                 >
@@ -188,12 +191,16 @@ export const Sidebar = ({ onOpenAddSubject, onRenameSubject }: SidebarProps) => 
                 {isExpanded && (
                   <div class={styles.chaptersList}>
                     {subChapters.length === 0 ? (
-                      <span
+                      <div
                         class={styles.chapterItem}
-                        style={{ color: 'var(--text-muted)', fontStyle: 'italic', cursor: 'default' }}
+                        style={{ color: 'var(--accent-primary)', cursor: 'pointer', fontSize: '12px' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (onOpenAddChapter) onOpenAddChapter(sub.id);
+                        }}
                       >
-                        No chapters
-                      </span>
+                        + Add Chapter
+                      </div>
                     ) : (
                       subChapters.map((chap) => {
                         const isChapActive =
