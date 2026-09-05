@@ -432,20 +432,14 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #7c3aed;
-  background: rgba(124, 58, 237, 0.1);
+  color: var(--accent-primary);
+  background: var(--accent-dim);
   border: none;
   border-radius: var(--radius-full);
   padding: 2px 6px;
   line-height: 1.2;
   vertical-align: middle;
   margin-left: 6px;
-}
-
-:global(body:not(.light-theme)) .newBadge,
-:global(body:not(.light-theme)) .betaBadge {
-  color: #a78bfa;
-  background: rgba(167, 139, 250, 0.15);
 }
 
 /* === Shortcuts & Controls Card === */

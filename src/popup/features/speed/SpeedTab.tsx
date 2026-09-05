@@ -305,7 +305,7 @@ export function SpeedTab() {
 
         <div class={styles.hudFooterRow}>
           <label class={styles.hudFooterTitle} onClick={() => { constantVideoQuality.value = !constantVideoQuality.value; saveSetting('constantVideoQuality', constantVideoQuality.value); }}>
-            Constant Video Quality <span class={styles.newBadge}>NEW</span>
+            Constant Video Quality <span class={styles.betaBadge}>BETA</span>
           </label>
           <Toggle
             checked={constantVideoQuality.value}

@@ -3,12 +3,122 @@
 // Directly interacts with Video.js, VHS, and stream quality levels
 
 (function initPwcEngineBridge() {
-  if ((window as any).__PWC_ENGINE_BRIDGE_INITIALIZED__) return;
-  (window as any).__PWC_ENGINE_BRIDGE_INITIALIZED__ = true;
+  interface VhsOptions {
+    bandwidth?: number;
+    limitRenditionByPlayerDimensions?: boolean;
+    enableLowInitialPlaylist?: boolean;
+    useBandwidthFromLocalStorage?: boolean;
+    [key: string]: unknown;
+  }
 
-  let targetQuality: string = (window as any).__PWC_LAST_TARGET_QUALITY__ || '720p';
-  let purgeTimeout: any = null;
-  let activePollTimer: any = null;
+  interface PlaylistAttributes {
+    RESOLUTION?: {
+      width?: number;
+      height?: number;
+    };
+    BANDWIDTH?: number;
+    [key: string]: unknown;
+  }
+
+  interface PlaylistEntry {
+    attributes?: PlaylistAttributes;
+    uri?: string;
+    [key: string]: unknown;
+  }
+
+  interface MasterPlaylist {
+    playlists?: PlaylistEntry[];
+    [key: string]: unknown;
+  }
+
+  interface VhsRepresentation {
+    height?: number;
+    width?: number;
+    bandwidth?: number;
+    enabled?: (enable?: boolean) => boolean;
+    [key: string]: unknown;
+  }
+
+  interface VhsTech {
+    bandwidth?: number;
+    playlists?: {
+      master?: MasterPlaylist;
+      media?: (playlist?: PlaylistEntry) => PlaylistEntry | undefined;
+      [key: string]: unknown;
+    };
+    selectPlaylist?: () => PlaylistEntry | undefined;
+    representations?: () => VhsRepresentation[];
+    mainSegmentLoader_?: {
+      abort?: () => void;
+      reset_?: () => void;
+      [key: string]: unknown;
+    };
+    masterPlaylistController_?: {
+      mediaSource?: MediaSource;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  }
+
+  interface QualityLevel {
+    id?: string;
+    label?: string;
+    width?: number;
+    height?: number;
+    bitrate?: number;
+    enabled?: boolean;
+    [key: string]: unknown;
+  }
+
+  interface QualityLevelList {
+    length: number;
+    [index: number]: QualityLevel;
+    on?: (event: string, callback: () => void) => void;
+    addEventListener?: (event: string, callback: () => void) => void;
+    __pwc_attached?: boolean;
+    [key: string]: unknown;
+  }
+
+  interface PlayerTech extends VhsTech {
+    vhs?: VhsTech;
+    representations?: () => VhsRepresentation[];
+  }
+
+  interface VideoJsPlayer {
+    tech?: (options?: { IWillNotUseThisInPlugins?: boolean }) => PlayerTech | null;
+    qualityLevels?: () => QualityLevelList | null;
+    currentTime?: (time?: number) => number;
+    paused?: () => boolean;
+    __pwc_abr_hooked?: boolean;
+    [key: string]: unknown;
+  }
+
+  interface VideoJsGlobal {
+    options?: {
+      vhs?: VhsOptions;
+      html5?: {
+        vhs?: VhsOptions;
+        [key: string]: unknown;
+      };
+      [key: string]: unknown;
+    };
+    players?: Record<string, VideoJsPlayer>;
+    getAllPlayers?: () => VideoJsPlayer[];
+    [key: string]: unknown;
+  }
+
+  interface PwcWindow {
+    __PWC_ENGINE_BRIDGE_INITIALIZED__?: boolean;
+    __PWC_LAST_TARGET_QUALITY__?: string;
+    videojs?: VideoJsGlobal;
+  }
+
+  const pwcWin = window as unknown as PwcWindow;
+  if (pwcWin.__PWC_ENGINE_BRIDGE_INITIALIZED__) return;
+  pwcWin.__PWC_ENGINE_BRIDGE_INITIALIZED__ = true;
+
+  let targetQuality: string = pwcWin.__PWC_LAST_TARGET_QUALITY__ || '720p';
+  let activePollTimer: number | undefined = undefined;
 
   let isConstantQualityEnabled: boolean = false;
   try {
@@ -27,31 +137,33 @@
     } catch (_e) {}
   }
 
+  // Helper to configure high bandwidth options on VHS instances
+  function applyHighBandwidthProfile(vhs: VhsOptions): void {
+    vhs.bandwidth = 100000000; // 100 Mbps
+    vhs.limitRenditionByPlayerDimensions = false;
+    vhs.enableLowInitialPlaylist = false;
+    vhs.useBandwidthFromLocalStorage = true;
+  }
+
   // 2. Pre-configure global Video.js defaults to prevent low-res startup (only if constant quality is active)
-  function seedVideoJsOptions(vjs: any) {
+  function seedVideoJsOptions(vjs: VideoJsGlobal): void {
     if (!isConstantQualityEnabled || !vjs || !vjs.options) return;
     try {
       vjs.options.vhs = vjs.options.vhs || {};
-      vjs.options.vhs.bandwidth = 100000000;
-      vjs.options.vhs.limitRenditionByPlayerDimensions = false;
-      vjs.options.vhs.enableLowInitialPlaylist = false;
-      vjs.options.vhs.useBandwidthFromLocalStorage = true;
+      applyHighBandwidthProfile(vjs.options.vhs);
 
       if (vjs.options.html5) {
         vjs.options.html5.vhs = vjs.options.html5.vhs || {};
-        vjs.options.html5.vhs.bandwidth = 100000000;
-        vjs.options.html5.vhs.limitRenditionByPlayerDimensions = false;
-        vjs.options.html5.vhs.enableLowInitialPlaylist = false;
-        vjs.options.html5.vhs.useBandwidthFromLocalStorage = true;
+        applyHighBandwidthProfile(vjs.options.html5.vhs);
       }
       console.log('[PWC-QUALITY] Seeded Video.js global VHS options (100 Mbps)');
     } catch (_e) {}
   }
 
-  if (typeof (window as any).videojs !== 'undefined') {
-    seedVideoJsOptions((window as any).videojs);
+  if (pwcWin.videojs) {
+    seedVideoJsOptions(pwcWin.videojs);
   } else {
-    let _vjs = (window as any).videojs;
+    let _vjs: VideoJsGlobal | undefined = pwcWin.videojs;
     try {
       Object.defineProperty(window, 'videojs', {
         configurable: true,
@@ -59,7 +171,7 @@
         get() {
           return _vjs;
         },
-        set(val) {
+        set(val: VideoJsGlobal) {
           _vjs = val;
           seedVideoJsOptions(val);
         },
@@ -67,26 +179,26 @@
     } catch (_e) {}
   }
 
-  function getPlayer(): any {
+  function getPlayer(): VideoJsPlayer | null {
     try {
       // 1. Check video elements and parents
-      const videoEl = document.querySelector('video');
-      if (videoEl && (videoEl as any).player) {
-        return (videoEl as any).player;
+      const videoEl = document.querySelector('video') as (HTMLVideoElement & { player?: VideoJsPlayer }) | null;
+      if (videoEl && videoEl.player) {
+        return videoEl.player;
       }
-      if (videoEl?.parentElement && (videoEl.parentElement as any).player) {
-        return (videoEl.parentElement as any).player;
+      if (videoEl?.parentElement && (videoEl.parentElement as HTMLElement & { player?: VideoJsPlayer }).player) {
+        return (videoEl.parentElement as HTMLElement & { player?: VideoJsPlayer }).player!;
       }
 
       // 2. Check Video.js containers
-      const vjsEl = document.querySelector('.video-js, .video-player-app, [id^="vjs_video_"]');
-      if (vjsEl && (vjsEl as any).player) {
-        return (vjsEl as any).player;
+      const vjsEl = document.querySelector('.video-js, .video-player-app, [id^="vjs_video_"]') as (HTMLElement & { player?: VideoJsPlayer }) | null;
+      if (vjsEl && vjsEl.player) {
+        return vjsEl.player;
       }
 
       // 3. Check window.videojs players registry
-      if (typeof (window as any).videojs === 'function') {
-        const vjs = (window as any).videojs;
+      const vjs = (window as unknown as { videojs?: VideoJsGlobal }).videojs;
+      if (vjs) {
         if (vjs.players) {
           const keys = Object.keys(vjs.players);
           if (keys.length > 0) return vjs.players[keys[0]];
@@ -100,21 +212,22 @@
       // 4. Scan for any DOM element holding a .player property
       const elements = document.querySelectorAll('.video-js, [class*="vjs-"], video');
       for (let i = 0; i < elements.length; i++) {
-        if ((elements[i] as any).player) return (elements[i] as any).player;
+        const p = (elements[i] as HTMLElement & { player?: VideoJsPlayer }).player;
+        if (p) return p;
       }
     } catch (_e) {}
     return null;
   }
 
-  function getQualityLevels(): any {
+  function getQualityLevels(): QualityLevelList | null {
     const player = getPlayer();
     if (player && typeof player.qualityLevels === 'function') {
-      return player.qualityLevels();
+      return player.qualityLevels() || null;
     }
     return null;
   }
 
-  function getAvailableHeights(levels: any): number[] {
+  function getAvailableHeights(levels: QualityLevelList | null): number[] {
     if (!levels || levels.length === 0) {
       // Check VHS representations if qualityLevels plugin not populated
       const player = getPlayer();
@@ -133,7 +246,7 @@
 
     const heights: number[] = [];
     for (let i = 0; i < levels.length; i++) {
-      const h = levels[i].height;
+      const h = levels[i]?.height;
       if (typeof h === 'number' && !isNaN(h) && h > 0 && !heights.includes(h)) {
         heights.push(h);
       }
@@ -142,15 +255,15 @@
     return heights.length > 0 ? heights : [720, 480, 360, 240];
   }
 
-  function getCurrentQualityLabel(levels: any): string {
+  function getCurrentQualityLabel(levels: QualityLevelList | null): string {
     if (!levels || levels.length === 0) return targetQuality || '720p';
 
     let enabledCount = 0;
     let enabledHeight = 0;
     for (let i = 0; i < levels.length; i++) {
-      if (levels[i].enabled) {
+      if (levels[i]?.enabled) {
         enabledCount++;
-        enabledHeight = levels[i].height;
+        enabledHeight = levels[i]?.height || 0;
       }
     }
 
@@ -163,7 +276,7 @@
     return targetQuality || 'auto';
   }
 
-  function broadcastState(levels?: any) {
+  function broadcastState(levels?: QualityLevelList | null) {
     const lvls = levels || getQualityLevels();
     const available = getAvailableHeights(lvls);
     const current = getCurrentQualityLabel(lvls);
@@ -178,8 +291,27 @@
     );
   }
 
+  // Shared helper to find the closest item index by resolution height
+  function findClosestIndexByHeight(items: Array<{ height?: number }>, targetHeight: number): number {
+    if (!items || items.length === 0) return -1;
+    const exact = items.findIndex((item) => item.height === targetHeight);
+    if (exact !== -1) return exact;
+
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    for (let i = 0; i < items.length; i++) {
+      const h = items[i]?.height || 0;
+      const diff = Math.abs(h - targetHeight);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = i;
+      }
+    }
+    return closestIdx;
+  }
+
   // Hook VHS selectPlaylist early so chunk 0 downloads in 720p directly
-  function hookPlayerABR(player: any) {
+  function hookPlayerABR(player: VideoJsPlayer) {
     if (!isConstantQualityEnabled || !player || player.__pwc_abr_hooked) return;
     player.__pwc_abr_hooked = true;
 
@@ -196,30 +328,16 @@
             const clean = targetQuality.replace('p', '');
             const targetHeight = parseInt(clean, 10);
             const master = vhs.playlists?.master;
-            if (master && Array.isArray(master.playlists) && master.playlists.length > 0) {
-              // 1. Exact match
-              const exact = master.playlists.find(
-                (p: any) => p.attributes?.RESOLUTION?.height === targetHeight
-              );
-              if (exact) {
-                console.log(`[PWC-QUALITY] selectPlaylist picked exact ${targetHeight}p rendition`);
-                return exact;
-              }
-
-              // 2. Closest match
-              let closest = master.playlists[0];
-              let minDiff = Infinity;
-              for (const p of master.playlists) {
-                const h = p.attributes?.RESOLUTION?.height || 0;
-                const diff = Math.abs(h - targetHeight);
-                if (diff < minDiff) {
-                  minDiff = diff;
-                  closest = p;
-                }
-              }
-              if (closest) {
-                console.log(`[PWC-QUALITY] selectPlaylist picked closest ${closest.attributes?.RESOLUTION?.height}p rendition`);
-                return closest;
+            const playlists = (arguments && arguments[0] && Array.isArray(arguments[0]))
+              ? (arguments[0] as PlaylistEntry[])
+              : (master && Array.isArray(master.playlists) ? master.playlists : null);
+            if (playlists && playlists.length > 0) {
+              const heights = playlists.map((p) => ({ height: p.attributes?.RESOLUTION?.height }));
+              const bestIdx = findClosestIndexByHeight(heights, targetHeight);
+              if (bestIdx >= 0 && playlists[bestIdx]) {
+                const chosen = playlists[bestIdx];
+                console.log(`[PWC-QUALITY] selectPlaylist picked ${chosen.attributes?.RESOLUTION?.height}p rendition`);
+                return chosen;
               }
             }
           }
@@ -230,83 +348,13 @@
     } catch (_e) {}
   }
 
-  // Purge pre-buffered low-quality chunks and micro-seek to sync crisp 720p immediately
-  function purgeBufferAndSync(player: any) {
-    if (!player) return;
-    try {
-      const curTime = typeof player.currentTime === 'function' ? player.currentTime() : 0;
-      const tech = typeof player.tech === 'function' ? player.tech({ IWillNotUseThisInPlugins: true }) : null;
-      const vhs = tech?.vhs;
-
-      // 1. Abort any currently in-flight segment downloads
-      if (vhs?.mainSegmentLoader_ && typeof vhs.mainSegmentLoader_.abort === 'function') {
-        vhs.mainSegmentLoader_.abort();
-        console.log('[PWC-QUALITY] Aborted in-flight low-res segment download');
-      }
-
-      // 2. Clear forward buffer from SourceBuffers
-      const mediaSource = vhs?.masterPlaylistController_?.mediaSource;
-      if (mediaSource && mediaSource.sourceBuffers && mediaSource.sourceBuffers.length > 0) {
-        const buffers = Array.from(mediaSource.sourceBuffers) as SourceBuffer[];
-        buffers.forEach((sb) => {
-          const start = Math.max(0.1, curTime + 0.2);
-          const end = curTime + 10000;
-          const doRemove = () => {
-            try {
-              if (start < end && sb.buffered && sb.buffered.length > 0) {
-                const bufEnd = sb.buffered.end(sb.buffered.length - 1);
-                if (bufEnd > start) {
-                  sb.remove(start, Math.min(end, bufEnd));
-                  console.log(`[PWC-QUALITY] Purged forward buffer (${start.toFixed(1)}s -> ${bufEnd.toFixed(1)}s)`);
-                }
-              }
-            } catch (_e) {}
-          };
-
-          if (!sb.updating) {
-            doRemove();
-          } else {
-            const onUpdateEnd = () => {
-              sb.removeEventListener('updateend', onUpdateEnd);
-              doRemove();
-            };
-            sb.addEventListener('updateend', onUpdateEnd);
-          }
-        });
-      }
-
-      // 3. Reset VHS segment loader tracking
-      if (vhs?.mainSegmentLoader_ && typeof vhs.mainSegmentLoader_.reset_ === 'function') {
-        vhs.mainSegmentLoader_.reset_();
-      }
-
-      // 4. Micro-seek to sync decoder immediately
-      setTimeout(() => {
-        try {
-          if (typeof player.currentTime === 'function') {
-            const now = player.currentTime();
-            player.currentTime(now + 0.001);
-            console.log('[PWC-QUALITY] Micro-seek performed at', now);
-          }
-        } catch (_e) {}
-      }, 50);
-    } catch (_e) {}
-  }
-
-  function requestPurgeBuffer(player: any) {
-    if (purgeTimeout) clearTimeout(purgeTimeout);
-    purgeTimeout = setTimeout(() => {
-      purgeBufferAndSync(player);
-    }, 60);
-  }
-
-  function attachLevelsListeners(levels: any) {
+  function attachLevelsListeners(levels: QualityLevelList | null) {
     if (!levels || levels.__pwc_attached) return;
     levels.__pwc_attached = true;
 
     const onAdd = () => {
       console.log('[PWC-QUALITY] addqualitylevel fired, re-applying target:', targetQuality);
-      if (targetQuality) applyQuality(targetQuality, false);
+      if (targetQuality) applyQuality(targetQuality);
       broadcastState(levels);
     };
     const onChange = () => {
@@ -325,9 +373,9 @@
     } catch (_e) {}
   }
 
-  function applyQuality(quality: string, shouldPurge = true): boolean {
+  function applyQuality(quality: string): boolean {
     targetQuality = (quality || 'auto').toLowerCase().trim();
-    (window as any).__PWC_LAST_TARGET_QUALITY__ = targetQuality;
+    pwcWin.__PWC_LAST_TARGET_QUALITY__ = targetQuality;
 
     const player = getPlayer();
     if (player) {
@@ -351,31 +399,21 @@
         }
         applied = true;
       } else {
-        let matchIdx = -1;
+        const levelItems: Array<{ height?: number }> = [];
         for (let i = 0; i < levels.length; i++) {
-          if (levels[i].height === targetHeight) {
-            matchIdx = i;
-            break;
-          }
+          levelItems.push({ height: levels[i]?.height });
         }
-        if (matchIdx === -1) {
-          let minDiff = Infinity;
-          let closestIdx = 0;
-          for (let i = 0; i < levels.length; i++) {
-            const diff = Math.abs(levels[i].height - targetHeight);
-            if (diff < minDiff) {
-              minDiff = diff;
-              closestIdx = i;
-            }
-          }
-          matchIdx = closestIdx;
-        }
+        const matchIdx = findClosestIndexByHeight(levelItems, targetHeight);
 
         for (let i = 0; i < levels.length; i++) {
-          levels[i].enabled = (i === matchIdx);
+          if (levels[i]) {
+            levels[i].enabled = (i === matchIdx);
+          }
         }
-        console.log(`[PWC-QUALITY] Locked qualityLevels[${matchIdx}] (${levels[matchIdx].height}p) enabled=true`);
-        applied = true;
+        if (matchIdx >= 0 && levels[matchIdx]) {
+          console.log(`[PWC-QUALITY] Locked qualityLevels[${matchIdx}] (${levels[matchIdx].height}p) enabled=true`);
+        }
+        applied = matchIdx !== -1;
       }
       broadcastState(levels);
     }
@@ -384,25 +422,20 @@
     if (!applied && player) {
       try {
         const tech = typeof player.tech === 'function' ? player.tech({ IWillNotUseThisInPlugins: true }) : null;
-        const reps = tech?.vhs?.representations ? tech.vhs.representations() : (tech?.representations ? tech.representations() : null);
+        const reps = tech?.vhs?.representations
+          ? tech.vhs.representations()
+          : typeof tech?.representations === 'function'
+            ? tech.representations()
+            : null;
         if (reps && reps.length > 0) {
           if (isAuto) {
-            reps.forEach((r: any) => typeof r.enabled === 'function' && r.enabled(true));
+            reps.forEach((r: VhsRepresentation) => typeof r.enabled === 'function' && r.enabled(true));
             applied = true;
           } else {
-            let matchRep = reps.find((r: any) => r.height === targetHeight);
-            if (!matchRep) {
-              let minDiff = Infinity;
-              reps.forEach((r: any) => {
-                const diff = Math.abs((r.height || 0) - targetHeight);
-                if (diff < minDiff) {
-                  minDiff = diff;
-                  matchRep = r;
-                }
-              });
-            }
+            const matchIdx = findClosestIndexByHeight(reps, targetHeight);
+            const matchRep = matchIdx >= 0 ? reps[matchIdx] : null;
             if (matchRep) {
-              reps.forEach((r: any) => {
+              reps.forEach((r: VhsRepresentation) => {
                 if (typeof r.enabled === 'function') {
                   r.enabled(r === matchRep);
                 }
@@ -416,38 +449,15 @@
       } catch (_e) {}
     }
 
-    // Layer 3: Direct HLS Playlist switch
-    if (player && !isAuto) {
-      try {
-        const tech = typeof player.tech === 'function' ? player.tech({ IWillNotUseThisInPlugins: true }) : null;
-        const vhs = tech?.vhs;
-        const master = vhs?.playlists?.master;
-        if (master && Array.isArray(master.playlists) && typeof vhs.playlists?.media === 'function') {
-          const matchPl = master.playlists.find((p: any) => p.attributes?.RESOLUTION?.height === targetHeight)
-            || master.playlists[0];
-          if (matchPl && vhs.playlists.media() !== matchPl) {
-            vhs.playlists.media(matchPl);
-            console.log(`[PWC-QUALITY] Switched vhs.playlists.media directly to ${matchPl.attributes?.RESOLUTION?.height}p`);
-            applied = true;
-          }
-        }
-      } catch (_e) {}
-    }
-
-    // If successfully locked, purge old buffer to show 720p instantly
-    if (applied && shouldPurge && player) {
-      requestPurgeBuffer(player);
-    }
-
     return applied;
   }
 
   // Active polling loop: retries every 250ms for up to 15 seconds after video begins loading
   function startQualityEnforcementLoop() {
     if (!isConstantQualityEnabled) return;
-    if (activePollTimer) clearInterval(activePollTimer);
+    if (activePollTimer !== undefined) clearInterval(activePollTimer);
     let attempts = 0;
-    activePollTimer = setInterval(() => {
+    activePollTimer = window.setInterval(() => {
       attempts++;
       const player = getPlayer();
       if (player) {
@@ -457,51 +467,57 @@
       const hasLevels = levels && levels.length > 0;
       if (hasLevels) {
         attachLevelsListeners(levels);
-        const success = applyQuality(targetQuality, true);
+        const success = applyQuality(targetQuality);
         broadcastState(levels);
         if (success || attempts > 20) {
-          clearInterval(activePollTimer);
-          activePollTimer = null;
+          if (activePollTimer !== undefined) {
+            clearInterval(activePollTimer);
+            activePollTimer = undefined;
+          }
         }
       } else if (attempts > 60) {
-        clearInterval(activePollTimer);
-        activePollTimer = null;
+        if (activePollTimer !== undefined) {
+          clearInterval(activePollTimer);
+          activePollTimer = undefined;
+        }
       }
     }, 250);
   }
 
   // Listen for quality commands from PWC content script
-  window.addEventListener('PWC_SET_QUALITY', (event: any) => {
-    if (event && event.detail && event.detail.quality) {
-      console.log('[PWC-QUALITY] Received PWC_SET_QUALITY:', event.detail.quality);
-      applyQuality(event.detail.quality, true);
+  window.addEventListener('PWC_SET_QUALITY', (event: Event) => {
+    const customEvt = event as CustomEvent<{ quality?: string }>;
+    if (customEvt && customEvt.detail && customEvt.detail.quality) {
+      console.log('[PWC-QUALITY] Received PWC_SET_QUALITY:', customEvt.detail.quality);
+      applyQuality(customEvt.detail.quality);
     }
   });
 
-  window.addEventListener('PWC_SET_CONSTANT_QUALITY_ENABLED', (event: any) => {
-    if (event && event.detail !== undefined) {
-      isConstantQualityEnabled = !!event.detail.enabled;
+  window.addEventListener('PWC_SET_CONSTANT_QUALITY_ENABLED', (event: Event) => {
+    const customEvt = event as CustomEvent<{ enabled?: boolean }>;
+    if (customEvt && customEvt.detail !== undefined) {
+      isConstantQualityEnabled = !!customEvt.detail.enabled;
       console.log('[PWC-QUALITY] Constant quality enabled changed to:', isConstantQualityEnabled);
       try {
         localStorage.setItem('pwc_constant_quality', isConstantQualityEnabled ? 'true' : 'false');
       } catch (_e) {}
 
       if (isConstantQualityEnabled) {
-        if (typeof (window as any).videojs !== 'undefined') {
-          seedVideoJsOptions((window as any).videojs);
+        if (pwcWin.videojs) {
+          seedVideoJsOptions(pwcWin.videojs);
         }
         const player = getPlayer();
         if (player) {
           hookPlayerABR(player);
         }
         startQualityEnforcementLoop();
-        applyQuality(targetQuality, true);
+        applyQuality(targetQuality);
       } else {
-        if (activePollTimer) {
+        if (activePollTimer !== undefined) {
           clearInterval(activePollTimer);
-          activePollTimer = null;
+          activePollTimer = undefined;
         }
-        applyQuality('auto', false);
+        applyQuality('auto');
       }
     }
   });
@@ -526,7 +542,7 @@
       console.log('[PWC-QUALITY] Video loadedmetadata detected -> enforcing quality');
       const player = getPlayer();
       if (player) hookPlayerABR(player);
-      applyQuality(targetQuality, true);
+      applyQuality(targetQuality);
     }
   }, true);
 
@@ -534,7 +550,7 @@
     if (isConstantQualityEnabled && e.target instanceof HTMLVideoElement) {
       const player = getPlayer();
       if (player) hookPlayerABR(player);
-      applyQuality(targetQuality, false);
+      applyQuality(targetQuality);
     }
   }, true);
 
@@ -543,7 +559,7 @@
       const player = getPlayer();
       if (player) {
         hookPlayerABR(player);
-        applyQuality(targetQuality, false);
+        applyQuality(targetQuality);
       }
     }
   }, true);

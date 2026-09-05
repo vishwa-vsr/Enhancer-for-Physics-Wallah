@@ -2,11 +2,11 @@ import { state, safeSetSettings } from '../../state';
 import { VideoQuality } from '../../types';
 import { updateQualityHUD } from '../ui/quality-hud';
 
-let currentQuality: string = '720p';
+let currentQuality: VideoQuality = '720p';
 let availableQualities: number[] = [720, 480, 360, 240];
 let isListening = false;
 
-export function getCurrentQuality(): string {
+export function getCurrentQuality(): VideoQuality {
   return currentQuality;
 }
 

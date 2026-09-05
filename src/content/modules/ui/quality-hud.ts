@@ -4,7 +4,7 @@ import { findPWToolbar } from '../distractions/elements';
 import { getCurrentQuality, saveQuality } from '../video/quality-controller';
 
 let isMenuOpen = false;
-let closeMenuTimer: any = null;
+let closeMenuTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function buildQualityControl(container: HTMLElement): void {
   container.innerHTML = '';
