@@ -258,6 +258,10 @@
   function getCurrentQualityLabel(levels: QualityLevelList | null): string {
     if (!levels || levels.length === 0) return targetQuality || '720p';
 
+    if (!targetQuality || targetQuality === 'auto') {
+      return 'auto';
+    }
+
     let enabledCount = 0;
     let enabledHeight = 0;
     for (let i = 0; i < levels.length; i++) {
@@ -267,13 +271,12 @@
       }
     }
 
-    if (enabledCount === levels.length || enabledCount === 0) {
-      return 'auto';
-    }
     if (enabledCount === 1 && enabledHeight) {
       return `${enabledHeight}p`;
     }
-    return targetQuality || 'auto';
+
+    // Keep user's chosen target quality instead of reverting to 'auto' during buffering
+    return targetQuality;
   }
 
   function broadcastState(levels?: QualityLevelList | null) {
@@ -320,11 +323,14 @@
       const vhs = tech?.vhs;
       if (vhs && typeof vhs.selectPlaylist === 'function') {
         const origSelectPlaylist = vhs.selectPlaylist;
+        let initialChunkSelected = false;
+
         vhs.selectPlaylist = function () {
           if (!isConstantQualityEnabled) {
             return origSelectPlaylist.apply(this, arguments as any);
           }
-          if (targetQuality && targetQuality !== 'auto') {
+          if (!initialChunkSelected && targetQuality && targetQuality !== 'auto') {
+            initialChunkSelected = true;
             const clean = targetQuality.replace('p', '');
             const targetHeight = parseInt(clean, 10);
             const master = vhs.playlists?.master;
@@ -336,13 +342,18 @@
               const bestIdx = findClosestIndexByHeight(heights, targetHeight);
               if (bestIdx >= 0 && playlists[bestIdx]) {
                 const chosen = playlists[bestIdx];
-                console.log(`[PWC-QUALITY] selectPlaylist picked ${chosen.attributes?.RESOLUTION?.height}p rendition`);
+                console.log(`[PWC-QUALITY] selectPlaylist picked initial ${chosen.attributes?.RESOLUTION?.height}p rendition`);
                 return chosen;
               }
             }
           }
           return origSelectPlaylist.apply(this, arguments as any);
         };
+        if (typeof player.on === 'function') {
+          player.on('loadstart', () => {
+            initialChunkSelected = false;
+          });
+        }
         console.log('[PWC-QUALITY] Successfully hooked VHS selectPlaylist');
       }
     } catch (_e) {}
@@ -529,7 +540,7 @@
   // Start initial enforcement loop if enabled
   startQualityEnforcementLoop();
 
-  // Monitor video lifecycle events: loadstart, loadedmetadata, canplay, play
+  // Monitor video lifecycle events: loadstart and loadedmetadata only
   document.addEventListener('loadstart', (e: Event) => {
     if (isConstantQualityEnabled && e.target instanceof HTMLVideoElement) {
       console.log('[PWC-QUALITY] Video loadstart detected');
@@ -543,24 +554,6 @@
       const player = getPlayer();
       if (player) hookPlayerABR(player);
       applyQuality(targetQuality);
-    }
-  }, true);
-
-  document.addEventListener('canplay', (e: Event) => {
-    if (isConstantQualityEnabled && e.target instanceof HTMLVideoElement) {
-      const player = getPlayer();
-      if (player) hookPlayerABR(player);
-      applyQuality(targetQuality);
-    }
-  }, true);
-
-  document.addEventListener('play', (e: Event) => {
-    if (isConstantQualityEnabled && e.target instanceof HTMLVideoElement) {
-      const player = getPlayer();
-      if (player) {
-        hookPlayerABR(player);
-        applyQuality(targetQuality);
-      }
     }
   }, true);
 })();

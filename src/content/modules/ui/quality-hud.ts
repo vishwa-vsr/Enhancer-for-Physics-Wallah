@@ -1,10 +1,67 @@
 import { state } from '../../state';
 import { VideoQuality } from '../../types';
 import { findPWToolbar } from '../distractions/elements';
-import { getCurrentQuality, saveQuality } from '../video/quality-controller';
+import { getCurrentQuality, saveQuality, getAvailableQualities } from '../video/quality-controller';
 
 let isMenuOpen = false;
 let closeMenuTimer: ReturnType<typeof setTimeout> | null = null;
+
+function populateQualityMenuItems(menu: HTMLElement): void {
+  const title = menu.querySelector('.pwc-quality-menu-title');
+  menu.innerHTML = '';
+  if (title) {
+    menu.appendChild(title);
+  } else {
+    const menuTitle = document.createElement('div');
+    menuTitle.className = 'pwc-quality-menu-title';
+    menuTitle.textContent = 'Quality';
+    menu.appendChild(menuTitle);
+  }
+
+  const available = getAvailableQualities();
+  const descriptors: Record<number, string> = {
+    1080: '1080p (Full HD)',
+    720: '720p (High)',
+    480: '480p (Standard)',
+    360: '360p (Medium)',
+    240: '240p (Data Saver)',
+  };
+
+  const options: { label: string; value: VideoQuality }[] = [
+    { label: 'Auto (Recommended)', value: 'auto' },
+  ];
+
+  available.forEach((h) => {
+    const val = `${h}p` as VideoQuality;
+    const label = descriptors[h] || `${h}p`;
+    options.push({ label, value: val });
+  });
+
+  options.forEach((opt) => {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'pwc-quality-item';
+    item.dataset.quality = opt.value;
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'pwc-quality-item-label';
+    labelSpan.textContent = opt.label;
+    item.appendChild(labelSpan);
+
+    const checkSpan = document.createElement('span');
+    checkSpan.className = 'pwc-quality-item-check';
+    checkSpan.textContent = '✓';
+    item.appendChild(checkSpan);
+
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      saveQuality(opt.value);
+      closeQualityMenu();
+    });
+
+    menu.appendChild(item);
+  });
+}
 
 export function buildQualityControl(container: HTMLElement): void {
   container.innerHTML = '';
@@ -63,45 +120,7 @@ export function buildQualityControl(container: HTMLElement): void {
   // 2. Options Popup Menu (opens on hover or click)
   const menu = document.createElement('div');
   menu.className = 'pwc-quality-menu';
-
-  const menuTitle = document.createElement('div');
-  menuTitle.className = 'pwc-quality-menu-title';
-  menuTitle.textContent = 'Quality';
-  menu.appendChild(menuTitle);
-
-  const options: { label: string; value: VideoQuality }[] = [
-    { label: 'Auto (Recommended)', value: 'auto' },
-    { label: '720p (High)', value: '720p' },
-    { label: '480p (Standard)', value: '480p' },
-    { label: '360p (Medium)', value: '360p' },
-    { label: '240p (Data Saver)', value: '240p' },
-  ];
-
-  options.forEach((opt) => {
-    const item = document.createElement('button');
-    item.type = 'button';
-    item.className = 'pwc-quality-item';
-    item.dataset.quality = opt.value;
-
-    const labelSpan = document.createElement('span');
-    labelSpan.className = 'pwc-quality-item-label';
-    labelSpan.textContent = opt.label;
-    item.appendChild(labelSpan);
-
-    const checkSpan = document.createElement('span');
-    checkSpan.className = 'pwc-quality-item-check';
-    checkSpan.textContent = '✓';
-    item.appendChild(checkSpan);
-
-    item.addEventListener('click', (e) => {
-      e.stopPropagation();
-      saveQuality(opt.value);
-      closeQualityMenu();
-    });
-
-    menu.appendChild(item);
-  });
-
+  populateQualityMenuItems(menu);
   container.appendChild(menu);
 
   // 3. Event Listeners for smooth hover & click
@@ -205,6 +224,27 @@ export function updateQualityHUD(): void {
       container.style.display = 'none';
     } else {
       container.style.display = '';
+    }
+
+    const menu = container.querySelector<HTMLElement>('.pwc-quality-menu');
+    if (menu) {
+      const renderedQualities: number[] = [];
+      menu.querySelectorAll<HTMLElement>('.pwc-quality-item').forEach((item) => {
+        const q = item.dataset.quality;
+        if (q && q !== 'auto') {
+          const num = parseInt(q.replace('p', ''), 10);
+          if (!isNaN(num)) renderedQualities.push(num);
+        }
+      });
+
+      const available = getAvailableQualities();
+      const isMatch =
+        renderedQualities.length === available.length &&
+        renderedQualities.every((val, index) => val === available[index]);
+
+      if (!isMatch) {
+        populateQualityMenuItems(menu);
+      }
     }
   }
 
