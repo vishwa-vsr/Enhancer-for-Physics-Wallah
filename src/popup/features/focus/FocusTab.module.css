@@ -15,3 +15,88 @@
   flex-direction: column;
   overflow: hidden;
 }
+
+.lockRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.lockInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.lockTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.lockDesc {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.lockBtn {
+  border: none;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  background: var(--accent-primary);
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.lockBtn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.lockBtn:active {
+  background: var(--accent-active);
+  transform: translateY(0);
+}
+
+.lockBtn:disabled {
+  background: var(--bg-control);
+  color: var(--text-subtle);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.lockBtnActive {
+  border: 1px solid var(--accent-primary);
+  border-radius: 10px;
+  padding: 8px 13px;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  background: var(--accent-dim);
+  color: var(--accent-focus);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.lockBtnActive:hover {
+  background: var(--accent-primary);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.lockHint {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text-subtle);
+  padding: 0 14px 12px;
+}

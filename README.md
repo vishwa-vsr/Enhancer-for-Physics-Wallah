@@ -68,6 +68,7 @@ Install the extension directly with one click from your browser's official store
 ---
 
 ### 🎯 4. Focus Mode & Distraction Decluttering
+* **Focus Lock Mode (Strict Study Session):** One click from the player toolbar or popup locks you into a clean fullscreen lecture — live chat, doubts, Ask AI, notes and clutter are all hidden at once. Pressing `Escape` (leaving fullscreen) or switching tabs instantly pauses the video and shows a *"Stay Focused!"* reminder so you can return to fullscreen or quit the session consciously.
 * **1-Click Instant Focus Mode:** Click the chevron arrow button on the toolbar to collapse all controls, sidebars, and mouse cursor for a clean, cinematic study experience. Move your mouse or touch the screen to bring them back.
 * **Auto-Pause on Tab Switch:** Pauses the lecture automatically when switching tabs or minimizing the browser, and resumes seamlessly when you return.
 * **Granular Element Toggles:** Individually hide:

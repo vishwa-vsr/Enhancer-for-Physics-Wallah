@@ -5,6 +5,7 @@ import { injectSpeedControl } from '../ui/speed-hud';
 import { injectQualityControl } from '../ui/quality-hud';
 import { injectSkipSilenceButton } from '../ui/silence-hud';
 import { injectInstantHideButton } from '../ui/focus-mode';
+import { injectFocusLockButton } from '../ui/focus-lock';
 import { injectFinishTimeBadge } from '../ui/finish-time';
 import { isSSEngineRunning, ssInit } from '../audio/skip-silence';
 
@@ -51,6 +52,7 @@ export function monitor(): void {
       injectQualityControl();
       injectSkipSilenceButton();
       injectInstantHideButton();
+      injectFocusLockButton();
       injectFinishTimeBadge();
     } finally {
       isModifyingDOM = false;
