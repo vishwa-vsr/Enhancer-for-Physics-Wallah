@@ -111,6 +111,15 @@ export async function initStore() {
     if (changes.hideQuality !== undefined) {
       hideQuality.value = !!changes.hideQuality;
     }
+    if (changes.installDate !== undefined) {
+      installDate.value = (changes.installDate as number) || 0;
+    }
+    if (changes.reviewPromptStatus !== undefined) {
+      reviewPromptStatus.value = (changes.reviewPromptStatus as ReviewPromptStatus) || 'pending';
+    }
+    if (changes.reviewPromptNextShowTime !== undefined) {
+      reviewPromptNextShowTime.value = (changes.reviewPromptNextShowTime as number) || 0;
+    }
   });
 
   isLoading.value = false;

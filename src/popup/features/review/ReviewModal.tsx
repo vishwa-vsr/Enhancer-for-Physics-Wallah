@@ -38,14 +38,22 @@ export function ReviewModal() {
     };
   }, [installDate.value, reviewPromptStatus.value, reviewPromptNextShowTime.value, visible]);
 
+  const openLink = (url: string) => {
+    if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
+      chrome.tabs.create({ url });
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
   const handleLeaveReview = () => {
     let url = 'https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj/reviews';
     if (navigator.userAgent.includes('Firefox')) {
-      url = 'https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/';
+      url = 'https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/reviews/';
     } else if (navigator.userAgent.includes('Edg/')) {
       url = 'https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan';
     }
-    window.open(url, '_blank');
+    openLink(url);
     reviewPromptStatus.value = 'reviewed';
     saveSetting('reviewPromptStatus', 'reviewed');
     setVisible(false);

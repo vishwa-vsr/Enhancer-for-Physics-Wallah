@@ -32,8 +32,8 @@ export const Footer = () => {
     if (userAgent.includes('Edg/')) {
       return 'https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan';
     }
-    if (userAgent.includes('Firefox/')) {
-      return 'https://addons.mozilla.org/en-US/firefox/addon/pw-control/';
+    if (userAgent.includes('Firefox')) {
+      return 'https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/';
     }
     return 'https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj?authuser=0&hl=en-GB';
   };
