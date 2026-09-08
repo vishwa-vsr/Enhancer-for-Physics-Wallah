@@ -5,6 +5,37 @@ import { stepSpeed, saveSpeed } from '../video/controller';
 import { updateFinishTime } from './finish-time';
 import { getSSCurrentState } from '../audio/skip-silence';
 
+const MIN_SPEED = 0.5;
+const MAX_SPEED = 4.0;
+
+function formatSpeed(speed: number): string {
+  return speed.toFixed(2).replace(/0$/, '');
+}
+
+function parseTypedSpeed(value: string): number | null {
+  const normalized = value.trim().replace(/x$/i, '').trim();
+  if (!normalized) return null;
+
+  const parsed = Number(normalized);
+  if (!Number.isFinite(parsed)) return null;
+
+  const clamped = Math.min(MAX_SPEED, Math.max(MIN_SPEED, parsed));
+  return Math.round(clamped * 100) / 100;
+}
+
+function setExpanded(container: HTMLElement, expanded: boolean): void {
+  container.classList.toggle('pwc-expanded', expanded);
+  container
+    .querySelector<HTMLButtonElement>('.pwc-speed-btn')
+    ?.setAttribute('aria-expanded', String(expanded));
+}
+
+function closeAfterSelection(container: HTMLElement): void {
+  if (state.alwaysExpandWidget) return;
+  container.classList.add('pwc-selection-complete');
+  setExpanded(container, false);
+}
+
 // Equal-distance 4-point segmented slider interpolation functions
 // Points: [p0, p1, p2, p3] mapped at 0%, 33.3333%, 66.6667%, 100%
 export function speedToSliderPercent(speed: number | string, points?: number[]): number {
@@ -72,10 +103,12 @@ export function applyAlwaysExpandState(targetContainer?: HTMLElement | null): vo
   if (container) {
     if (state.alwaysExpandWidget) {
       container.classList.add('pwc-always-expanded');
-      container.classList.add('pwc-expanded');
+      container.classList.remove('pwc-selection-complete');
+      setExpanded(container, true);
     } else {
+      const wasAlwaysExpanded = container.classList.contains('pwc-always-expanded');
       container.classList.remove('pwc-always-expanded');
-      container.classList.remove('pwc-expanded');
+      if (wasAlwaysExpanded) setExpanded(container, false);
     }
   }
 }
@@ -89,24 +122,35 @@ export function updateSliderBackground(slider: HTMLInputElement | null, _val?: n
 // Bind mouse drag and scroll wheel events to a speed control container
 export function setupUIEventListeners(container: HTMLElement): void {
   const slider = container.querySelector<HTMLInputElement>('.pwc-speed-slider');
-  if (!slider) return;
+  const speedInput = container.querySelector<HTMLInputElement>('.pwc-speed-input');
+  const button = container.querySelector<HTMLButtonElement>('.pwc-speed-btn');
+  if (!slider || !speedInput || !button) return;
 
   updateSliderBackground(slider, state.currentSpeed);
 
-  let mouseLeaveTimer: any = null;
+  let mouseLeaveTimer: ReturnType<typeof setTimeout> | null = null;
+  let skipNextBlurCommit = false;
   container.addEventListener('mouseenter', () => {
     if (mouseLeaveTimer) {
       clearTimeout(mouseLeaveTimer);
       mouseLeaveTimer = null;
     }
-    container.classList.add('pwc-expanded');
+    setExpanded(container, true);
   });
 
   container.addEventListener('mouseleave', () => {
+    container.classList.remove('pwc-selection-complete');
     if (state.alwaysExpandWidget) return;
     mouseLeaveTimer = setTimeout(() => {
-      container.classList.remove('pwc-expanded');
+      setExpanded(container, false);
     }, 250);
+  });
+
+  button.addEventListener('click', () => {
+    container.classList.remove('pwc-selection-complete');
+    setExpanded(container, true);
+    speedInput.focus();
+    speedInput.select();
   });
 
   slider.addEventListener('input', (e: Event) => {
@@ -129,7 +173,74 @@ export function setupUIEventListeners(container: HTMLElement): void {
     }
 
     updateSliderBackground(slider, val);
+    target.setAttribute('aria-valuetext', `${formatSpeed(val)}x`);
     saveSpeed(val);
+  });
+
+  slider.addEventListener('change', () => {
+    slider.blur();
+    closeAfterSelection(container);
+  });
+
+  const commitTypedSpeed = (): boolean => {
+    const speed = parseTypedSpeed(speedInput.value);
+    if (speed === null) {
+      speedInput.setAttribute('aria-invalid', 'true');
+      return false;
+    }
+
+    speedInput.removeAttribute('aria-invalid');
+    speedInput.value = formatSpeed(speed);
+    saveSpeed(speed);
+    return true;
+  };
+
+  speedInput.addEventListener('input', () => {
+    speedInput.removeAttribute('aria-invalid');
+  });
+
+  speedInput.addEventListener('focus', () => {
+    container.classList.remove('pwc-selection-complete');
+    setExpanded(container, true);
+    speedInput.select();
+  });
+
+  speedInput.addEventListener('keydown', (e: KeyboardEvent) => {
+    e.stopPropagation();
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (commitTypedSpeed()) {
+        skipNextBlurCommit = true;
+        speedInput.blur();
+        closeAfterSelection(container);
+      } else {
+        speedInput.select();
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      speedInput.value = formatSpeed(state.currentSpeed);
+      speedInput.removeAttribute('aria-invalid');
+      skipNextBlurCommit = true;
+      speedInput.blur();
+      closeAfterSelection(container);
+    }
+  });
+
+  speedInput.addEventListener('blur', (e: FocusEvent) => {
+    if (skipNextBlurCommit) {
+      skipNextBlurCommit = false;
+    } else {
+      if (!commitTypedSpeed()) {
+        speedInput.value = formatSpeed(state.currentSpeed);
+        speedInput.removeAttribute('aria-invalid');
+      }
+    }
+
+    const nextTarget = e.relatedTarget;
+    if (!(nextTarget instanceof Node) || !container.contains(nextTarget)) {
+      closeAfterSelection(container);
+    }
   });
 
   container.addEventListener(
@@ -141,6 +252,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
         (state.skipSilenceEnabled && getSSCurrentState() === 'silence')
       )
         return;
+      if (e.target === speedInput) return;
       e.preventDefault();
       const val = stepSpeed(e.deltaY < 0 ? 1 : -1);
       slider.value = String(Math.round(speedToSliderPercent(val, state.snapPoints) * 10));
@@ -159,7 +271,9 @@ export function buildSpeedControl(container: HTMLElement): void {
   const btn = document.createElement('button');
   btn.className = 'pwc-speed-btn';
   btn.type = 'button';
-  btn.setAttribute('title', 'Playback Speed');
+  btn.setAttribute('title', 'Set playback speed');
+  btn.setAttribute('aria-label', 'Set playback speed');
+  btn.setAttribute('aria-expanded', 'false');
 
   // Create SVG using document.createElementNS for SVGs
   const svgNS = 'http://www.w3.org/2000/svg';
@@ -197,7 +311,7 @@ export function buildSpeedControl(container: HTMLElement): void {
   // Create badge
   const badge = document.createElement('span');
   badge.className = 'pwc-speed-badge';
-  badge.textContent = `${state.currentSpeed.toFixed(1)}x`;
+  badge.textContent = `${formatSpeed(state.currentSpeed)}x`;
   btn.appendChild(badge);
 
   container.appendChild(btn);
@@ -206,17 +320,39 @@ export function buildSpeedControl(container: HTMLElement): void {
   const sliderContainer = document.createElement('div');
   sliderContainer.className = 'pwc-speed-slider-container';
 
+  const speedInputWrapper = document.createElement('label');
+  speedInputWrapper.className = 'pwc-speed-input-wrapper';
+  speedInputWrapper.title = `Enter a speed from ${MIN_SPEED}x to ${MAX_SPEED}x`;
+
+  const speedInput = document.createElement('input');
+  speedInput.type = 'text';
+  speedInput.className = 'pwc-speed-input';
+  speedInput.inputMode = 'decimal';
+  speedInput.autocomplete = 'off';
+  speedInput.spellcheck = false;
+  speedInput.value = formatSpeed(state.currentSpeed);
+  speedInput.setAttribute('aria-label', `Playback speed, ${MIN_SPEED} to ${MAX_SPEED}`);
+  speedInputWrapper.appendChild(speedInput);
+
+  const speedUnit = document.createElement('span');
+  speedUnit.className = 'pwc-speed-input-unit';
+  speedUnit.textContent = 'x';
+  speedInputWrapper.appendChild(speedUnit);
+  sliderContainer.appendChild(speedInputWrapper);
+
   const sliderWrapper = document.createElement('div');
   sliderWrapper.className = 'pwc-slider-wrapper';
 
-  const input = document.createElement('input');
-  input.type = 'range';
-  input.className = 'pwc-speed-slider';
-  input.min = '0';
-  input.max = '1000';
-  input.step = '1';
-  input.value = String(Math.round(speedToSliderPercent(state.currentSpeed, state.snapPoints) * 10));
-  sliderWrapper.appendChild(input);
+  const slider = document.createElement('input');
+  slider.type = 'range';
+  slider.className = 'pwc-speed-slider';
+  slider.min = '0';
+  slider.max = '1000';
+  slider.step = '1';
+  slider.value = String(Math.round(speedToSliderPercent(state.currentSpeed, state.snapPoints) * 10));
+  slider.setAttribute('aria-label', 'Playback speed slider');
+  slider.setAttribute('aria-valuetext', `${formatSpeed(state.currentSpeed)}x`);
+  sliderWrapper.appendChild(slider);
 
   const ticks = document.createElement('div');
   ticks.className = 'pwc-slider-ticks';
@@ -273,12 +409,20 @@ export function injectSpeedControl(): void {
 // Update speed badges, slider values, tick highlights, and needle angles in the UI
 export function updateUI(): void {
   document.querySelectorAll<HTMLElement>('.pwc-speed-badge').forEach((badge) => {
-    badge.textContent = `${state.currentSpeed.toFixed(1)}x`;
+    badge.textContent = `${formatSpeed(state.currentSpeed)}x`;
+  });
+
+  document.querySelectorAll<HTMLInputElement>('.pwc-speed-input').forEach((input) => {
+    if (document.activeElement !== input) {
+      input.value = formatSpeed(state.currentSpeed);
+      input.removeAttribute('aria-invalid');
+    }
   });
 
   document.querySelectorAll<HTMLInputElement>('.pwc-speed-slider').forEach((slider) => {
     const pct = speedToSliderPercent(state.currentSpeed, state.snapPoints);
     slider.value = String(Math.round(pct * 10));
+    slider.setAttribute('aria-valuetext', `${formatSpeed(state.currentSpeed)}x`);
     updateSliderBackground(slider, state.currentSpeed);
   });
 
