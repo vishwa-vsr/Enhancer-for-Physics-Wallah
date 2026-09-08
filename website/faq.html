@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="./logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>FAQ & Help Guide — Enhancer for PW</title>
+    <meta name="description" content="Official FAQ and Help Guide for Enhancer for Physics Wallah. Learn how to install, configure hotkeys, fix video issues, and use Skip Silence." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- JSON-LD FAQ Schema for Google Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I install Enhancer for PW?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Open Chrome Web Store, Firefox Add-ons, or Microsoft Edge Add-ons, search for 'Enhancer for Physics Wallah' (or click the Add to Browser button on our homepage), and click 'Add to Browser'. It starts working immediately on pw.live with zero login."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why don't keyboard shortcuts work when I press them?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "By default, keyboard hotkeys (H to speed up, J to slow down, L to reset) are disabled when typing inside doubt boxes, search inputs, or notes to prevent accidental triggers. Also check if hotkeys are enabled in the extension popup."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Skip Silence record my audio or lectures?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The extension uses the browser's Web Audio API purely in temporary RAM to measure volume. It never records, stores, or transmits any audio anywhere."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can my Physics Wallah account get banned for using this extension?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Enhancer for PW is a purely client-side video player controller. It does not tamper with server APIs, DRM, or unauthorized downloads. It simply adjusts playback speed, audio volume, and hides DOM clutter locally in your browser."
+          }
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="bg-background text-foreground antialiased selection:bg-white/20 selection:text-white min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/faq.tsx"></script>
+  </body>
+</html>

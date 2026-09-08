@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/sitemap.xml

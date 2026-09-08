@@ -1,9 +1,9 @@
 # Build & compiled directories
 dist/
 node_modules/
-backup/
-docs/
-pages/
+/backup/
+/docs/
+/pages/
 assets/promo-posters/
 assets/skip silence/
 *.zip
