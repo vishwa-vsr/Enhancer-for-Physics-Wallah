@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "build:fast": "vite build",
-    "zip": "powershell -Command \"Compress-Archive -Path dist/chrome/* -DestinationPath dist/pw-chrome-v1.0.8.2.zip -Force; Compress-Archive -Path dist/firefox/* -DestinationPath dist/pw-firefox-v1.0.8.2.zip -Force; Compress-Archive -Path dist/edge/* -DestinationPath dist/pw-edge-v1.0.8.2.zip -Force\"",
+    "zip": "tar -a -c -f dist/pw-chrome-v1.0.8.2.zip -C dist/chrome * && tar -a -c -f dist/pw-firefox-v1.0.8.2.zip -C dist/firefox * && tar -a -c -f dist/pw-edge-v1.0.8.2.zip -C dist/edge *",
     "package": "npm run build && npm run zip",
     "lint": "eslint src --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\""
