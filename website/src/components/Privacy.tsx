@@ -3,7 +3,7 @@ import { Lock, Cpu, Eye, Code2 } from 'lucide-react';
 
 export const Privacy: React.FC = () => {
   return (
-    <section id="privacy" className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 max-w-7xl mx-auto">
+    <section id="privacy" className="relative z-10 pt-10 sm:pt-14 pb-16 sm:pb-24 px-4 sm:px-6 max-w-7xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
         <div>
           <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
@@ -15,9 +15,6 @@ export const Privacy: React.FC = () => {
           >
             Your account, notes, and study habits belong only to you.
           </h2>
-          <p className="text-muted-foreground text-sm sm:text-base mt-3 sm:mt-4 leading-relaxed">
-            Unlike other extensions that harvest data or inject affiliate links, Enhancer for PW is strictly an open-source, local browser utility. No accounts, no servers, zero telemetry.
-          </p>
 
           <div className="mt-8 flex flex-col gap-4">
             <div className="flex items-start gap-4">

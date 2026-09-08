@@ -60,18 +60,6 @@ export const PageNavbar: React.FC<PageNavbarProps> = ({ currentPage }) => {
             Home
           </a>
           <a
-            href="./index.html#features"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Features
-          </a>
-          <a
-            href="./index.html#reviews"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Reviews
-          </a>
-          <a
             href="./faq.html"
             className={`text-sm transition-colors ${
               currentPage === 'faq' ? 'text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'
@@ -222,20 +210,6 @@ export const PageNavbar: React.FC<PageNavbarProps> = ({ currentPage }) => {
             className="text-sm text-foreground font-medium py-1"
           >
             Home
-          </a>
-          <a
-            href="./index.html#features"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm text-muted-foreground hover:text-foreground py-1"
-          >
-            Features
-          </a>
-          <a
-            href="./index.html#reviews"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm text-muted-foreground hover:text-foreground py-1"
-          >
-            Reviews
           </a>
           <a
             href="./faq.html"

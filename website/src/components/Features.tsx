@@ -42,21 +42,14 @@ const FEATURE_LIST = [
 
 export const Features: React.FC = () => {
   return (
-    <section id="features" className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 max-w-7xl mx-auto">
-      <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-        <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
-          Built for the PW Grind
-        </span>
+    <section id="features" className="relative z-10 pt-16 sm:pt-24 pb-6 sm:pb-8 px-4 sm:px-6 max-w-7xl mx-auto">
+      <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
         <h2
-          className="text-3xl sm:text-5xl md:text-6xl mt-2 tracking-tight text-foreground"
+          className="text-3xl sm:text-5xl md:text-6xl tracking-tight text-foreground"
           style={{ fontFamily: "'Instrument Serif', serif" }}
         >
-          Engineered to save your study hours.
+          Exam bagal mein <em className="not-italic text-muted-foreground">aa gaya hai!</em>
         </h2>
-        <p className="text-muted-foreground text-sm sm:text-lg mt-3 sm:mt-4 leading-relaxed">
-          Default video players waste your time with rigid speeds and noisy chat screens.
-          Enhancer for PW replaces that with raw study efficiency.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

@@ -1,20 +1,22 @@
 import React from 'react';
 import { PageNavbar } from '../components/PageNavbar';
 import { Footer } from '../components/Footer';
-import { Shield, Lock, Cpu, Database, CheckCircle2 } from 'lucide-react';
+import { Shield, Lock, Cpu, Database } from 'lucide-react';
+import KineticGrid from '@/components/ui/kinetic-grid';
+import SmoothScroll from '@/components/ui/smooth-scroll';
 
 export const PrivacyPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-white/20 selection:text-white">
-      <PageNavbar currentPage="privacy" />
+    <SmoothScroll>
+      <div className="relative min-h-screen text-foreground flex flex-col selection:bg-white/20 selection:text-white">
+        {/* Full-Page Interactive Kinetic Grid Background */}
+        <KineticGrid globalColor="navy" isFixedBackground className="fixed inset-0 w-full h-full pointer-events-none z-0" />
 
-      <main className="flex-1 py-12 sm:py-16 px-4 sm:px-6 max-w-4xl mx-auto w-full">
+        <PageNavbar currentPage="privacy" />
+
+      <main className="relative z-10 flex-1 py-12 sm:py-16 px-4 sm:px-6 max-w-4xl mx-auto w-full">
         {/* Header */}
         <div className="mb-10 sm:mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400 font-medium mb-3 sm:mb-4">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Effective Date: September 2026 • Version 1.0.8.2</span>
-          </div>
           <h1
             className="text-3xl sm:text-6xl tracking-tight text-foreground"
             style={{ fontFamily: "'Instrument Serif', serif" }}
@@ -23,6 +25,9 @@ export const PrivacyPage: React.FC = () => {
           </h1>
           <p className="text-muted-foreground text-sm sm:text-lg mt-2 sm:mt-3 leading-relaxed">
             At <strong>Enhancer for PW</strong>, your study habits, personal accounts, and browser privacy always come first. This policy explains clearly and honestly how data is handled.
+          </p>
+          <p className="text-xs sm:text-sm text-white/40 mt-2 font-mono">
+            Last updated: September 2026 • Version 1.0.8.2
           </p>
         </div>
 
@@ -126,5 +131,6 @@ export const PrivacyPage: React.FC = () => {
 
       <Footer onOpenStore={() => {}} />
     </div>
+  </SmoothScroll>
   );
 };

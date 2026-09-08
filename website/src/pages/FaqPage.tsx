@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { PageNavbar } from '../components/PageNavbar';
 import { Footer } from '../components/Footer';
-import { ChevronDown, ChevronUp, HelpCircle, CheckCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, CheckCircle } from 'lucide-react';
+import KineticGrid from '@/components/ui/kinetic-grid';
+import SmoothScroll from '@/components/ui/smooth-scroll';
 
 interface FaqItem {
   question: string;
@@ -48,7 +50,12 @@ const FAQS: FaqItem[] = [
   {
     category: 'Safety & Privacy',
     question: 'Can my account get banned for using this extension?',
-    answer: 'No. Enhancer for PW operates strictly as a local browser-side video controller. It does not tamper with batch databases, DRM, or video downloads. It simply adjusts the standard HTML5 video playback rate and hides distracting chat panels.',
+    answer: 'No. Enhancer for PW works entirely locally on your own computer screen. It never sends automated bot requests, does not bypass logins, and does not touch private PW database servers.',
+  },
+  {
+    category: 'Safety & Privacy',
+    question: 'Does Skip Silence record my audio or microphone?',
+    answer: 'Never. Skip Silence only listens to the volume level of the teacher speaking in the video in real-time RAM to detect pauses, and discards that data milliseconds later.',
   },
 ];
 
@@ -60,16 +67,16 @@ export const FaqPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-white/20 selection:text-white">
-      <PageNavbar currentPage="faq" />
+    <SmoothScroll>
+      <div className="relative min-h-screen text-foreground flex flex-col selection:bg-white/20 selection:text-white">
+        {/* Full-Page Interactive Kinetic Grid Background */}
+        <KineticGrid globalColor="navy" isFixedBackground className="fixed inset-0 w-full h-full pointer-events-none z-0" />
 
-      <main className="flex-1 py-12 sm:py-16 px-4 sm:px-6 max-w-4xl mx-auto w-full">
+        <PageNavbar currentPage="faq" />
+
+      <main className="relative z-10 flex-1 py-12 sm:py-16 px-4 sm:px-6 max-w-4xl mx-auto w-full">
         {/* Header */}
         <div className="mb-10 sm:mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs text-blue-400 font-medium mb-3 sm:mb-4">
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>Frequently Asked Questions</span>
-          </div>
           <h1
             className="text-3xl sm:text-6xl tracking-tight text-foreground"
             style={{ fontFamily: "'Instrument Serif', serif" }}
@@ -105,18 +112,13 @@ export const FaqPage: React.FC = () => {
               >
                 <button
                   onClick={() => toggleFaq(idx)}
-                  className="w-full text-left p-4 sm:p-6 flex items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02] transition-colors"
+                  className="w-full text-left p-4 sm:p-6 flex items-center justify-between gap-4 cursor-pointer hover:bg-white/[0.02] transition-colors"
                   aria-expanded={isOpen}
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center items-start gap-1.5 sm:gap-3">
-                    <span className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg bg-white/5 text-muted-foreground border border-white/5 font-mono">
-                      {item.category}
-                    </span>
-                    <span className="text-sm sm:text-lg font-medium text-white tracking-tight">
-                      {item.question}
-                    </span>
-                  </div>
-                  <div className="p-1.5 rounded-xl bg-white/5 text-muted-foreground shrink-0 mt-0.5 sm:mt-0">
+                  <span className="text-sm sm:text-lg font-medium text-white tracking-tight">
+                    {item.question}
+                  </span>
+                  <div className="p-1.5 rounded-xl bg-white/5 text-muted-foreground shrink-0">
                     {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </div>
                 </button>
@@ -134,5 +136,6 @@ export const FaqPage: React.FC = () => {
 
       <Footer onOpenStore={() => {}} />
     </div>
+  </SmoothScroll>
   );
 };

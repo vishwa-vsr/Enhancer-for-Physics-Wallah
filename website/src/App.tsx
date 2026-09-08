@@ -1,44 +1,41 @@
-import { useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Features } from './components/Features';
 import { Reviews } from './components/Reviews';
 import { Privacy } from './components/Privacy';
 import { Footer } from './components/Footer';
-import { StoreModal } from './components/StoreModal';
+import KineticGrid from './components/ui/kinetic-grid';
+import SmoothScroll from './components/ui/smooth-scroll';
 
 export function App() {
-  const [storeModalOpen, setStoreModalOpen] = useState(false);
-
-  const handleOpenStore = () => setStoreModalOpen(true);
-  const handleCloseStore = () => setStoreModalOpen(false);
-
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-white/20 selection:text-white">
-      {/* Top Navigation */}
-      <Navbar />
+    <SmoothScroll>
+      <div className="relative min-h-screen text-foreground flex flex-col selection:bg-white/20 selection:text-white">
+        {/* Full-Page Interactive Kinetic Grid Background */}
+        <KineticGrid globalColor="navy" isFixedBackground className="fixed inset-0 w-full h-full pointer-events-none z-0" />
 
-      {/* Main Content */}
-      <main className="flex-1">
-        {/* Fullscreen Video Hero with Direct Store Cards */}
-        <Hero />
+        {/* Top Navigation */}
+        <Navbar />
 
-        {/* Feature Highlights */}
-        <Features />
+        {/* Main Content */}
+        <main className="relative z-10 flex-1">
+          {/* Fullscreen Video Hero with Direct Store Cards */}
+          <Hero />
 
-        {/* Real Student Reviews */}
-        <Reviews />
+          {/* Feature Highlights */}
+          <Features />
 
-        {/* Privacy & Trust */}
-        <Privacy />
-      </main>
+          {/* Real Student Reviews */}
+          <Reviews />
 
-      {/* Footer with Disclaimer */}
-      <Footer onOpenStore={handleOpenStore} />
+          {/* Privacy & Trust */}
+          <Privacy />
+        </main>
 
-      {/* Multi-store Quick Modal for Footer */}
-      <StoreModal isOpen={storeModalOpen} onClose={handleCloseStore} />
-    </div>
+        {/* Footer with Direct Store Links */}
+        <Footer />
+      </div>
+    </SmoothScroll>
   );
 }
 
