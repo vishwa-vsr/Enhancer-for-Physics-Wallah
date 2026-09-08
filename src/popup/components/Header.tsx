@@ -30,7 +30,7 @@ export const Header = () => {
     <header class={styles.header}>
       <div class={styles.brand}>
         <div class={styles.logoWrapper}>
-          <img src={logoUrl} alt="PW Control Logo" class={styles.logoImg} width={32} height={32} />
+          <img src={logoUrl} alt="Enhancer for PW Logo" class={styles.logoImg} width={32} height={32} />
         </div>
         <h1 class={styles.title}>Enhancer for PW</h1>
       </div>
