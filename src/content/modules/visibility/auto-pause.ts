@@ -14,10 +14,11 @@ export function initAutoPause(): void {
     const video = getActiveVideo();
 
     if (document.hidden) {
-      // Auto-pause on tab hide (user setting) and while a Focus Lock session
-      // is running — leaving the lecture must pause playback immediately.
+      // Auto-pause on tab hide (user setting). If Focus Lock is running,
+      // its own dedicated guard handles pausing and showing the reminder.
       if (
-        (state.autoPauseOnHide || isFocusLockActive()) &&
+        state.autoPauseOnHide &&
+        !isFocusLockActive() &&
         video &&
         !video.paused
       ) {
@@ -33,8 +34,7 @@ export function initAutoPause(): void {
 
       cancelSpaceHold();
     } else {
-      // Focus Lock keeps playback paused on return: the Focus Lock reminder
-      // modal lets the student consciously resume (or quit the session).
+      // Resume playback on return only for regular auto-pause
       if (
         state.autoPauseOnHide &&
         !isFocusLockActive() &&

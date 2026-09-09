@@ -45,6 +45,12 @@ function isFocusLockKey(key: keyof HideSettings): boolean {
   return FOCUS_LOCK_HIDE_KEYS.includes(key);
 }
 
+function shouldEnableDistraction(key: keyof HideSettings, currentSettings: HideSettings): boolean {
+  return focusLockOverride
+    ? isFocusLockKey(key)
+    : state.extensionEnabled && currentSettings[key] === true;
+}
+
 // Toggle mapping keys to documentElement class names
 export const classMap: Record<keyof HideSettings, string> = {
   hideAskAI: 'pwc-hide-askai',
@@ -66,9 +72,7 @@ export function applySettingsHTML(settings?: HideSettings): void {
 
   (Object.keys(classMap) as (keyof HideSettings)[]).forEach((key) => {
     const className = classMap[key];
-    const isEnabled = focusLockOverride
-      ? isFocusLockKey(key)
-      : state.extensionEnabled && currentSettings[key] === true;
+    const isEnabled = shouldEnableDistraction(key, currentSettings);
     if (isEnabled) {
       root.classList.add(className);
     } else {
@@ -84,9 +88,7 @@ export function applyDistractorsState(): void {
   const activeSettings: Record<string, boolean> = {};
   const hideKeys = Object.keys(classMap) as (keyof HideSettings)[];
   for (const key of hideKeys) {
-    activeSettings[key] = focusLockOverride
-      ? isFocusLockKey(key)
-      : state.extensionEnabled && state.hideSettings[key];
+    activeSettings[key] = shouldEnableDistraction(key, state.hideSettings);
   }
 
   const video = getActiveVideo();

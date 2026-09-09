@@ -3,7 +3,7 @@ import { getActiveVideo } from '../video/detector';
 import { cancelSpaceHold } from '../shortcuts/space-hold';
 import { isUserTyping } from '../shortcuts/keyboard';
 import { setFocusLockOverride } from '../distractions/focus-css';
-import { findFullscreenButton, getControlButton } from '../distractions/elements';
+import { findFullscreenButton, getControlButton, findPWToolbar } from '../distractions/elements';
 import { showInfoToast } from './toast';
 
 /**
@@ -351,15 +351,12 @@ export function injectFocusLockButton(): void {
       fullscreenWrapper.parentElement.insertBefore(btn, fullscreenWrapper);
     }
   } else if (!btn.isConnected) {
-    // Fallback: main control bar (same placement as the instant-hide button).
-    const footerRight = document.getElementById('footer-right-section');
-    const controlBar = footerRight ? footerRight.parentElement : null;
-    const parent = controlBar || footerRight;
-    if (parent) {
-      if (parent.firstChild) {
-        parent.insertBefore(btn, parent.firstChild);
+    const toolbar = findPWToolbar();
+    if (toolbar) {
+      if (toolbar.firstChild) {
+        toolbar.insertBefore(btn, toolbar.firstChild);
       } else {
-        parent.appendChild(btn);
+        toolbar.appendChild(btn);
       }
     }
   }
@@ -393,7 +390,7 @@ export function initFocusLock(): void {
             if (focusLockActive || getActiveVideo()) {
               sendResponse({ ok: true, active: focusLockActive });
             }
-          } else if (action === 'activate' || action === 'toggle') {
+          } else if (action === 'toggle') {
             if (focusLockActive) {
               deactivateFocusLock();
               sendResponse({ ok: true, active: false });
@@ -403,9 +400,6 @@ export function initFocusLock(): void {
             }
             // No video in this frame: stay silent so a frame hosting the
             // lecture player can answer instead.
-          } else if (action === 'deactivate') {
-            deactivateFocusLock();
-            sendResponse({ ok: true, active: false });
           }
         } catch (_e) {
           // Ignored: extension context invalidated
