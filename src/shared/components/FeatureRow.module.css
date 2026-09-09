@@ -32,3 +32,18 @@
   user-select: none;
   line-height: 1.35;
 }
+
+.featureSublabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  line-height: 1.35;
+  margin-top: 1px;
+}
+
+.featureRow.disabled {
+  opacity: 0.55;
+}
+
+.featureRow.disabled .featureTitle {
+  cursor: default;
+}

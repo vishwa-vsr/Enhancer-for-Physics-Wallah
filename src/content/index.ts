@@ -15,6 +15,7 @@ import {
 import { initKeyboardShortcuts } from './modules/shortcuts/keyboard';
 import { initSpaceHold } from './modules/shortcuts/space-hold';
 import { initAutoPause } from './modules/visibility/auto-pause';
+import { initFocusLock, deactivateFocusLock } from './modules/ui/focus-lock';
 import { startDomObserver } from './modules/dom/observer';
 import { HideSettings } from './types';
 
@@ -44,6 +45,11 @@ function init(): void {
     }
 
     if (changedKeys.includes('extensionEnabled')) {
+      if (!currentState.extensionEnabled) {
+        // Turning the extension off must also end any running Focus Lock
+        // session so all distraction hiding is restored cleanly.
+        deactivateFocusLock();
+      }
       focusChanged = true;
     }
 
@@ -140,6 +146,7 @@ function init(): void {
   initKeyboardShortcuts();
   initSpaceHold();
   initAutoPause();
+  initFocusLock();
 
   // 5. Start DOM observer for dynamic injections
   startDomObserver();

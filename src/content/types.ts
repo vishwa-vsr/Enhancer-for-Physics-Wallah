@@ -54,6 +54,7 @@ export interface ContentState {
 
   // Extension status
   extensionEnabled: boolean;
+  themeMode: ThemeMode;
 }
 
 // ===== Audio Graph Cache Interface =====

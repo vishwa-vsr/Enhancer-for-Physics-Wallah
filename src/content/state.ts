@@ -1,4 +1,4 @@
-import { ContentState, HideSettings, StateChangeListener, VideoQuality } from './types';
+import { ContentState, HideSettings, StateChangeListener, ThemeMode, VideoQuality } from './types';
 
 export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideAskAI: false,
@@ -43,6 +43,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   skipSilenceMinDuration: 0.5,
 
   extensionEnabled: true,
+  themeMode: 'dark',
 };
 
 export const state: ContentState = {
@@ -142,6 +143,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'skipSilenceTimeSaved',
         'skipSilenceMinDuration',
         'autoPauseOnHide',
+        'themeMode',
       ],
       function (result) {
         try {
@@ -242,6 +244,10 @@ export function initState(onLoaded?: () => void): void {
     state.showFinishTime = result.showFinishTime !== false;
     state.finishTimeFormat = result.finishTimeFormat || 'minimal';
     state.autoPauseOnHide = !!result.autoPauseOnHide;
+    state.themeMode = result.themeMode || 'dark';
+    if (typeof document !== 'undefined' && document.documentElement) {
+      document.documentElement.classList.toggle('pwc-light-theme', state.themeMode === 'light');
+    }
 
     if (onLoaded) {
       onLoaded();
@@ -263,6 +269,14 @@ export function initState(onLoaded?: () => void): void {
           if (!chrome.runtime || !chrome.runtime.id) return;
           if (area === 'local') {
             const changedKeys: string[] = [];
+
+            if (Object.prototype.hasOwnProperty.call(changes, 'themeMode')) {
+              state.themeMode = (changes.themeMode.newValue as ThemeMode) || 'dark';
+              if (typeof document !== 'undefined' && document.documentElement) {
+                document.documentElement.classList.toggle('pwc-light-theme', state.themeMode === 'light');
+              }
+              changedKeys.push('themeMode');
+            }
 
             if (Object.prototype.hasOwnProperty.call(changes, 'extensionEnabled')) {
               state.extensionEnabled = changes.extensionEnabled.newValue !== false;
