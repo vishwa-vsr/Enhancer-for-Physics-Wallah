@@ -374,43 +374,37 @@ html.pwc-collapsed-state * {
   position: fixed !important;
   inset: 0 !important;
   z-index: 2147483647 !important;
-  background: rgba(2, 6, 23, 0.82) !important;
+  background: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif !important;
   animation: pwc-focus-fade-in 0.22s ease !important;
 }
 
 .pwc-focus-lock-card {
-  background: linear-gradient(160deg, #171b26 0%, #101319 100%) !important;
-  border: 1px solid rgba(167, 139, 250, 0.28) !important;
+  background: linear-gradient(160deg, #181c26 0%, #12151d 100%) !important;
+  border: none !important;
   border-radius: 18px !important;
-  padding: 28px 30px 24px !important;
-  width: min(420px, calc(100vw - 48px)) !important;
+  padding: 24px 28px 22px !important;
+  width: min(390px, calc(100vw - 48px)) !important;
   box-sizing: border-box !important;
   text-align: center !important;
   color: #f8fafc !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55) !important;
-}
-
-.pwc-focus-lock-card > svg {
-  width: 46px !important;
-  height: 46px !important;
-  stroke: #a78bfa !important;
-  stroke-width: 1.8 !important;
-  fill: none !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
 }
 
 .pwc-focus-lock-title {
-  font-size: 20px !important;
+  font-size: 19px !important;
   font-weight: 700 !important;
-  margin: 14px 0 8px !important;
+  margin: 0 0 8px !important;
   color: #ffffff !important;
 }
 
 .pwc-focus-lock-text {
-  font-size: 14px !important;
+  font-size: 13.5px !important;
   line-height: 1.55 !important;
   color: #b5bbc5 !important;
   margin: 0 0 22px !important;
@@ -425,38 +419,77 @@ html.pwc-collapsed-state * {
 
 .pwc-focus-lock-accept {
   border: none !important;
-  border-radius: 12px !important;
-  padding: 11px 18px !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
+  border-radius: 10px !important;
+  padding: 10px 24px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
   font-family: inherit !important;
   background: #6c63ff !important;
   color: #ffffff !important;
   cursor: pointer !important;
-  transition: background 0.2s ease, transform 0.2s ease !important;
+  transition: background 0.18s ease !important;
 }
 
 .pwc-focus-lock-accept:hover {
   background: #7e77ff !important;
-  transform: translateY(-1px) !important;
 }
 
 .pwc-focus-lock-quit {
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-radius: 12px !important;
-  padding: 11px 18px !important;
-  font-size: 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 10px !important;
+  padding: 10px 24px !important;
+  font-size: 13.5px !important;
   font-weight: 600 !important;
   font-family: inherit !important;
   background: transparent !important;
   color: #cbd5e1 !important;
   cursor: pointer !important;
-  transition: background 0.2s ease, color 0.2s ease !important;
+  transition: background 0.18s ease, color 0.18s ease !important;
 }
 
 .pwc-focus-lock-quit:hover {
   background: rgba(255, 255, 255, 0.08) !important;
   color: #ffffff !important;
+}
+
+/* Light mode support for Stay Focused modal */
+html.pwc-light-theme .pwc-focus-lock-overlay {
+  background: rgba(0, 0, 0, 0.45) !important;
+}
+
+html.pwc-light-theme .pwc-focus-lock-card {
+  background: #ffffff !important;
+  border: none !important;
+  color: #181d27 !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22) !important;
+}
+
+html.pwc-light-theme .pwc-focus-lock-title {
+  color: #181d27 !important;
+}
+
+html.pwc-light-theme .pwc-focus-lock-text {
+  color: #4b5565 !important;
+}
+
+html.pwc-light-theme .pwc-focus-lock-accept {
+  background: #5a55ea !important;
+  color: #ffffff !important;
+}
+
+html.pwc-light-theme .pwc-focus-lock-accept:hover {
+  background: #4e48d6 !important;
+}
+
+html.pwc-light-theme .pwc-focus-lock-quit {
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  background: #edf1f6 !important;
+  color: #4b5565 !important;
+}
+
+html.pwc-light-theme .pwc-focus-lock-quit:hover {
+  background: #dfe5ee !important;
+  color: #181d27 !important;
 }
 
 /* Click-to-fullscreen pill shown when automatic fullscreen is blocked
@@ -471,7 +504,7 @@ html.pwc-collapsed-state * {
   align-items: center !important;
   background: rgba(15, 18, 28, 0.94) !important;
   color: #e2e8f0 !important;
-  border: 1px solid rgba(167, 139, 250, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   padding: 10px 18px !important;
   border-radius: 999px !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;

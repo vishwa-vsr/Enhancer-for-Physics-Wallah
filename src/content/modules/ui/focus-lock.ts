@@ -207,30 +207,6 @@ function showModal(): void {
   const card = document.createElement('div');
   card.className = 'pwc-focus-lock-card';
 
-  // Shield icon
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('fill', 'none');
-  svg.setAttribute('stroke', 'currentColor');
-  svg.setAttribute('stroke-width', '2');
-  svg.setAttribute('stroke-linecap', 'round');
-  svg.setAttribute('stroke-linejoin', 'round');
-  const shieldPath = document.createElementNS(svgNS, 'path');
-  shieldPath.setAttribute('d', 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z');
-  const lockRect = document.createElementNS(svgNS, 'rect');
-  lockRect.setAttribute('x', '9');
-  lockRect.setAttribute('y', '11');
-  lockRect.setAttribute('width', '6');
-  lockRect.setAttribute('height', '5');
-  lockRect.setAttribute('rx', '1');
-  const lockArc = document.createElementNS(svgNS, 'path');
-  lockArc.setAttribute('d', 'M10 11v-1.5a2 2 0 0 1 4 0V11');
-  svg.appendChild(shieldPath);
-  svg.appendChild(lockRect);
-  svg.appendChild(lockArc);
-  card.appendChild(svg);
-
   const title = document.createElement('h3');
   title.className = 'pwc-focus-lock-title';
   title.textContent = 'Stay Focused!';
@@ -239,7 +215,7 @@ function showModal(): void {
   const text = document.createElement('p');
   text.className = 'pwc-focus-lock-text';
   text.textContent =
-    'Your study session is still running. Do you want to return to fullscreen, or quit Focus Lock?';
+    'Your study session is still running. Do you want to return to fullscreen, or quit?';
   card.appendChild(text);
 
   const actions = document.createElement('div');
@@ -248,7 +224,7 @@ function showModal(): void {
   const returnBtn = document.createElement('button');
   returnBtn.type = 'button';
   returnBtn.className = 'pwc-focus-lock-accept';
-  returnBtn.textContent = 'Return to Fullscreen';
+  returnBtn.textContent = 'Return';
   returnBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -268,7 +244,7 @@ function showModal(): void {
   const quitBtn = document.createElement('button');
   quitBtn.type = 'button';
   quitBtn.className = 'pwc-focus-lock-quit';
-  quitBtn.textContent = 'Quit Focus Lock';
+  quitBtn.textContent = 'Quit';
   quitBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     e.preventDefault();

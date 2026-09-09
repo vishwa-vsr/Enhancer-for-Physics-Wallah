@@ -85,37 +85,27 @@ interface FocusLockSectionProps {
 
 function FocusLockSection({ lockUnavailable, lockActive, onToggle }: FocusLockSectionProps) {
   return (
-    <section>
+    <section aria-label="Focus Lock Settings">
       <h2 class={styles.sectionTitle}>Focus Lock</h2>
       <div class={styles.settingsGroupCard}>
-        <div class={styles.lockRow}>
-          <div class={styles.lockInfo}>
-            <span class={styles.lockTitle}>Strict Study Session</span>
-            <span class={styles.lockDesc}>
-              Clean fullscreen player with all distractions hidden. Leaving
-              fullscreen or switching tabs pauses the video with a reminder.
-            </span>
-          </div>
-          <button
-            class={lockActive ? styles.lockBtnActive : styles.lockBtn}
-            onClick={onToggle}
+        <FeatureRow
+          label="Strict Study Session"
+          sublabel={
+            lockUnavailable
+              ? 'Open a lecture video to start'
+              : lockActive
+                ? 'Active — auto-hiding chat, doubts, notes & settings'
+                : 'Fullscreen & distraction-free'
+          }
+          disabled={lockUnavailable}
+        >
+          <Toggle
+            checked={lockActive}
             disabled={lockUnavailable}
-            title={
-              lockUnavailable
-                ? 'Open a Physics Wallah lecture tab first'
-                : lockActive
-                  ? 'Exit Focus Lock in the lecture tab'
-                  : 'Start a strict distraction-free session'
-            }
-          >
-            {lockActive ? 'Exit Focus Lock' : lockUnavailable ? 'Open a Lecture' : 'Start Focus Lock'}
-          </button>
-        </div>
-        {lockUnavailable && (
-          <div class={styles.lockHint}>
-            Open a Physics Wallah lecture tab to start a Focus Lock session.
-          </div>
-        )}
+            onChange={onToggle}
+            ariaLabel="Toggle Focus Lock"
+          />
+        </FeatureRow>
       </div>
     </section>
   );
