@@ -134,6 +134,16 @@ Read our complete [Privacy Policy](PRIVACY_POLICY.md) for details.
 
 ---
 
+## 👥 Contributors
+
+Thanks to everyone who has contributed to Enhancer for Physics Wallah:
+
+<a href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=vishwa-vsr/Enhancer-for-Physics-Wallah" alt="Enhancer for Physics Wallah Contributors" />
+</a>
+
+---
+
 ## 👩‍💻 Want to Build or Contribute?
 
 We welcome open-source contributions! Whether you want to add new features, fix a bug, or improve styling, check out our developer guide:
