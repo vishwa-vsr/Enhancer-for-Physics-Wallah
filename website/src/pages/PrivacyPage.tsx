@@ -27,7 +27,7 @@ export const PrivacyPage: React.FC = () => {
             At <strong>Enhancer for PW</strong>, your study habits, personal accounts, and browser privacy always come first. This policy explains clearly and honestly how data is handled.
           </p>
           <p className="text-xs sm:text-sm text-white/40 mt-2 font-mono">
-            Last updated: September 2026 • Version 1.0.8.2
+            Last updated: September 2026 • Version 1.0.8.3
           </p>
         </div>
 

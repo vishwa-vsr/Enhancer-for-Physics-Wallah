@@ -6,12 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.0.8.3] - 2026-09-09
+
 ### Added
-- **Focus Lock Mode — Strict Distraction-Free Study Session (Closes #11)**: One-click Focus Lock from the new shield button in the player toolbar or from the popup starts a strict study session:
-  - Automatically enters a clean fullscreen presentation and simultaneously hides all distractions (live chat, doubt forums, Ask AI, study notes, note timeline and settings clutter) while keeping playback controls usable.
-  - Anti-Distraction Guard: pressing `Escape` (exiting fullscreen) or switching to another tab instantly pauses the video and shows a clean *"Stay Focused!"* modal to return to fullscreen (and resume) or quit the session.
-  - Works even when automatic fullscreen is blocked by the browser — a click-to-fullscreen prompt appears instead.
-  - Integrates directly with the existing distraction-hiding modules and respects the user's own hide toggles after the session ends; Auto-Pause no longer auto-resumes while locked.
+- **Focus Lock Mode**: 1-click fullscreen study session that pauses when you get distracted (contributed by [@undefined-parth](https://github.com/undefined-parth) in [#12](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/pull/12)).
 
 ---
 

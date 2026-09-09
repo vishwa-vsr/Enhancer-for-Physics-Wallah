@@ -4,7 +4,7 @@
   # Enhancer for Physics Wallah
   ### Supercharge your lecture experience on `pw.live` with speed controls, smart silence skipping, and 1-click focus tools
 
-  [![Version: 1.0.8.2](https://img.shields.io/badge/version-1.0.8.2-blue.svg)](#)
+  [![Version: 1.0.8.3](https://img.shields.io/badge/version-1.0.8.3-blue.svg)](#)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
   [![Preact](https://img.shields.io/badge/Preact-10-673AB8?logo=preact&logoColor=white)](https://preactjs.com/)
