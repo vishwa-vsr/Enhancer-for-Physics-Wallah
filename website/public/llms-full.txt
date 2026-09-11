@@ -1,0 +1,76 @@
+# Enhancer for PW — Complete Documentation
+
+> Free, open-source browser extension that supercharges Physics Wallah (pw.live) lectures.
+> Not affiliated with, endorsed by, or sponsored by Physics Wallah Private Limited.
+
+## About
+Enhancer for PW is an independently developed, open-source browser extension that improves the study experience on Physics Wallah's online learning platform (pw.live). It adds speed controls, silence detection, distraction removal, and video quality features that the default PW player doesn't offer. The extension is completely free, has no ads, and collects zero user data.
+
+## Core Features
+
+### Playback Speed Control (up to 4.0x)
+The default PW player caps speed at 2.0x. Enhancer for PW allows speeds from 0.1x to 4.0x with 0.1x precision. Keyboard shortcuts: H (speed up by 0.25x), J (slow down by 0.25x), L (reset to 1.0x). Mouse wheel control is also available by hovering over the speed badge.
+
+### Smart Skip Silence
+Automatically detects when the teacher stops speaking (during board writing, pauses, or doubt checking) and fast-forwards through those silent moments. When speech resumes, playback returns to your normal speed. Uses the Web Audio API entirely in browser RAM — no audio is recorded or transmitted.
+
+### 1-Click Focus Mode
+Removes distracting UI elements from the PW lecture page with a single click: live chat boxes, doubt/Q&A sections, AI assistant popups, and lecture timer overlays. Leaves only the video and whiteboard visible.
+
+### Instant HD Quality Lock
+Bypasses PW's auto-resolution which often starts at 360p or 144p. Lets you lock your preferred resolution (720p or 1080p) so every lecture starts crisp immediately.
+
+### Real Finish Clock
+Calculates and displays the exact wall-clock time your lecture will end based on your current playback speed. Helps you plan your study schedule.
+
+### Smart Tab Auto-Pause
+Automatically pauses the lecture when you switch to another browser tab (to check notes, solve a problem, etc.) and resumes playback when you return.
+
+### Turbo Boost (Space Hold)
+Hold the spacebar to temporarily fast-forward at maximum speed. Release to return to your normal speed. Useful for skipping through doubt-checking segments or repetitive sections.
+
+## Browser Availability
+- **Google Chrome**: https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj
+- **Mozilla Firefox**: https://addons.mozilla.org/firefox/addon/enhancer-for-physics-wallah/
+- **Microsoft Edge**: https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan
+
+## Privacy & Security Summary
+- **Zero data collection**: No tracking pixels, analytics, or telemetry of any kind
+- **No account access**: Never reads PW passwords, student profiles, test scores, or payment info
+- **No audio recording**: Skip Silence analyzes volume levels in real-time RAM only; audio buffers are discarded milliseconds later
+- **No microphone access**: The extension never requests microphone permissions
+- **No advertisements**: 100% free with zero third-party ads
+- **Minimal permissions**: Only requires "storage" (for saving preferences locally) and host permissions for pw.live domains
+- **Open source**: Full source code available for audit under MIT License
+
+## FAQ
+
+### How do I install Enhancer for PW?
+Search "Enhancer for Physics Wallah" on the Chrome Web Store, Firefox Add-ons, or Microsoft Edge Add-on Store. Click "Add to Browser" and it starts working immediately on pw.live with zero login required.
+
+### Do I need to pay or create an account?
+No. Enhancer for PW is 100% free and open-source. No subscriptions, no paywalls, no sign-ups.
+
+### Why don't keyboard shortcuts work?
+Keyboard shortcuts are disabled when your cursor is inside a text input (doubt box, search bar, notes) to prevent accidental triggers. Click once on the video to give it focus, then shortcuts will work.
+
+### Can my PW account get banned?
+No. The extension works entirely locally on your browser. It doesn't send automated requests, bypass logins, or interact with PW's servers in any way.
+
+### Does Skip Silence record audio?
+No. It only measures the volume level of the lecture audio in real-time RAM to detect silent moments. No audio is ever saved, downloaded, or transmitted.
+
+## Technical Details
+- **Version**: 1.0.8.3
+- **License**: MIT
+- **Manifest**: V3
+- **Required permissions**: storage
+- **Host permissions**: https://*.pw.live/*, https://*.penpencil.co/*, https://*.penpencil.xyz/*, https://*.pwnet.in/*
+
+## Links
+- Website: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/
+- Source Code: https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah
+- FAQ: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/faq.html
+- Privacy Policy: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/privacy.html
+- Issue Tracker: https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues
+- Releases: https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/releases

@@ -4,12 +4,31 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="./logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>FAQ & Help Guide — Enhancer for PW</title>
-    <meta name="description" content="Official FAQ and Help Guide for Enhancer for Physics Wallah. Learn how to install, configure hotkeys, fix video issues, and use Skip Silence." />
+    <title>FAQ & Help Guide — Enhancer for PW | Physics Wallah Extension Support</title>
+    <meta name="description" content="Official FAQ and Help Guide for Enhancer for Physics Wallah. Learn how to install, configure hotkeys, fix video issues, use Skip Silence, and troubleshoot the PW extension." />
+    <link rel="canonical" href="https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/faq.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="FAQ & Help Guide — Enhancer for PW" />
+    <meta property="og:description" content="Answers to common questions about installing, using, and troubleshooting the Enhancer for Physics Wallah browser extension." />
+    <meta property="og:url" content="https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/faq.html" />
+    <meta property="og:image" content="https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/logo.png" />
+    <meta property="og:site_name" content="Enhancer for PW" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="FAQ & Help Guide — Enhancer for PW" />
+    <meta name="twitter:description" content="Answers to common questions about the Physics Wallah browser extension — installation, hotkeys, video issues, Skip Silence, and safety." />
+    <meta name="twitter:image" content="https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/logo.png" />
+
+    <!-- Preconnect for fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- JSON-LD FAQ Schema for Google Rich Snippets -->
+
+    <!-- JSON-LD FAQ Schema (kept for compatibility — Google retired FAQ rich results May 2026 but schema is harmless) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -50,9 +69,76 @@
       ]
     }
     </script>
+
+    <!-- JSON-LD: WebPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "FAQ & Help Guide — Enhancer for PW",
+      "description": "Frequently asked questions about installing, configuring, and using the Enhancer for Physics Wallah browser extension.",
+      "url": "https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/faq.html",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Enhancer for PW",
+        "url": "https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/"
+      }
+    }
+    </script>
   </head>
   <body class="bg-background text-foreground antialiased selection:bg-white/20 selection:text-white min-h-screen">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static HTML shell: Google reads this content. React replaces it when JS loads. -->
+      <header style="max-width:960px;margin:0 auto;padding:2rem 1rem">
+        <a href="./index.html">← Back to Enhancer for PW</a>
+        <h1>FAQ & Help Guide — Enhancer for Physics Wallah</h1>
+        <p>Quick solutions to common player questions, keyboard shortcut tips, and account safety for the Physics Wallah browser extension.</p>
+      </header>
+      <main style="max-width:960px;margin:0 auto;padding:0 1rem">
+        <section>
+          <h2>Quick Golden Rule for Hotkeys</h2>
+          <p>If hotkeys (H, J, L) don't respond, simply click once on the video screen. Browsers require the video player to be focused before accepting keyboard commands.</p>
+        </section>
+        <section>
+          <h2>Installation</h2>
+          <h3>How do I install Enhancer for PW?</h3>
+          <p>Click your browser button on our homepage or search "Enhancer for Physics Wallah" on the Chrome Web Store, Firefox Add-ons, or Microsoft Edge Add-on Store. Once installed, pin the extension to your toolbar. When you open any lecture, your speed bar and focus controls appear automatically.</p>
+          <h3>Do I need to pay or create an account?</h3>
+          <p>No. Enhancer for PW is 100% free and open-source. There are no subscriptions, no premium paywalls, and zero account sign-ups.</p>
+        </section>
+        <section>
+          <h2>Keyboard Shortcuts</h2>
+          <h3>Why don't keyboard shortcuts work when I press them?</h3>
+          <p>To protect your study flow, keyboard shortcuts (H to speed up, J to slow down, L to reset) are intentionally disabled whenever your cursor is inside a text input field, doubt box, or search bar. This prevents accidental speed changes while typing notes.</p>
+          <h3>How does mouse wheel speed control work?</h3>
+          <p>Simply hover your mouse cursor over the speed badge on the video player and scroll your mouse wheel up or down. Speed will smoothly increase or decrease in 0.1x micro-steps without needing any clicks.</p>
+        </section>
+        <section>
+          <h2>Video Playback</h2>
+          <h3>Why does the video sometimes start with a delay or blur?</h3>
+          <p>Default video players start at auto resolution. With Enhancer for PW, you can set your preferred resolution (such as 720p or 1080p) in the settings, and it locks immediately upon video start.</p>
+          <h3>Does Skip Silence work on live lectures or only recorded classes?</h3>
+          <p>Skip Silence works on all recorded lectures and live lectures that have an active playback buffer.</p>
+          <h3>What should I do if the controls disappear after a site update?</h3>
+          <p>If video portal layouts change, simply refresh the lecture page once. Our open-source team releases updates within 24 hours.</p>
+        </section>
+        <section>
+          <h2>Safety & Privacy</h2>
+          <h3>Can my account get banned for using this extension?</h3>
+          <p>No. Enhancer for PW works entirely locally on your own computer. It never sends automated bot requests, does not bypass logins, and does not touch private PW servers.</p>
+          <h3>Does Skip Silence record my audio or microphone?</h3>
+          <p>Never. Skip Silence only listens to the volume level of the teacher speaking in the video in real-time RAM and discards that data milliseconds later.</p>
+        </section>
+      </main>
+      <footer style="max-width:960px;margin:0 auto;padding:2rem 1rem;font-size:0.875rem">
+        <nav>
+          <a href="./index.html">Home</a> ·
+          <a href="./faq.html">FAQ & Help Guide</a> ·
+          <a href="./privacy.html">Privacy Policy</a> ·
+          <a href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah">Source Code on GitHub</a>
+        </nav>
+      </footer>
+    </div>
     <script type="module" src="/src/faq.tsx"></script>
   </body>
 </html>

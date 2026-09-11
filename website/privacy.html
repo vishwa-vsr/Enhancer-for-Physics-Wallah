@@ -4,14 +4,99 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="./logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Privacy Policy — Enhancer for PW</title>
-    <meta name="description" content="Official Privacy Policy for Enhancer for Physics Wallah. 100% local storage, zero telemetry, no audio recording." />
+    <title>Privacy Policy — Enhancer for PW | Zero Data Collection, 100% Local</title>
+    <meta name="description" content="Official Privacy Policy for Enhancer for Physics Wallah. 100% local storage, zero telemetry, no audio recording. Your study habits and accounts stay private." />
+    <link rel="canonical" href="https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/privacy.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Privacy Policy — Enhancer for PW" />
+    <meta property="og:description" content="100% local storage, zero telemetry, no audio recording. The Enhancer for Physics Wallah extension respects your privacy completely." />
+    <meta property="og:url" content="https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/privacy.html" />
+    <meta property="og:image" content="https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/logo.png" />
+    <meta property="og:site_name" content="Enhancer for PW" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Privacy Policy — Enhancer for PW" />
+    <meta name="twitter:description" content="100% local storage, zero telemetry, no audio recording. Your data stays on your device." />
+    <meta name="twitter:image" content="https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/logo.png" />
+
+    <!-- Preconnect for fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- JSON-LD: WebPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Privacy Policy — Enhancer for PW",
+      "description": "Privacy policy for the Enhancer for Physics Wallah browser extension. Zero data collection, 100% local storage, no telemetry.",
+      "url": "https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/privacy.html",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Enhancer for PW",
+        "url": "https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/"
+      }
+    }
+    </script>
   </head>
   <body class="bg-background text-foreground antialiased selection:bg-white/20 selection:text-white min-h-screen">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static HTML shell: Google reads this content. React replaces it when JS loads. -->
+      <header style="max-width:960px;margin:0 auto;padding:2rem 1rem">
+        <a href="./index.html">← Back to Enhancer for PW</a>
+        <h1>Privacy Policy — Enhancer for Physics Wallah</h1>
+        <p>At Enhancer for PW, your study habits, personal accounts, and browser privacy always come first. This policy explains clearly and honestly how data is handled.</p>
+        <p><small>Last updated: September 2026 · Version 1.0.8.3</small></p>
+      </header>
+      <main style="max-width:960px;margin:0 auto;padding:0 1rem">
+        <section>
+          <h2>1. Zero Data Collection & Zero Tracking</h2>
+          <p>We do not collect, store, transmit, or sell any of your personal information, browsing history, or lecture activity.</p>
+          <ul>
+            <li><strong>No Analytics or Telemetry:</strong> There are no tracking pixels or Google Analytics scripts inside the extension.</li>
+            <li><strong>No Account Access:</strong> We never read, access, or store your Physics Wallah passwords, student profile details, test scores, or payments.</li>
+            <li><strong>No Advertisements:</strong> The extension is 100% free and contains zero third-party ads.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>2. Real-Time Audio Processing (Skip Silence)</h2>
+          <p>The Skip Silence feature dynamically fast-forwards through teacher pauses and silent formula writing:</p>
+          <ul>
+            <li><strong>How it works:</strong> The browser's native Web Audio API measures lecture output volume in real-time to detect quiet moments.</li>
+            <li><strong>No Recording:</strong> Audio and video are never recorded, saved, downloaded, or sent to any server.</li>
+            <li><strong>No Microphone Access:</strong> The extension never requests or activates your microphone.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>3. Local Storage on Your Device</h2>
+          <p>The extension only uses Chrome's standard chrome.storage.local API to remember your personal preferences:</p>
+          <ul>
+            <li>Custom video speed choices (e.g. 2.5x, 3.2x).</li>
+            <li>Focus mode settings (hiding live chat or doubt boxes).</li>
+            <li>Accumulated "Time Saved" counter.</li>
+          </ul>
+          <p>Uninstalling the extension or clearing your browser extension storage removes 100% of these records instantly.</p>
+        </section>
+        <section>
+          <h2>4. Open Source & Contact</h2>
+          <p>Enhancer for PW is an open-source community tool released under the MIT License. Anyone can inspect and audit the complete source code on <a href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah">GitHub</a>.</p>
+          <p>For questions or feedback, open an issue on GitHub or email us at extensionsfeedback@gmail.com.</p>
+        </section>
+      </main>
+      <footer style="max-width:960px;margin:0 auto;padding:2rem 1rem;font-size:0.875rem">
+        <nav>
+          <a href="./index.html">Home</a> ·
+          <a href="./faq.html">FAQ & Help Guide</a> ·
+          <a href="./privacy.html">Privacy Policy</a> ·
+          <a href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah">Source Code on GitHub</a>
+        </nav>
+      </footer>
+    </div>
     <script type="module" src="/src/privacy.tsx"></script>
   </body>
 </html>

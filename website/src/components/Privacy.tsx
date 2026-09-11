@@ -15,6 +15,9 @@ export const Privacy: React.FC = () => {
           >
             Your account, notes, and study habits belong only to you.
           </h2>
+          <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+            Enhancer for Physics Wallah collects zero data. No tracking, no analytics, no microphone access. Read our full <a href="./privacy.html" className="text-white/80 hover:text-white underline underline-offset-2 transition-colors">Privacy Policy</a> or check out our <a href="./faq.html" className="text-white/80 hover:text-white underline underline-offset-2 transition-colors">FAQ & Help Guide</a>.
+          </p>
 
           <div className="mt-8 flex flex-col gap-4">
             <div className="flex items-start gap-4">

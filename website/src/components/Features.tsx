@@ -50,6 +50,9 @@ export const Features: React.FC = () => {
         >
           Exam bagal mein <em className="not-italic text-muted-foreground">aa gaya hai!</em>
         </h2>
+        <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
+          Speed controls, skip silence, focus mode, and HD quality lock — everything you need to finish Physics Wallah lectures faster.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

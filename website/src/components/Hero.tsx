@@ -88,12 +88,13 @@ export const Hero: React.FC = () => {
   ];
   return (
     <section className="relative min-h-[100dvh] sm:min-h-[700px] h-screen flex flex-col justify-between overflow-hidden">
-      {/* Background Video */}
+      {/* Background Video — lazy loaded to avoid blocking page load */}
       <video
         autoPlay
         loop
         muted
         playsInline
+        preload="none"
         className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
       >
         <source
@@ -105,7 +106,7 @@ export const Hero: React.FC = () => {
       {/* Subtle depth overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#021422]/50 via-transparent to-[#021422] z-[1] pointer-events-none" />
 
-      {/* Hero Centerpiece: Headline Only */}
+      {/* Hero Centerpiece: Headline + SEO Subtitle */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-5xl mx-auto my-auto pt-24 sm:pt-28 pb-4">
         <h1
           className="animate-fade-rise text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-[1.05] sm:leading-[0.95] tracking-tight sm:tracking-[-2.46px] font-normal text-foreground"
@@ -113,6 +114,9 @@ export const Hero: React.FC = () => {
         >
           Kyun nahi ho rahi <em className="not-italic text-muted-foreground">padhai?!</em>
         </h1>
+        <p className="animate-fade-rise-delay mt-4 text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+          Speed up Physics Wallah lectures up to 4x, auto-skip silence, remove distractions, and lock HD quality — free extension for Chrome, Firefox & Edge.
+        </p>
       </div>
 
       {/* Bottom Bar: Vertical Store Cards on Left, Scroll Indicator on Right */}

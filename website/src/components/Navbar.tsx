@@ -46,7 +46,7 @@ export const Navbar: React.FC = () => {
           </span>
         </a>
 
-        {/* Desktop Nav Links (Clean & Balanced) */}
+        {/* Desktop Nav Links — exposed so Google can crawl them */}
         <div className="hidden md:flex items-center gap-8">
           <a
             href="#"
@@ -65,6 +65,12 @@ export const Navbar: React.FC = () => {
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Reviews
+          </a>
+          <a
+            href="./faq.html"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            FAQ
           </a>
         </div>
 

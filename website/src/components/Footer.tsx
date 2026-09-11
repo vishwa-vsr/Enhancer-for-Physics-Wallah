@@ -70,13 +70,13 @@ export const Footer: React.FC<FooterProps> = () => {
           Home
         </a>
         <a href="./index.html#features" className="hover:text-white transition-colors">
-          Features
+          Extension Features
         </a>
         <a href="./index.html#reviews" className="hover:text-white transition-colors">
-          Reviews
+          Student Reviews
         </a>
         <a href="./faq.html" className="hover:text-white transition-colors text-white/90">
-          FAQ
+          FAQ & Help Guide
         </a>
         <a href="./privacy.html" className="hover:text-white transition-colors">
           Privacy Policy

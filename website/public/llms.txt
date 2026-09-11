@@ -1,0 +1,29 @@
+# Enhancer for PW
+
+> Free, open-source browser extension that supercharges Physics Wallah (pw.live) lectures.
+
+## What It Does
+- Watch lectures at up to 4.0x speed (with 0.1x precision)
+- Auto-skip teacher silence and board-writing pauses
+- 1-click Focus Mode to remove chat, doubt boxes, and AI popups
+- Lock HD video quality (720p/1080p) automatically
+- Real-time finish clock showing when your lecture will end
+- Smart tab auto-pause (pauses when you switch tabs)
+- Keyboard shortcuts: H (speed up), J (slow down), L (reset), Space (turbo boost)
+
+## Availability
+- Chrome: https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj
+- Firefox: https://addons.mozilla.org/firefox/addon/enhancer-for-physics-wallah/
+- Edge: https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan
+
+## Privacy
+- 100% local — zero data collection, zero telemetry
+- No audio recording — Skip Silence uses real-time RAM only
+- No account access — never touches your PW login
+- Open source under MIT License
+
+## Links
+- Website: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/
+- Source Code: https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah
+- FAQ: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/faq.html
+- Privacy Policy: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/privacy.html
