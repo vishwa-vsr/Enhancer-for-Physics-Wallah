@@ -25,7 +25,7 @@ function parseTypedSpeed(value: string): number | null {
 
 function setExpanded(container: HTMLElement, expanded: boolean): void {
   container.classList.toggle('pwc-expanded', expanded);
-  container.querySelectorAll<HTMLButtonElement>('.pwc-speed-btn, .pwc-speed-badge').forEach((trigger) => {
+  container.querySelectorAll<HTMLButtonElement>('.pwc-speed-badge').forEach((trigger) => {
     trigger.setAttribute('aria-expanded', String(expanded));
   });
 }
@@ -134,8 +134,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
   const slider = container.querySelector<HTMLInputElement>('.pwc-speed-slider');
   const badge = container.querySelector<HTMLButtonElement>('.pwc-speed-badge');
   const speedInput = container.querySelector<HTMLInputElement>('.pwc-speed-badge-input');
-  const button = container.querySelector<HTMLButtonElement>('.pwc-speed-btn');
-  if (!slider || !badge || !speedInput || !button) return;
+  if (!slider || !badge || !speedInput) return;
 
   updateSliderBackground(slider, state.currentSpeed);
 
@@ -189,11 +188,6 @@ export function setupUIEventListeners(container: HTMLElement): void {
       if (container.classList.contains('pwc-speed-editing')) finishBadgeEditing(true);
       setExpanded(container, false);
     }, 250);
-  });
-
-  button.addEventListener('click', () => {
-    container.classList.remove('pwc-escape-collapsed');
-    setExpanded(container, true);
   });
 
   badge.addEventListener('click', () => {
@@ -309,48 +303,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
 export function buildSpeedControl(container: HTMLElement): void {
   container.textContent = '';
 
-  // Create button
-  const btn = document.createElement('button');
-  btn.className = 'pwc-speed-btn';
-  btn.type = 'button';
-  btn.setAttribute('title', 'Set playback speed');
-  btn.setAttribute('aria-label', 'Set playback speed');
-  btn.setAttribute('aria-expanded', 'false');
-
-  // Create SVG using document.createElementNS for SVGs
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('fill', 'none');
-  svg.setAttribute('stroke', 'currentColor');
-  svg.setAttribute('stroke-width', '2.2');
-  svg.setAttribute('stroke-linecap', 'round');
-  svg.setAttribute('stroke-linejoin', 'round');
-
-  const path = document.createElementNS(svgNS, 'path');
-  path.setAttribute('d', 'M6 18A8 8 0 1 1 18 18');
-  svg.appendChild(path);
-
-  const line = document.createElementNS(svgNS, 'line');
-  line.setAttribute('class', 'pwc-needle');
-  line.setAttribute('x1', '12');
-  line.setAttribute('y1', '14');
-  line.setAttribute('x2', '15');
-  line.setAttribute('y2', '9');
-  line.style.transformOrigin = '12px 14px';
-  line.style.transition = 'transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)';
-  svg.appendChild(line);
-
-  const circle = document.createElementNS(svgNS, 'circle');
-  circle.setAttribute('cx', '12');
-  circle.setAttribute('cy', '14');
-  circle.setAttribute('r', '1.5');
-  circle.setAttribute('fill', 'currentColor');
-  svg.appendChild(circle);
-
-  btn.appendChild(svg);
-
-  container.appendChild(btn);
+  // Speed badge doubles as the precise-entry trigger
 
   // Make the existing speed badge the precise-entry trigger.
   const badge = document.createElement('button');
@@ -471,13 +424,6 @@ export function updateUI(): void {
     } else {
       label.classList.remove('pwc-active-tick');
     }
-  });
-
-  // Update needle rotation based on current speed
-  const pct = (state.currentSpeed - 0.5) / (4.0 - 0.5);
-  const angle = -110 + pct * 220; // range from -110deg to 110deg
-  document.querySelectorAll<SVGElement>('.pwc-needle').forEach((needle) => {
-    needle.style.transform = `rotate(${angle}deg)`;
   });
 
   // Update lecture finish time badge

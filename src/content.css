@@ -13,47 +13,7 @@
   position: relative;
 }
 
-/* Speed Button (Matches player micro icon styles) */
-.pwc-speed-btn {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0 6px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: color 0.2s ease;
-  height: 100%;
-  outline: none;
-}
 
-.pwc-speed-btn:hover {
-  color: #ffffff;
-}
-
-.pwc-speed-btn:focus-visible {
-  color: #ffffff;
-  outline: 2px solid #a78bfa;
-  outline-offset: -2px;
-  border-radius: 5px;
-}
-
-/* Speed SVG Outline Icon */
-.pwc-speed-btn svg {
-  width: 23px;
-  height: 23px;
-  stroke: currentColor;
-  stroke-width: 2.2;
-  fill: none;
-  transition: transform 0.2s ease;
-}
-
-.pwc-speed-btn:hover svg {
-  transform: scale(1.12);
-}
 
 
 /* Slider Container (slides out on hover to the right) */
@@ -110,31 +70,38 @@
 /* The existing badge doubles as the direct-entry trigger. */
 .pwc-speed-badge {
   position: relative;
-  flex: 0 0 46px;
+  flex: 0 0 52px !important;
+  width: 52px !important;
+  min-width: 52px !important;
+  max-width: 52px !important;
+  box-sizing: border-box !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   height: 100%;
-  min-width: 46px;
   min-height: 0 !important;
   margin: 0 !important;
-  padding: 0 6px !important;
+  padding: 0 !important;
   border: 0 !important;
-  border-radius: 0 !important;
+  border-radius: 4px !important;
   background: transparent !important;
   color: rgba(255, 255, 255, 0.85) !important;
   font-family: inherit !important;
   font-size: 15px !important;
   font-weight: 700 !important;
+  font-variant-numeric: tabular-nums !important;
   line-height: 1 !important;
+  text-align: center !important;
   cursor: pointer;
-  outline: none;
+  outline: none !important;
   box-shadow: none !important;
-  transition: color 0.2s ease;
+  overflow: hidden !important;
+  transition: color 0.2s ease, background 0.2s ease;
 }
 
 .pwc-speed-badge:hover {
   color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 .pwc-speed-badge:focus,
@@ -182,25 +149,29 @@
 /* Replace only the badge pixels while editing; reset player-wide input styles. */
 .pwc-speed-badge-input {
   display: inline-block;
-  flex: 0 0 46px;
-  width: 46px;
+  flex: 0 0 52px !important;
+  width: 52px !important;
+  min-width: 52px !important;
+  max-width: 52px !important;
+  box-sizing: border-box !important;
   height: 100%;
-  min-width: 0;
   min-height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
+  border-radius: 4px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
   color: #ffffff !important;
   font-family: inherit !important;
   font-size: 15px !important;
   font-weight: 700 !important;
+  font-variant-numeric: tabular-nums !important;
   line-height: 1 !important;
-  text-align: center;
+  text-align: center !important;
   appearance: textfield;
   outline: none !important;
   box-shadow: none !important;
+  overflow: hidden !important;
 }
 
 .pwc-speed-badge-input:focus {
