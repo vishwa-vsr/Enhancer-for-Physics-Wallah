@@ -59,79 +59,183 @@
 /* Slider Container (slides out on hover to the right) */
 .pwc-speed-slider-container {
   width: 0px;
+  flex: 0 0 0;
+  min-width: 0;
   opacity: 0;
   overflow: hidden;
-  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, padding-left 0.25s ease;
+  transition:
+    width 3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    flex-basis 3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 1.4s ease,
+    padding-left 3s cubic-bezier(0.22, 0.61, 0.36, 1);
   display: flex;
   align-items: center;
   height: 100%;
   padding-left: 0;
-  gap: 9px;
 }
 
 /* Slide out when container is hovered or active */
-.pwc-speed-container:not(.pwc-selection-complete):hover .pwc-speed-slider-container,
+.pwc-speed-container:not(.pwc-escape-collapsed):hover .pwc-speed-slider-container,
 .pwc-speed-container.pwc-expanded .pwc-speed-slider-container {
-  width: clamp(166px, 25vw, 210px);
+  width: 150px;
+  flex: 0 0 150px;
   opacity: 1;
   padding-left: 14px;
   overflow: visible !important;
+  transition:
+    width 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    flex-basis 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.18s ease,
+    padding-left 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Escape can intentionally close the menu while the pointer remains over it. */
+.pwc-speed-container.pwc-escape-collapsed:hover .pwc-speed-slider-container {
+  width: 0 !important;
+  flex-basis: 0 !important;
+  opacity: 0 !important;
+  padding-left: 0 !important;
+  overflow: hidden !important;
 }
 
 /* Always Expanded Mode: keeps slider open permanently */
 .pwc-speed-container.pwc-always-expanded .pwc-speed-slider-container {
-  width: clamp(166px, 25vw, 210px) !important;
+  width: 150px !important;
+  flex-basis: 150px !important;
   opacity: 1 !important;
   padding-left: 14px !important;
   overflow: visible !important;
 }
 
-/* Compact direct-entry field for precise values such as 1.25x */
-.pwc-speed-input-wrapper {
-  flex: 0 0 48px;
-  height: 25px;
+/* The existing badge doubles as the direct-entry trigger. */
+.pwc-speed-badge {
+  position: relative;
+  flex: 0 0 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-sizing: border-box;
-  padding: 0 6px;
-  border: 1px solid rgba(255, 255, 255, 0.38);
-  border-radius: 6px;
-  background: rgba(7, 9, 15, 0.68);
-  color: #ffffff;
-  cursor: text;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  height: 100%;
+  min-width: 42px;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 8px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  cursor: pointer;
+  outline: none;
+  box-shadow: none !important;
+  text-decoration: underline dotted rgba(255, 255, 255, 0.48);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
 }
 
-.pwc-speed-input-wrapper:focus-within {
-  border-color: #a78bfa;
-  background: rgba(7, 9, 15, 0.9);
-  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.3);
+.pwc-speed-badge:hover {
+  color: #ffffff !important;
 }
 
-.pwc-speed-input {
-  width: 29px;
-  min-width: 0;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: inherit;
-  font: 700 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  text-align: right;
-  appearance: textfield;
+.pwc-speed-badge:focus-visible {
+  color: #ffffff !important;
+  outline: 2px solid #a78bfa;
+  outline-offset: -2px;
+  border-radius: 3px;
 }
 
-.pwc-speed-input[aria-invalid="true"] {
-  color: #fb7185;
-}
-
-.pwc-speed-input-unit {
-  margin-left: 1px;
-  color: rgba(255, 255, 255, 0.72);
+.pwc-speed-badge::after {
+  content: attr(data-edit-hint);
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  z-index: 10;
+  padding: 4px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  background: rgba(10, 12, 20, 0.96);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  color: rgba(255, 255, 255, 0.92);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 3px);
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+}
+
+.pwc-speed-badge:hover::after,
+.pwc-speed-badge:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  visibility: visible;
+  transition-delay: 0.35s, 0.35s, 0s;
+}
+
+.pwc-speed-badge[hidden] {
+  display: none !important;
+}
+
+/* Replace only the badge pixels while editing; reset player-wide input styles. */
+.pwc-speed-badge-input {
+  display: inline-block;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 100%;
+  min-width: 0;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  text-align: center;
+  appearance: textfield;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.pwc-speed-badge-input:focus {
+  box-shadow: inset 0 -1px 0 #a78bfa !important;
+}
+
+.pwc-speed-badge-input[hidden] {
+  display: none !important;
+}
+
+.pwc-speed-badge-input[aria-invalid="true"] {
+  color: #fb7185 !important;
+  box-shadow: inset 0 -1px 0 #fb7185 !important;
+}
+
+/* Keep inherited PW player styles from shifting the inline edit field. */
+.pwc-speed-container.pwc-speed-editing {
+  align-items: center;
+}
+
+.pwc-speed-container.pwc-speed-editing .pwc-speed-badge-input {
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pwc-speed-slider-container,
+  .pwc-speed-container:not(.pwc-escape-collapsed):hover .pwc-speed-slider-container,
+  .pwc-speed-container.pwc-expanded .pwc-speed-slider-container {
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Wrapper to hold range input and tick marks */
@@ -141,9 +245,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1 1 auto;
-  width: auto;
-  min-width: 0;
+  width: 100%;
   height: 24px;
 }
 
@@ -256,9 +358,7 @@
   box-shadow: 0 0 8px rgba(167, 139, 250, 0.9);
 }
 
-
-
-/* ==========================================================================
+/*
    CSS-Based Focus Toggle Hiding Rules
    These use the pwc-hide-* classes that content.js adds to <html>.
    CSS-based hiding is more reliable than JS-based element detection because

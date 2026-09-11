@@ -25,14 +25,24 @@ function parseTypedSpeed(value: string): number | null {
 
 function setExpanded(container: HTMLElement, expanded: boolean): void {
   container.classList.toggle('pwc-expanded', expanded);
-  container
-    .querySelector<HTMLButtonElement>('.pwc-speed-btn')
-    ?.setAttribute('aria-expanded', String(expanded));
+  container.querySelectorAll<HTMLButtonElement>('.pwc-speed-btn, .pwc-speed-badge').forEach((trigger) => {
+    trigger.setAttribute('aria-expanded', String(expanded));
+  });
 }
 
-function closeAfterSelection(container: HTMLElement): void {
+function setBadgeEditing(container: HTMLElement, editing: boolean): void {
+  const badge = container.querySelector<HTMLButtonElement>('.pwc-speed-badge');
+  const input = container.querySelector<HTMLInputElement>('.pwc-speed-badge-input');
+  if (!badge || !input) return;
+
+  container.classList.toggle('pwc-speed-editing', editing);
+  badge.hidden = editing;
+  input.hidden = !editing;
+}
+
+function collapseOnEscape(container: HTMLElement): void {
   if (state.alwaysExpandWidget) return;
-  container.classList.add('pwc-selection-complete');
+  container.classList.add('pwc-escape-collapsed');
   setExpanded(container, false);
 }
 
@@ -103,7 +113,7 @@ export function applyAlwaysExpandState(targetContainer?: HTMLElement | null): vo
   if (container) {
     if (state.alwaysExpandWidget) {
       container.classList.add('pwc-always-expanded');
-      container.classList.remove('pwc-selection-complete');
+      container.classList.remove('pwc-escape-collapsed');
       setExpanded(container, true);
     } else {
       const wasAlwaysExpanded = container.classList.contains('pwc-always-expanded');
@@ -122,35 +132,85 @@ export function updateSliderBackground(slider: HTMLInputElement | null, _val?: n
 // Bind mouse drag and scroll wheel events to a speed control container
 export function setupUIEventListeners(container: HTMLElement): void {
   const slider = container.querySelector<HTMLInputElement>('.pwc-speed-slider');
-  const speedInput = container.querySelector<HTMLInputElement>('.pwc-speed-input');
+  const badge = container.querySelector<HTMLButtonElement>('.pwc-speed-badge');
+  const speedInput = container.querySelector<HTMLInputElement>('.pwc-speed-badge-input');
   const button = container.querySelector<HTMLButtonElement>('.pwc-speed-btn');
-  if (!slider || !speedInput || !button) return;
+  if (!slider || !badge || !speedInput || !button) return;
 
   updateSliderBackground(slider, state.currentSpeed);
 
   let mouseLeaveTimer: ReturnType<typeof setTimeout> | null = null;
-  let skipNextBlurCommit = false;
+
+  const resetTypedSpeed = () => {
+    speedInput.value = formatSpeed(state.currentSpeed);
+    speedInput.removeAttribute('aria-invalid');
+  };
+
+  const commitTypedSpeed = (): boolean => {
+    const speed = parseTypedSpeed(speedInput.value);
+    if (speed === null) {
+      speedInput.setAttribute('aria-invalid', 'true');
+      return false;
+    }
+
+    speedInput.removeAttribute('aria-invalid');
+    speedInput.value = formatSpeed(speed);
+    saveSpeed(speed);
+    return true;
+  };
+
+  const finishBadgeEditing = (commit: boolean, focusBadge = false) => {
+    if (commit) {
+      if (!commitTypedSpeed()) resetTypedSpeed();
+    } else {
+      resetTypedSpeed();
+    }
+    setBadgeEditing(container, false);
+    if (focusBadge) badge.focus();
+  };
+
   container.addEventListener('mouseenter', () => {
     if (mouseLeaveTimer) {
       clearTimeout(mouseLeaveTimer);
       mouseLeaveTimer = null;
     }
+    container.classList.remove('pwc-escape-collapsed');
     setExpanded(container, true);
   });
 
   container.addEventListener('mouseleave', () => {
-    container.classList.remove('pwc-selection-complete');
+    container.classList.remove('pwc-escape-collapsed');
     if (state.alwaysExpandWidget) return;
     mouseLeaveTimer = setTimeout(() => {
+      if (container.classList.contains('pwc-speed-editing')) finishBadgeEditing(true);
       setExpanded(container, false);
     }, 250);
   });
 
   button.addEventListener('click', () => {
-    container.classList.remove('pwc-selection-complete');
+    container.classList.remove('pwc-escape-collapsed');
     setExpanded(container, true);
+  });
+
+  badge.addEventListener('click', () => {
+    container.classList.remove('pwc-escape-collapsed');
+    setExpanded(container, true);
+    speedInput.value = formatSpeed(state.currentSpeed);
+    setBadgeEditing(container, true);
     speedInput.focus();
     speedInput.select();
+  });
+
+  badge.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      badge.click();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      collapseOnEscape(container);
+    }
   });
 
   slider.addEventListener('input', (e: Event) => {
@@ -177,32 +237,13 @@ export function setupUIEventListeners(container: HTMLElement): void {
     saveSpeed(val);
   });
 
-  slider.addEventListener('change', () => {
-    slider.blur();
-    closeAfterSelection(container);
-  });
-
-  const commitTypedSpeed = (): boolean => {
-    const speed = parseTypedSpeed(speedInput.value);
-    if (speed === null) {
-      speedInput.setAttribute('aria-invalid', 'true');
-      return false;
-    }
-
-    speedInput.removeAttribute('aria-invalid');
-    speedInput.value = formatSpeed(speed);
-    saveSpeed(speed);
-    return true;
-  };
-
   speedInput.addEventListener('input', () => {
     speedInput.removeAttribute('aria-invalid');
   });
 
   speedInput.addEventListener('focus', () => {
-    container.classList.remove('pwc-selection-complete');
+    container.classList.remove('pwc-escape-collapsed');
     setExpanded(container, true);
-    speedInput.select();
   });
 
   speedInput.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -211,35 +252,32 @@ export function setupUIEventListeners(container: HTMLElement): void {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (commitTypedSpeed()) {
-        skipNextBlurCommit = true;
-        speedInput.blur();
-        closeAfterSelection(container);
+        finishBadgeEditing(false, true);
       } else {
         speedInput.select();
       }
     } else if (e.key === 'Escape') {
       e.preventDefault();
-      speedInput.value = formatSpeed(state.currentSpeed);
-      speedInput.removeAttribute('aria-invalid');
-      skipNextBlurCommit = true;
-      speedInput.blur();
-      closeAfterSelection(container);
+      finishBadgeEditing(false);
+      collapseOnEscape(container);
     }
   });
 
   speedInput.addEventListener('blur', (e: FocusEvent) => {
-    if (skipNextBlurCommit) {
-      skipNextBlurCommit = false;
-    } else {
-      if (!commitTypedSpeed()) {
-        speedInput.value = formatSpeed(state.currentSpeed);
-        speedInput.removeAttribute('aria-invalid');
-      }
-    }
+    if (speedInput.hidden) return;
+    finishBadgeEditing(true);
 
     const nextTarget = e.relatedTarget;
     if (!(nextTarget instanceof Node) || !container.contains(nextTarget)) {
-      closeAfterSelection(container);
+      setExpanded(container, false);
+    }
+  });
+
+  slider.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      collapseOnEscape(container);
     }
   });
 
@@ -308,37 +346,32 @@ export function buildSpeedControl(container: HTMLElement): void {
 
   btn.appendChild(svg);
 
-  // Create badge
-  const badge = document.createElement('span');
-  badge.className = 'pwc-speed-badge';
-  badge.textContent = `${formatSpeed(state.currentSpeed)}x`;
-  btn.appendChild(badge);
-
   container.appendChild(btn);
+
+  // Make the existing speed badge the precise-entry trigger.
+  const badge = document.createElement('button');
+  badge.type = 'button';
+  badge.className = 'pwc-speed-badge';
+  badge.dataset.editHint = 'Click to edit';
+  badge.setAttribute('aria-label', 'Click to edit playback speed');
+  badge.setAttribute('aria-expanded', 'false');
+  badge.textContent = `${formatSpeed(state.currentSpeed)}x`;
+  container.appendChild(badge);
+
+  const speedInput = document.createElement('input');
+  speedInput.type = 'text';
+  speedInput.className = 'pwc-speed-badge-input';
+  speedInput.inputMode = 'decimal';
+  speedInput.autocomplete = 'off';
+  speedInput.spellcheck = false;
+  speedInput.hidden = true;
+  speedInput.value = formatSpeed(state.currentSpeed);
+  speedInput.setAttribute('aria-label', `Playback speed, ${MIN_SPEED} to ${MAX_SPEED}`);
+  container.appendChild(speedInput);
 
   // Create slider container
   const sliderContainer = document.createElement('div');
   sliderContainer.className = 'pwc-speed-slider-container';
-
-  const speedInputWrapper = document.createElement('label');
-  speedInputWrapper.className = 'pwc-speed-input-wrapper';
-  speedInputWrapper.title = `Enter a speed from ${MIN_SPEED}x to ${MAX_SPEED}x`;
-
-  const speedInput = document.createElement('input');
-  speedInput.type = 'text';
-  speedInput.className = 'pwc-speed-input';
-  speedInput.inputMode = 'decimal';
-  speedInput.autocomplete = 'off';
-  speedInput.spellcheck = false;
-  speedInput.value = formatSpeed(state.currentSpeed);
-  speedInput.setAttribute('aria-label', `Playback speed, ${MIN_SPEED} to ${MAX_SPEED}`);
-  speedInputWrapper.appendChild(speedInput);
-
-  const speedUnit = document.createElement('span');
-  speedUnit.className = 'pwc-speed-input-unit';
-  speedUnit.textContent = 'x';
-  speedInputWrapper.appendChild(speedUnit);
-  sliderContainer.appendChild(speedInputWrapper);
 
   const sliderWrapper = document.createElement('div');
   sliderWrapper.className = 'pwc-slider-wrapper';
@@ -412,7 +445,7 @@ export function updateUI(): void {
     badge.textContent = `${formatSpeed(state.currentSpeed)}x`;
   });
 
-  document.querySelectorAll<HTMLInputElement>('.pwc-speed-input').forEach((input) => {
+  document.querySelectorAll<HTMLInputElement>('.pwc-speed-badge-input').forEach((input) => {
     if (document.activeElement !== input) {
       input.value = formatSpeed(state.currentSpeed);
       input.removeAttribute('aria-invalid');
