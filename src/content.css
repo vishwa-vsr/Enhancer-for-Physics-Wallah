@@ -137,11 +137,11 @@
   color: #ffffff !important;
 }
 
+.pwc-speed-badge:focus,
 .pwc-speed-badge:focus-visible {
   color: #ffffff !important;
-  outline: 2px solid #a78bfa;
-  outline-offset: -2px;
-  border-radius: 3px;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .pwc-speed-badge::after {
@@ -168,8 +168,7 @@
   transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
 }
 
-.pwc-speed-badge:hover::after,
-.pwc-speed-badge:focus-visible::after {
+.pwc-speed-badge:hover::after {
   opacity: 1;
   transform: translate(-50%, 0);
   visibility: visible;
@@ -205,7 +204,8 @@
 }
 
 .pwc-speed-badge-input:focus {
-  box-shadow: inset 0 -1px 0 #a78bfa !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .pwc-speed-badge-input[hidden] {

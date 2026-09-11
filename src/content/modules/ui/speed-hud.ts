@@ -166,7 +166,11 @@ export function setupUIEventListeners(container: HTMLElement): void {
       resetTypedSpeed();
     }
     setBadgeEditing(container, false);
-    if (focusBadge) badge.focus();
+    if (focusBadge) {
+      badge.focus();
+    } else {
+      badge.blur();
+    }
   };
 
   container.addEventListener('mouseenter', () => {
@@ -252,7 +256,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (commitTypedSpeed()) {
-        finishBadgeEditing(false, true);
+        finishBadgeEditing(false, false);
       } else {
         speedInput.select();
       }
