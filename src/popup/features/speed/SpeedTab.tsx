@@ -3,6 +3,7 @@ import { Toggle } from '@shared/components/Toggle';
 import { FeatureRow } from '@shared/components/FeatureRow';
 import { Stepper } from '@shared/components/Stepper';
 import { saveSetting } from '@shared/storage';
+import type { VideoQuality } from '@shared/types';
 import {
   preferredSpeed, constantVideoQuality, preferredQuality, snapPoints, hideSpeed, hideQuality, alwaysExpandWidget,
   showFinishTime, finishTimeFormat, enableHotkeys, disableScroll,
@@ -314,41 +315,49 @@ export function SpeedTab() {
           />
         </div>
 
-        <div class={`${styles.hudFooterRow} ${!constantVideoQuality.value ? styles.disabledRow : ''}`}>
-          <label class={styles.hudFooterTitle}>
-            Default Video Quality
-          </label>
-          <div class={styles.finishTimeControls}>
-            <select
-              class={styles.finishTimeFormatSelect}
-              disabled={!constantVideoQuality.value}
-              value={preferredQuality.value}
-              onChange={(e) => {
-                const val = (e.target as HTMLSelectElement).value as typeof preferredQuality.value;
-                preferredQuality.value = val;
-                saveSetting('preferredQuality', val);
-              }}
-              aria-label="Default Video Quality"
-            >
-              <option value="720p">720p (High)</option>
-              <option value="480p">480p (Standard)</option>
-              <option value="360p">360p (Medium)</option>
-              <option value="240p">240p (Data Saver)</option>
-              <option value="auto">Auto (PW Default)</option>
-            </select>
-          </div>
-        </div>
+        {constantVideoQuality.value && (
+          <div class={styles.qualitySubOptionsBox}>
+            <div class={styles.qualitySubOptionRow}>
+              <span class={styles.subOptionLabel}>Default Video Quality</span>
+              <select
+                class={styles.qualitySelect}
+                value={preferredQuality.value}
+                onChange={(e) => {
+                  const val = (e.target as HTMLSelectElement).value as VideoQuality;
+                  preferredQuality.value = val;
+                  saveSetting('preferredQuality', val);
+                }}
+                aria-label="Default Video Quality"
+              >
+                <option value="720p">720p (High)</option>
+                <option value="480p">480p (Standard)</option>
+                <option value="360p">360p (Medium)</option>
+                <option value="240p">240p (Data Saver)</option>
+                <option value="auto">Auto (PW Default)</option>
+              </select>
+            </div>
 
-        <div class={`${styles.hudFooterRow} ${!constantVideoQuality.value ? styles.disabledRow : ''}`}>
-          <label class={styles.hudFooterTitle} onClick={() => { if (constantVideoQuality.value) { hideQuality.value = !hideQuality.value; saveSetting('hideQuality', hideQuality.value); } }}>
-            Hide Quality Widget
-          </label>
-          <Toggle
-            checked={hideQuality.value}
-            onChange={(v) => { if (constantVideoQuality.value) { hideQuality.value = v; saveSetting('hideQuality', v); } }}
-            ariaLabel="Toggle Hide Quality Widget"
-          />
-        </div>
+            <div class={styles.qualitySubOptionRow}>
+              <span
+                class={styles.subOptionLabel}
+                onClick={() => {
+                  hideQuality.value = !hideQuality.value;
+                  saveSetting('hideQuality', hideQuality.value);
+                }}
+              >
+                Hide Quality Widget
+              </span>
+              <Toggle
+                checked={hideQuality.value}
+                onChange={(v) => {
+                  hideQuality.value = v;
+                  saveSetting('hideQuality', v);
+                }}
+                ariaLabel="Toggle Hide Quality Widget"
+              />
+            </div>
+          </div>
+        )}
 
         <div class={styles.hudFooterRow}>
           <label class={styles.hudFooterTitle} onClick={() => { showFinishTime.value = !showFinishTime.value; saveSetting('showFinishTime', showFinishTime.value); }}>
