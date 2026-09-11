@@ -28,37 +28,7 @@ export const userName = signal<string>('');
 export const activeView = signal<ActiveView>({ type: 'today' });
 export const expandedSubjects = signal<Record<string, boolean>>({});
 export const isLoaded = signal<boolean>(false);
-
-function initializeDefaultSubjects(): void {
-  const defaultSubs: Subject[] = [];
-  const defaultChaps: Chapter[] = [];
-  const now = Date.now();
-
-  DEFAULT_SUBJECTS_DATA.forEach((s, idx) => {
-    const subId = `sub_default_${s.name.toLowerCase()}`;
-    const chapId = `chap_default_${s.name.toLowerCase()}_1`;
-    defaultSubs.push({
-      id: subId,
-      name: s.name,
-      color: s.color,
-      icon: s.icon,
-      createdAt: now + idx,
-    });
-    defaultChaps.push({
-      id: chapId,
-      name: 'Chapter 1',
-      subjectId: subId,
-      icon: 'file-text',
-      createdAt: now + idx,
-    });
-  });
-
-  subjects.value = defaultSubs;
-  chapters.value = defaultChaps;
-  expandedSubjects.value = {
-    [defaultSubs[0].id]: true,
-  };
-}
+export const isAddChainModalOpen = signal<boolean>(false);
 
 export function toggleSubjectExpanded(subjectId: string): void {
   expandedSubjects.value = {
@@ -83,7 +53,26 @@ export async function loadPlannerData(): Promise<void> {
     }
 
     if (loadedData) {
-      subjects.value = (loadedData.subjects || []).map((s) => {
+      // Filter out any default dummy subjects and their chapters/tasks
+      const rawSubjects = (loadedData.subjects || []).filter(
+        (s) => !s.id.startsWith('sub_default_'),
+      );
+      const rawChapters = (loadedData.chapters || []).filter(
+        (c) =>
+          !c.id.startsWith('chap_default_') &&
+          !c.subjectId.startsWith('sub_default_'),
+      );
+      const rawTasks = (loadedData.tasks || []).filter(
+        (t) =>
+          !t.subjectId.startsWith('sub_default_') &&
+          !t.chapterId.startsWith('chap_default_'),
+      );
+
+      const hadDefaults =
+        rawSubjects.length !== (loadedData.subjects || []).length ||
+        rawChapters.length !== (loadedData.chapters || []).length;
+
+      subjects.value = rawSubjects.map((s) => {
         if (!s.icon) {
           const match = DEFAULT_SUBJECTS_DATA.find(
             (d) => d.name.toLowerCase() === s.name.toLowerCase(),
@@ -92,23 +81,22 @@ export async function loadPlannerData(): Promise<void> {
         }
         return s;
       });
-      chapters.value = (loadedData.chapters || []).map((c) => ({
+      chapters.value = rawChapters.map((c) => ({
         ...c,
         icon: c.icon || 'file-text',
       }));
-      tasks.value = loadedData.tasks || [];
+      tasks.value = rawTasks;
       if (loadedData.tags && loadedData.tags.length > 0) {
         customTags.value = loadedData.tags;
       }
       if (loadedData.userName) {
         userName.value = loadedData.userName;
       }
-    }
 
-    // If no subjects exist, initialize with Maths, Physics, Chemistry, Bio + Chapter 1
-    if (subjects.value.length === 0) {
-      initializeDefaultSubjects();
-      await persistData();
+      // If we cleaned out legacy defaults, update storage
+      if (hadDefaults) {
+        await persistData();
+      }
     }
 
     // Auto-update dashboard if synced from popup or another tab
@@ -287,8 +275,38 @@ export async function toggleTask(id: string): Promise<void> {
   await persistData();
 }
 
+export function getLocalDateStr(d: Date = new Date()): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function getLocalTomorrowStr(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return getLocalDateStr(d);
+}
+
 export async function deleteTask(id: string): Promise<void> {
-  tasks.value = tasks.value.filter((t) => t.id !== id);
+  const taskToDelete = tasks.value.find((t) => t.id === id);
+  let updated = tasks.value.filter((t) => t.id !== id);
+
+  if (taskToDelete) {
+    const prevId = taskToDelete.prevTaskId;
+    const nextId = taskToDelete.nextTaskId;
+    updated = updated.map((t) => {
+      if (prevId && t.id === prevId) {
+        return { ...t, nextTaskId: nextId };
+      }
+      if (nextId && t.id === nextId) {
+        return { ...t, prevTaskId: prevId };
+      }
+      return t;
+    });
+  }
+
+  tasks.value = updated;
   await persistData();
 }
 
@@ -310,7 +328,9 @@ export interface CreateChainParams {
   subjectId: string;
   chapterId: string;
   lectureTitle: string;
+  chainTitle?: string;
   duration?: string;
+  selectedLabels?: string[];
   hasDpp?: boolean;
   dppTitle?: string;
   hasNotes?: boolean;
@@ -322,84 +342,134 @@ export async function addConnectedChain(params: CreateChainParams): Promise<Task
   const chainId = 'chain_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
   const now = Date.now();
   const createdTasks: Task[] = [];
+  const chainTitle = params.chainTitle?.trim() || params.lectureTitle.trim();
 
-  // 1. Lecture Task
-  const lectureTask: Task = {
-    id: 'task_' + now + '_lec_' + Math.random().toString(36).substring(2, 6),
-    title: params.lectureTitle,
-    completed: false,
-    subjectId: params.subjectId,
-    chapterId: params.chapterId,
-    tags: ['Lecture'],
-    createdAt: now,
-    chainId,
-    chainType: 'lecture',
-    orderIndex: 0,
-    dueDate: params.dueDate,
-    duration: params.duration,
-  };
-  createdTasks.push(lectureTask);
+  if (params.selectedLabels && params.selectedLabels.length > 0) {
+    let prevTask: Task | null = null;
+    params.selectedLabels.forEach((labelName, idx) => {
+      const lower = labelName.toLowerCase();
+      let stepTitle = params.lectureTitle;
+      let duration: string | undefined = undefined;
 
-  let prevTask = lectureTask;
+      if (lower === 'lecture') {
+        stepTitle = params.lectureTitle;
+        duration = params.duration;
+      } else if (lower === 'dpp') {
+        stepTitle = params.dppTitle || `${params.lectureTitle.replace(/lecture/i, 'DPP').trim() || 'DPP Practice'}`;
+      } else if (lower === 'revision') {
+        stepTitle = `Revision: ${params.lectureTitle}`;
+      } else if (lower === 'notes') {
+        stepTitle = `Notes: ${params.lectureTitle}`;
+      } else {
+        stepTitle = `${labelName}: ${params.lectureTitle}`;
+      }
 
-  // 2. DPP Task (if applicable)
-  if (params.hasDpp !== false) {
-    const dppTask: Task = {
-      id: 'task_' + (now + 1) + '_dpp_' + Math.random().toString(36).substring(2, 6),
-      title: params.dppTitle || `${params.lectureTitle.replace(/lecture/i, 'DPP').trim() || 'DPP Practice'}`,
+      const newTask: Task = {
+        id: `task_${now + idx}_${lower.substring(0, 4)}_${Math.random().toString(36).substring(2, 6)}`,
+        title: stepTitle,
+        completed: false,
+        subjectId: params.subjectId,
+        chapterId: params.chapterId,
+        tags: [labelName],
+        createdAt: now + idx,
+        chainId,
+        chainTitle,
+        chainType: lower,
+        orderIndex: idx,
+        prevTaskId: prevTask ? prevTask.id : undefined,
+        dueDate: params.dueDate,
+        duration,
+      };
+
+      if (prevTask) {
+        prevTask.nextTaskId = newTask.id;
+      }
+      createdTasks.push(newTask);
+      prevTask = newTask;
+    });
+  } else {
+    // 1. Lecture Task
+    const lectureTask: Task = {
+      id: 'task_' + now + '_lec_' + Math.random().toString(36).substring(2, 6),
+      title: params.lectureTitle,
       completed: false,
       subjectId: params.subjectId,
       chapterId: params.chapterId,
-      tags: ['DPP'],
-      createdAt: now + 1,
+      tags: ['Lecture'],
+      createdAt: now,
       chainId,
-      chainType: 'dpp',
-      orderIndex: 1,
-      prevTaskId: prevTask.id,
+      chainTitle,
+      chainType: 'lecture',
+      orderIndex: 0,
       dueDate: params.dueDate,
+      duration: params.duration,
     };
-    prevTask.nextTaskId = dppTask.id;
-    createdTasks.push(dppTask);
-    prevTask = dppTask;
-  }
+    createdTasks.push(lectureTask);
 
-  // 3. Notes Task (if requested, default false for cleaner pipelines, or revision)
-  if (params.hasNotes) {
-    const notesTask: Task = {
-      id: 'task_' + (now + 2) + '_notes_' + Math.random().toString(36).substring(2, 6),
-      title: `Notes: ${params.lectureTitle}`,
-      completed: false,
-      subjectId: params.subjectId,
-      chapterId: params.chapterId,
-      tags: ['Notes'],
-      createdAt: now + 2,
-      chainId,
-      chainType: 'notes',
-      orderIndex: createdTasks.length,
-      prevTaskId: prevTask.id,
-    };
-    prevTask.nextTaskId = notesTask.id;
-    createdTasks.push(notesTask);
-    prevTask = notesTask;
-  }
+    let prevTask = lectureTask;
 
-  // 4. Revision Task (default connected to wrap up the learning loop)
-  if (params.hasRevision !== false) {
-    const revTask: Task = {
-      id: 'task_' + (now + 3) + '_rev_' + Math.random().toString(36).substring(2, 6),
-      title: `Revision: ${params.lectureTitle}`,
-      completed: false,
-      subjectId: params.subjectId,
-      chapterId: params.chapterId,
-      tags: ['Revision'],
-      createdAt: now + 3,
-      chainId,
-      chainType: 'revision',
-      orderIndex: createdTasks.length,
-      prevTaskId: prevTask.id,
-    };
-    prevTask.nextTaskId = revTask.id;
-    createdTasks.push(revTask);
+    // 2. DPP Task (if applicable)
+    if (params.hasDpp !== false) {
+      const dppTask: Task = {
+        id: 'task_' + (now + 1) + '_dpp_' + Math.random().toString(36).substring(2, 6),
+        title: params.dppTitle || `${params.lectureTitle.replace(/lecture/i, 'DPP').trim() || 'DPP Practice'}`,
+        completed: false,
+        subjectId: params.subjectId,
+        chapterId: params.chapterId,
+        tags: ['DPP'],
+        createdAt: now + 1,
+        chainId,
+        chainTitle,
+        chainType: 'dpp',
+        orderIndex: 1,
+        prevTaskId: prevTask.id,
+        dueDate: params.dueDate,
+      };
+      prevTask.nextTaskId = dppTask.id;
+      createdTasks.push(dppTask);
+      prevTask = dppTask;
+    }
+
+    // 3. Notes Task (if requested, default false for cleaner pipelines, or revision)
+    if (params.hasNotes) {
+      const notesTask: Task = {
+        id: 'task_' + (now + 2) + '_notes_' + Math.random().toString(36).substring(2, 6),
+        title: `Notes: ${params.lectureTitle}`,
+        completed: false,
+        subjectId: params.subjectId,
+        chapterId: params.chapterId,
+        tags: ['Notes'],
+        createdAt: now + 2,
+        chainId,
+        chainTitle,
+        chainType: 'notes',
+        orderIndex: createdTasks.length,
+        prevTaskId: prevTask.id,
+      };
+      prevTask.nextTaskId = notesTask.id;
+      createdTasks.push(notesTask);
+      prevTask = notesTask;
+    }
+
+    // 4. Revision Task (default connected to wrap up the learning loop)
+    if (params.hasRevision !== false) {
+      const revTask: Task = {
+        id: 'task_' + (now + 3) + '_rev_' + Math.random().toString(36).substring(2, 6),
+        title: `Revision: ${params.lectureTitle}`,
+        completed: false,
+        subjectId: params.subjectId,
+        chapterId: params.chapterId,
+        tags: ['Revision'],
+        createdAt: now + 3,
+        chainId,
+        chainTitle,
+        chainType: 'revision',
+        orderIndex: createdTasks.length,
+        prevTaskId: prevTask.id,
+      };
+      prevTask.nextTaskId = revTask.id;
+      createdTasks.push(revTask);
+    }
   }
 
   tasks.value = [...createdTasks, ...tasks.value];
@@ -411,6 +481,10 @@ export async function addCustomFlowStep(parentTaskId: string, title: string): Pr
   const parent = tasks.value.find((t) => t.id === parentTaskId);
   if (!parent) return null;
 
+  // Make sure chainId is established and shared with the new step!
+  const chainId = parent.chainId || ('chain_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6));
+  parent.chainId = chainId;
+
   const now = Date.now();
   const newTask: Task = {
     id: 'task_' + now + '_cust_' + Math.random().toString(36).substring(2, 6),
@@ -420,10 +494,12 @@ export async function addCustomFlowStep(parentTaskId: string, title: string): Pr
     chapterId: parent.chapterId,
     tags: ['Bonus'],
     createdAt: now,
-    chainId: parent.chainId,
+    chainId,
+    chainTitle: parent.chainTitle,
     chainType: 'custom',
     orderIndex: (parent.orderIndex || 0) + 1,
     prevTaskId: parent.id,
+    dueDate: parent.dueDate,
   };
 
   // Link parent to new task
@@ -432,12 +508,29 @@ export async function addCustomFlowStep(parentTaskId: string, title: string): Pr
   if (oldNextId) {
     newTask.nextTaskId = oldNextId;
     const oldNext = tasks.value.find((t) => t.id === oldNextId);
-    if (oldNext) oldNext.prevTaskId = newTask.id;
+    if (oldNext) {
+      oldNext.prevTaskId = newTask.id;
+      oldNext.chainId = chainId;
+      if (parent.chainTitle) oldNext.chainTitle = parent.chainTitle;
+    }
   }
 
-  tasks.value = [newTask, ...tasks.value];
+  // Update tasks immutably so both parent and new step are fully reactive
+  tasks.value = [newTask, ...tasks.value.map((t) => (t.id === parent.id ? { ...parent } : t))];
   await persistData();
   return newTask;
+}
+
+export async function updateChainTitle(chainId: string, newTitle: string): Promise<void> {
+  const trimmed = newTitle.trim();
+  if (!trimmed) return;
+  tasks.value = tasks.value.map((t) => (t.chainId === chainId ? { ...t, chainTitle: trimmed } : t));
+  await persistData();
+}
+
+export async function deleteConnectedChain(chainId: string): Promise<void> {
+  tasks.value = tasks.value.filter((t) => t.chainId !== chainId);
+  await persistData();
 }
 
 export async function connectTasks(fromTaskId: string, toTaskId: string): Promise<void> {
@@ -502,10 +595,15 @@ export const filteredTasks = computed(() => {
   if (view.type === 'chapter' && view.chapterId) {
     list = list.filter((t) => t.chapterId === view.chapterId);
   } else if (view.type === 'today') {
-    const todayStr = new Date().toISOString().split('T')[0];
-    list = list.filter((t) => !t.completed || t.dueDate === todayStr);
+    const todayStr = getLocalDateStr();
+    // Today: tasks scheduled for today, OR incomplete tasks from earlier dates (overdue)
+    list = list.filter(
+      (t) => t.dueDate === todayStr || (!t.completed && t.dueDate && t.dueDate < todayStr),
+    );
   } else if (view.type === 'upcoming') {
-    list = list.filter((t) => !t.completed);
+    const todayStr = getLocalDateStr();
+    // Upcoming: incomplete tasks scheduled for future dates
+    list = list.filter((t) => !t.completed && t.dueDate && t.dueDate > todayStr);
   }
 
   return list;

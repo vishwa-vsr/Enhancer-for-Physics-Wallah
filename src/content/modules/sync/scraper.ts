@@ -4,6 +4,7 @@ export interface ScrapedItem {
   duration?: string;
   date?: string;
   noDpp?: boolean;
+  attachedDppTitle?: string;
 }
 
 export interface ScrapedPwData {
@@ -119,50 +120,57 @@ export function scrapeCurrentPwPage(): ScrapedPwData {
   if (pageType === 'chapter_contents') {
     // Collect all card elements across content lists
     const cardCandidates = document.querySelectorAll(
-      '[id^="lecture-card-"], [class*="_card_"], [class*="cardWrapper"], [class*="contentCard"], [class*="file-item"], [class*="lectureItem"]',
+      '[id^="lecture-card-"], [id^="dpp-card-"], [class*="_cardWrapper_"], [class*="contentCard"], [class*="file-item"], [class*="lectureItem"]',
     );
+    const cards =
+      cardCandidates.length > 0 ? cardCandidates : document.querySelectorAll('[class*="_card_"]');
 
+    const seenIds = new Set<string>();
     const seenTitles = new Set<string>();
 
-    cardCandidates.forEach((el) => {
+    cards.forEach((el) => {
+      const elId = el.id || '';
+      if (elId && seenIds.has(elId)) return;
+      if (elId) seenIds.add(elId);
+
       const fullText = el.textContent || '';
       if (!fullText.trim()) return;
 
-      // Check if it's a Lecture, DPP, or Notes
-      const isDpp = /dpp|mcq\s*quiz/i.test(fullText) && !/no\s*dpp/i.test(fullText);
-      const isNotes = /notes|pdf/i.test(fullText) && !isDpp && !/lecture/i.test(fullText);
-      const isNoDpp = /no\s*dpp/i.test(fullText);
+      const metaEl = el.querySelector('[class*="_meta_"], [class*="meta"]');
+      const metaText = metaEl?.textContent?.trim() || '';
 
-      // Extract Clean Title
-      // Often in h3, h4, p, or div with title/name in class
-      let title = '';
-      const titleElem = el.querySelector('h2, h3, h4, [class*="title"], [class*="Title"], [class*="name"]');
-      if (titleElem && titleElem.textContent?.trim()) {
-        title = titleElem.textContent.trim();
-      } else {
-        // Fallback: extract line with chapter name or lecture keywords
+      const isLectureCard =
+        elId.startsWith('lecture-card-') ||
+        /lecture/i.test(metaText) ||
+        /lecture/i.test(fullText.slice(0, 50));
+      const isStandaloneDpp =
+        elId.startsWith('dpp-card-') || (/dpp|quiz/i.test(metaText) && !isLectureCard);
+      const isNotes = /notes|pdf/i.test(metaText) && !isLectureCard && !isStandaloneDpp;
+
+      // Extract Clean Title from title container (ignoring DPP button tray text)
+      const titleElem =
+        el.querySelector('[class*="_titleText_"]') ||
+        el.querySelector('h2, h3, h4, [class*="title"], [class*="Title"], [class*="name"]');
+      let title = titleElem?.textContent?.trim() || '';
+      if (!title) {
         const lines = fullText
           .split('\n')
           .map((l) => l.trim())
-          .filter((l) => l.length > 5);
+          .filter(
+            (l) =>
+              l.length > 8 &&
+              !/watch|resume|attempt|notes & more|marks|dpp\s*\d+/i.test(l),
+          );
         title = lines[0] || '';
-      }
-
-      // If title is just "Lecture" or "DPP", search for a better descriptive line in the card
-      if (title.length < 10 || /^lecture$/i.test(title) || /^dpp$/i.test(title)) {
-        const lines = fullText
-          .split('\n')
-          .map((l) => l.trim())
-          .filter((l) => l.length > 10 && !/watch|resume|attempt|notes & more|marks/i.test(l));
-        if (lines[0]) title = lines[0];
       }
 
       if (!title || seenTitles.has(title)) return;
       seenTitles.add(title);
 
       // Extract duration if present (e.g. 1h:37m or 45m)
-      const durationMatch = fullText.match(/\b\d+h(?::\d+m)?|\b\d+m\b/);
-      const duration = durationMatch ? durationMatch[0] : undefined;
+      const durEl = el.querySelector('[class*="_durationText_"]');
+      const duration =
+        durEl?.textContent?.trim() || fullText.match(/\b\d+h(?::\d+m)?|\b\d+m\b/)?.[0];
 
       // Extract date if present (e.g. 8 Jun 2026)
       const dateMatch = fullText.match(
@@ -170,15 +178,50 @@ export function scrapeCurrentPwPage(): ScrapedPwData {
       );
       const date = dateMatch ? dateMatch[0].replace(',', '').trim() : undefined;
 
-      const type: ScrapedItem['type'] = isDpp ? 'dpp' : isNotes ? 'notes' : 'lecture';
+      if (isLectureCard) {
+        // Check for attached DPP tray at bottom of lecture card
+        const tray = el.querySelector('[class*="_tray_"]');
+        const dppNameEl = el.querySelector('[class*="_dppName_"]');
+        let attachedDppTitle = dppNameEl?.textContent?.trim();
+        if (!attachedDppTitle && tray) {
+          const trayText = tray.textContent?.trim() || '';
+          if (/dpp/i.test(trayText)) {
+            attachedDppTitle = trayText.replace(/attempt\s*dpp/i, '').trim();
+          }
+        }
 
-      items.push({
-        type,
-        title,
-        duration,
-        date,
-        noDpp: isNoDpp,
-      });
+        const isNoDpp = !attachedDppTitle && /no\s*dpp/i.test(fullText);
+
+        items.push({
+          type: 'lecture',
+          title,
+          duration,
+          date,
+          noDpp: isNoDpp,
+          attachedDppTitle: attachedDppTitle || undefined,
+        });
+
+        // Also add the attached DPP as an item for standalone lookups
+        if (attachedDppTitle) {
+          items.push({
+            type: 'dpp',
+            title: attachedDppTitle,
+            date,
+          });
+        }
+      } else if (isStandaloneDpp) {
+        items.push({
+          type: 'dpp',
+          title,
+          date,
+        });
+      } else if (isNotes) {
+        items.push({
+          type: 'notes',
+          title,
+          date,
+        });
+      }
     });
   }
 

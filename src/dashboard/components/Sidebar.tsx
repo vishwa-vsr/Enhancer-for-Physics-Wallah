@@ -6,6 +6,7 @@ import {
   userName,
   expandedSubjects,
   toggleSubjectExpanded,
+  getLocalDateStr,
 } from '../store';
 import { Subject } from '../types';
 import { StudyIcon } from '@shared/components/StudyIcons';
@@ -25,9 +26,14 @@ export const Sidebar = ({
 }: SidebarProps) => {
   const currentView = activeView.value;
 
-  // Counts for top views only
-  const todayCount = tasks.value.filter((t) => !t.completed).length;
-  const upcomingCount = tasks.value.filter((t) => !t.completed).length;
+  // Accurate counts for Today and Upcoming views
+  const todayStr = getLocalDateStr();
+  const todayCount = tasks.value.filter(
+    (t) => t.dueDate === todayStr || (!t.completed && t.dueDate && t.dueDate < todayStr),
+  ).length;
+  const upcomingCount = tasks.value.filter(
+    (t) => !t.completed && t.dueDate && t.dueDate > todayStr,
+  ).length;
 
   const logoUrl =
     typeof chrome !== 'undefined' && chrome.runtime?.getURL
@@ -131,14 +137,7 @@ export const Sidebar = ({
           </button>
         </div>
 
-        {subjects.value.length === 0 ? (
-          <div class={styles.emptyPrompt}>
-            <span>No subjects yet</span>
-            <button class={styles.emptyBtn} onClick={onOpenAddSubject}>
-              + Add Subject
-            </button>
-          </div>
-        ) : (
+        {subjects.value.length === 0 ? null : (
           subjects.value.map((sub) => {
             const isExpanded = !!expandedSubjects.value[sub.id];
             const subChapters = chapters.value.filter((c) => c.subjectId === sub.id);

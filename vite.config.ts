@@ -120,12 +120,18 @@ function copyExtensionAssetsPlugin(): Plugin {
         fs.writeFileSync(resolve(targetDir, 'manifest.json'), JSON.stringify(targetManifest, null, 2));
       }
 
-      // 3. Clean up loose Vite build files from the root of dist/ so only target folders remain
-      const itemsToClean = ['assets', 'src', 'icons', 'manifest.json', 'content.js', 'content.css', 'background.js'];
-      for (const item of itemsToClean) {
-        const p = resolve(distDir, item);
-        if (fs.existsSync(p)) {
-          fs.rmSync(p, { recursive: true, force: true });
+      // 3. Mirror dist/chrome into the root of dist/ so whether the user loaded dist/ or dist/chrome/, it works
+      const chromeDir = resolve(distDir, 'chrome');
+      if (fs.existsSync(chromeDir)) {
+        const entries = fs.readdirSync(chromeDir, { withFileTypes: true });
+        for (const entry of entries) {
+          const srcPath = resolve(chromeDir, entry.name);
+          const destPath = resolve(distDir, entry.name);
+          if (entry.isDirectory()) {
+            copyDir(srcPath, destPath);
+          } else {
+            fs.copyFileSync(srcPath, destPath);
+          }
         }
       }
     },

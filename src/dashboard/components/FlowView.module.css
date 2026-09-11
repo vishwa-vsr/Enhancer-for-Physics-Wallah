@@ -117,6 +117,28 @@
   gap: 12px;
 }
 
+.chainMenuBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-fast, 0.15s ease);
+  flex-shrink: 0;
+}
+
+.chainMenuBtn:hover {
+  background: var(--bg-control);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
 .chainTitleGroup {
   display: flex;
   align-items: center;
@@ -125,11 +147,11 @@
 }
 
 .chainTitle {
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text-primary);
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
 }
 
 .chainDateBadge {
@@ -176,11 +198,11 @@
 
 .nodeCard {
   width: 250px;
-  min-height: 115px;
+  min-height: 94px;
   background-color: var(--bg-control);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg, 14px);
-  padding: 14px 16px;
+  padding: 12px 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -191,6 +213,10 @@
 
 .nodeCard:hover {
   border-color: var(--border-subtle);
+}
+
+.nodeCardDone {
+  opacity: 0.85;
 }
 
 /* Node Contents */
@@ -238,27 +264,82 @@
   color: #db2777;
 }
 
-.nodeCheckBtn {
+.nodeHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nodeActionBtn {
   width: 22px;
   height: 22px;
   border-radius: 6px;
-  border: 1.5px solid var(--border-subtle);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.nodeActionBtn:hover {
   background: var(--bg-card);
+  border-color: var(--border-subtle);
+}
+
+.nodeActionBtnActive {
+  background: var(--bg-card) !important;
+  color: var(--accent-primary, #6366f1) !important;
+  border-color: var(--accent-primary, #6366f1) !important;
+}
+
+.nodeRenameBtn:hover {
+  color: var(--accent-primary, #6366f1);
+}
+
+.nodeDeleteBtn:hover {
+  color: #ef4444;
+}
+
+.nodeCheckBtn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border-subtle);
+  background: transparent;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: border-color var(--transition-fast, 0.15s ease);
+  padding: 0;
+  transition: transform var(--transition-fast, 0.15s ease), border-color var(--transition-fast, 0.15s ease), background-color var(--transition-fast, 0.15s ease);
+  flex-shrink: 0;
 }
 
 .nodeCheckBtn:hover {
-  border-color: #10b981;
+  transform: scale(1.12);
 }
 
 .nodeCheckBtnDone {
   background: #10b981 !important;
   border-color: #10b981 !important;
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.35);
+}
+
+.editTitleInput {
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--accent-primary, #6366f1);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  box-sizing: border-box;
 }
 
 .nodeTitle {
@@ -278,22 +359,29 @@
   opacity: 0.55;
 }
 
+.nodeBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 20px;
+}
+
 .lectureBody {
   display: flex;
   align-items: center;
-  margin: 4px 0 2px;
+  margin: 2px 0 0;
 }
 
 .durationBadge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12.5px;
+  gap: 5px;
+  font-size: 11.5px;
   font-weight: 600;
   color: var(--accent-primary, #6366f1);
-  background: rgba(99, 102, 241, 0.1);
-  padding: 4px 9px;
-  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.08);
+  padding: 3px 8px;
+  border-radius: 5px;
 }
 
 /* Footer & Scheduling */
@@ -462,3 +550,322 @@
   margin-bottom: 18px;
   color: var(--text-secondary);
 }
+
+.nodeHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.nodeMenuBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-fast, 0.15s ease);
+  flex-shrink: 0;
+}
+
+.nodeMenuBtn:hover {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.scheduledBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-primary, #6366f1);
+  background: rgba(99, 102, 241, 0.1);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.scheduledBadge:hover {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: var(--accent-primary, #6366f1);
+}
+
+.chainLabelsGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+  margin-bottom: 16px;
+}
+
+.chainLabelCheckItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 550;
+  background: var(--bg-control);
+  border: 1.5px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.chainLabelCheckItemActive {
+  border-color: var(--accent-primary, #6366f1);
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--text-primary);
+}
+
+.chainLabelCheckbox {
+  cursor: pointer;
+  accent-color: var(--accent-primary, #6366f1);
+}
+
+/* 3-Dot Step Settings Modal */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.15s ease-out;
+}
+
+.modalCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl, 16px);
+  padding: 24px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: scaleUp 0.18s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modalCloseBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalCloseBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-control);
+}
+
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modalFieldLabel {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.modalInput {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-control);
+  color: var(--text-primary);
+  font-size: 13px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.modalInput:focus {
+  border-color: var(--accent-primary, #6366f1);
+}
+
+.modalLabelsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.modalLabelPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-control);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modalLabelPillSelected {
+  border-color: var(--accent-primary, #6366f1);
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.modalDateActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.modalQuickDateBtn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-control);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modalQuickDateBtn:hover {
+  border-color: var(--accent-primary, #6366f1);
+  color: var(--accent-primary, #6366f1);
+}
+
+.modalQuickDateBtnActive {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: var(--accent-primary, #6366f1);
+  color: var(--accent-primary, #6366f1);
+  font-weight: 700;
+}
+
+.modalClearDateBtn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: transparent;
+  color: #ef4444;
+  font-size: 11.5px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modalClearDateBtn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.modalDeleteBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modalDeleteBtn:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+.modalSaveBtn {
+  padding: 8px 18px;
+  background: var(--accent-primary, #6366f1);
+  border: none;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.modalSaveBtn:hover {
+  opacity: 0.9;
+}
+
+.modalCancelBtn {
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modalCancelBtn:hover {
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+

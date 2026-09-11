@@ -1,6 +1,6 @@
 import { isLightTheme, toggleTheme } from '@shared/theme';
 import { SunIcon, MoonIcon } from '@shared/components/ThemeIcons';
-import { userName, activeView, subjects, chapters } from '../store';
+import { userName, activeView, subjects, chapters, isAddChainModalOpen } from '../store';
 import { Subject, Chapter } from '../types';
 import styles from './Header.module.css';
 
@@ -62,6 +62,28 @@ export const Header = ({
         </div>
 
         <div class={styles.headerActions}>
+          {activeChapter && (
+            <button
+              class={styles.headerActionBtnPrimary}
+              onClick={() => {
+                isAddChainModalOpen.value = true;
+              }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                width="12"
+                height="12"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              New Study Chain
+            </button>
+          )}
+
           {onOpenAddChapter && (
             <button
               class={styles.headerActionBtn}
@@ -79,23 +101,6 @@ export const Header = ({
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
               Add Chapter
-            </button>
-          )}
-
-          {activeChapter && onOpenAddTask && (
-            <button class={styles.headerActionBtnPrimary} onClick={onOpenAddTask}>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2.5}
-                width="12"
-                height="12"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              Add Task
             </button>
           )}
 

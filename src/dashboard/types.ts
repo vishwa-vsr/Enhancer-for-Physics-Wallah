@@ -5,7 +5,7 @@ export interface TagItem {
   color: string;
 }
 
-export type ChainStage = 'lecture' | 'dpp' | 'notes' | 'revision' | 'custom';
+export type ChainStage = 'lecture' | 'dpp' | 'notes' | 'revision' | 'custom' | string;
 
 export interface Task {
   id: string;
@@ -18,6 +18,7 @@ export interface Task {
   chapterId: string;
   createdAt: number;
   chainId?: string;
+  chainTitle?: string;
   chainType?: ChainStage;
   nextTaskId?: string;
   prevTaskId?: string;

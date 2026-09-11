@@ -78,6 +78,20 @@ export function injectSyncButton(): void {
     }
   });
 
+// Helper to auto-scroll down and trigger PW lazy loading of cards
+async function autoScrollToLoadAll(): Promise<void> {
+  const originalY = window.scrollY;
+  // Scroll down smoothly to trigger PW lazy load
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  await new Promise((resolve) => setTimeout(resolve, 350));
+  // Check if scroll height grew, scroll again to get bottom-most
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  await new Promise((resolve) => setTimeout(resolve, 350));
+  // Scroll back smoothly to top
+  window.scrollTo({ top: originalY, behavior: 'smooth' });
+  await new Promise((resolve) => setTimeout(resolve, 150));
+}
+
   // 6. Click handler: scrape and save directly
   btn.addEventListener('click', async (e) => {
     e.preventDefault();
@@ -85,19 +99,23 @@ export function injectSyncButton(): void {
 
     if (btn.disabled) return;
 
-    // Transition to Syncing state
+    // Transition to Loading state
     btn.disabled = true;
     btn.style.cursor = 'wait';
     btn.style.opacity = '0.85';
-    btn.textContent = 'Syncing...';
+    btn.textContent = 'Loading lectures...';
 
     try {
-      const scraped = scrapeCurrentPwPage();
-      await syncPwDataToPlanner(scraped);
+      // Auto-scroll down to trigger PW lazy-loading
+      await autoScrollToLoadAll();
 
-      // Transition to Success state
+      btn.textContent = 'Syncing...';
+      const scraped = scrapeCurrentPwPage();
+      const result = await syncPwDataToPlanner(scraped);
+
+      // Transition to Success state with dynamic message
       btn.dataset.synced = 'true';
-      btn.textContent = '✓ Synced!';
+      btn.textContent = `✓ ${result.message || 'Synced!'}`;
       btn.style.backgroundColor = '#16a34a'; // Clean subtle green
       btn.style.opacity = '1';
       btn.style.cursor = 'default';
@@ -108,7 +126,7 @@ export function injectSyncButton(): void {
         btn.textContent = '⚡ Sync to Padhle';
         btn.style.backgroundColor = '#5a4bda';
         btn.style.cursor = 'pointer';
-      }, 2500);
+      }, 3000);
     } catch (err) {
       console.error('[Padhle] Sync error:', err);
       btn.textContent = '⚠️ Sync Failed';
@@ -121,7 +139,7 @@ export function injectSyncButton(): void {
         btn.textContent = '⚡ Sync to Padhle';
         btn.style.backgroundColor = '#5a4bda';
         btn.style.cursor = 'pointer';
-      }, 2500);
+      }, 3000);
     }
   });
 

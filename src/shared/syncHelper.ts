@@ -36,6 +36,32 @@ export async function savePlannerDataToStorage(data: StudyPlannerData): Promise<
   }
 }
 
+export function parseLectureDateToIso(dateStr?: string): string | undefined {
+  if (!dateStr) return undefined;
+  try {
+    const months: Record<string, string> = {
+      jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
+      jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12',
+    };
+    const match = dateStr.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+    if (match) {
+      const day = match[1].padStart(2, '0');
+      const monKey = match[2].toLowerCase().substring(0, 3);
+      const month = months[monKey];
+      const year = match[3];
+      if (month) return `${year}-${month}-${day}`;
+    }
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  } catch {}
+  return undefined;
+}
+
 export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncResult> {
   const currentData = await getPlannerDataFromStorage();
   const subjects = [...(currentData.subjects || [])];
@@ -108,7 +134,7 @@ export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncR
     await savePlannerDataToStorage({ ...currentData, subjects, chapters });
     return {
       success: true,
-      message: `Synced ${addedChaps} chapters for ${targetSubject.name}!`,
+      message: `Synced ${addedChaps} chapters! Click into a chapter to sync its lectures.`,
       subjectName: targetSubject.name,
       importedTasksCount: 0,
     };
@@ -166,22 +192,29 @@ export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncR
     const chainId = 'chain_' + now + '_' + idx + '_' + Math.random().toString(36).substring(2, 6);
     const isNoDpp = lec.noDpp || /no\s*dpp/i.test(lec.title);
 
-    // Smart Match: find matching DPP by number
-    let matchingDpp = undefined;
+    // Smart Match: prefer exact attached DPP from lecture card tray, then fallback to number match
+    let finalDppTitle: string | undefined = undefined;
     if (!isNoDpp) {
-      const matchNum = lec.title.match(/(?:lecture|\b)\s*0?(\d+)/i);
-      if (matchNum && matchNum[1]) {
-        const num = matchNum[1];
-        matchingDpp = dpps.find((d) => {
-          const dppMatch = d.title.match(/(?:dpp|\b)\s*0?(\d+)/i);
-          return dppMatch && dppMatch[1] === num;
-        });
+      if (lec.attachedDppTitle) {
+        finalDppTitle = lec.attachedDppTitle;
+      } else {
+        const matchNum = lec.title.match(/(?:lecture|\b)\s*0?(\d+)/i);
+        if (matchNum && matchNum[1]) {
+          const num = matchNum[1];
+          const matched = dpps.find((d) => {
+            const dppMatch = d.title.match(/(?:dpp|\b)\s*0?(\d+)/i);
+            return dppMatch && dppMatch[1] === num;
+          });
+          if (matched) finalDppTitle = matched.title;
+        }
       }
     }
 
     const lecTaskId = 'task_' + now + '_l_' + idx;
-    const dppTaskId = matchingDpp ? 'task_' + now + '_d_' + idx : undefined;
+    const dppTaskId = finalDppTitle ? 'task_' + now + '_d_' + idx : undefined;
     const revTaskId = 'task_' + now + '_r_' + idx;
+
+    const parsedDueDate = parseLectureDateToIso(lec.date);
 
     // 1. Lecture Task
     const lectureTask: Task = {
@@ -197,16 +230,17 @@ export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncR
       orderIndex: 0,
       duration: lec.duration,
       lectureDate: lec.date,
+      dueDate: parsedDueDate,
       nextTaskId: dppTaskId || revTaskId,
     };
     tasks.push(lectureTask);
     importedCount++;
 
     // 2. DPP Task (if matched)
-    if (dppTaskId && matchingDpp) {
+    if (dppTaskId && finalDppTitle) {
       const dppTask: Task = {
         id: dppTaskId,
-        title: matchingDpp.title,
+        title: finalDppTitle,
         completed: false,
         subjectId: targetSubject.id,
         chapterId: targetChapter.id,
@@ -217,6 +251,7 @@ export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncR
         orderIndex: 1,
         prevTaskId: lecTaskId,
         nextTaskId: revTaskId,
+        dueDate: parsedDueDate,
       };
       tasks.push(dppTask);
       importedCount++;

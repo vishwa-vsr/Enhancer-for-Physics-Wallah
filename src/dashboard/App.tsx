@@ -9,6 +9,7 @@ import {
   filteredTasks,
   deleteSubject,
   deleteChapter,
+  isAddChainModalOpen,
 } from './store';
 import { Subject, Chapter } from './types';
 import { Sidebar } from './components/Sidebar';
@@ -124,6 +125,8 @@ export const App = () => {
       } else {
         handleOpenAddChapter(subjects.value[0].id);
       }
+    } else if (currentView.type === 'chapter') {
+      isAddChainModalOpen.value = true;
     } else {
       setTaskModalOpen(true);
     }
