@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - **Focus Lock Mode**: 1-click fullscreen study session that pauses when you get distracted (contributed by [@undefined-parth](https://github.com/undefined-parth) in [#12](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/pull/12)).
 
+### Improved & Polished
+- **Smooth Settings Drawers**: Sub-options for Video Quality, Hotkeys, and Spacebar Boost now glide open with smooth animations and a clean edge-to-edge layout.
+
 ---
 
 ## [1.0.8.2] - 2026-09-02
