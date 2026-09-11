@@ -6,18 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.0.8.3] - 2026-09-11
+
 ### Added
 - **Direct Speed Typing**: Click the speed number (like `1.0x`) to type exact speeds like `1.25x` or `1.75x` (contributed by [@MAYANK-MAHAUR](https://github.com/MAYANK-MAHAUR) in [#13](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/pull/13)).
-
-### Improved & Polished
-- **Rock-Solid Speed Slider**: Removed the old speedometer icon for a cleaner look and locked down the number width so the slider never shakes.
-
-## [1.0.8.3] - 2026-09-09
-
-### Added
 - **Focus Lock Mode**: 1-click fullscreen study session that pauses when you get distracted (contributed by [@undefined-parth](https://github.com/undefined-parth) in [#12](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/pull/12)).
 
 ### Improved & Polished
+- **Rock-Solid Speed Slider**: Removed the old speedometer icon for a cleaner look and locked down the number width so the slider never shakes.
 - **Smooth Settings Drawers**: Sub-options for Video Quality, Hotkeys, and Spacebar Boost now glide open with smooth animations and a clean edge-to-edge layout.
 
 ---
