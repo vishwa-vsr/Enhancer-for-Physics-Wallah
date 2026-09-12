@@ -63,7 +63,8 @@ export interface AudioGraph {
   sourceNode: MediaElementAudioSourceNode;
   delayNode: DelayNode;
   gainNode: GainNode;
-  workletNode: AudioWorkletNode;
+  workletNode?: AudioWorkletNode | null;
+  analyserNode?: AnalyserNode | null;
 }
 
 // ===== State Change Listener Type =====

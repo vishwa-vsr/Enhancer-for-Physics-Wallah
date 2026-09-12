@@ -12,6 +12,7 @@ import {
   getSSAudioContext,
   getSSGainNode,
 } from './modules/audio/skip-silence';
+import { getActiveVideo } from './modules/video/detector';
 import { initKeyboardShortcuts } from './modules/shortcuts/keyboard';
 import { initSpaceHold } from './modules/shortcuts/space-hold';
 import { initAutoPause } from './modules/visibility/auto-pause';
@@ -37,7 +38,8 @@ function init(): void {
       if (currentState.constantVideoQuality) {
         applyQuality(currentState.preferredQuality);
       }
-      if (currentState.skipSilenceEnabled) {
+      const initVid = getActiveVideo();
+      if (currentState.skipSilenceEnabled && initVid && !initVid.paused) {
         ssInit();
       }
       previousSkipSilenceEnabled = currentState.skipSilenceEnabled;
@@ -81,7 +83,10 @@ function init(): void {
       const wasEnabled = previousSkipSilenceEnabled;
       previousSkipSilenceEnabled = currentState.skipSilenceEnabled;
       if (currentState.skipSilenceEnabled && !wasEnabled) {
-        ssInit();
+        const activeVid = getActiveVideo();
+        if (activeVid && !activeVid.paused) {
+          ssInit();
+        }
       } else if (!currentState.skipSilenceEnabled && wasEnabled) {
         ssDestroy();
       }

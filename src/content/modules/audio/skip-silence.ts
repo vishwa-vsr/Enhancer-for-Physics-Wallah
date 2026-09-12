@@ -46,6 +46,8 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 let ssAudioContext: AudioContext | null = null;
 let ssSourceNode: MediaElementAudioSourceNode | null = null;
 let ssWorkletNode: AudioWorkletNode | null = null;
+let ssAnalyserNode: AnalyserNode | null = null;
+let ssAnalyserInterval: any = null;
 let ssDelayNode: DelayNode | null = null;
 let ssGainNode: GainNode | null = null;
 let ssConnectedVideo: HTMLVideoElement | null = null;
@@ -165,14 +167,45 @@ export function updateDynamicNoiseFloor(db: number): void {
 // Helper to ensure AudioContext stays awake across browser autoplay policies
 export function resumeAudioContextOnInteraction(audioCtx: AudioContext): void {
   if (!audioCtx || audioCtx.state !== 'suspended') return;
-  audioCtx.resume();
+  audioCtx.resume().catch(() => {});
   const resumeFn = () => {
     if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume();
+      audioCtx.resume().catch(() => {});
     }
   };
   document.addEventListener('pointerdown', resumeFn, { once: true, capture: true });
   document.addEventListener('keydown', resumeFn, { once: true, capture: true });
+}
+
+export function startAnalyserLoop(analyser: AnalyserNode): void {
+  stopAnalyserLoop();
+  const buffer = new Float32Array(analyser.fftSize);
+  ssAnalyserInterval = setInterval(() => {
+    if (!ssEngineRunning || isUserHoldingSpace()) return;
+    const video = getActiveVideo();
+    if (!video || video.paused || video.ended || video.readyState < 2) {
+      ssIsSilentNow = false;
+      ssSilentMsAccumulated = 0;
+      return;
+    }
+    analyser.getFloatTimeDomainData(buffer);
+    let sum = 0;
+    for (let i = 0; i < buffer.length; i++) {
+      sum += buffer[i] * buffer[i];
+    }
+    const rms = Math.sqrt(sum / buffer.length);
+    ssLastVolumeLevel = rms;
+    const db = rmsToDb(rms);
+    ssLastVolumeDb = db;
+    ssProcessVolume(db);
+  }, 25);
+}
+
+export function stopAnalyserLoop(): void {
+  if (ssAnalyserInterval) {
+    clearInterval(ssAnalyserInterval);
+    ssAnalyserInterval = null;
+  }
 }
 
 // Permanent Audio Graph cache per HTMLMediaElement (WeakMap + DOM property fallback)
@@ -186,7 +219,7 @@ export function getCachedAudioGraph(video: HTMLVideoElement): AudioGraph | null 
 // Initialize or resume the audio pipeline for skip silence
 export async function ssInit(): Promise<void> {
   const video = getActiveVideo();
-  if (!video || ssInitializing) return;
+  if (!video || video.paused || ssInitializing) return;
 
   ssInitializing = true;
   try {
@@ -196,14 +229,14 @@ export async function ssInit(): Promise<void> {
       const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
       const audioCtx = new AudioCtxClass();
 
-      // Create worklet from inline code via Blob URL
-      const blob = new Blob([VOLUME_PROCESSOR_CODE], { type: 'application/javascript' });
-      const workletUrl = URL.createObjectURL(blob);
-      await audioCtx.audioWorklet.addModule(workletUrl);
-      URL.revokeObjectURL(workletUrl);
-
-      // Create source node once per video element
-      const sourceNode = audioCtx.createMediaElementSource(video);
+      // Create or reuse source node (MUST NEVER call createMediaElementSource twice on same video element)
+      let sourceNode: MediaElementAudioSourceNode;
+      if ((video as any)._pwcSourceNode) {
+        sourceNode = (video as any)._pwcSourceNode;
+      } else {
+        sourceNode = audioCtx.createMediaElementSource(video);
+        (video as any)._pwcSourceNode = sourceNode;
+      }
 
       // Create delay node for lookahead buffer (60ms)
       const delayNode = audioCtx.createDelay(1.0);
@@ -213,16 +246,29 @@ export async function ssInit(): Promise<void> {
       const gainNode = audioCtx.createGain();
       gainNode.gain.value = 1.0;
 
-      // Create worklet node for volume analysis
-      const workletNode = new AudioWorkletNode(audioCtx, 'pwc-volume-processor');
-
-      // Audio routing:
-      // video -> source -> delay -> gain -> destination (speakers)
-      // video -> source -> workletNode (volume analysis, no output)
+      // Connect main speaker routing immediately
       sourceNode.connect(delayNode);
       delayNode.connect(gainNode);
       gainNode.connect(audioCtx.destination);
-      sourceNode.connect(workletNode);
+
+      let workletNode: AudioWorkletNode | null = null;
+      let analyserNode: AnalyserNode | null = null;
+
+      // Try AudioWorklet first, then gracefully fall back to native AnalyserNode
+      try {
+        const blob = new Blob([VOLUME_PROCESSOR_CODE], { type: 'application/javascript' });
+        const workletUrl = URL.createObjectURL(blob);
+        await audioCtx.audioWorklet.addModule(workletUrl);
+        URL.revokeObjectURL(workletUrl);
+
+        workletNode = new AudioWorkletNode(audioCtx, 'pwc-volume-processor');
+        sourceNode.connect(workletNode);
+      } catch (workletErr: any) {
+        console.info('PW Control: Using native AnalyserNode volume meter (AudioWorklet fallback):', workletErr?.message);
+        analyserNode = audioCtx.createAnalyser();
+        analyserNode.fftSize = 256;
+        sourceNode.connect(analyserNode);
+      }
 
       graph = {
         context: audioCtx,
@@ -230,13 +276,14 @@ export async function ssInit(): Promise<void> {
         delayNode: delayNode,
         gainNode: gainNode,
         workletNode: workletNode,
+        analyserNode: analyserNode,
       };
 
       videoAudioGraphs.set(video, graph);
       (video as any)._pwcAudioGraph = graph;
     }
 
-    // Ensure AudioContext is resumed
+    // Ensure AudioContext is resumed safely
     resumeAudioContextOnInteraction(graph.context);
 
     // Point current engine references to this active video's graph
@@ -244,18 +291,23 @@ export async function ssInit(): Promise<void> {
     ssSourceNode = graph.sourceNode;
     ssDelayNode = graph.delayNode;
     ssGainNode = graph.gainNode;
-    ssWorkletNode = graph.workletNode;
+    ssWorkletNode = graph.workletNode || null;
+    ssAnalyserNode = graph.analyserNode || null;
     ssConnectedVideo = video;
 
-    // Enable worklet message reporting
-    ssWorkletNode.port.postMessage(true);
-    ssWorkletNode.port.onmessage = (event) => {
-      if (!ssEngineRunning || isUserHoldingSpace()) return;
-      ssLastVolumeLevel = event.data;
-      const db = rmsToDb(event.data);
-      ssLastVolumeDb = db;
-      ssProcessVolume(db);
-    };
+    if (ssWorkletNode) {
+      stopAnalyserLoop();
+      ssWorkletNode.port.postMessage(true);
+      ssWorkletNode.port.onmessage = (event) => {
+        if (!ssEngineRunning || isUserHoldingSpace()) return;
+        ssLastVolumeLevel = event.data;
+        const db = rmsToDb(event.data);
+        ssLastVolumeDb = db;
+        ssProcessVolume(db);
+      };
+    } else if (ssAnalyserNode) {
+      startAnalyserLoop(ssAnalyserNode);
+    }
 
     ssEngineRunning = true;
     ssCurrentState = 'speech';
@@ -305,6 +357,8 @@ export function ssDestroy(): void {
   ssCurrentState = 'idle';
   ssIsSilentNow = false;
   ssSilentMsAccumulated = 0;
+
+  stopAnalyserLoop();
 
   // Stop worklet processing
   if (ssWorkletNode) {
@@ -424,7 +478,12 @@ export function toggleSkipSilence(enable: boolean): void {
   state.skipSilenceEnabled = enable;
   safeSetSettings({ skipSilenceEnabled: enable });
   if (enable) {
-    ssInit();
+    const video = getActiveVideo();
+    if (video && !video.paused) {
+      ssInit();
+    } else {
+      updateSkipSilenceUI();
+    }
   } else {
     ssDestroy();
   }

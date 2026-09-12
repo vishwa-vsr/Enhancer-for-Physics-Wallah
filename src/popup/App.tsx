@@ -42,9 +42,11 @@ const tabs = [
     label: 'Silence',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
-        <path d="M11 5L6 9H2v6h4l5 4V5z" />
-        <line x1="23" y1="9" x2="17" y2="15" />
-        <line x1="17" y1="9" x2="23" y2="15" />
+        <line x1="3" y1="10" x2="3" y2="14" />
+        <line x1="7" y1="6" x2="7" y2="18" />
+        <line x1="11" y1="3" x2="11" y2="21" />
+        <polyline points="15 8 19 12 15 16" />
+        <line x1="21" y1="8" x2="21" y2="16" />
       </svg>
     )
   }

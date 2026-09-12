@@ -56,22 +56,38 @@ export function injectSkipSilenceButton(): void {
     svg.setAttribute('stroke-linecap', 'round');
     svg.setAttribute('stroke-linejoin', 'round');
 
-    // Speaker with X (muted/silence icon)
-    const path1 = document.createElementNS(svgNS, 'path');
-    path1.setAttribute('d', 'M11 5L6 9H2v6h4l5 4V5z');
-    svg.appendChild(path1);
-    const line1 = document.createElementNS(svgNS, 'line');
-    line1.setAttribute('x1', '23');
-    line1.setAttribute('y1', '9');
-    line1.setAttribute('x2', '17');
-    line1.setAttribute('y2', '15');
-    svg.appendChild(line1);
-    const line2 = document.createElementNS(svgNS, 'line');
-    line2.setAttribute('x1', '17');
-    line2.setAttribute('y1', '9');
-    line2.setAttribute('x2', '23');
-    line2.setAttribute('y2', '15');
-    svg.appendChild(line2);
+    // Soundwave with forward skip icon
+    const bar1 = document.createElementNS(svgNS, 'line');
+    bar1.setAttribute('x1', '3');
+    bar1.setAttribute('y1', '10');
+    bar1.setAttribute('x2', '3');
+    bar1.setAttribute('y2', '14');
+    svg.appendChild(bar1);
+
+    const bar2 = document.createElementNS(svgNS, 'line');
+    bar2.setAttribute('x1', '7');
+    bar2.setAttribute('y1', '6');
+    bar2.setAttribute('x2', '7');
+    bar2.setAttribute('y2', '18');
+    svg.appendChild(bar2);
+
+    const bar3 = document.createElementNS(svgNS, 'line');
+    bar3.setAttribute('x1', '11');
+    bar3.setAttribute('y1', '3');
+    bar3.setAttribute('x2', '11');
+    bar3.setAttribute('y2', '21');
+    svg.appendChild(bar3);
+
+    const chevron = document.createElementNS(svgNS, 'polyline');
+    chevron.setAttribute('points', '15 8 19 12 15 16');
+    svg.appendChild(chevron);
+
+    const endLine = document.createElementNS(svgNS, 'line');
+    endLine.setAttribute('x1', '21');
+    endLine.setAttribute('y1', '8');
+    endLine.setAttribute('x2', '21');
+    endLine.setAttribute('y2', '16');
+    svg.appendChild(endLine);
 
     btn.appendChild(svg);
     container.appendChild(btn);
@@ -133,6 +149,13 @@ export function updateSkipSilenceUI(): void {
     btn.classList.toggle('active', state.skipSilenceEnabled);
     btn.classList.toggle('speech', state.skipSilenceEnabled && currentState === 'speech');
     btn.classList.toggle('silence', state.skipSilenceEnabled && currentState === 'silence');
+    if (!state.skipSilenceEnabled) {
+      btn.setAttribute('title', 'Skip Silence: Off (Click to enable)');
+    } else if (isRunning) {
+      btn.setAttribute('title', 'Skip Silence: Active (Click to disable)');
+    } else {
+      btn.setAttribute('title', 'Skip Silence: Ready (Play video to start)');
+    }
   }
 
   if (viz) {
@@ -167,8 +190,9 @@ export function updateSkipSilenceUI(): void {
       status.style.display = '';
       status.style.color = '#4ade80';
     } else {
-      status.textContent = '';
-      status.style.display = 'none';
+      status.textContent = isRunning ? 'Listening...' : '';
+      status.style.display = isRunning ? '' : 'none';
+      status.style.color = '#4ade80';
     }
   }
 }
