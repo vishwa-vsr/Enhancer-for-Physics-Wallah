@@ -1,5 +1,6 @@
 import { state } from '../../state';
 import { findPWToolbar } from '../distractions/elements';
+import { getActiveVideo } from '../video/detector';
 import {
   isSSEngineRunning,
   getSSCurrentState,
@@ -154,7 +155,12 @@ export function updateSkipSilenceUI(): void {
     } else if (isRunning) {
       btn.setAttribute('title', 'Skip Silence: Active (Click to disable)');
     } else {
-      btn.setAttribute('title', 'Skip Silence: Ready (Play video to start)');
+      const activeVid = getActiveVideo();
+      if (activeVid && !activeVid.paused) {
+        btn.setAttribute('title', 'Skip Silence: Click video to activate audio');
+      } else {
+        btn.setAttribute('title', 'Skip Silence: Ready (Play video to start)');
+      }
     }
   }
 

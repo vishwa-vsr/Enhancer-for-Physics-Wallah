@@ -164,6 +164,38 @@ export function updateDynamicNoiseFloor(db: number): void {
   }
 }
 
+// Global shared AudioContext singleton per page lifecycle
+let sharedAudioContext: AudioContext | null = null;
+
+export function getSharedAudioContext(): AudioContext {
+  const win = window as any;
+  if (win.__pwcAudioContext && win.__pwcAudioContext.state !== 'closed') {
+    sharedAudioContext = win.__pwcAudioContext;
+  }
+  if (!sharedAudioContext || sharedAudioContext.state === 'closed') {
+    const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+    sharedAudioContext = new AudioCtxClass();
+    win.__pwcAudioContext = sharedAudioContext;
+    resumeAudioContextOnInteraction(sharedAudioContext);
+  }
+  return sharedAudioContext;
+}
+
+// Global user-gesture unlock listener that continuously keeps AudioContext awake
+let gestureUnlockInitialized = false;
+function initGlobalGestureUnlock(): void {
+  if (gestureUnlockInitialized) return;
+  gestureUnlockInitialized = true;
+  const unlock = () => {
+    const ctx = sharedAudioContext || (window as any).__pwcAudioContext;
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+  };
+  document.addEventListener('pointerdown', unlock, { capture: true });
+  document.addEventListener('keydown', unlock, { capture: true });
+}
+
 // Helper to ensure AudioContext stays awake across browser autoplay policies
 export function resumeAudioContextOnInteraction(audioCtx: AudioContext): void {
   if (!audioCtx || audioCtx.state !== 'suspended') return;
@@ -210,39 +242,50 @@ export function stopAnalyserLoop(): void {
 
 // Permanent Audio Graph cache per HTMLMediaElement (WeakMap + DOM property fallback)
 const videoAudioGraphs = new WeakMap<HTMLVideoElement, AudioGraph>();
+const videoInitPromises = new WeakMap<HTMLVideoElement, Promise<AudioGraph | null>>();
 
 export function getCachedAudioGraph(video: HTMLVideoElement): AudioGraph | null {
   if (!video) return null;
   return videoAudioGraphs.get(video) || (video as any)._pwcAudioGraph || null;
 }
 
-// Initialize or resume the audio pipeline for skip silence
-export async function ssInit(): Promise<void> {
-  const video = getActiveVideo();
-  if (!video || video.paused || ssInitializing) return;
+// Safely creates or reuses the audio processing pipeline for a given video
+async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGraph | null> {
+  const cached = getCachedAudioGraph(video);
+  if (cached) return cached;
 
-  ssInitializing = true;
-  try {
-    let graph = getCachedAudioGraph(video);
+  const existingPromise = videoInitPromises.get(video);
+  if (existingPromise) return existingPromise;
 
-    if (!graph) {
-      const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
-      const audioCtx = new AudioCtxClass();
+  const initPromise = (async (): Promise<AudioGraph | null> => {
+    try {
+      const audioCtx = getSharedAudioContext();
+      initGlobalGestureUnlock();
 
-      // Create or reuse source node (MUST NEVER call createMediaElementSource twice on same video element)
-      let sourceNode: MediaElementAudioSourceNode;
-      if ((video as any)._pwcSourceNode) {
-        sourceNode = (video as any)._pwcSourceNode;
-      } else {
-        sourceNode = audioCtx.createMediaElementSource(video);
-        (video as any)._pwcSourceNode = sourceNode;
+      // Ensure AudioContext is resumed immediately
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
       }
 
-      // Create delay node for lookahead buffer (60ms)
+      // Check if this video element already has an attached sourceNode or AudioGraph
+      let sourceNode: MediaElementAudioSourceNode | null = (video as any)._pwcSourceNode || null;
+      if (!sourceNode) {
+        try {
+          sourceNode = audioCtx.createMediaElementSource(video);
+          (video as any)._pwcSourceNode = sourceNode;
+        } catch (sourceErr: any) {
+          if (sourceErr.name === 'InvalidStateError' || (sourceErr.message && sourceErr.message.includes('already connected'))) {
+            console.warn('PW Control: Video element was already connected to an audio source node.');
+            const existingGraph = (video as any)._pwcAudioGraph || videoAudioGraphs.get(video);
+            if (existingGraph) return existingGraph;
+          }
+          throw sourceErr;
+        }
+      }
+
       const delayNode = audioCtx.createDelay(1.0);
       delayNode.delayTime.value = 0.06;
 
-      // Create gain node for muting during silence
       const gainNode = audioCtx.createGain();
       gainNode.gain.value = 1.0;
 
@@ -270,7 +313,7 @@ export async function ssInit(): Promise<void> {
         sourceNode.connect(analyserNode);
       }
 
-      graph = {
+      const graph: AudioGraph = {
         context: audioCtx,
         sourceNode: sourceNode,
         delayNode: delayNode,
@@ -281,6 +324,31 @@ export async function ssInit(): Promise<void> {
 
       videoAudioGraphs.set(video, graph);
       (video as any)._pwcAudioGraph = graph;
+      return graph;
+    } catch (e: any) {
+      console.warn('PW Control: AudioGraph creation error:', e?.message);
+      return null;
+    } finally {
+      videoInitPromises.delete(video);
+    }
+  })();
+
+  videoInitPromises.set(video, initPromise);
+  return initPromise;
+}
+
+// Initialize or resume the audio pipeline for skip silence
+export async function ssInit(): Promise<void> {
+  const video = getActiveVideo();
+  if (!video || video.paused || ssInitializing) return;
+
+  ssInitializing = true;
+  try {
+    const graph = await getOrCreateAudioGraph(video);
+    if (!graph) {
+      ssInitializing = false;
+      updateSkipSilenceUI();
+      return;
     }
 
     // Ensure AudioContext is resumed safely

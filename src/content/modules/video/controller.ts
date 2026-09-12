@@ -137,8 +137,11 @@ export function onRateChange(): void {
   updateUI();
 }
 
-// Delay applying speed on play to allow player init scripts to settle
+// Apply speed and wake up audio immediately on play to preserve user gesture
 export function onVideoPlay(): void {
+  if (state.skipSilenceEnabled && !isSSEngineRunning()) {
+    ssInit();
+  }
   setTimeout(() => {
     applySpeedToActiveVideo();
     autoApplyPreferredQuality();
