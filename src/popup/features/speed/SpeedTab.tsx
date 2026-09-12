@@ -14,7 +14,7 @@ import styles from './SpeedTab.module.css';
 
 // Segmented 4-point slider interpolation math (exact port from popup.js)
 function speedToSliderPercent(speed: number, points: number[]): number {
-  const pts = points.length === 4 ? points : [1.0, 2.0, 3.0, 4.0];
+  const pts = points.length === 4 ? points : [1.0, 1.5, 2.0, 2.5];
   const s = speed;
   if (s <= pts[0]) return 0;
   if (s >= pts[3]) return 100;
@@ -34,7 +34,7 @@ function speedToSliderPercent(speed: number, points: number[]): number {
 }
 
 function sliderPercentToSpeed(pct: number, points: number[]): number {
-  const pts = points.length === 4 ? points : [1.0, 2.0, 3.0, 4.0];
+  const pts = points.length === 4 ? points : [1.0, 1.5, 2.0, 2.5];
   const p = Math.max(0, Math.min(100, pct));
   if (p <= 0) return pts[0];
   if (p >= 100) return pts[3];
@@ -143,7 +143,7 @@ export function SpeedTab() {
   };
 
   const resetSnapDefaults = () => {
-    const defaults = [1.0, 2.0, 3.0, 4.0];
+    const defaults = [1.0, 1.5, 2.0, 2.5];
     snapPoints.value = defaults;
     saveSetting('snapPoints', defaults);
   };
@@ -250,7 +250,7 @@ export function SpeedTab() {
                 type="button"
                 class={styles.snapResetDefaultsBtn}
                 onClick={resetSnapDefaults}
-                title="Reset Snap Points to 1.0x, 2.0x, 3.0x, 4.0x"
+                title="Reset Snap Points to 1.0x, 1.5x, 2.0x, 2.5x"
               >
                 <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />

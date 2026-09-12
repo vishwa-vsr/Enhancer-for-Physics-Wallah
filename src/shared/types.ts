@@ -62,7 +62,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   preferredSpeed: 1.0,
   constantVideoQuality: false,
   preferredQuality: '720p',
-  snapPoints: [1.0, 2.0, 3.0, 4.0],
+  snapPoints: [1.0, 1.5, 2.0, 2.5],
 
   hideAskAI: false,
   hideDoubt: false,

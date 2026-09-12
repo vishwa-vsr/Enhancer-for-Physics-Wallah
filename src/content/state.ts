@@ -17,7 +17,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   currentSpeed: 1.0,
   constantVideoQuality: false,
   preferredQuality: '720p',
-  snapPoints: [1.0, 2.0, 3.0, 4.0],
+  snapPoints: [1.0, 1.5, 2.0, 2.5],
 
   hideSettings: { ...DEFAULT_HIDE_SETTINGS },
   enableInstantHide: false,
@@ -73,7 +73,7 @@ function notifyListeners(changedKeys: string[]): void {
 // Sanitize 4 snap points array
 export function sanitizeSnapPoints(points: any): number[] {
   if (!points || !Array.isArray(points) || points.length !== 4) {
-    return [1.0, 2.0, 3.0, 4.0];
+    return [1.0, 1.5, 2.0, 2.5];
   }
   const raw = points.map((v) => {
     let n = parseFloat(v);

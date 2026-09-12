@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added & Improved
+- **Wider Speed Slider**: Made the speed slider wider so it is much easier and smoother to drag.
+- **Stable Bottom Bar**: Fixed the finish time clock so changing speeds will not push or shift the slider on your screen.
+
 ## [1.0.8.3] - 2026-09-11
 
 ### Added

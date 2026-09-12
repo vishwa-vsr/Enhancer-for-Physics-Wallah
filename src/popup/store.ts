@@ -6,7 +6,7 @@ import { loadSettings, onSettingsChanged } from '@shared/storage';
 export const preferredSpeed = signal(1.0);
 export const constantVideoQuality = signal(false);
 export const preferredQuality = signal<VideoQuality>('720p');
-export const snapPoints = signal<number[]>([1.0, 2.0, 3.0, 4.0]);
+export const snapPoints = signal<number[]>([1.0, 1.5, 2.0, 2.5]);
 
 // ===== Focus toggle signals (match chrome.storage keys exactly) =====
 export const hideAskAI = signal(false);
@@ -59,7 +59,7 @@ export async function initStore() {
   preferredSpeed.value = s.preferredSpeed;
   constantVideoQuality.value = !!s.constantVideoQuality;
   preferredQuality.value = s.preferredQuality || '720p';
-  snapPoints.value = Array.isArray(s.snapPoints) ? s.snapPoints : [1, 2, 3, 4];
+  snapPoints.value = Array.isArray(s.snapPoints) ? s.snapPoints : [1.0, 1.5, 2.0, 2.5];
 
   hideAskAI.value = !!s.hideAskAI;
   hideDoubt.value = !!s.hideDoubt;

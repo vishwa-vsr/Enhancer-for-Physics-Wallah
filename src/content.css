@@ -11,6 +11,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   user-select: none;
   position: relative;
+  flex-shrink: 0 !important;
 }
 
 
@@ -37,8 +38,8 @@
 /* Slide out when container is hovered or active */
 .pwc-speed-container:not(.pwc-escape-collapsed):hover .pwc-speed-slider-container,
 .pwc-speed-container.pwc-expanded .pwc-speed-slider-container {
-  width: 150px;
-  flex: 0 0 150px;
+  width: 200px;
+  flex: 0 0 200px;
   opacity: 1;
   padding-left: 14px;
   overflow: visible !important;
@@ -60,8 +61,8 @@
 
 /* Always Expanded Mode: keeps slider open permanently */
 .pwc-speed-container.pwc-always-expanded .pwc-speed-slider-container {
-  width: 150px !important;
-  flex-basis: 150px !important;
+  width: 200px !important;
+  flex-basis: 200px !important;
   opacity: 1 !important;
   padding-left: 14px !important;
   overflow: visible !important;
@@ -109,37 +110,6 @@
   color: #ffffff !important;
   outline: none !important;
   box-shadow: none !important;
-}
-
-.pwc-speed-badge::after {
-  content: attr(data-edit-hint);
-  position: absolute;
-  bottom: calc(100% + 7px);
-  left: 50%;
-  z-index: 10;
-  padding: 4px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 4px;
-  background: rgba(10, 12, 20, 0.96);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1;
-  text-decoration: none;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, 3px);
-  visibility: hidden;
-  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
-}
-
-.pwc-speed-badge:hover::after {
-  opacity: 1;
-  transform: translate(-50%, 0);
-  visibility: visible;
-  transition-delay: 0.35s, 0.35s, 0s;
 }
 
 .pwc-speed-badge[hidden] {
@@ -459,47 +429,6 @@ html.pwc-collapsed-state * {
    Focus Lock Mode (Strict Distraction-Free Study Session)
    ========================================================================== */
 
-/* Focus Lock shield button placed next to the native fullscreen button */
-.pwc-focus-lock-btn {
-  height: 100% !important;
-  width: 36px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 1000 !important;
-  background: transparent !important;
-  border: none !important;
-  color: rgba(255, 255, 255, 0.75) !important;
-  cursor: pointer !important;
-  transition: color 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.25s ease !important;
-  padding: 0 !important;
-  margin: 0 4px !important;
-}
-
-.pwc-focus-lock-btn:hover {
-  color: #ffffff !important;
-  transform: scale(1.15) !important;
-}
-
-.pwc-focus-lock-btn svg {
-  width: 22px !important;
-  height: 22px !important;
-  stroke: currentColor !important;
-  stroke-width: 2.2 !important;
-  fill: none !important;
-  transition: fill 0.2s ease !important;
-}
-
-/* Active session state: violet glow so the lock is clearly visible */
-.pwc-focus-lock-btn.active {
-  color: #a78bfa !important;
-  filter: drop-shadow(0 0 5px rgba(167, 139, 250, 0.65)) !important;
-}
-
-.pwc-focus-lock-btn.active svg {
-  fill: rgba(167, 139, 250, 0.18) !important;
-}
-
 /* Stay Focused reminder modal */
 .pwc-focus-lock-overlay {
   position: fixed !important;
@@ -779,8 +708,11 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   line-height: 1.4;
   user-select: none;
   pointer-events: none;
-  margin-left: 6px;
+  margin-right: 6px;
+  margin-left: 2px;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums !important;
+  flex-shrink: 0;
 }
 
 .pwc-finish-icon {
@@ -800,11 +732,13 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   color: #ffffff;
   font-weight: 600;
   letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums !important;
 }
 
 .pwc-finish-left {
   color: #B5BBC5;
   font-weight: 500;
+  font-variant-numeric: tabular-nums !important;
 }
 
 /* ==========================================================================

@@ -3,7 +3,6 @@ import { getActiveVideo } from '../video/detector';
 import { cancelSpaceHold } from '../shortcuts/space-hold';
 import { isUserTyping } from '../shortcuts/keyboard';
 import { setFocusLockOverride } from '../distractions/focus-css';
-import { findFullscreenButton, getControlButton, findPWToolbar } from '../distractions/elements';
 import { showInfoToast } from './toast';
 
 /**
@@ -297,71 +296,7 @@ function updateFocusLockButton(): void {
 }
 
 export function injectFocusLockButton(): void {
-  if (!state.extensionEnabled) {
-    document.getElementById(FOCUS_LOCK_BTN_ID)?.remove();
-    return;
-  }
-  const video = getActiveVideo();
-  if (!video) return;
-
-  let btn = document.getElementById(FOCUS_LOCK_BTN_ID) as HTMLButtonElement | null;
-  if (!btn) {
-    btn = document.createElement('button');
-    btn.id = FOCUS_LOCK_BTN_ID;
-    btn.className = 'pwc-focus-lock-btn';
-    btn.type = 'button';
-    btn.setAttribute('title', 'Focus Lock (Distraction-Free Study Session)');
-
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', 'currentColor');
-    svg.setAttribute('stroke-width', '2.2');
-    svg.setAttribute('stroke-linecap', 'round');
-    svg.setAttribute('stroke-linejoin', 'round');
-    const shieldPath = document.createElementNS(svgNS, 'path');
-    shieldPath.setAttribute('d', 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z');
-    const lockRect = document.createElementNS(svgNS, 'rect');
-    lockRect.setAttribute('x', '9');
-    lockRect.setAttribute('y', '11');
-    lockRect.setAttribute('width', '6');
-    lockRect.setAttribute('height', '5');
-    lockRect.setAttribute('rx', '1');
-    const lockArc = document.createElementNS(svgNS, 'path');
-    lockArc.setAttribute('d', 'M10 11v-1.5a2 2 0 0 1 4 0V11');
-    svg.appendChild(shieldPath);
-    svg.appendChild(lockRect);
-    svg.appendChild(lockArc);
-    btn.appendChild(svg);
-
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      toggleFocusLock();
-    });
-  }
-
-  // Position right before the native fullscreen button for one-click access.
-  const fullscreenBtn = findFullscreenButton();
-  const fullscreenWrapper = fullscreenBtn ? getControlButton(fullscreenBtn) : null;
-  if (fullscreenWrapper && fullscreenWrapper.parentElement) {
-    if (btn.parentElement !== fullscreenWrapper.parentElement ||
-      btn.nextElementSibling !== fullscreenWrapper) {
-      fullscreenWrapper.parentElement.insertBefore(btn, fullscreenWrapper);
-    }
-  } else if (!btn.isConnected) {
-    const toolbar = findPWToolbar();
-    if (toolbar) {
-      if (toolbar.firstChild) {
-        toolbar.insertBefore(btn, toolbar.firstChild);
-      } else {
-        toolbar.appendChild(btn);
-      }
-    }
-  }
-
-  updateFocusLockButton();
+  document.getElementById(FOCUS_LOCK_BTN_ID)?.remove();
 }
 
 // ===== Initialization & Popup Bridge =====

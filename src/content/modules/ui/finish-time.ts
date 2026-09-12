@@ -142,8 +142,8 @@ export function injectFinishTimeBadge(): void {
     badge.appendChild(leftSpan);
 
     const speedCtrl = toolbar.querySelector('#pwc-speed-control');
-    if (speedCtrl && speedCtrl.nextSibling) {
-      toolbar.insertBefore(badge, speedCtrl.nextSibling);
+    if (speedCtrl) {
+      toolbar.insertBefore(badge, speedCtrl);
     } else if (toolbar.firstChild) {
       toolbar.insertBefore(badge, toolbar.firstChild);
     } else {

@@ -65,7 +65,7 @@ src/
 │       │   ├── elements.ts       # PW toolbar locator (#footer-right-section) & button matchers
 │       │   └── focus-css.ts      # Settings-offset button index hider & zero-flicker classes
 │       ├── ui/
-│       │   ├── speed-hud.ts      # Speedometer button, segmented slider & needle dial
+│       │   ├── speed-hud.ts      # Speed badge button, direct speed entry & segmented slider
 │       │   ├── finish-time.ts    # Dynamic lecture finish clock & remaining time badge
 │       │   ├── focus-mode.ts     # Instant Focus arrow button & full-player collapse
 │       │   ├── silence-hud.ts    # Skip silence toolbar button, 5-bar equalizer & status text

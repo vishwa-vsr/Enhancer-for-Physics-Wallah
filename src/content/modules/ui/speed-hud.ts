@@ -24,6 +24,9 @@ function parseTypedSpeed(value: string): number | null {
 }
 
 function setExpanded(container: HTMLElement, expanded: boolean): void {
+  if (expanded) {
+    container.classList.remove('pwc-escape-collapsed');
+  }
   container.classList.toggle('pwc-expanded', expanded);
   container.querySelectorAll<HTMLButtonElement>('.pwc-speed-badge').forEach((trigger) => {
     trigger.setAttribute('aria-expanded', String(expanded));
@@ -49,7 +52,7 @@ function collapseOnEscape(container: HTMLElement): void {
 // Equal-distance 4-point segmented slider interpolation functions
 // Points: [p0, p1, p2, p3] mapped at 0%, 33.3333%, 66.6667%, 100%
 export function speedToSliderPercent(speed: number | string, points?: number[]): number {
-  const pts = points && points.length === 4 ? points : [1.0, 2.0, 3.0, 4.0];
+  const pts = points && points.length === 4 ? points : [1.0, 1.5, 2.0, 2.5];
   const s = typeof speed === 'number' ? speed : parseFloat(speed);
   if (isNaN(s) || s <= pts[0]) return 0;
   if (s >= pts[3]) return 100;
@@ -69,7 +72,7 @@ export function speedToSliderPercent(speed: number | string, points?: number[]):
 }
 
 export function sliderPercentToSpeed(pct: number | string, points?: number[]): number {
-  const pts = points && points.length === 4 ? points : [1.0, 2.0, 3.0, 4.0];
+  const pts = points && points.length === 4 ? points : [1.0, 1.5, 2.0, 2.5];
   const p = Math.max(0, Math.min(100, typeof pct === 'number' ? pct : parseFloat(pct)));
   let raw = pts[0];
   if (p <= 0) {
@@ -113,7 +116,6 @@ export function applyAlwaysExpandState(targetContainer?: HTMLElement | null): vo
   if (container) {
     if (state.alwaysExpandWidget) {
       container.classList.add('pwc-always-expanded');
-      container.classList.remove('pwc-escape-collapsed');
       setExpanded(container, true);
     } else {
       const wasAlwaysExpanded = container.classList.contains('pwc-always-expanded');
@@ -158,12 +160,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
     return true;
   };
 
-  const finishBadgeEditing = (commit: boolean, focusBadge = false) => {
-    if (commit) {
-      if (!commitTypedSpeed()) resetTypedSpeed();
-    } else {
-      resetTypedSpeed();
-    }
+  const closeEditing = (focusBadge = false) => {
     setBadgeEditing(container, false);
     if (focusBadge) {
       badge.focus();
@@ -172,12 +169,23 @@ export function setupUIEventListeners(container: HTMLElement): void {
     }
   };
 
+  const cancelAndCloseEditing = (focusBadge = false) => {
+    resetTypedSpeed();
+    closeEditing(focusBadge);
+  };
+
+  const saveAndCloseEditing = (focusBadge = false) => {
+    if (!commitTypedSpeed()) {
+      resetTypedSpeed();
+    }
+    closeEditing(focusBadge);
+  };
+
   container.addEventListener('mouseenter', () => {
     if (mouseLeaveTimer) {
       clearTimeout(mouseLeaveTimer);
       mouseLeaveTimer = null;
     }
-    container.classList.remove('pwc-escape-collapsed');
     setExpanded(container, true);
   });
 
@@ -185,13 +193,12 @@ export function setupUIEventListeners(container: HTMLElement): void {
     container.classList.remove('pwc-escape-collapsed');
     if (state.alwaysExpandWidget) return;
     mouseLeaveTimer = setTimeout(() => {
-      if (container.classList.contains('pwc-speed-editing')) finishBadgeEditing(true);
+      if (container.classList.contains('pwc-speed-editing')) saveAndCloseEditing();
       setExpanded(container, false);
     }, 250);
   });
 
   badge.addEventListener('click', () => {
-    container.classList.remove('pwc-escape-collapsed');
     setExpanded(container, true);
     speedInput.value = formatSpeed(state.currentSpeed);
     setBadgeEditing(container, true);
@@ -240,7 +247,6 @@ export function setupUIEventListeners(container: HTMLElement): void {
   });
 
   speedInput.addEventListener('focus', () => {
-    container.classList.remove('pwc-escape-collapsed');
     setExpanded(container, true);
   });
 
@@ -250,20 +256,20 @@ export function setupUIEventListeners(container: HTMLElement): void {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (commitTypedSpeed()) {
-        finishBadgeEditing(false, false);
+        closeEditing(false);
       } else {
         speedInput.select();
       }
     } else if (e.key === 'Escape') {
       e.preventDefault();
-      finishBadgeEditing(false);
+      cancelAndCloseEditing(false);
       collapseOnEscape(container);
     }
   });
 
   speedInput.addEventListener('blur', (e: FocusEvent) => {
     if (speedInput.hidden) return;
-    finishBadgeEditing(true);
+    saveAndCloseEditing();
 
     const nextTarget = e.relatedTarget;
     if (!(nextTarget instanceof Node) || !container.contains(nextTarget)) {
@@ -382,7 +388,10 @@ export function injectSpeedControl(): void {
       container.className = 'pwc-speed-container';
       buildSpeedControl(container);
 
-      if (toolbar.firstChild) {
+      const finishBadge = toolbar.querySelector('#pwc-finish-time-badge');
+      if (finishBadge && finishBadge.nextSibling) {
+        toolbar.insertBefore(container, finishBadge.nextSibling);
+      } else if (toolbar.firstChild) {
         toolbar.insertBefore(container, toolbar.firstChild);
       } else {
         toolbar.appendChild(container);
