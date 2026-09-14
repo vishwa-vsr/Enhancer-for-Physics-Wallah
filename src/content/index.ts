@@ -11,6 +11,7 @@ import {
   getSSCurrentState,
   getSSAudioContext,
   getSSGainNode,
+  initGlobalGestureUnlock,
 } from './modules/audio/skip-silence';
 import { getActiveVideo } from './modules/video/detector';
 import { initKeyboardShortcuts } from './modules/shortcuts/keyboard';
@@ -148,6 +149,7 @@ function init(): void {
   initState();
 
   // 4. Register user interactions & global listeners
+  initGlobalGestureUnlock();
   initKeyboardShortcuts();
   initSpaceHold();
   initAutoPause();

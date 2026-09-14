@@ -60,11 +60,12 @@ export interface ContentState {
 // ===== Audio Graph Cache Interface =====
 export interface AudioGraph {
   context: AudioContext;
-  sourceNode: MediaElementAudioSourceNode;
-  delayNode: DelayNode;
-  gainNode: GainNode;
+  sourceNode: MediaElementAudioSourceNode | MediaStreamAudioSourceNode;
+  delayNode?: DelayNode | null;
+  gainNode?: GainNode | null;
   workletNode?: AudioWorkletNode | null;
   analyserNode?: AnalyserNode | null;
+  isStream?: boolean;
 }
 
 // ===== State Change Listener Type =====

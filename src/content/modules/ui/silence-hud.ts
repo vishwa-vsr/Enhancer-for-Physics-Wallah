@@ -7,6 +7,8 @@ import {
   getSSLastVolumeLevel,
   getSSSessionSaved,
   toggleSkipSilence,
+  getSharedAudioContext,
+  ssInit,
 } from '../audio/skip-silence';
 
 let ssVisualizerInterval: any = null;
@@ -125,6 +127,20 @@ export function injectSkipSilenceButton(): void {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
+      const isRunning = isSSEngineRunning();
+      const video = getActiveVideo();
+
+      // If enabled but stalled while video is playing:
+      // Direct click on the button IS a direct user gesture! Wake up audio immediately!
+      if (state.skipSilenceEnabled && !isRunning && video && !video.paused) {
+        const audioCtx = getSharedAudioContext();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume().catch(() => {});
+        }
+        ssInit();
+        return;
+      }
+
       toggleSkipSilence(!state.skipSilenceEnabled);
     });
   }
@@ -157,7 +173,7 @@ export function updateSkipSilenceUI(): void {
     } else {
       const activeVid = getActiveVideo();
       if (activeVid && !activeVid.paused) {
-        btn.setAttribute('title', 'Skip Silence: Click video to activate audio');
+        btn.setAttribute('title', 'Skip Silence: Click button or video to activate');
       } else {
         btn.setAttribute('title', 'Skip Silence: Ready (Play video to start)');
       }

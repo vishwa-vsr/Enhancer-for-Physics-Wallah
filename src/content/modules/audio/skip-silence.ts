@@ -44,7 +44,7 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
 // Engine state
 let ssAudioContext: AudioContext | null = null;
-let ssSourceNode: MediaElementAudioSourceNode | null = null;
+let ssSourceNode: MediaElementAudioSourceNode | MediaStreamAudioSourceNode | null = null;
 let ssWorkletNode: AudioWorkletNode | null = null;
 let ssAnalyserNode: AnalyserNode | null = null;
 let ssAnalyserInterval: any = null;
@@ -73,7 +73,7 @@ export function getSSLastVolumeDb(): number {
   return ssLastVolumeDb;
 }
 
-export function getSSSourceNode(): MediaElementAudioSourceNode | null {
+export function getSSSourceNode(): MediaElementAudioSourceNode | MediaStreamAudioSourceNode | null {
   return ssSourceNode;
 }
 
@@ -181,15 +181,24 @@ export function getSharedAudioContext(): AudioContext {
   return sharedAudioContext;
 }
 
-// Global user-gesture unlock listener that continuously keeps AudioContext awake
+// Global user-gesture unlock listener that continuously keeps AudioContext awake and kicks stalled engine
 let gestureUnlockInitialized = false;
-function initGlobalGestureUnlock(): void {
+export function initGlobalGestureUnlock(): void {
   if (gestureUnlockInitialized) return;
   gestureUnlockInitialized = true;
   const unlock = () => {
-    const ctx = sharedAudioContext || (window as any).__pwcAudioContext;
-    if (ctx && ctx.state === 'suspended') {
-      ctx.resume().catch(() => {});
+    try {
+      const ctx = getSharedAudioContext();
+      if (ctx && ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+    } catch (_e) {}
+
+    if (state.skipSilenceEnabled && !isSSEngineRunning()) {
+      const vid = getActiveVideo();
+      if (vid && !vid.paused) {
+        ssInit();
+      }
     }
   };
   document.addEventListener('pointerdown', unlock, { capture: true });
@@ -252,7 +261,7 @@ export function getCachedAudioGraph(video: HTMLVideoElement): AudioGraph | null 
 // Safely creates or reuses the audio processing pipeline for a given video
 async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGraph | null> {
   const cached = getCachedAudioGraph(video);
-  if (cached) return cached;
+  if (cached && cached.context && cached.context.state !== 'closed') return cached;
 
   const existingPromise = videoInitPromises.get(video);
   if (existingPromise) return existingPromise;
@@ -268,31 +277,69 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
       }
 
       // Check if this video element already has an attached sourceNode or AudioGraph
-      let sourceNode: MediaElementAudioSourceNode | null = (video as any)._pwcSourceNode || null;
+      let sourceNode: MediaElementAudioSourceNode | MediaStreamAudioSourceNode | null =
+        (video as any)._pwcSourceNode || null;
+      let isStream = (video as any)._pwcIsStreamSource || false;
+
+      if (sourceNode && (sourceNode as any).context !== audioCtx) {
+        sourceNode = null;
+        (video as any)._pwcSourceNode = null;
+        (video as any)._pwcAudioGraph = null;
+      }
+
       if (!sourceNode) {
         try {
           sourceNode = audioCtx.createMediaElementSource(video);
           (video as any)._pwcSourceNode = sourceNode;
+          (video as any)._pwcIsStreamSource = false;
         } catch (sourceErr: any) {
-          if (sourceErr.name === 'InvalidStateError' || (sourceErr.message && sourceErr.message.includes('already connected'))) {
-            console.warn('PW Control: Video element was already connected to an audio source node.');
+          if (
+            sourceErr.name === 'InvalidStateError' ||
+            (sourceErr.message && sourceErr.message.includes('already connected'))
+          ) {
+            console.warn('PW Control: Video element was already connected to an audio source node. Attempting stream fallback...');
             const existingGraph = (video as any)._pwcAudioGraph || videoAudioGraphs.get(video);
-            if (existingGraph) return existingGraph;
+            if (existingGraph && existingGraph.context === audioCtx) return existingGraph;
+
+            // Fall back to captureStream() which bypasses Chromium's single-connection lock
+            const captureFn = (video as any).captureStream || (video as any).mozCaptureStream;
+            if (typeof captureFn === 'function') {
+              try {
+                const stream: MediaStream = captureFn.call(video);
+                if (stream) {
+                  sourceNode = audioCtx.createMediaStreamSource(stream);
+                  isStream = true;
+                  (video as any)._pwcSourceNode = sourceNode;
+                  (video as any)._pwcIsStreamSource = true;
+                  console.info('PW Control: Successfully attached using MediaStreamAudioSourceNode fallback.');
+                }
+              } catch (streamErr: any) {
+                console.warn('PW Control: captureStream fallback failed:', streamErr?.message);
+              }
+            }
           }
-          throw sourceErr;
+          if (!sourceNode) {
+            throw sourceErr;
+          }
         }
       }
 
-      const delayNode = audioCtx.createDelay(1.0);
-      delayNode.delayTime.value = 0.06;
+      let delayNode: DelayNode | null = null;
+      let gainNode: GainNode | null = null;
 
-      const gainNode = audioCtx.createGain();
-      gainNode.gain.value = 1.0;
+      // Only route to destination if using MediaElementAudioSourceNode.
+      // With captureStream, the video element naturally plays to speakers; routing to destination causes echo!
+      if (!isStream) {
+        delayNode = audioCtx.createDelay(1.0);
+        delayNode.delayTime.value = 0.06;
 
-      // Connect main speaker routing immediately
-      sourceNode.connect(delayNode);
-      delayNode.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = 1.0;
+
+        sourceNode.connect(delayNode);
+        delayNode.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+      }
 
       let workletNode: AudioWorkletNode | null = null;
       let analyserNode: AnalyserNode | null = null;
@@ -320,6 +367,7 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
         gainNode: gainNode,
         workletNode: workletNode,
         analyserNode: analyserNode,
+        isStream: isStream,
       };
 
       videoAudioGraphs.set(video, graph);
@@ -357,8 +405,8 @@ export async function ssInit(): Promise<void> {
     // Point current engine references to this active video's graph
     ssAudioContext = graph.context;
     ssSourceNode = graph.sourceNode;
-    ssDelayNode = graph.delayNode;
-    ssGainNode = graph.gainNode;
+    ssDelayNode = graph.delayNode || null;
+    ssGainNode = graph.gainNode || null;
     ssWorkletNode = graph.workletNode || null;
     ssAnalyserNode = graph.analyserNode || null;
     ssConnectedVideo = video;
