@@ -70,3 +70,17 @@ export interface AudioGraph {
 
 // ===== State Change Listener Type =====
 export type StateChangeListener = (state: ContentState, changedKeys: string[]) => void;
+
+// ===== DOM & Window Extension Types for Audio Caching =====
+export interface PWCEnhancedVideoElement extends HTMLVideoElement {
+  _pwcSourceNode?: MediaElementAudioSourceNode | MediaStreamAudioSourceNode | null;
+  _pwcAudioGraph?: AudioGraph | null;
+  _pwcIsStreamSource?: boolean;
+  captureStream?: () => MediaStream;
+  mozCaptureStream?: () => MediaStream;
+}
+
+export interface PWCEnhancedWindow extends Window {
+  __pwcAudioContext?: AudioContext | null;
+}
+

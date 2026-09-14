@@ -7,11 +7,10 @@ import {
   getSSLastVolumeLevel,
   getSSSessionSaved,
   toggleSkipSilence,
-  getSharedAudioContext,
-  ssInit,
+  wakeUpSSEngine,
 } from '../audio/skip-silence';
 
-let ssVisualizerInterval: any = null;
+let ssVisualizerInterval: ReturnType<typeof setInterval> | null = null;
 
 // Format milliseconds to human-readable time saved string
 export function formatTimeSaved(ms: number): string {
@@ -133,11 +132,7 @@ export function injectSkipSilenceButton(): void {
       // If enabled but stalled while video is playing:
       // Direct click on the button IS a direct user gesture! Wake up audio immediately!
       if (state.skipSilenceEnabled && !isRunning && video && !video.paused) {
-        const audioCtx = getSharedAudioContext();
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume().catch(() => {});
-        }
-        ssInit();
+        wakeUpSSEngine();
         return;
       }
 
@@ -227,7 +222,7 @@ export function manageSSVisualizerInterval(): void {
       ssVisualizerInterval = setInterval(() => {
         if (state.skipSilenceEnabled && isSSEngineRunning()) {
           updateSkipSilenceUI();
-        } else {
+        } else if (ssVisualizerInterval) {
           clearInterval(ssVisualizerInterval);
           ssVisualizerInterval = null;
         }

@@ -1,4 +1,4 @@
-import { AudioGraph, SilenceState } from '../../types';
+import { AudioGraph, SilenceState, PWCEnhancedVideoElement, PWCEnhancedWindow } from '../../types';
 import { state, safeSetSettings } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { setVideoPlaybackRate } from '../video/controller';
@@ -47,7 +47,7 @@ let ssAudioContext: AudioContext | null = null;
 let ssSourceNode: MediaElementAudioSourceNode | MediaStreamAudioSourceNode | null = null;
 let ssWorkletNode: AudioWorkletNode | null = null;
 let ssAnalyserNode: AnalyserNode | null = null;
-let ssAnalyserInterval: any = null;
+let ssAnalyserInterval: ReturnType<typeof setInterval> | null = null;
 let ssDelayNode: DelayNode | null = null;
 let ssGainNode: GainNode | null = null;
 let ssConnectedVideo: HTMLVideoElement | null = null;
@@ -168,12 +168,14 @@ export function updateDynamicNoiseFloor(db: number): void {
 let sharedAudioContext: AudioContext | null = null;
 
 export function getSharedAudioContext(): AudioContext {
-  const win = window as any;
+  const win = window as unknown as PWCEnhancedWindow;
   if (win.__pwcAudioContext && win.__pwcAudioContext.state !== 'closed') {
     sharedAudioContext = win.__pwcAudioContext;
   }
   if (!sharedAudioContext || sharedAudioContext.state === 'closed') {
-    const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+    const AudioCtxClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     sharedAudioContext = new AudioCtxClass();
     win.__pwcAudioContext = sharedAudioContext;
     resumeAudioContextOnInteraction(sharedAudioContext);
@@ -181,28 +183,30 @@ export function getSharedAudioContext(): AudioContext {
   return sharedAudioContext;
 }
 
+// Unified wake-up helper that unlocks AudioContext and starts Skip Silence if stalled
+export function wakeUpSSEngine(): void {
+  try {
+    const ctx = getSharedAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+  } catch (_e) {}
+
+  if (state.skipSilenceEnabled && !isSSEngineRunning()) {
+    const vid = getActiveVideo();
+    if (vid && !vid.paused) {
+      ssInit();
+    }
+  }
+}
+
 // Global user-gesture unlock listener that continuously keeps AudioContext awake and kicks stalled engine
 let gestureUnlockInitialized = false;
 export function initGlobalGestureUnlock(): void {
   if (gestureUnlockInitialized) return;
   gestureUnlockInitialized = true;
-  const unlock = () => {
-    try {
-      const ctx = getSharedAudioContext();
-      if (ctx && ctx.state === 'suspended') {
-        ctx.resume().catch(() => {});
-      }
-    } catch (_e) {}
-
-    if (state.skipSilenceEnabled && !isSSEngineRunning()) {
-      const vid = getActiveVideo();
-      if (vid && !vid.paused) {
-        ssInit();
-      }
-    }
-  };
-  document.addEventListener('pointerdown', unlock, { capture: true });
-  document.addEventListener('keydown', unlock, { capture: true });
+  document.addEventListener('pointerdown', wakeUpSSEngine, { capture: true });
+  document.addEventListener('keydown', wakeUpSSEngine, { capture: true });
 }
 
 // Helper to ensure AudioContext stays awake across browser autoplay policies
@@ -255,7 +259,8 @@ const videoInitPromises = new WeakMap<HTMLVideoElement, Promise<AudioGraph | nul
 
 export function getCachedAudioGraph(video: HTMLVideoElement): AudioGraph | null {
   if (!video) return null;
-  return videoAudioGraphs.get(video) || (video as any)._pwcAudioGraph || null;
+  const enhancedVideo = video as PWCEnhancedVideoElement;
+  return videoAudioGraphs.get(video) || enhancedVideo._pwcAudioGraph || null;
 }
 
 // Safely creates or reuses the audio processing pipeline for a given video
@@ -277,44 +282,46 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
       }
 
       // Check if this video element already has an attached sourceNode or AudioGraph
+      const enhancedVideo = video as PWCEnhancedVideoElement;
       let sourceNode: MediaElementAudioSourceNode | MediaStreamAudioSourceNode | null =
-        (video as any)._pwcSourceNode || null;
-      let isStream = (video as any)._pwcIsStreamSource || false;
+        enhancedVideo._pwcSourceNode || null;
+      let isStream = enhancedVideo._pwcIsStreamSource || false;
 
-      if (sourceNode && (sourceNode as any).context !== audioCtx) {
+      if (sourceNode && sourceNode.context !== audioCtx) {
         sourceNode = null;
-        (video as any)._pwcSourceNode = null;
-        (video as any)._pwcAudioGraph = null;
+        enhancedVideo._pwcSourceNode = null;
+        enhancedVideo._pwcAudioGraph = null;
       }
 
       if (!sourceNode) {
         try {
           sourceNode = audioCtx.createMediaElementSource(video);
-          (video as any)._pwcSourceNode = sourceNode;
-          (video as any)._pwcIsStreamSource = false;
-        } catch (sourceErr: any) {
+          enhancedVideo._pwcSourceNode = sourceNode;
+          enhancedVideo._pwcIsStreamSource = false;
+        } catch (sourceErr: unknown) {
+          const err = sourceErr as Error;
           if (
-            sourceErr.name === 'InvalidStateError' ||
-            (sourceErr.message && sourceErr.message.includes('already connected'))
+            err.name === 'InvalidStateError' ||
+            (err.message && err.message.includes('already connected'))
           ) {
             console.warn('PW Control: Video element was already connected to an audio source node. Attempting stream fallback...');
-            const existingGraph = (video as any)._pwcAudioGraph || videoAudioGraphs.get(video);
+            const existingGraph = enhancedVideo._pwcAudioGraph || videoAudioGraphs.get(video);
             if (existingGraph && existingGraph.context === audioCtx) return existingGraph;
 
             // Fall back to captureStream() which bypasses Chromium's single-connection lock
-            const captureFn = (video as any).captureStream || (video as any).mozCaptureStream;
+            const captureFn = enhancedVideo.captureStream || enhancedVideo.mozCaptureStream;
             if (typeof captureFn === 'function') {
               try {
                 const stream: MediaStream = captureFn.call(video);
                 if (stream) {
                   sourceNode = audioCtx.createMediaStreamSource(stream);
                   isStream = true;
-                  (video as any)._pwcSourceNode = sourceNode;
-                  (video as any)._pwcIsStreamSource = true;
+                  enhancedVideo._pwcSourceNode = sourceNode;
+                  enhancedVideo._pwcIsStreamSource = true;
                   console.info('PW Control: Successfully attached using MediaStreamAudioSourceNode fallback.');
                 }
-              } catch (streamErr: any) {
-                console.warn('PW Control: captureStream fallback failed:', streamErr?.message);
+              } catch (streamErr: unknown) {
+                console.warn('PW Control: captureStream fallback failed:', (streamErr as Error)?.message);
               }
             }
           }
@@ -339,6 +346,14 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
         sourceNode.connect(delayNode);
         delayNode.connect(gainNode);
         gainNode.connect(audioCtx.destination);
+      } else {
+        // Silent drain: route through gain = 0 to audio destination.
+        // Guarantees Chromium's pull-based Web Audio engine continuously pumps samples
+        // to our analyzer/worklet without creating any audible double-sound / echo!
+        const silentDrain = audioCtx.createGain();
+        silentDrain.gain.value = 0.0;
+        sourceNode.connect(silentDrain);
+        silentDrain.connect(audioCtx.destination);
       }
 
       let workletNode: AudioWorkletNode | null = null;
@@ -353,8 +368,8 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
 
         workletNode = new AudioWorkletNode(audioCtx, 'pwc-volume-processor');
         sourceNode.connect(workletNode);
-      } catch (workletErr: any) {
-        console.info('PW Control: Using native AnalyserNode volume meter (AudioWorklet fallback):', workletErr?.message);
+      } catch (workletErr: unknown) {
+        console.info('PW Control: Using native AnalyserNode volume meter (AudioWorklet fallback):', (workletErr as Error)?.message);
         analyserNode = audioCtx.createAnalyser();
         analyserNode.fftSize = 256;
         sourceNode.connect(analyserNode);
@@ -371,10 +386,10 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
       };
 
       videoAudioGraphs.set(video, graph);
-      (video as any)._pwcAudioGraph = graph;
+      enhancedVideo._pwcAudioGraph = graph;
       return graph;
-    } catch (e: any) {
-      console.warn('PW Control: AudioGraph creation error:', e?.message);
+    } catch (e: unknown) {
+      console.warn('PW Control: AudioGraph creation error:', (e as Error)?.message);
       return null;
     } finally {
       videoInitPromises.delete(video);
@@ -432,13 +447,14 @@ export async function ssInit(): Promise<void> {
     ssInitializing = false;
     updateSkipSilenceUI();
     manageSSVisualizerInterval();
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const error = err as Error;
     ssInitializing = false;
     ssEngineRunning = false;
-    console.warn('PW Control: Skip Silence init failed:', err.message);
+    console.warn('PW Control: Skip Silence init failed:', error.message);
     if (
-      err.name === 'NotSupportedError' ||
-      (err.message && (err.message.includes('CORS') || err.message.includes('cross-origin')))
+      error.name === 'NotSupportedError' ||
+      (error.message && (error.message.includes('CORS') || error.message.includes('cross-origin')))
     ) {
       showInfoToast('Skip Silence: Video source blocked (CORS)');
     }
