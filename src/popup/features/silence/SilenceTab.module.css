@@ -227,3 +227,27 @@
 .resetSpeedBtn:active .resetIcon {
   transform: rotate(-180deg) scale(0.9);
 }
+
+.ssConflictTip {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 6px 2px 2px 2px;
+  padding: 8px 10px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.ssTipIcon {
+  font-size: 13px;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.ssTipText {
+  flex: 1;
+}
+

@@ -168,6 +168,13 @@ export function SilenceTab() {
           </div>
         </div>
       </div>
+
+      <div class={styles.ssConflictTip}>
+        <span class={styles.ssTipIcon}>💡</span>
+        <span class={styles.ssTipText}>
+          <strong>Tip:</strong> If Skip Silence doesn't activate, check if another sound or volume booster extension is running.
+        </span>
+      </div>
     </section>
   );
 }
