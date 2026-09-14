@@ -13,9 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Focus Lock Mode**: 1-click fullscreen study session that pauses when you get distracted (contributed by [@undefined-parth](https://github.com/undefined-parth) in [#12](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/pull/12)).
 
 ### Fixed & Improved
-- **Reliable Skip Silence**: Fixed an issue where Skip Silence failed to start or got stuck on Chrome. It now starts smoothly when you click Play.
-- **New Soundwave Icon**: Replaced the confusing "mute" icon with a clean soundwave skip icon on both the video bar and popup menu.
-- **Built-in Backup Sound Meter**: Added a native sound listener so silence detection never fails, even with strict browser security.
+- **Rock-Solid Skip Silence**: Starts reliably upon playing lectures, with automatic sound recovery that prevents freezes even if other audio tools are present.
+- **New Soundwave Icon**: Replaced the old "mute" speaker icon with a clean soundwave skip icon on the video toolbar and popup menu.
 - **Wider Speed Slider**: Made the speed slider wider so it is much easier and smoother to drag.
 - **Stable Bottom Bar**: Fixed the finish time clock so changing speeds will not push or shift the slider on your screen.
 - **Rock-Solid Speed Slider**: Removed the old speedometer icon for a cleaner look and locked down the number width so the slider never shakes.
