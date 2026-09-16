@@ -5,7 +5,7 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,10 +18,10 @@
   max-width: 92vw;
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-xl, 16px);
   padding: 24px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
-  animation: slideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--card-shadow, 0 12px 36px rgba(0, 0, 0, 0.35));
+  animation: scaleUp 0.18s ease-out;
   font-family: var(--font-sans);
 }
 
@@ -34,14 +34,14 @@
   }
 }
 
-@keyframes slideUp {
+@keyframes scaleUp {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.97);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1);
   }
 }
 
@@ -164,142 +164,4 @@
   transform: none;
 }
 
-/* Color & Icon Pickers */
-.colorGrid {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
 
-.colorBtn {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  padding: 0;
-  background: transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.colorBtnSelected {
-  border-color: var(--text-primary);
-  box-shadow: 0 0 0 2px var(--bg-card);
-}
-
-.colorInner {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: block;
-}
-
-.iconCategoryBar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  margin-bottom: 8px;
-  scrollbar-width: none;
-}
-
-.iconCategoryBar::-webkit-scrollbar {
-  display: none;
-}
-
-.iconCategoryChip {
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 500;
-  border-radius: 9999px;
-  background-color: var(--bg-control);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all var(--transition-fast);
-}
-
-.iconCategoryChip:hover {
-  background-color: var(--bg-control-hover);
-  color: var(--text-primary);
-}
-
-.iconCategoryChipActive {
-  background-color: var(--accent-dim);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  font-weight: 600;
-}
-
-.iconGrid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  align-content: start;
-  gap: 6px;
-  height: 160px;
-  min-height: 160px;
-  max-height: 160px;
-  overflow-y: auto;
-  padding: 6px;
-  background-color: var(--bg-control);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  box-sizing: border-box;
-}
-
-.iconGrid::-webkit-scrollbar {
-  width: 4px;
-}
-
-.iconGrid::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
-  border-radius: 4px;
-}
-
-.iconBtn {
-  height: 36px;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  transition: all var(--transition-fast);
-}
-
-.iconBtn:hover {
-  background-color: var(--bg-card);
-  color: var(--text-primary);
-}
-
-.iconBtnSelected {
-  background-color: var(--accent-dim) !important;
-  border-color: var(--accent-primary) !important;
-  color: var(--accent-primary) !important;
-}
-
-.deleteActionBtn {
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-  border: none;
-  background: transparent;
-  color: #ef4444;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.deleteActionBtn:hover {
-  background-color: rgba(239, 68, 68, 0.1);
-}

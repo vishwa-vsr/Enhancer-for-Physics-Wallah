@@ -3,7 +3,7 @@ import { addSubject, updateSubject } from '../store';
 import { Subject } from '../types';
 import { StudyIcon, STUDY_ICONS_LIST } from '@shared/components/StudyIcons';
 import { getAlphaColor } from '@shared/theme';
-import styles from './AddTaskDialog.module.css';
+import styles from './SubjectModal.module.css';
 
 interface AddSubjectModalProps {
   open: boolean;
@@ -79,11 +79,7 @@ export const AddSubjectModal = ({
 
   return (
     <div class={styles.modalOverlay} onClick={onClose}>
-      <div
-        class={styles.modalContent}
-        style={{ width: '420px' }}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div class={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div class={styles.modalHeader}>
           <h2>{editingSubject ? 'Edit Subject' : 'Add New Subject'}</h2>
           <button class={styles.closeBtn} onClick={onClose}>

@@ -3,7 +3,7 @@ import { addChapter, updateChapter, subjects } from '../store';
 import { Chapter } from '../types';
 import { StudyIcon, STUDY_ICONS_LIST } from '@shared/components/StudyIcons';
 import { getAlphaColor } from '@shared/theme';
-import styles from './AddTaskDialog.module.css';
+import styles from './SubjectModal.module.css';
 
 interface AddChapterModalProps {
   open: boolean;
@@ -66,11 +66,7 @@ export const AddChapterModal = ({
 
   return (
     <div class={styles.modalOverlay} onClick={onClose}>
-      <div
-        class={styles.modalContent}
-        style={{ width: '420px' }}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div class={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div class={styles.modalHeader}>
           <h2>
             {editingChapter

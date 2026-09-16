@@ -29,7 +29,7 @@ export const Sidebar = ({
   // Accurate counts for Today and Upcoming views
   const todayStr = getLocalDateStr();
   const todayCount = tasks.value.filter(
-    (t) => t.dueDate === todayStr || (!t.completed && t.dueDate && t.dueDate < todayStr),
+    (t) => !t.completed && (t.dueDate === todayStr || (t.dueDate && t.dueDate < todayStr)),
   ).length;
   const upcomingCount = tasks.value.filter(
     (t) => !t.completed && t.dueDate && t.dueDate > todayStr,
@@ -86,7 +86,7 @@ export const Sidebar = ({
             </svg>
             <span>Today</span>
           </div>
-          <span class={styles.badge}>{todayCount}</span>
+          {todayCount > 0 && <span class={styles.badge}>{todayCount}</span>}
         </button>
 
         <button
@@ -112,7 +112,7 @@ export const Sidebar = ({
             </svg>
             <span>Upcoming</span>
           </div>
-          <span class={styles.badge}>{upcomingCount}</span>
+          {upcomingCount > 0 && <span class={styles.badge}>{upcomingCount}</span>}
         </button>
       </nav>
 

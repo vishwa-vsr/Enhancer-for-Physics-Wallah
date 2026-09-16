@@ -31,8 +31,12 @@ export const AddTaskDialog = ({
 
   useEffect(() => {
     const chaps = chapters.value.filter((c) => c.subjectId === selectedSubjectId);
-    if (chaps.length > 0 && !chaps.some((c) => c.id === selectedChapterId)) {
-      setSelectedChapterId(chaps[0].id);
+    if (chaps.length > 0) {
+      if (!chaps.some((c) => c.id === selectedChapterId)) {
+        setSelectedChapterId(chaps[0].id);
+      }
+    } else {
+      setSelectedChapterId('');
     }
   }, [selectedSubjectId]);
 

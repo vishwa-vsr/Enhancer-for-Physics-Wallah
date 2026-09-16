@@ -271,7 +271,18 @@ export async function addTask(taskData: Omit<Task, 'id' | 'createdAt'>): Promise
 }
 
 export async function toggleTask(id: string): Promise<void> {
-  tasks.value = tasks.value.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t));
+  const todayStr = getLocalDateStr();
+  tasks.value = tasks.value.map((t) => {
+    if (t.id === id) {
+      const nextCompleted = !t.completed;
+      return {
+        ...t,
+        completed: nextCompleted,
+        completedDate: nextCompleted ? todayStr : undefined,
+      };
+    }
+    return t;
+  });
   await persistData();
 }
 
@@ -315,13 +326,6 @@ export async function updateTask(id: string, updates: Partial<Task>): Promise<vo
   await persistData();
 }
 
-// Display Mode Actions (List vs Flow)
-export function setDisplayMode(mode: 'list' | 'flow'): void {
-  activeView.value = {
-    ...activeView.value,
-    displayMode: mode,
-  };
-}
 
 // Connected Flow Chain Actions
 export interface CreateChainParams {
@@ -477,7 +481,12 @@ export async function addConnectedChain(params: CreateChainParams): Promise<Task
   return createdTasks;
 }
 
-export async function addCustomFlowStep(parentTaskId: string, title: string): Promise<Task | null> {
+export async function addCustomFlowStep(
+  parentTaskId: string,
+  title: string,
+  label?: string,
+  dueDate?: string,
+): Promise<Task | null> {
   const parent = tasks.value.find((t) => t.id === parentTaskId);
   if (!parent) return null;
 
@@ -486,20 +495,21 @@ export async function addCustomFlowStep(parentTaskId: string, title: string): Pr
   parent.chainId = chainId;
 
   const now = Date.now();
+  const stepLabel = label?.trim();
   const newTask: Task = {
-    id: 'task_' + now + '_cust_' + Math.random().toString(36).substring(2, 6),
+    id: 'task_' + now + '_step_' + Math.random().toString(36).substring(2, 6),
     title: title.trim(),
     completed: false,
     subjectId: parent.subjectId,
     chapterId: parent.chapterId,
-    tags: ['Bonus'],
+    tags: stepLabel ? [stepLabel] : [],
     createdAt: now,
     chainId,
     chainTitle: parent.chainTitle,
-    chainType: 'custom',
+    chainType: stepLabel ? stepLabel.toLowerCase() : 'custom',
     orderIndex: (parent.orderIndex || 0) + 1,
     prevTaskId: parent.id,
-    dueDate: parent.dueDate,
+    dueDate: dueDate !== undefined ? (dueDate || undefined) : parent.dueDate,
   };
 
   // Link parent to new task
@@ -521,47 +531,34 @@ export async function addCustomFlowStep(parentTaskId: string, title: string): Pr
   return newTask;
 }
 
-export async function updateChainTitle(chainId: string, newTitle: string): Promise<void> {
+export async function updateChainTitle(
+  chainId: string,
+  newTitle: string,
+  taskIds?: string[],
+): Promise<void> {
   const trimmed = newTitle.trim();
   if (!trimmed) return;
-  tasks.value = tasks.value.map((t) => (t.chainId === chainId ? { ...t, chainTitle: trimmed } : t));
-  await persistData();
-}
+  const taskIdSet = new Set(taskIds || []);
 
-export async function deleteConnectedChain(chainId: string): Promise<void> {
-  tasks.value = tasks.value.filter((t) => t.chainId !== chainId);
-  await persistData();
-}
-
-export async function connectTasks(fromTaskId: string, toTaskId: string): Promise<void> {
   tasks.value = tasks.value.map((t) => {
-    if (t.id === fromTaskId) {
-      return { ...t, nextTaskId: toTaskId };
-    }
-    if (t.id === toTaskId) {
-      return { ...t, prevTaskId: fromTaskId };
+    if (t.chainId === chainId || taskIdSet.has(t.id)) {
+      return {
+        ...t,
+        chainId: t.chainId || chainId,
+        chainTitle: trimmed,
+      };
     }
     return t;
   });
   await persistData();
 }
 
-export async function disconnectTasks(fromTaskId: string): Promise<void> {
-  const fromTask = tasks.value.find((t) => t.id === fromTaskId);
-  if (!fromTask || !fromTask.nextTaskId) return;
-
-  const toTaskId = fromTask.nextTaskId;
-  tasks.value = tasks.value.map((t) => {
-    if (t.id === fromTaskId) {
-      return { ...t, nextTaskId: undefined };
-    }
-    if (t.id === toTaskId) {
-      return { ...t, prevTaskId: undefined };
-    }
-    return t;
-  });
+export async function deleteConnectedChain(chainId: string, taskIds?: string[]): Promise<void> {
+  const taskIdSet = new Set(taskIds || []);
+  tasks.value = tasks.value.filter((t) => t.chainId !== chainId && !taskIdSet.has(t.id));
   await persistData();
 }
+
 
 
 
@@ -592,14 +589,23 @@ export const filteredTasks = computed(() => {
   let list = tasks.value;
   const view = activeView.value;
 
-  if (view.type === 'chapter' && view.chapterId) {
-    list = list.filter((t) => t.chapterId === view.chapterId);
+  if (view.type === 'chapter') {
+    if (view.chapterId) {
+      list = list.filter((t) => t.chapterId === view.chapterId);
+    } else {
+      // If subject has no chapters or chapterId is empty, return empty list to prevent leaking database
+      return [];
+    }
   } else if (view.type === 'today') {
     const todayStr = getLocalDateStr();
-    // Today: tasks scheduled for today, OR incomplete tasks from earlier dates (overdue)
-    list = list.filter(
-      (t) => t.dueDate === todayStr || (!t.completed && t.dueDate && t.dueDate < todayStr),
-    );
+    // Today: tasks scheduled for today, OR incomplete tasks from earlier dates (overdue),
+    // OR overdue tasks that were completed today so the user can see their accomplishment
+    list = list.filter((t) => {
+      if (t.dueDate === todayStr) return true;
+      if (!t.completed && t.dueDate && t.dueDate < todayStr) return true;
+      if (t.completed && t.dueDate && t.dueDate < todayStr && t.completedDate === todayStr) return true;
+      return false;
+    });
   } else if (view.type === 'upcoming') {
     const todayStr = getLocalDateStr();
     // Upcoming: incomplete tasks scheduled for future dates

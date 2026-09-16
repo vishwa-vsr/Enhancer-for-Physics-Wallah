@@ -43,13 +43,17 @@ const formatScheduleDate = (dueDate?: string) => {
 };
 
 export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
-  const [addingStepForTaskId, setAddingStepForTaskId] = useState<string | null>(null);
-  const [newStepTitle, setNewStepTitle] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
   const [newChainLectureTitle, setNewChainLectureTitle] = useState('');
   const [newChainDuration, setNewChainDuration] = useState('');
   const [selectedChainLabels, setSelectedChainLabels] = useState<string[]>(['Lecture', 'DPP', 'Revision']);
+
+  // Add Step Pop-up Modal State (replaces the inline '+' card)
+  const [addStepModalParentTask, setAddStepModalParentTask] = useState<Task | null>(null);
+  const [addStepModalTitle, setAddStepModalTitle] = useState('');
+  const [addStepModalLabel, setAddStepModalLabel] = useState('');
+  const [addStepModalDueDate, setAddStepModalDueDate] = useState<string | undefined>(undefined);
 
   // 3-Dot Step Settings Modal State
   const [activeStepModalTask, setActiveStepModalTask] = useState<Task | null>(null);
@@ -144,15 +148,24 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
 
   const filteredChains = chainRows;
 
-  const handleAddCustomStep = async (parentTaskId: string) => {
-    const trimmed = newStepTitle.trim();
-    if (!trimmed) {
-      setAddingStepForTaskId(null);
-      return;
-    }
-    await addCustomFlowStep(parentTaskId, trimmed);
-    setNewStepTitle('');
-    setAddingStepForTaskId(null);
+  const openAddStepModal = (parentTask: Task) => {
+    setAddStepModalParentTask(parentTask);
+    setAddStepModalTitle('');
+    setAddStepModalLabel('');
+    setAddStepModalDueDate(undefined);
+  };
+
+  const handleSaveAddStep = async () => {
+    if (!addStepModalParentTask) return;
+    const trimmed = addStepModalTitle.trim();
+    if (!trimmed) return;
+    await addCustomFlowStep(
+      addStepModalParentTask.id,
+      trimmed,
+      addStepModalLabel.trim() || undefined,
+      addStepModalDueDate,
+    );
+    setAddStepModalParentTask(null);
   };
 
   const handleStartRename = (task: Task) => {
@@ -205,14 +218,21 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
     if (!activeChainModalId) return;
     const trimmed = activeChainModalTitle.trim();
     if (trimmed) {
-      await updateChainTitle(activeChainModalId, trimmed);
+      await updateChainTitle(
+        activeChainModalId,
+        trimmed,
+        activeChainModalTasks.map((t) => t.id),
+      );
     }
     setActiveChainModalId(null);
   };
 
   const handleDeleteChain = async () => {
     if (!activeChainModalId) return;
-    await deleteConnectedChain(activeChainModalId);
+    await deleteConnectedChain(
+      activeChainModalId,
+      activeChainModalTasks.map((t) => t.id),
+    );
     setActiveChainModalId(null);
   };
 
@@ -348,16 +368,9 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
                       const dppMatch = task.title.match(/(?:dpp|\b)\s*0?(\d+)/i);
                       displayTitle = dppMatch ? `DPP ${dppMatch[1]}` : (task.title || 'DPP Practice');
                     } else if (typeLabel.toLowerCase() === 'notes') {
-                      displayTitle =
-                        task.title && !/^notes(\s*:.*)?$/i.test(task.title.trim())
-                          ? task.title
-                          : 'Notes & Formulas';
+                      displayTitle = task.title || 'Notes';
                     } else if (typeLabel.toLowerCase() === 'revision') {
-                      if (!task.title || /^revision(\s*:.*)?$/i.test(task.title.trim())) {
-                        displayTitle = 'Formulas & Key Notes';
-                      } else {
-                        displayTitle = task.title;
-                      }
+                      displayTitle = task.title || 'Revision';
                     } else {
                       displayTitle = task.title || typeLabel;
                     }
@@ -448,13 +461,13 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
                               />
                             </div>
                           ) : (
-                            <div class={styles.nodeBody}>
+                            <div class={styles.nodeBody} title={displayTitle}>
                               {displayTitle && (
                                 <p
                                   class={`${styles.nodeTitle} ${
                                     task.completed ? styles.nodeTitleDone : ''
                                   }`}
-                                  title="Double click to rename"
+                                  title={displayTitle}
                                   onDblClick={(e) => {
                                     e.stopPropagation();
                                     handleStartRename(task);
@@ -491,32 +504,30 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
                             </div>
 
                             {/* Scheduled date badge */}
-                            {task.dueDate && (
-                              <button
-                                type="button"
-                                class={styles.scheduledBadge}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openStepModal(task);
-                                }}
-                                title="Scheduled date (Click to edit)"
+                            <button
+                              type="button"
+                              class={task.dueDate ? styles.scheduledBadge : styles.scheduleAddBadge}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openStepModal(task);
+                              }}
+                              title={task.dueDate ? 'Scheduled date (Click to edit)' : 'Add scheduled date'}
+                            >
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                width="11"
+                                height="11"
                               >
-                                <svg
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth={2}
-                                  width="11"
-                                  height="11"
-                                >
-                                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                  <line x1="16" y1="2" x2="16" y2="6" />
-                                  <line x1="8" y1="2" x2="8" y2="6" />
-                                  <line x1="3" y1="10" x2="21" y2="10" />
-                                </svg>
-                                {formatScheduleDate(task.dueDate)}
-                              </button>
-                            )}
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                              </svg>
+                              {formatScheduleDate(task.dueDate)}
+                            </button>
                           </div>
                         </div>
 
@@ -527,96 +538,29 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
                           </div>
                         )}
 
-                        {/* If last task, show '+' button to branch/add bonus step */}
+                        {/* If last task, show '+' button to open Add Step modal */}
                         {isLast && (
-                          <>
-                            {addingStepForTaskId === task.id ? (
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '6px',
-                                  marginLeft: '10px',
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <input
-                                  ref={(el) => {
-                                    if (el) el.focus();
-                                  }}
-                                  type="text"
-                                  placeholder="Step name (e.g. Formula revision)"
-                                  value={newStepTitle}
-                                  onInput={(e) =>
-                                    setNewStepTitle((e.target as HTMLInputElement).value)
-                                  }
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') handleAddCustomStep(task.id);
-                                    if (e.key === 'Escape') setAddingStepForTaskId(null);
-                                  }}
-                                  style={{
-                                    padding: '7px 10px',
-                                    borderRadius: '8px',
-                                    border: '1px solid var(--accent-primary, #6366f1)',
-                                    background: 'var(--bg-control)',
-                                    color: 'var(--text-primary)',
-                                    fontSize: '12px',
-                                    width: '180px',
-                                  }}
-                                />
-                                <button
-                                  onClick={() => handleAddCustomStep(task.id)}
-                                  style={{
-                                    padding: '7px 12px',
-                                    background: 'var(--accent-primary, #6366f1)',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    fontSize: '12px',
-                                    fontWeight: '600',
-                                    cursor: 'pointer',
-                                  }}
-                                >
-                                  Add
-                                </button>
-                                <button
-                                  onClick={() => setAddingStepForTaskId(null)}
-                                  style={{
-                                    padding: '7px 8px',
-                                    background: 'transparent',
-                                    color: 'var(--text-muted)',
-                                    border: 'none',
-                                    fontSize: '13px',
-                                    cursor: 'pointer',
-                                  }}
-                                >
-                                  ✕
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                class={styles.addStepBtn}
-                                title="Attach next bonus step"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setAddingStepForTaskId(task.id);
-                                  setNewStepTitle('');
-                                }}
-                              >
-                                <svg
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth={2.5}
-                                  width={16}
-                                  height={16}
-                                >
-                                  <line x1="12" y1="5" x2="12" y2="19" />
-                                  <line x1="5" y1="12" x2="19" y2="12" />
-                                </svg>
-                              </button>
-                            )}
-                          </>
+                          <button
+                            type="button"
+                            class={styles.addStepBtn}
+                            title="Add step to chain"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openAddStepModal(task);
+                            }}
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2.5}
+                              width={16}
+                              height={16}
+                            >
+                              <line x1="12" y1="5" x2="12" y2="19" />
+                              <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                          </button>
                         )}
                       </div>
                     );
@@ -996,6 +940,152 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
                   onClick={handleSaveStepModal}
                 >
                   Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Step Modal (opened via '+' button at end of chain) */}
+      {addStepModalParentTask && (
+        <div
+          class={styles.modalBackdrop}
+          onClick={() => setAddStepModalParentTask(null)}
+        >
+          <div
+            class={styles.modalCard}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div class={styles.modalHeader}>
+              <h3 class={styles.modalTitle}>Add Step</h3>
+              <button
+                type="button"
+                class={styles.modalCloseBtn}
+                onClick={() => setAddStepModalParentTask(null)}
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Step Title Input */}
+            <div class={styles.modalField}>
+              <label class={styles.modalFieldLabel}>Step Title</label>
+              <input
+                type="text"
+                class={styles.modalInput}
+                value={addStepModalTitle}
+                onInput={(e) => setAddStepModalTitle((e.target as HTMLInputElement).value)}
+                placeholder="Enter step title (e.g. Formula Revision, DPP 02)..."
+                autoFocus
+              />
+            </div>
+
+            {/* Step Label */}
+            <div class={styles.modalField}>
+              <label class={styles.modalFieldLabel}>Step Label</label>
+              <div class={styles.modalLabelsGrid}>
+                {customTags.value.map((tag) => {
+                  const isSelected = addStepModalLabel.toLowerCase() === tag.name.toLowerCase();
+                  return (
+                    <button
+                      key={tag.name}
+                      type="button"
+                      class={`${styles.modalLabelPill} ${
+                        isSelected ? styles.modalLabelPillSelected : ''
+                      }`}
+                      style={
+                        isSelected
+                          ? {
+                              backgroundColor: `${tag.color}20`,
+                              borderColor: tag.color,
+                              color: tag.color,
+                            }
+                          : undefined
+                      }
+                      onClick={() => setAddStepModalLabel(isSelected ? '' : tag.name)}
+                    >
+                      <span
+                        style={{
+                          width: 7,
+                          height: 7,
+                          borderRadius: '50%',
+                          backgroundColor: tag.color,
+                        }}
+                      />
+                      <span>{tag.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Schedule Task */}
+            <div class={styles.modalField}>
+              <label class={styles.modalFieldLabel}>Schedule Date</label>
+              <div class={styles.modalDateActions}>
+                <button
+                  type="button"
+                  class={`${styles.modalQuickDateBtn} ${
+                    addStepModalDueDate === getTodayStr() ? styles.modalQuickDateBtnActive : ''
+                  }`}
+                  onClick={() => setAddStepModalDueDate(getTodayStr())}
+                >
+                  Today
+                </button>
+                <button
+                  type="button"
+                  class={`${styles.modalQuickDateBtn} ${
+                    addStepModalDueDate === getTomorrowStr() ? styles.modalQuickDateBtnActive : ''
+                  }`}
+                  onClick={() => setAddStepModalDueDate(getTomorrowStr())}
+                >
+                  Tomorrow
+                </button>
+                <input
+                  type="date"
+                  class={styles.modalInput}
+                  style={{ width: 'auto', flex: 1, minWidth: '130px' }}
+                  value={addStepModalDueDate || ''}
+                  onChange={(e) =>
+                    setAddStepModalDueDate((e.target as HTMLInputElement).value || undefined)
+                  }
+                />
+                {addStepModalDueDate && (
+                  <button
+                    type="button"
+                    class={styles.modalClearDateBtn}
+                    onClick={() => setAddStepModalDueDate(undefined)}
+                  >
+                    Clear Date
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div class={styles.modalFooter} style={{ justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  class={styles.modalCancelBtn}
+                  onClick={() => setAddStepModalParentTask(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class={styles.modalSaveBtn}
+                  disabled={!addStepModalTitle.trim()}
+                  style={
+                    !addStepModalTitle.trim()
+                      ? { opacity: 0.5, cursor: 'not-allowed' }
+                      : undefined
+                  }
+                  onClick={handleSaveAddStep}
+                >
+                  Add Step
                 </button>
               </div>
             </div>

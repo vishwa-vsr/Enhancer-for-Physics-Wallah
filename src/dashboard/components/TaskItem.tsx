@@ -1,17 +1,26 @@
 import { Task } from '../types';
-import { subjects, chapters, toggleTask, deleteTask, activeView } from '../store';
+import { subjects, chapters, toggleTask, deleteTask, activeView, getLocalDateStr, customTags } from '../store';
+import { getAlphaColor } from '@shared/theme';
 import styles from './TaskItem.module.css';
 
 interface TaskItemProps {
   task: Task;
+  onDeleteRequest?: (task: Task) => void;
 }
 
-export const TaskItem = ({ task }: TaskItemProps) => {
+export const TaskItem = ({ task, onDeleteRequest }: TaskItemProps) => {
   const currentView = activeView.value;
 
   const subject = subjects.value.find((s) => s.id === task.subjectId);
   const chapter = chapters.value.find((c) => c.id === task.chapterId);
   const showOrigin = currentView.type !== 'chapter';
+  const todayStr = getLocalDateStr();
+  const isOverdue = !task.completed && !!task.dueDate && task.dueDate < todayStr;
+
+  const getTagColor = (tag: string) => {
+    const found = customTags.value.find((t) => t.name.toLowerCase() === tag.toLowerCase());
+    return found?.color || '#6366f1';
+  };
 
   // Format date like "Dec 14, 2024" as in Figma
   const formattedDate = task.dueDate
@@ -69,6 +78,49 @@ export const TaskItem = ({ task }: TaskItemProps) => {
             </span>
           )}
 
+          {/* Overdue Badge */}
+          {isOverdue && (
+            <span class={styles.overdueBadge}>Overdue</span>
+          )}
+
+          {/* Tag Pills */}
+          {task.tags && task.tags.length > 0 && (
+            task.tags.map((tag) => {
+              const color = getTagColor(tag);
+              return (
+                <span
+                  key={tag}
+                  class={styles.tagPill}
+                  style={{
+                    color: color,
+                    backgroundColor: getAlphaColor(color, 0.12),
+                    borderColor: getAlphaColor(color, 0.25),
+                  }}
+                >
+                  {tag}
+                </span>
+              );
+            })
+          )}
+
+          {/* Duration Badge */}
+          {task.duration && (
+            <div class={styles.durationBadge}>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                width="12"
+                height="12"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span>{task.duration}</span>
+            </div>
+          )}
+
           {/* Due date */}
           {formattedDate && (
             <div class={styles.metaItem}>
@@ -93,7 +145,17 @@ export const TaskItem = ({ task }: TaskItemProps) => {
       </div>
 
       {/* Delete button */}
-      <button class={styles.deleteBtn} onClick={() => deleteTask(task.id)}>
+      <button
+        class={styles.deleteBtn}
+        onClick={() => {
+          if (onDeleteRequest) {
+            onDeleteRequest(task);
+          } else {
+            deleteTask(task.id);
+          }
+        }}
+        aria-label="Delete task"
+      >
         <svg
           viewBox="0 0 24 24"
           fill="none"

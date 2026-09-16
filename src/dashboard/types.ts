@@ -25,6 +25,7 @@ export interface Task {
   orderIndex?: number;
   duration?: string;
   lectureDate?: string;
+  completedDate?: string;
 }
 
 export interface Chapter {

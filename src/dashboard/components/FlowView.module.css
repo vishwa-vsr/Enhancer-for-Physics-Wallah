@@ -6,90 +6,6 @@
   padding-bottom: 60px;
 }
 
-/* Toolbar */
-.flowToolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 14px 20px;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg, 14px);
-  box-shadow: var(--card-shadow);
-}
-
-.toolbarLeft {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.statsText {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.statsHighlight {
-  color: #10b981;
-  font-weight: 700;
-}
-
-.filterGroup {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background-color: var(--bg-control);
-  border: 1px solid var(--border-subtle);
-  padding: 3px;
-  border-radius: var(--radius-md, 10px);
-}
-
-.filterBtn {
-  background: transparent;
-  border: none;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-muted);
-  border-radius: 7px;
-  cursor: pointer;
-  transition: color var(--transition-fast, 0.15s ease);
-}
-
-.filterBtn:hover {
-  color: var(--text-primary);
-}
-
-.filterBtnActive {
-  background-color: var(--bg-card);
-  color: var(--text-primary);
-  font-weight: 600;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-.addChainBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background-color: var(--accent-primary, #6366f1);
-  color: #ffffff;
-  border: none;
-  border-radius: var(--radius-md, 10px);
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
-  transition: opacity var(--transition-fast, 0.15s ease);
-}
-
-.addChainBtn:hover {
-  opacity: 0.9;
-}
-
 /* Chains Canvas */
 .chainsList {
   display: flex;
@@ -198,7 +114,7 @@
 
 .nodeCard {
   width: 250px;
-  min-height: 94px;
+  height: 135px;
   background-color: var(--bg-control);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg, 14px);
@@ -206,9 +122,10 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 10px;
+  box-sizing: border-box;
   position: relative;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
 }
 
 .nodeCard:hover {
@@ -264,46 +181,6 @@
   color: #db2777;
 }
 
-.nodeHeaderActions {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.nodeActionBtn {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: all var(--transition-fast, 0.15s ease);
-}
-
-.nodeActionBtn:hover {
-  background: var(--bg-card);
-  border-color: var(--border-subtle);
-}
-
-.nodeActionBtnActive {
-  background: var(--bg-card) !important;
-  color: var(--accent-primary, #6366f1) !important;
-  border-color: var(--accent-primary, #6366f1) !important;
-}
-
-.nodeRenameBtn:hover {
-  color: var(--accent-primary, #6366f1);
-}
-
-.nodeDeleteBtn:hover {
-  color: #ef4444;
-}
-
 .nodeCheckBtn {
   width: 20px;
   height: 20px;
@@ -343,15 +220,17 @@
 }
 
 .nodeTitle {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.35;
   color: var(--text-primary);
-  margin: 2px 0 0;
+  margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .nodeTitleDone {
@@ -362,14 +241,17 @@
 .nodeBody {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-height: 20px;
+  justify-content: center;
+  flex: 1;
+  gap: 4px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .lectureBody {
   display: flex;
   align-items: center;
-  margin: 2px 0 0;
+  margin: 0;
 }
 
 .durationBadge {
@@ -405,90 +287,6 @@
   color: var(--accent-primary, #6366f1);
   font-weight: 700;
   font-size: 11px;
-}
-
-.scheduleBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border-subtle);
-  background-color: var(--bg-card);
-  color: var(--text-secondary);
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.15s ease;
-}
-
-.scheduleBtn:hover {
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-}
-
-.scheduleBtnHasDate {
-  background: rgba(99, 102, 241, 0.08);
-  border-color: rgba(99, 102, 241, 0.25);
-  color: var(--accent-primary, #6366f1);
-  font-weight: 600;
-}
-
-/* Date Picker Popover */
-.datePopover {
-  position: absolute;
-  bottom: 30px;
-  right: 0;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md, 10px);
-  padding: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 170px;
-  animation: popIn 0.15s ease-out;
-}
-
-@keyframes popIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.dateInput {
-  width: 100%;
-  padding: 5px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border-subtle);
-  background-color: var(--bg-control);
-  color: var(--text-primary);
-  font-size: 12px;
-  box-sizing: border-box;
-}
-
-.quickDatesRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.quickDateBtn {
-  flex: 1;
-  padding: 3px 6px;
-  font-size: 10.5px;
-  font-weight: 500;
-  border-radius: 4px;
-  border: 1px solid var(--border-subtle);
-  background-color: var(--bg-control);
-  color: var(--text-secondary);
-  cursor: pointer;
-}
-
-.quickDateBtn:hover {
-  background-color: var(--accent-dim);
-  color: var(--accent-primary);
 }
 
 /* Connector Wire (Ultra clean minimal line) */
@@ -529,27 +327,6 @@
   color: var(--accent-primary);
 }
 
-.emptyFlowState {
-  text-align: center;
-  padding: 48px 20px;
-  color: var(--text-muted);
-  background-color: var(--bg-card);
-  border-radius: var(--radius-xl, 16px);
-  border: 1px dashed var(--border-subtle);
-}
-
-.emptyTitle {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 6px;
-}
-
-.emptyDesc {
-  font-size: 13.5px;
-  margin-bottom: 18px;
-  color: var(--text-secondary);
-}
 
 .nodeHeaderLeft {
   display: flex;
@@ -598,6 +375,27 @@
 .scheduledBadge:hover {
   background: rgba(99, 102, 241, 0.18);
   border-color: var(--accent-primary, #6366f1);
+}
+
+.scheduleAddBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px dashed var(--border-subtle);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.scheduleAddBadge:hover {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: var(--accent-primary, #6366f1);
+  color: var(--accent-primary, #6366f1);
 }
 
 .chainLabelsGroup {
@@ -717,7 +515,8 @@
 
 .modalInput {
   width: 100%;
-  padding: 9px 12px;
+  height: 38px;
+  padding: 0 12px;
   border-radius: 8px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-control);
@@ -725,7 +524,13 @@
   font-size: 13px;
   box-sizing: border-box;
   outline: none;
-  transition: border-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+
+.modalInput:hover {
+  border-color: var(--accent-primary, #6366f1);
 }
 
 .modalInput:focus {
@@ -768,43 +573,57 @@
 }
 
 .modalQuickDateBtn {
-  padding: 6px 12px;
-  border-radius: 6px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 8px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-control);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 550;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .modalQuickDateBtn:hover {
   border-color: var(--accent-primary, #6366f1);
   color: var(--accent-primary, #6366f1);
+  background: rgba(99, 102, 241, 0.06);
 }
 
 .modalQuickDateBtnActive {
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(99, 102, 241, 0.14);
   border-color: var(--accent-primary, #6366f1);
   color: var(--accent-primary, #6366f1);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .modalClearDateBtn {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.25);
   background: transparent;
   color: #ef4444;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 550;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .modalClearDateBtn:hover {
   background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
 }
 
 .modalFooter {

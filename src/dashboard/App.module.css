@@ -49,119 +49,7 @@
   flex-wrap: wrap;
 }
 
-.viewHeaderLeft {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
 
-.viewBreadcrumbsRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.headerActionGroup {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.headerActionBtn {
-  padding: 6px 12px;
-  border-radius: var(--radius-md);
-  background-color: var(--bg-control);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  font-size: 12.5px;
-  font-weight: 500;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.headerActionBtn:hover {
-  background-color: var(--bg-control-hover);
-  color: var(--text-primary);
-  border-color: var(--accent-primary);
-}
-
-.headerActionBtnPrimary {
-  padding: 6px 13px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, #6b7fd7, #8b95e8);
-  border: 1px solid transparent;
-  color: #ffffff;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.headerActionBtnPrimary:hover {
-  filter: brightness(1.1);
-}
-
-.headerActionBtnDanger {
-  padding: 6px 12px;
-  border-radius: var(--radius-md);
-  background-color: var(--bg-control);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  font-size: 12.5px;
-  font-weight: 500;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.headerActionBtnDanger:hover {
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.3);
-}
-
-.headerIconBtn {
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.headerIconBtn:hover {
-  color: var(--text-primary);
-  background-color: var(--bg-control);
-}
-
-.headerIconBtnDanger {
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.headerIconBtnDanger:hover {
-  color: #ef4444;
-  background-color: rgba(239, 68, 68, 0.1);
-}
 
 .viewTitle {
   font-size: 20px;
@@ -172,64 +60,6 @@
   text-transform: capitalize;
 }
 
-.viewBreadcrumb {
-  font-size: 15px;
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
-.taskCountLabel {
-  font-size: 14px;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-.filteredBadge {
-  margin-left: 4px;
-  color: var(--accent-primary);
-}
-
-.emptyState {
-  text-align: center;
-  padding: 48px 24px;
-}
-
-.emptyIconCircle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background-color: var(--accent-dim);
-  color: var(--accent-primary);
-  margin-bottom: 16px;
-  font-size: 26px;
-}
-
-.emptyText {
-  color: var(--text-muted);
-  font-size: 14px;
-  margin: 0 0 16px 0;
-}
-
-.emptyButton {
-  padding: 9px 18px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, #6b7fd7, #8b95e8);
-  color: #ffffff;
-  border: none;
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(107, 127, 215, 0.35);
-  transition: all var(--transition-fast);
-}
-
-.emptyButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(107, 127, 215, 0.45);
-}
 
 /* Floating Action Button (+): Circular 56px matching Figma exactly */
 .fab {
@@ -246,7 +76,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 25px rgba(107, 127, 215, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   transition:
     transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.2s ease;
@@ -254,8 +84,8 @@
 }
 
 .fab:hover {
-  transform: scale(1.08);
-  box-shadow: 0 10px 28px rgba(107, 127, 215, 0.55);
+  transform: scale(1.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 
 .fab:active {

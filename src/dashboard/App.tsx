@@ -9,9 +9,10 @@ import {
   filteredTasks,
   deleteSubject,
   deleteChapter,
+  deleteTask,
   isAddChainModalOpen,
 } from './store';
-import { Subject, Chapter } from './types';
+import { Subject, Chapter, Task } from './types';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { StatsCards } from './components/StatsCards';
@@ -116,6 +117,17 @@ export const App = () => {
     setConfirmModalOpen(true);
   };
 
+  const handleDeleteTask = (task: Task) => {
+    setConfirmConfig({
+      title: 'Delete Task?',
+      message: `Are you sure you want to delete "${task.title}"? This cannot be undone.`,
+      action: async () => {
+        await deleteTask(task.id);
+      },
+    });
+    setConfirmModalOpen(true);
+  };
+
   const canAddTask = subjects.value.length > 0 && chapters.value.length > 0;
 
   const handleFabClick = () => {
@@ -167,13 +179,93 @@ export const App = () => {
                 )}
 
                 {/* Chapters are exclusively Flow View */}
-                {currentView.type === 'chapter' && currentView.chapterId ? (
-                  <FlowView
-                    chapterId={currentView.chapterId}
-                    subjectId={currentView.subjectId || ''}
-                  />
-                ) : taskList.length === 0 ? null : (
-                  taskList.map((task) => <TaskItem key={task.id} task={task} />)
+                {currentView.type === 'chapter' ? (
+                  currentView.chapterId ? (
+                    <FlowView
+                      chapterId={currentView.chapterId}
+                      subjectId={currentView.subjectId || ''}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        textAlign: 'center',
+                        padding: '60px 20px',
+                        background: 'var(--bg-card)',
+                        borderRadius: '16px',
+                        border: '1px solid var(--border-subtle)',
+                        marginTop: '20px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          borderRadius: '50%',
+                          background: 'rgba(99, 102, 241, 0.1)',
+                          color: 'var(--accent-primary, #6366f1)',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginBottom: '16px',
+                        }}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="24" height="24">
+                          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        </svg>
+                      </div>
+                      <h3 style={{ margin: '0 0 8px', fontSize: '16px', color: 'var(--text-primary)', fontWeight: '600' }}>
+                        No chapters in this subject yet
+                      </h3>
+                      <p style={{ margin: '0 0 20px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                        Add your first chapter to begin creating study chains and tracking progress.
+                      </p>
+                      {activeSubject && (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenAddChapter(activeSubject.id)}
+                          style={{
+                            padding: '8px 18px',
+                            borderRadius: '8px',
+                            border: 'none',
+                            background: 'var(--accent-primary, #6366f1)',
+                            color: '#ffffff',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="14" height="14">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                          </svg>
+                          Add Chapter
+                        </button>
+                      )}
+                    </div>
+                  )
+                ) : taskList.length === 0 ? (
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '48px 20px',
+                      color: 'var(--text-muted)',
+                      fontSize: '13.5px',
+                    }}
+                  >
+                    No tasks for {title.toLowerCase()}. You're all caught up!
+                  </div>
+                ) : (
+                  taskList.map((task) => (
+                    <TaskItem
+                      key={task.id}
+                      task={task}
+                      onDeleteRequest={handleDeleteTask}
+                    />
+                  ))
                 )}
               </>
             )}
