@@ -498,11 +498,6 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
                           )}
 
                           <div class={styles.nodeFooter}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <span class={styles.stepLabel}>Step {idx + 1}</span>
-                              {isUpNext && <span class={styles.upNextTag}>Up Next</span>}
-                            </div>
-
                             {/* Scheduled date badge */}
                             <button
                               type="button"
@@ -566,6 +561,9 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
                     );
                   })}
                 </div>
+                {chainIdx < filteredChains.length - 1 && (
+                  <div class={styles.chainDivider} />
+                )}
               </div>
             );
           })}
