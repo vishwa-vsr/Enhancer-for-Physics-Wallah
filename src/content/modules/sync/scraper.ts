@@ -3,6 +3,7 @@ export interface ScrapedItem {
   title: string;
   duration?: string;
   date?: string;
+  completed?: boolean;
   noDpp?: boolean;
   attachedDppTitle?: string;
 }
@@ -172,11 +173,48 @@ export function scrapeCurrentPwPage(): ScrapedPwData {
       const duration =
         durEl?.textContent?.trim() || fullText.match(/\b\d+h(?::\d+m)?|\b\d+m\b/)?.[0];
 
-      // Extract date if present (e.g. 8 Jun 2026)
-      const dateMatch = fullText.match(
-        /\b\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:,)?\s+\d{4}\b/i,
+      // Extract date if present (e.g. 8 Jun 2026 or 08 June, 2026 or Jun 8, 2026)
+      let date: string | undefined = undefined;
+
+      // 1. Direct search in child spans and meta tags first (avoids squished "Lecture8" text)
+      const dateSpans = el.querySelectorAll('span, [class*="_meta_"], [class*="meta"]');
+      for (const s of dateSpans) {
+        const txt = s.textContent?.trim() || '';
+        const sm =
+          txt.match(/(?:^|[^\d])(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:,)?\s+\d{4})\b/i) ||
+          txt.match(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,)?\s+\d{4})\b/i);
+        if (sm) {
+          date = (sm[1] || sm[0]).replace(',', '').trim();
+          break;
+        }
+      }
+
+      // 2. Fallback search across full text without strict leading word boundary
+      if (!date) {
+        const dm =
+          fullText.match(/(?:^|[^\d])(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:,)?\s+\d{4})\b/i) ||
+          fullText.match(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,)?\s+\d{4})\b/i);
+        date = dm ? (dm[1] || dm[0]).replace(',', '').trim() : undefined;
+      }
+
+      // Extract completion status (PW green checkmark circle or progress >= 90%)
+      const markCompleteEl = el.querySelector(
+        '[class*="_markCompleteIcon_"], [class*="markComplete"], [class*="completed"]',
       );
-      const date = dateMatch ? dateMatch[0].replace(',', '').trim() : undefined;
+      const isCompleteIcon = Boolean(
+        markCompleteEl &&
+          (/#3ccb7f|#3CCB7F/i.test(markCompleteEl.innerHTML) ||
+            markCompleteEl.querySelector(
+              'circle[fill*="#3CCB7F" i], circle[fill*="#3ccb7f" i], path[stroke*="#FFFFFF" i]',
+            )),
+      );
+
+      const progEl = el.querySelector('[class*="_progress_"]');
+      const progStyle = progEl?.getAttribute('style') || '';
+      const progMatch = progStyle.match(/width:\s*(\d+)%/);
+      const isFullyWatched = progMatch ? parseInt(progMatch[1], 10) >= 90 : false;
+
+      const completed = isCompleteIcon || isFullyWatched;
 
       if (isLectureCard) {
         // Check for attached DPP tray at bottom of lecture card
@@ -197,6 +235,7 @@ export function scrapeCurrentPwPage(): ScrapedPwData {
           title,
           duration,
           date,
+          completed,
           noDpp: isNoDpp,
           attachedDppTitle: attachedDppTitle || undefined,
         });
@@ -214,6 +253,7 @@ export function scrapeCurrentPwPage(): ScrapedPwData {
           type: 'dpp',
           title,
           date,
+          completed,
         });
       } else if (isNotes) {
         items.push({

@@ -36,6 +36,13 @@ export async function savePlannerDataToStorage(data: StudyPlannerData): Promise<
   }
 }
 
+function getLocalDateStr(d: Date = new Date()): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function parseLectureDateToIso(dateStr?: string): string | undefined {
   if (!dateStr) return undefined;
   try {
@@ -43,12 +50,22 @@ export function parseLectureDateToIso(dateStr?: string): string | undefined {
       jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
       jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12',
     };
-    const match = dateStr.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
-    if (match) {
-      const day = match[1].padStart(2, '0');
-      const monKey = match[2].toLowerCase().substring(0, 3);
+    // Pattern 1: '8 Jun 2026' or '08 June, 2026'
+    const match1 = dateStr.match(/(\d{1,2})\s+([A-Za-z]+)(?:,)?\s+(\d{4})/);
+    if (match1) {
+      const day = match1[1].padStart(2, '0');
+      const monKey = match1[2].toLowerCase().substring(0, 3);
       const month = months[monKey];
-      const year = match[3];
+      const year = match1[3];
+      if (month) return `${year}-${month}-${day}`;
+    }
+    // Pattern 2: 'Jun 8, 2026' or 'June 08 2026'
+    const match2 = dateStr.match(/([A-Za-z]+)\s+(\d{1,2})(?:,)?\s+(\d{4})/);
+    if (match2) {
+      const monKey = match2[1].toLowerCase().substring(0, 3);
+      const month = months[monKey];
+      const day = match2[2].padStart(2, '0');
+      const year = match2[3];
       if (month) return `${year}-${month}-${day}`;
     }
     const d = new Date(dateStr);
@@ -181,13 +198,45 @@ export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncR
 
   for (let idx = 0; idx < lectures.length; idx++) {
     const lec = lectures[idx];
+    const parsedDueDate = parseLectureDateToIso(lec.date);
+    const isLecCompleted = Boolean(lec.completed);
+
     // Check if task already exists
-    const exists = tasks.some(
+    const existingIndex = tasks.findIndex(
       (t) =>
         t.chapterId === targetChapter?.id &&
         t.title.toLowerCase() === lec.title.toLowerCase(),
     );
-    if (exists) continue;
+    if (existingIndex !== -1) {
+      const existing = tasks[existingIndex];
+      let hasChange = false;
+      const updates: Partial<Task> = {};
+
+      // If finished on PW, update completion without wiping user notes/progress
+      if (isLecCompleted && !existing.completed) {
+        updates.completed = true;
+        updates.completedDate = parsedDueDate || getLocalDateStr();
+        hasChange = true;
+      }
+      // If missing due date, backfill from website
+      if (!existing.dueDate && parsedDueDate) {
+        updates.dueDate = parsedDueDate;
+        hasChange = true;
+      }
+      if (!existing.lectureDate && lec.date) {
+        updates.lectureDate = lec.date;
+        hasChange = true;
+      }
+      if (!existing.duration && lec.duration) {
+        updates.duration = lec.duration;
+        hasChange = true;
+      }
+
+      if (hasChange) {
+        tasks[existingIndex] = { ...existing, ...updates };
+      }
+      continue;
+    }
 
     const chainId = 'chain_' + now + '_' + idx + '_' + Math.random().toString(36).substring(2, 6);
     const isNoDpp = lec.noDpp || /no\s*dpp/i.test(lec.title);
@@ -214,13 +263,12 @@ export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncR
     const dppTaskId = finalDppTitle ? 'task_' + now + '_d_' + idx : undefined;
     const revTaskId = 'task_' + now + '_r_' + idx;
 
-    const parsedDueDate = parseLectureDateToIso(lec.date);
-
     // 1. Lecture Task
     const lectureTask: Task = {
       id: lecTaskId,
       title: lec.title,
-      completed: false,
+      completed: isLecCompleted,
+      completedDate: isLecCompleted ? (parsedDueDate || getLocalDateStr()) : undefined,
       subjectId: targetSubject.id,
       chapterId: targetChapter.id,
       tags: ['Lecture'],
@@ -251,7 +299,7 @@ export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncR
         orderIndex: 1,
         prevTaskId: lecTaskId,
         nextTaskId: revTaskId,
-        dueDate: parsedDueDate,
+        dueDate: undefined,
       };
       tasks.push(dppTask);
       importedCount++;
@@ -270,6 +318,7 @@ export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncR
       chainType: 'revision',
       orderIndex: 2,
       prevTaskId: dppTaskId || lecTaskId,
+      dueDate: undefined,
     };
     tasks.push(revTask);
     importedCount++;
@@ -279,12 +328,21 @@ export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncR
   if (lectures.length === 0 && dpps.length > 0) {
     for (let idx = 0; idx < dpps.length; idx++) {
       const dpp = dpps[idx];
-      const exists = tasks.some(
+      const existingDppIndex = tasks.findIndex(
         (t) =>
           t.chapterId === targetChapter?.id &&
           t.title.toLowerCase() === dpp.title.toLowerCase(),
       );
-      if (exists) continue;
+      if (existingDppIndex !== -1) {
+        if (dpp.completed && !tasks[existingDppIndex].completed) {
+          tasks[existingDppIndex] = {
+            ...tasks[existingDppIndex],
+            completed: true,
+            completedDate: getLocalDateStr(),
+          };
+        }
+        continue;
+      }
 
       const chainId = 'chain_' + now + '_d_' + idx + '_' + Math.random().toString(36).substring(2, 6);
       const dppTaskId = 'task_' + now + '_d_' + idx;
@@ -292,7 +350,8 @@ export async function syncPwDataToPlanner(scraped: ScrapedPwData): Promise<SyncR
       tasks.push({
         id: dppTaskId,
         title: dpp.title,
-        completed: false,
+        completed: Boolean(dpp.completed),
+        completedDate: dpp.completed ? getLocalDateStr() : undefined,
         subjectId: targetSubject.id,
         chapterId: targetChapter.id,
         tags: ['DPP'],
