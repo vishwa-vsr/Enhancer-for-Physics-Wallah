@@ -310,7 +310,7 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+  box-shadow: none;
   transition: opacity var(--transition-fast, 0.15s ease), transform var(--transition-fast, 0.15s ease);
 }
 

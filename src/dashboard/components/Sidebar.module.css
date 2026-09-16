@@ -167,22 +167,24 @@
 }
 
 .addBtnSmall {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 6px;
-  background-color: var(--bg-control);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-fast, 0.15s ease);
 }
 
 .addBtnSmall:hover {
-  background-color: var(--accent-primary);
-  color: #ffffff;
-  border-color: var(--accent-primary);
+  background-color: var(--bg-control);
+  color: var(--text-primary);
 }
 
 .subjectGroup {

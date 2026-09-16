@@ -76,16 +76,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
   transition:
     transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.2s ease;
+    filter 0.2s ease;
   z-index: 50;
 }
 
 .fab:hover {
   transform: scale(1.06);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
+  box-shadow: none;
 }
 
 .fab:active {

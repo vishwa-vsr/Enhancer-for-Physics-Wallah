@@ -76,29 +76,39 @@
 .originBadge {
   font-size: 11px;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 6px;
   background-color: var(--accent-dim);
   color: var(--accent-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .overdueBadge {
   font-size: 11px;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 6px;
   background-color: rgba(239, 68, 68, 0.12);
   color: #ef4444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .tagPill {
   font-size: 11px;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 6px;
   border: 1px solid transparent;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .durationBadge {
@@ -109,8 +119,9 @@
   font-weight: 500;
   color: var(--accent-primary, #6366f1);
   background: rgba(99, 102, 241, 0.08);
-  padding: 2px 7px;
+  padding: 3px 7px;
   border-radius: 5px;
+  line-height: 1;
 }
 
 

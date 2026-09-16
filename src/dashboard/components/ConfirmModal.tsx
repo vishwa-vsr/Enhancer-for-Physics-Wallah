@@ -63,7 +63,10 @@ export const ConfirmModal = ({
           <button
             type="button"
             class={styles.submitBtn}
-            style={isDanger ? { backgroundColor: '#ef4444' } : undefined}
+            style={{
+              boxShadow: 'none',
+              ...(isDanger ? { backgroundColor: '#ef4444' } : {}),
+            }}
             onClick={onConfirm}
           >
             {confirmText}

@@ -157,6 +157,7 @@
   letter-spacing: 0.6px;
   padding: 3px 8px;
   border-radius: 6px;
+  line-height: 1;
 }
 
 .typeLecture {
@@ -207,7 +208,7 @@
 .nodeCheckBtnDone {
   background: #10b981 !important;
   border-color: #10b981 !important;
-  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.35);
+  box-shadow: none;
 }
 
 .editTitleInput {
@@ -260,21 +261,23 @@
 .durationBadge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 11.5px;
+  gap: 4px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--accent-primary, #6366f1);
   background: rgba(99, 102, 241, 0.08);
-  padding: 3px 8px;
+  padding: 3px 7px;
   border-radius: 5px;
+  line-height: 1;
 }
 
 /* Footer & Scheduling */
 .nodeFooter {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  margin-top: 4px;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
   font-size: 11.5px;
   color: var(--text-muted);
   position: relative;
@@ -360,6 +363,7 @@
   border-radius: 6px;
   border: 1px solid rgba(99, 102, 241, 0.2);
   cursor: pointer;
+  line-height: 1;
   transition: all var(--transition-fast, 0.15s ease);
 }
 
@@ -380,6 +384,7 @@
   border-radius: 6px;
   border: 1px dashed var(--border-subtle);
   cursor: pointer;
+  line-height: 1;
   transition: all var(--transition-fast, 0.15s ease);
 }
 
@@ -443,7 +448,7 @@
   border-radius: var(--radius-xl, 16px);
   padding: 24px;
   width: 90%;
-  max-width: 450px;
+  max-width: 480px;
   box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
@@ -492,6 +497,12 @@
   background: var(--bg-control);
 }
 
+.modalRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
 .modalField {
   display: flex;
   flex-direction: column;
@@ -526,6 +537,134 @@
 
 .modalInput:focus {
   border-color: var(--accent-primary, #6366f1);
+}
+
+.modalInput[type="date"] {
+  color-scheme: dark;
+}
+
+:global(body.light-theme) .modalInput[type="date"] {
+  color-scheme: light;
+}
+
+.modalInput[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+
+.modalInput[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+:global(body.light-theme) .modalInput[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+  opacity: 0.7;
+}
+
+:global(body.light-theme) .modalInput[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.modalInputDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-subtle) !important;
+}
+
+.durationInputGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  margin-top: 2px;
+}
+
+.durationUnitBox {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.durationMiniInput {
+  width: 44px;
+  height: 38px;
+  padding: 0 4px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-control);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.durationMiniInput::-webkit-inner-spin-button,
+.durationMiniInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.durationMiniInput[type=number] {
+  -moz-appearance: textfield;
+}
+
+.durationMiniInput:hover:not(:disabled) {
+  border-color: var(--accent-primary, #6366f1);
+}
+
+.durationMiniInput:focus {
+  border-color: var(--accent-primary, #6366f1);
+}
+
+.durationUnitLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.modalQuickDateBtnSmall {
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-control);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.modalQuickDateBtnSmall:hover {
+  border-color: var(--accent-primary, #6366f1);
+  color: var(--accent-primary, #6366f1);
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.modalClearDateTextBtn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.modalClearDateTextBtn:hover {
+  opacity: 0.8;
 }
 
 .modalLabelsGrid {

@@ -23,6 +23,8 @@ export const STUDY_ICONS_LIST: IconDefinition[] = [
   { id: 'percent', label: 'Percentage (%)', category: 'Math' },
   { id: 'infinity', label: 'Infinity (∞)', category: 'Math' },
   { id: 'function', label: 'Function f(x)', category: 'Math' },
+  { id: 'sigma', label: 'Sigma / Summation (Σ)', category: 'Math' },
+  { id: 'fx', label: 'Function Subscript (fx)', category: 'Math' },
 
   // Physics & Space
   { id: 'atom', label: 'Atom', category: 'Physics' },
@@ -188,8 +190,29 @@ export const StudyIcon = ({
     case 'function':
       return (
         <svg {...commonProps}>
-          <path d="M9 17c2 0 3-1 3-3V6a3 3 0 0 1 3-3" />
-          <line x1="8" x2="16" y1="11" y2="11" />
+          <path d="M9 3a3 3 0 0 0-3 3v11a3 3 0 0 1-3 3" />
+          <line x1="2" y1="11" x2="9" y2="11" />
+          <path d="M12 6c-1.5 3.5-1.5 8.5 0 12" />
+          <line x1="14.5" y1="9.5" x2="18.5" y2="14.5" />
+          <line x1="18.5" y1="9.5" x2="14.5" y2="14.5" />
+          <path d="M21 6c1.5 3.5 1.5 8.5 0 12" />
+        </svg>
+      );
+
+    case 'sigma':
+      return (
+        <svg {...commonProps}>
+          <polyline points="18 7 18 4 6 4 13 12 6 20 18 20 18 17" />
+        </svg>
+      );
+
+    case 'fx':
+      return (
+        <svg {...commonProps}>
+          <path d="M14 3a3.5 3.5 0 0 0-3.5 3.5v10a3.5 3.5 0 0 1-3.5 3.5" />
+          <line x1="5" y1="10" x2="14" y2="10" />
+          <line x1="15" y1="15" x2="20" y2="20" />
+          <line x1="20" y1="15" x2="15" y2="20" />
         </svg>
       );
 
