@@ -151,6 +151,7 @@ export const App = () => {
         onOpenAddSubject={handleOpenAddSubject}
         onRenameSubject={handleRenameSubject}
         onOpenAddChapter={handleOpenAddChapter}
+        onEditChapter={handleRenameChapter}
       />
 
       {/* Main Area */}
@@ -158,8 +159,6 @@ export const App = () => {
         <Header
           onOpenAddChapter={handleOpenAddChapter}
           onOpenAddTask={() => setTaskModalOpen(true)}
-          onEditChapter={handleRenameChapter}
-          onEditSubject={handleRenameSubject}
         />
 
         <main class={styles.scrollArea}>

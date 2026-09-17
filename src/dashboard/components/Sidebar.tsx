@@ -8,21 +8,23 @@ import {
   toggleSubjectExpanded,
   getLocalDateStr,
 } from '../store';
-import { Subject } from '../types';
+import { Subject, Chapter } from '../types';
 import { StudyIcon } from '@shared/components/StudyIcons';
-import { getLightShade, getAlphaColor } from '@shared/theme';
+import { getLightShade } from '@shared/theme';
 import styles from './Sidebar.module.css';
 
 interface SidebarProps {
   onOpenAddSubject: () => void;
   onRenameSubject: (subject: Subject) => void;
   onOpenAddChapter?: (subjectId: string) => void;
+  onEditChapter?: (chapter: Chapter) => void;
 }
 
 export const Sidebar = ({
   onOpenAddSubject,
   onRenameSubject,
   onOpenAddChapter,
+  onEditChapter,
 }: SidebarProps) => {
   const currentView = activeView.value;
 
@@ -148,7 +150,6 @@ export const Sidebar = ({
             const subChapters = chapters.value.filter((c) => c.subjectId === sub.id);
             const subColor = sub.color || '#6366f1';
             const chapterIconLightColor = getLightShade(subColor, 30);
-            const chapterActiveBg = getAlphaColor(subColor, 0.14);
 
             return (
               <div key={sub.id} class={styles.subjectGroup}>
@@ -194,54 +195,75 @@ export const Sidebar = ({
 
                 {isExpanded && (
                   <div class={styles.chaptersList}>
-                    {subChapters.length === 0 ? (
-                      <div
-                        class={styles.chapterItem}
-                        style={{ color: 'var(--accent-primary)', cursor: 'pointer', fontSize: '12px' }}
+                    {subChapters.map((chap) => {
+                      const isChapActive =
+                        currentView.type === 'chapter' && currentView.chapterId === chap.id;
+
+                      return (
+                        <div
+                          key={chap.id}
+                          class={`${styles.chapterItem} ${isChapActive ? styles.chapterItemActive : ''}`}
+                          onClick={() => {
+                            activeView.value = {
+                              type: 'chapter',
+                              subjectId: sub.id,
+                              chapterId: chap.id,
+                            };
+                          }}
+                        >
+                          <div class={styles.chapterLeft}>
+                            <StudyIcon
+                              name={chap.icon || 'file-text'}
+                              size={14}
+                              color={isChapActive ? subColor : chapterIconLightColor}
+                              class={styles.chapterIcon}
+                            />
+                            <span class={styles.chapterName}>{chap.name}</span>
+                          </div>
+
+                          {onEditChapter && (
+                            <button
+                              type="button"
+                              class={styles.chapterMenuBtn}
+                              aria-label={`Options for ${chap.name}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEditChapter(chap);
+                              }}
+                            >
+                              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                                <circle cx="5" cy="12" r="2.2" />
+                                <circle cx="12" cy="12" r="2.2" />
+                                <circle cx="19" cy="12" r="2.2" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {onOpenAddChapter && (
+                      <button
+                        type="button"
+                        class={styles.addChapterRowBtn}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (onOpenAddChapter) onOpenAddChapter(sub.id);
+                          onOpenAddChapter(sub.id);
                         }}
                       >
-                        + Add Chapter
-                      </div>
-                    ) : (
-                      subChapters.map((chap) => {
-                        const isChapActive =
-                          currentView.type === 'chapter' && currentView.chapterId === chap.id;
-
-                        return (
-                          <div
-                            key={chap.id}
-                            class={`${styles.chapterItem} ${isChapActive ? styles.chapterItemActive : ''}`}
-                            style={
-                              isChapActive
-                                ? {
-                                    backgroundColor: chapterActiveBg,
-                                    color: subColor,
-                                  }
-                                : undefined
-                            }
-                            onClick={() => {
-                              activeView.value = {
-                                type: 'chapter',
-                                subjectId: sub.id,
-                                chapterId: chap.id,
-                              };
-                            }}
-                          >
-                            <div class={styles.chapterLeft}>
-                              <StudyIcon
-                                name={chap.icon || 'file-text'}
-                                size={14}
-                                color={isChapActive ? subColor : chapterIconLightColor}
-                                class={styles.chapterIcon}
-                              />
-                              <span class={styles.chapterName}>{chap.name}</span>
-                            </div>
-                          </div>
-                        );
-                      })
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.2}
+                          width="12"
+                          height="12"
+                        >
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span>Add Chapter</span>
+                      </button>
                     )}
                   </div>
                 )}

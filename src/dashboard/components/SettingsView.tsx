@@ -2,16 +2,7 @@ import { useState, useEffect } from 'preact/hooks';
 import { userName, setUserName, customTags, addCustomTag, deleteCustomTag } from '../store';
 import styles from './SettingsView.module.css';
 
-const PRESET_COLORS = [
-  '#6b7fd7',
-  '#10b981',
-  '#f59e0b',
-  '#8b5cf6',
-  '#06b6d4',
-  '#ec4899',
-  '#ef4444',
-  '#64748b',
-];
+import { PRESET_COLORS } from '@shared/colors';
 
 export const SettingsView = () => {
   const [profileName, setProfileName] = useState(userName.value);

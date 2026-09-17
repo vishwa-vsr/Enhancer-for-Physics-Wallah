@@ -143,6 +143,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  row-gap: 10px;
+  flex-wrap: wrap;
   margin-top: 12px;
 }
 

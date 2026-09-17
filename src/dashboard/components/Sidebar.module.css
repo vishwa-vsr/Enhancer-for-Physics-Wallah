@@ -104,15 +104,24 @@
 }
 
 .navItemActive {
-  background-color: var(--accent-dim) !important;
-  color: var(--accent-primary) !important;
+  background-color: var(--bg-control-hover) !important;
+  color: var(--text-primary) !important;
   font-weight: 500 !important; /* Keep font-weight 500 so text never gets bold or jumps */
+}
+
+:global(body.light-theme) .navItemActive {
+  background-color: #f0f2f5 !important;
+  color: var(--text-primary) !important;
 }
 
 .navLeft {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.navLeft svg {
+  flex-shrink: 0;
 }
 
 .badge {
@@ -124,9 +133,23 @@
   font-weight: 500;
 }
 
+:global(body.light-theme) .badge {
+  background-color: #e2e8f0;
+  color: var(--text-secondary);
+}
+
+.navItemActive .navLeft svg {
+  color: var(--accent-primary) !important;
+}
+
 .navItemActive .badge {
-  background-color: var(--accent-primary);
-  color: #ffffff;
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+}
+
+:global(body.light-theme) .navItemActive .badge {
+  background-color: #e2e8f0;
+  color: var(--text-primary);
 }
 
 .divider {
@@ -296,14 +319,19 @@
 }
 
 .chapterItemActive {
-  background-color: var(--accent-dim);
-  color: var(--accent-primary);
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
+:global(body.light-theme) .chapterItemActive {
+  background-color: #f0f2f5;
+  color: var(--text-primary);
+}
+
 .chapterItemActive .badge {
-  background-color: var(--accent-primary);
-  color: #ffffff;
+  background-color: var(--bg-control);
+  color: var(--text-muted);
 }
 
 .chapterLeft {
@@ -331,7 +359,59 @@
   text-align: left;
 }
 
+.chapterMenuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
 
+.chapterItem:hover .chapterMenuBtn {
+  opacity: 1;
+}
+
+.chapterMenuBtn:hover {
+  background-color: var(--bg-control);
+  color: var(--text-primary);
+}
+
+.addChapterRowBtn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  margin-top: 2px;
+  text-align: left;
+}
+
+.addChapterRowBtn:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+}
+
+:global(body.light-theme) .addChapterRowBtn:hover {
+  background-color: #f0f2f5;
+  color: var(--text-primary);
+}
 
 .footer {
   padding: 12px;
@@ -360,7 +440,16 @@
 }
 
 .settingsBtnActive {
-  background-color: var(--accent-dim);
-  color: var(--accent-primary);
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
   font-weight: 500 !important; /* Keep font-weight 500 so text never gets bold or jumps */
+}
+
+:global(body.light-theme) .settingsBtnActive {
+  background-color: #f0f2f5;
+  color: var(--text-primary);
+}
+
+.settingsBtnActive svg {
+  color: var(--accent-primary);
 }

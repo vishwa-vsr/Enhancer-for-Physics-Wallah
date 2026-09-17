@@ -12,16 +12,7 @@ interface AddSubjectModalProps {
   onDelete?: (subject: Subject) => void;
 }
 
-const PRESET_COLORS = [
-  '#6366f1', // Indigo
-  '#3b82f6', // Blue
-  '#10b981', // Emerald
-  '#f59e0b', // Amber
-  '#ec4899', // Pink
-  '#8b5cf6', // Violet
-  '#06b6d4', // Cyan
-  '#ef4444', // Red
-];
+import { PRESET_COLORS } from '@shared/colors';
 
 export const AddSubjectModal = ({
   open,
