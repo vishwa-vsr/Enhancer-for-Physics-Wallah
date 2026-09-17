@@ -77,7 +77,7 @@ export const Sidebar = ({
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth={2}
+              strokeWidth={2.3}
               width="18"
               height="18"
             >
@@ -102,7 +102,7 @@ export const Sidebar = ({
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth={2}
+              strokeWidth={2.3}
               width="18"
               height="18"
             >
@@ -285,7 +285,7 @@ export const Sidebar = ({
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth={2}
+            strokeWidth={2.3}
             width="18"
             height="18"
           >
