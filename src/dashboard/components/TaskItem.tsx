@@ -68,6 +68,11 @@ export const TaskItem = ({ task, onDeleteRequest }: TaskItemProps) => {
         <p class={`${styles.taskTitle} ${task.completed ? styles.titleCompleted : ''}`}>
           {task.title}
         </p>
+        {task.description && (
+          <p class={`${styles.taskDescription} ${task.completed ? styles.titleCompleted : ''}`}>
+            {task.description}
+          </p>
+        )}
 
         <div class={styles.taskMeta}>
           {/* Origin Badge if in global view */}

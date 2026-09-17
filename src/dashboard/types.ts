@@ -10,6 +10,7 @@ export type ChainStage = 'lecture' | 'dpp' | 'notes' | 'revision' | 'custom' | s
 export interface Task {
   id: string;
   title: string;
+  description?: string;
   completed: boolean;
   dueDate?: string;
   priority?: Priority;

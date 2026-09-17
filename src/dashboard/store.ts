@@ -352,25 +352,19 @@ export async function addConnectedChain(params: CreateChainParams): Promise<Task
     let prevTask: Task | null = null;
     params.selectedLabels.forEach((labelName, idx) => {
       const lower = labelName.toLowerCase();
-      let stepTitle = params.lectureTitle;
       let duration: string | undefined = undefined;
+      let desc: string | undefined = undefined;
 
       if (lower === 'lecture') {
-        stepTitle = params.lectureTitle;
         duration = params.duration;
       } else if (lower === 'dpp') {
-        stepTitle = params.dppTitle || `${params.lectureTitle.replace(/lecture/i, 'DPP').trim() || 'DPP Practice'}`;
-      } else if (lower === 'revision') {
-        stepTitle = `Revision: ${params.lectureTitle}`;
-      } else if (lower === 'notes') {
-        stepTitle = `Notes: ${params.lectureTitle}`;
-      } else {
-        stepTitle = `${labelName}: ${params.lectureTitle}`;
+        desc = params.dppTitle;
       }
 
       const newTask: Task = {
         id: `task_${now + idx}_${lower.substring(0, 4)}_${Math.random().toString(36).substring(2, 6)}`,
-        title: stepTitle,
+        title: chainTitle,
+        description: desc,
         completed: false,
         subjectId: params.subjectId,
         chapterId: params.chapterId,
@@ -395,7 +389,7 @@ export async function addConnectedChain(params: CreateChainParams): Promise<Task
     // 1. Lecture Task
     const lectureTask: Task = {
       id: 'task_' + now + '_lec_' + Math.random().toString(36).substring(2, 6),
-      title: params.lectureTitle,
+      title: chainTitle,
       completed: false,
       subjectId: params.subjectId,
       chapterId: params.chapterId,
@@ -416,7 +410,8 @@ export async function addConnectedChain(params: CreateChainParams): Promise<Task
     if (params.hasDpp !== false) {
       const dppTask: Task = {
         id: 'task_' + (now + 1) + '_dpp_' + Math.random().toString(36).substring(2, 6),
-        title: params.dppTitle || `${params.lectureTitle.replace(/lecture/i, 'DPP').trim() || 'DPP Practice'}`,
+        title: chainTitle,
+        description: params.dppTitle,
         completed: false,
         subjectId: params.subjectId,
         chapterId: params.chapterId,
@@ -438,7 +433,7 @@ export async function addConnectedChain(params: CreateChainParams): Promise<Task
     if (params.hasNotes) {
       const notesTask: Task = {
         id: 'task_' + (now + 2) + '_notes_' + Math.random().toString(36).substring(2, 6),
-        title: `Notes: ${params.lectureTitle}`,
+        title: chainTitle,
         completed: false,
         subjectId: params.subjectId,
         chapterId: params.chapterId,
@@ -459,7 +454,7 @@ export async function addConnectedChain(params: CreateChainParams): Promise<Task
     if (params.hasRevision !== false) {
       const revTask: Task = {
         id: 'task_' + (now + 3) + '_rev_' + Math.random().toString(36).substring(2, 6),
-        title: `Revision: ${params.lectureTitle}`,
+        title: chainTitle,
         completed: false,
         subjectId: params.subjectId,
         chapterId: params.chapterId,
@@ -483,9 +478,10 @@ export async function addConnectedChain(params: CreateChainParams): Promise<Task
 
 export async function addCustomFlowStep(
   parentTaskId: string,
-  title: string,
   label?: string,
+  description?: string,
   dueDate?: string,
+  duration?: string,
 ): Promise<Task | null> {
   const parent = tasks.value.find((t) => t.id === parentTaskId);
   if (!parent) return null;
@@ -495,21 +491,24 @@ export async function addCustomFlowStep(
   parent.chainId = chainId;
 
   const now = Date.now();
-  const stepLabel = label?.trim();
+  const stepLabel = label?.trim() || 'Task';
+  const chainTitle = parent.chainTitle || parent.title;
   const newTask: Task = {
     id: 'task_' + now + '_step_' + Math.random().toString(36).substring(2, 6),
-    title: title.trim(),
+    title: chainTitle,
+    description: description?.trim() || undefined,
     completed: false,
     subjectId: parent.subjectId,
     chapterId: parent.chapterId,
     tags: stepLabel ? [stepLabel] : [],
     createdAt: now,
     chainId,
-    chainTitle: parent.chainTitle,
+    chainTitle: chainTitle,
     chainType: stepLabel ? stepLabel.toLowerCase() : 'custom',
     orderIndex: (parent.orderIndex || 0) + 1,
     prevTaskId: parent.id,
     dueDate: dueDate !== undefined ? (dueDate || undefined) : parent.dueDate,
+    duration,
   };
 
   // Link parent to new task
@@ -521,7 +520,7 @@ export async function addCustomFlowStep(
     if (oldNext) {
       oldNext.prevTaskId = newTask.id;
       oldNext.chainId = chainId;
-      if (parent.chainTitle) oldNext.chainTitle = parent.chainTitle;
+      if (chainTitle) oldNext.chainTitle = chainTitle;
     }
   }
 
@@ -546,6 +545,7 @@ export async function updateChainTitle(
         ...t,
         chainId: t.chainId || chainId,
         chainTitle: trimmed,
+        title: trimmed,
       };
     }
     return t;

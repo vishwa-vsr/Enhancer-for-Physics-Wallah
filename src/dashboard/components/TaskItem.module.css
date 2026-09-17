@@ -57,6 +57,15 @@
   color: var(--text-muted);
 }
 
+.taskDescription {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 3px 0 0 0;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
 .taskMeta {
   display: flex;
   align-items: center;

@@ -2,6 +2,8 @@ import { useState } from 'preact/hooks';
 import { Task } from '../types';
 import {
   tasks,
+  subjects,
+  chapters,
   toggleTask,
   updateTask,
   deleteTask,
@@ -43,21 +45,23 @@ const formatScheduleDate = (dueDate?: string) => {
 };
 
 export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
-  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
-  const [editingTitle, setEditingTitle] = useState('');
+  const currentSubject = subjects.value.find((s) => s.id === subjectId);
+  const currentChapter = chapters.value.find((c) => c.id === chapterId);
   const [newChainLectureTitle, setNewChainLectureTitle] = useState('');
   const [newChainDuration, setNewChainDuration] = useState('');
   const [selectedChainLabels, setSelectedChainLabels] = useState<string[]>(['Lecture', 'DPP', 'Revision']);
 
   // Add Step Pop-up Modal State (replaces the inline '+' card)
   const [addStepModalParentTask, setAddStepModalParentTask] = useState<Task | null>(null);
-  const [addStepModalTitle, setAddStepModalTitle] = useState('');
+  const [addStepModalDescription, setAddStepModalDescription] = useState('');
   const [addStepModalLabel, setAddStepModalLabel] = useState('');
+  const [addStepModalDurationHours, setAddStepModalDurationHours] = useState('');
+  const [addStepModalDurationMinutes, setAddStepModalDurationMinutes] = useState('');
   const [addStepModalDueDate, setAddStepModalDueDate] = useState<string | undefined>(undefined);
 
   // 3-Dot Step Settings Modal State
   const [activeStepModalTask, setActiveStepModalTask] = useState<Task | null>(null);
-  const [stepModalTitle, setStepModalTitle] = useState('');
+  const [stepModalDescription, setStepModalDescription] = useState('');
   const [stepModalLabel, setStepModalLabel] = useState('');
   const [stepModalDurationHours, setStepModalDurationHours] = useState('');
   const [stepModalDurationMinutes, setStepModalDurationMinutes] = useState('');
@@ -152,40 +156,41 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
 
   const openAddStepModal = (parentTask: Task) => {
     setAddStepModalParentTask(parentTask);
-    setAddStepModalTitle('');
-    setAddStepModalLabel('');
+    setAddStepModalDescription('');
+    setAddStepModalLabel(customTags.value[0]?.name || 'Revision');
+    setAddStepModalDurationHours('');
+    setAddStepModalDurationMinutes('');
     setAddStepModalDueDate(undefined);
   };
 
   const handleSaveAddStep = async () => {
     if (!addStepModalParentTask) return;
-    const trimmed = addStepModalTitle.trim();
-    if (!trimmed) return;
+    const isLecture = addStepModalLabel.toLowerCase() === 'lecture';
+    let durationVal: string | undefined = undefined;
+    if (isLecture) {
+      const h = addStepModalDurationHours.trim();
+      const m = addStepModalDurationMinutes.trim();
+      if (h && m) {
+        durationVal = `${h}h:${m}m`;
+      } else if (h) {
+        durationVal = `${h}h`;
+      } else if (m) {
+        durationVal = `${m}m`;
+      }
+    }
     await addCustomFlowStep(
       addStepModalParentTask.id,
-      trimmed,
-      addStepModalLabel.trim() || undefined,
+      addStepModalLabel.trim() || 'Task',
+      addStepModalDescription.trim() || undefined,
       addStepModalDueDate,
+      durationVal,
     );
     setAddStepModalParentTask(null);
   };
 
-  const handleStartRename = (task: Task) => {
-    setEditingTaskId(task.id);
-    setEditingTitle(task.title);
-  };
-
-  const handleSaveRename = async (taskId: string) => {
-    const trimmed = editingTitle.trim();
-    if (trimmed) {
-      await updateTask(taskId, { title: trimmed });
-    }
-    setEditingTaskId(null);
-  };
-
   const openStepModal = (task: Task) => {
     setActiveStepModalTask(task);
-    setStepModalTitle(task.title);
+    setStepModalDescription(task.description || '');
     setStepModalLabel(task.tags[0] || task.chainType || 'Lecture');
     setStepModalDueDate(task.dueDate);
     const dur = task.duration || '';
@@ -198,7 +203,6 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
 
   const handleSaveStepModal = async () => {
     if (!activeStepModalTask) return;
-    const trimmed = stepModalTitle.trim() || activeStepModalTask.title;
     const isLecture = stepModalLabel.toLowerCase() === 'lecture';
     let durationVal: string | undefined = undefined;
     if (isLecture) {
@@ -213,7 +217,7 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
       }
     }
     await updateTask(activeStepModalTask.id, {
-      title: trimmed,
+      description: stepModalDescription.trim() || undefined,
       tags: [stepModalLabel],
       chainType: stepModalLabel.toLowerCase(),
       dueDate: stepModalDueDate || undefined,
@@ -385,15 +389,12 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
                       labelColor = '#d97706';
                     }
 
-                    if (typeLabel.toLowerCase() === 'dpp') {
-                      const dppMatch = task.title.match(/(?:dpp|\b)\s*0?(\d+)/i);
-                      displayTitle = dppMatch ? `DPP ${dppMatch[1]}` : (task.title || 'DPP Practice');
-                    } else if (typeLabel.toLowerCase() === 'notes') {
-                      displayTitle = task.title || 'Notes';
-                    } else if (typeLabel.toLowerCase() === 'revision') {
-                      displayTitle = task.title || 'Revision';
-                    } else {
-                      displayTitle = task.title || typeLabel;
+                    let cardText = '';
+                    if (task.description && task.description.trim()) {
+                      cardText = task.description.trim();
+                    } else if (typeLabel.toLowerCase() === 'dpp') {
+                      const dppMatch = (task.description || task.title || '').match(/(?:dpp|\b)\s*0?(\d+)/i);
+                      cardText = dppMatch ? `DPP ${dppMatch[1]}` : 'DPP Practice';
                     }
 
                     return (
@@ -462,43 +463,23 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
                             </button>
                           </div>
 
-                          {editingTaskId === task.id ? (
-                            <div style={{ margin: '4px 0' }} onClick={(e) => e.stopPropagation()}>
-                              <input
-                                ref={(el) => {
-                                  if (el) el.focus();
-                                }}
-                                type="text"
-                                class={styles.editTitleInput}
-                                value={editingTitle}
-                                onInput={(e) =>
-                                  setEditingTitle((e.target as HTMLInputElement).value)
-                                }
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') handleSaveRename(task.id);
-                                  if (e.key === 'Escape') setEditingTaskId(null);
-                                }}
-                                onBlur={() => handleSaveRename(task.id)}
-                              />
-                            </div>
-                          ) : (
-                            <div class={styles.nodeBody} title={displayTitle}>
-                              {displayTitle && (
-                                <p
-                                  class={`${styles.nodeTitle} ${
-                                    task.completed ? styles.nodeTitleDone : ''
-                                  }`}
-                                  title={displayTitle}
-                                  onDblClick={(e) => {
-                                    e.stopPropagation();
-                                    handleStartRename(task);
-                                  }}
-                                >
-                                  {displayTitle}
-                                </p>
-                              )}
-                            </div>
-                          )}
+                          <div
+                            class={styles.nodeBody}
+                            title={cardText}
+                            onClick={() => openStepModal(task)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {cardText ? (
+                              <p
+                                class={`${styles.nodeDescription} ${
+                                  task.completed ? styles.nodeDescriptionDone : ''
+                                }`}
+                                title={cardText}
+                              >
+                                {cardText}
+                              </p>
+                            ) : null}
+                          </div>
 
                           <div class={styles.nodeFooter}>
                             {task.duration && task.duration.toLowerCase() !== 'video' ? (
@@ -643,11 +624,11 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
                     marginBottom: '6px',
                   }}
                 >
-                  Lecture Title
+                  Study Chain Title
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Lecture 01: Electric Charges and Fields"
+                  placeholder="e.g. Electrostatics 01: Electric Charges and Fields"
                   value={newChainLectureTitle}
                   onInput={(e) => setNewChainLectureTitle((e.target as HTMLInputElement).value)}
                   autoFocus
@@ -796,224 +777,321 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
         </div>
       )}
 
-      {/* 3-Dot Step Settings Modal */}
+      {/* 3-Dot Step Settings Modal (Todoist-style Two-Column) */}
       {activeStepModalTask && (
         <div
           class={styles.modalBackdrop}
-          onClick={() => setActiveStepModalTask(null)}
+          onClick={() => {
+            if (activeStepModalTask) {
+              updateTask(activeStepModalTask.id, { description: stepModalDescription.trim() || undefined });
+            }
+            setActiveStepModalTask(null);
+          }}
         >
           <div
-            class={styles.modalCard}
+            class={styles.modalCardTwoColumn}
             onClick={(e) => e.stopPropagation()}
           >
-            <div class={styles.modalHeader}>
-              <h3 class={styles.modalTitle}>Task Settings</h3>
+            {/* Top Bar with Breadcrumb and Close */}
+            <div class={styles.twoColTopBar}>
+              <div class={styles.twoColBreadcrumb}>
+                <span style={{ color: 'var(--accent-primary, #6366f1)' }}>#</span>
+                <span>{currentSubject?.name || 'Subject'}</span>
+                <span style={{ opacity: 0.4 }}>/</span>
+                <span>{currentChapter?.name || 'Chapter'}</span>
+              </div>
               <button
                 type="button"
                 class={styles.modalCloseBtn}
-                onClick={() => setActiveStepModalTask(null)}
+                onClick={() => {
+                  if (activeStepModalTask) {
+                    updateTask(activeStepModalTask.id, { description: stepModalDescription.trim() || undefined });
+                  }
+                  setActiveStepModalTask(null);
+                }}
                 title="Close"
               >
                 ✕
               </button>
             </div>
 
-            {/* Task Title Input */}
-            <div class={styles.modalField}>
-              <label class={styles.modalFieldLabel}>Task Title</label>
-              <input
-                type="text"
-                class={styles.modalInput}
-                value={stepModalTitle}
-                onInput={(e) => setStepModalTitle((e.target as HTMLInputElement).value)}
-                placeholder="Enter task title..."
-              />
-            </div>
+            {/* Two Column Body */}
+            <div class={styles.twoColBody}>
+              {/* Left Column: Title & Description */}
+              <div class={styles.twoColMain}>
+                <div class={styles.twoColTitleRow}>
+                  <button
+                    type="button"
+                    class={`${styles.nodeCheckBtn} ${styles.twoColCheckbox} ${
+                      activeStepModalTask.completed ? styles.nodeCheckBtnDone : ''
+                    }`}
+                    onClick={() => {
+                      toggleTask(activeStepModalTask.id);
+                    }}
+                    title={activeStepModalTask.completed ? 'Mark pending' : 'Mark done'}
+                  >
+                    {activeStepModalTask.completed && (
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={3.5}
+                        width="12"
+                        height="12"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </button>
+                  <h2 class={styles.twoColTitleText}>
+                    {activeStepModalTask.chainTitle || activeStepModalTask.title}
+                  </h2>
+                </div>
 
-            {/* Task Label */}
-            <div class={styles.modalField}>
-              <label class={styles.modalFieldLabel}>Task Label</label>
-              <div class={styles.modalLabelsGrid}>
-                {customTags.value.map((tag) => {
-                  const isSelected = stepModalLabel.toLowerCase() === tag.name.toLowerCase();
-                  return (
-                    <button
-                      key={tag.name}
-                      type="button"
-                      class={`${styles.modalLabelPill} ${
-                        isSelected ? styles.modalLabelPillSelected : ''
-                      }`}
-                      style={
-                        isSelected
-                          ? {
-                              backgroundColor: `${tag.color}20`,
-                              borderColor: tag.color,
-                              color: tag.color,
-                            }
-                          : undefined
-                      }
-                      onClick={() => {
-                        setStepModalLabel(tag.name);
-                        if (tag.name.toLowerCase() !== 'lecture') {
-                          setStepModalDurationHours('');
-                          setStepModalDurationMinutes('');
-                        }
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 7,
-                          height: 7,
-                          borderRadius: '50%',
-                          backgroundColor: tag.color,
-                        }}
-                      />
-                      <span>{tag.name}</span>
-                    </button>
-                  );
-                })}
+                <div>
+                  <label class={styles.twoColDescriptionLabel}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="14" height="14">
+                      <line x1="4" y1="6" x2="20" y2="6" />
+                      <line x1="4" y1="12" x2="20" y2="12" />
+                      <line x1="4" y1="18" x2="14" y2="18" />
+                    </svg>
+                    <span>Description</span>
+                  </label>
+                  <textarea
+                    rows={7}
+                    class={styles.twoColDescriptionArea}
+                    value={stepModalDescription}
+                    onInput={(e) => {
+                      const val = (e.target as HTMLTextAreaElement).value;
+                      setStepModalDescription(val);
+                      updateTask(activeStepModalTask.id, { description: val.trim() || undefined });
+                    }}
+                    placeholder="Add description or personal study notes..."
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Schedule Date & Lecture Duration Row (Side-by-Side, Stable Height) */}
-            <div class={styles.modalRow}>
-              {/* Schedule Date */}
-              <div class={styles.modalField} style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <label class={styles.modalFieldLabel}>Schedule Date</label>
-                  {stepModalDueDate && (
+              {/* Right Column: Properties Sidebar */}
+              <div class={styles.twoColSidebar}>
+                {/* Project Origin */}
+                <div class={styles.sidebarSection}>
+                  <span class={styles.sidebarSectionTitle}>Project</span>
+                  <div class={styles.sidebarOriginBadge}>
+                    <span style={{ color: 'var(--accent-primary, #6366f1)' }}>#</span>
+                    <span>{currentSubject?.name || 'Subject'} / {currentChapter?.name || 'Chapter'}</span>
+                  </div>
+                </div>
+
+                {/* Task Label */}
+                <div class={styles.sidebarSection}>
+                  <span class={styles.sidebarSectionTitle}>Task Label</span>
+                  <div class={styles.modalLabelsGrid}>
+                    {customTags.value.map((tag) => {
+                      const isSelected = stepModalLabel.toLowerCase() === tag.name.toLowerCase();
+                      return (
+                        <button
+                          key={tag.name}
+                          type="button"
+                          class={`${styles.modalLabelPill} ${isSelected ? styles.modalLabelPillSelected : ''}`}
+                          style={
+                            isSelected
+                              ? {
+                                  backgroundColor: `${tag.color}20`,
+                                  borderColor: tag.color,
+                                  color: tag.color,
+                                }
+                              : undefined
+                          }
+                          onClick={() => {
+                            setStepModalLabel(tag.name);
+                            if (tag.name.toLowerCase() !== 'lecture') {
+                              setStepModalDurationHours('');
+                              setStepModalDurationMinutes('');
+                              updateTask(activeStepModalTask.id, {
+                                tags: [tag.name],
+                                chainType: tag.name.toLowerCase(),
+                                duration: undefined,
+                              });
+                            } else {
+                              updateTask(activeStepModalTask.id, {
+                                tags: [tag.name],
+                                chainType: tag.name.toLowerCase(),
+                              });
+                            }
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: 7,
+                              height: 7,
+                              borderRadius: '50%',
+                              backgroundColor: tag.color,
+                            }}
+                          />
+                          <span>{tag.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Schedule Date */}
+                <div class={styles.sidebarSection}>
+                  <div class={styles.sidebarSectionHeader}>
+                    <span class={styles.sidebarSectionTitle}>Schedule Date</span>
+                    {stepModalDueDate && (
+                      <button
+                        type="button"
+                        class={styles.modalClearDateTextBtn}
+                        onClick={() => {
+                          setStepModalDueDate(undefined);
+                          updateTask(activeStepModalTask.id, { dueDate: undefined });
+                        }}
+                        title="Clear date"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <input
+                      type="date"
+                      class={styles.modalInput}
+                      value={stepModalDueDate || ''}
+                      onChange={(e) => {
+                        const val = (e.target as HTMLInputElement).value || undefined;
+                        setStepModalDueDate(val);
+                        updateTask(activeStepModalTask.id, { dueDate: val });
+                      }}
+                    />
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <button
+                        type="button"
+                        class={`${styles.modalQuickDateBtnSmall} ${
+                          stepModalDueDate === getTodayStr() ? styles.modalQuickDateBtnActive : ''
+                        }`}
+                        style={{ flex: 1 }}
+                        onClick={() => {
+                          const today = getTodayStr();
+                          setStepModalDueDate(today);
+                          updateTask(activeStepModalTask.id, { dueDate: today });
+                        }}
+                      >
+                        Today
+                      </button>
+                      <button
+                        type="button"
+                        class={`${styles.modalQuickDateBtnSmall} ${
+                          stepModalDueDate === getTomorrowStr() ? styles.modalQuickDateBtnActive : ''
+                        }`}
+                        style={{ flex: 1 }}
+                        onClick={() => {
+                          const tomorrow = getTomorrowStr();
+                          setStepModalDueDate(tomorrow);
+                          updateTask(activeStepModalTask.id, { dueDate: tomorrow });
+                        }}
+                      >
+                        Tomorrow
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lecture Duration */}
+                <div class={styles.sidebarSection}>
+                  <span class={styles.sidebarSectionTitle}>Lecture Duration</span>
+                  <div class={styles.durationInputGroup}>
+                    <div class={styles.durationUnitBox}>
+                      <input
+                        type="number"
+                        min="0"
+                        max="24"
+                        class={`${styles.durationMiniInput} ${
+                          stepModalLabel.toLowerCase() !== 'lecture' ? styles.modalInputDisabled : ''
+                        }`}
+                        disabled={stepModalLabel.toLowerCase() !== 'lecture'}
+                        value={stepModalLabel.toLowerCase() === 'lecture' ? stepModalDurationHours : ''}
+                        onInput={(e) => {
+                          const h = (e.target as HTMLInputElement).value;
+                          setStepModalDurationHours(h);
+                          const m = stepModalDurationMinutes.trim();
+                          let dur: string | undefined = undefined;
+                          if (h.trim() && m) dur = `${h.trim()}h:${m}m`;
+                          else if (h.trim()) dur = `${h.trim()}h`;
+                          else if (m) dur = `${m}m`;
+                          updateTask(activeStepModalTask.id, { duration: dur });
+                        }}
+                        placeholder={stepModalLabel.toLowerCase() === 'lecture' ? '0' : '—'}
+                        title="Hours"
+                      />
+                      <span class={styles.durationUnitLabel}>h</span>
+                    </div>
+                    <div class={styles.durationUnitBox}>
+                      <input
+                        type="number"
+                        min="0"
+                        max="59"
+                        class={`${styles.durationMiniInput} ${
+                          stepModalLabel.toLowerCase() !== 'lecture' ? styles.modalInputDisabled : ''
+                        }`}
+                        disabled={stepModalLabel.toLowerCase() !== 'lecture'}
+                        value={stepModalLabel.toLowerCase() === 'lecture' ? stepModalDurationMinutes : ''}
+                        onInput={(e) => {
+                          const m = (e.target as HTMLInputElement).value;
+                          setStepModalDurationMinutes(m);
+                          const h = stepModalDurationHours.trim();
+                          let dur: string | undefined = undefined;
+                          if (h && m.trim()) dur = `${h}h:${m.trim()}m`;
+                          else if (h) dur = `${h}h`;
+                          else if (m.trim()) dur = `${m.trim()}m`;
+                          updateTask(activeStepModalTask.id, { duration: dur });
+                        }}
+                        placeholder={stepModalLabel.toLowerCase() === 'lecture' ? '00' : '—'}
+                        title="Minutes"
+                      />
+                      <span class={styles.durationUnitLabel}>m</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delete Task button */}
+                <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)' }}>
+                  {isDeletingStep ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: '600' }}>Confirm delete?</span>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button
+                          type="button"
+                          class={styles.modalDeleteBtn}
+                          style={{ backgroundColor: '#ef4444', color: '#ffffff', borderColor: '#ef4444', flex: 1 }}
+                          onClick={handleDeleteStepModal}
+                        >
+                          Delete
+                        </button>
+                        <button
+                          type="button"
+                          class={styles.modalCancelBtn}
+                          style={{ flex: 1 }}
+                          onClick={() => setIsDeletingStep(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
                     <button
                       type="button"
-                      class={styles.modalClearDateTextBtn}
-                      onClick={() => setStepModalDueDate(undefined)}
-                      title="Clear scheduled date"
+                      class={styles.modalDeleteBtn}
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                      onClick={() => setIsDeletingStep(true)}
                     >
-                      Clear
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="13" height="13">
+                        <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                      </svg>
+                      Delete Task
                     </button>
                   )}
                 </div>
-                <div style={{ display: 'flex', gap: '6px', marginTop: '2px' }}>
-                  <input
-                    type="date"
-                    class={styles.modalInput}
-                    style={{ flex: 1, minWidth: 0 }}
-                    value={stepModalDueDate || ''}
-                    onChange={(e) =>
-                      setStepModalDueDate((e.target as HTMLInputElement).value || undefined)
-                    }
-                  />
-                  <button
-                    type="button"
-                    class={`${styles.modalQuickDateBtnSmall} ${
-                      stepModalDueDate === getTodayStr() ? styles.modalQuickDateBtnActive : ''
-                    }`}
-                    onClick={() => setStepModalDueDate(getTodayStr())}
-                    title="Set to Today"
-                  >
-                    Today
-                  </button>
-                  <button
-                    type="button"
-                    class={`${styles.modalQuickDateBtnSmall} ${
-                      stepModalDueDate === getTomorrowStr() ? styles.modalQuickDateBtnActive : ''
-                    }`}
-                    onClick={() => setStepModalDueDate(getTomorrowStr())}
-                    title="Set to Tomorrow"
-                  >
-                    Tomorrow
-                  </button>
-                </div>
-              </div>
-
-              {/* Lecture Duration Mini-boxes */}
-              <div class={styles.modalField} style={{ flex: '0 0 auto' }}>
-                <label class={styles.modalFieldLabel}>Lecture Duration</label>
-                <div class={styles.durationInputGroup}>
-                  <div class={styles.durationUnitBox}>
-                    <input
-                      type="number"
-                      min="0"
-                      max="24"
-                      class={`${styles.durationMiniInput} ${
-                        stepModalLabel.toLowerCase() !== 'lecture' ? styles.modalInputDisabled : ''
-                      }`}
-                      disabled={stepModalLabel.toLowerCase() !== 'lecture'}
-                      value={stepModalLabel.toLowerCase() === 'lecture' ? stepModalDurationHours : ''}
-                      onInput={(e) => setStepModalDurationHours((e.target as HTMLInputElement).value)}
-                      placeholder={stepModalLabel.toLowerCase() === 'lecture' ? '0' : '—'}
-                      title="Hours"
-                    />
-                    <span class={styles.durationUnitLabel}>h</span>
-                  </div>
-                  <div class={styles.durationUnitBox}>
-                    <input
-                      type="number"
-                      min="0"
-                      max="59"
-                      class={`${styles.durationMiniInput} ${
-                        stepModalLabel.toLowerCase() !== 'lecture' ? styles.modalInputDisabled : ''
-                      }`}
-                      disabled={stepModalLabel.toLowerCase() !== 'lecture'}
-                      value={stepModalLabel.toLowerCase() === 'lecture' ? stepModalDurationMinutes : ''}
-                      onInput={(e) => setStepModalDurationMinutes((e.target as HTMLInputElement).value)}
-                      placeholder={stepModalLabel.toLowerCase() === 'lecture' ? '00' : '—'}
-                      title="Minutes"
-                    />
-                    <span class={styles.durationUnitLabel}>m</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Actions */}
-            <div class={styles.modalFooter}>
-              {isDeletingStep ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: '600' }}>Confirm delete task?</span>
-                  <button
-                    type="button"
-                    class={styles.modalDeleteBtn}
-                    style={{ backgroundColor: '#ef4444', color: '#ffffff', borderColor: '#ef4444' }}
-                    onClick={handleDeleteStepModal}
-                  >
-                    Yes, Delete
-                  </button>
-                  <button
-                    type="button"
-                    class={styles.modalCancelBtn}
-                    onClick={() => setIsDeletingStep(false)}
-                  >
-                    No
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  class={styles.modalDeleteBtn}
-                  onClick={() => setIsDeletingStep(true)}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="13" height="13">
-                    <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                  </svg>
-                  Delete Task
-                </button>
-              )}
-
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  type="button"
-                  class={styles.modalCancelBtn}
-                  onClick={() => setActiveStepModalTask(null)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  class={styles.modalSaveBtn}
-                  onClick={handleSaveStepModal}
-                >
-                  Save Changes
-                </button>
               </div>
             </div>
           </div>
@@ -1027,11 +1105,17 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
           onClick={() => setAddStepModalParentTask(null)}
         >
           <div
-            class={styles.modalCard}
+            class={styles.modalCardTwoColumn}
             onClick={(e) => e.stopPropagation()}
           >
-            <div class={styles.modalHeader}>
-              <h3 class={styles.modalTitle}>Add Task</h3>
+            {/* Top Bar: Breadcrumb + Close Button */}
+            <div class={styles.twoColTopBar}>
+              <div class={styles.twoColBreadcrumb}>
+                <span style={{ color: 'var(--accent-primary, #6366f1)', fontWeight: 'bold' }}>#</span>
+                <span>{currentSubject?.name || 'Subject'}</span>
+                <span style={{ opacity: 0.4 }}>/</span>
+                <span>{currentChapter?.name || 'Chapter'}</span>
+              </div>
               <button
                 type="button"
                 class={styles.modalCloseBtn}
@@ -1042,124 +1126,202 @@ export const FlowView = ({ chapterId, subjectId }: FlowViewProps) => {
               </button>
             </div>
 
-            {/* Task Title Input */}
-            <div class={styles.modalField}>
-              <label class={styles.modalFieldLabel}>Task Title</label>
-              <input
-                type="text"
-                class={styles.modalInput}
-                value={addStepModalTitle}
-                onInput={(e) => setAddStepModalTitle((e.target as HTMLInputElement).value)}
-                placeholder="Enter task title (e.g. Formula Revision, DPP 02)..."
-                autoFocus
-              />
-            </div>
+            {/* Two Column Body */}
+            <div class={styles.twoColBody}>
+              {/* Left Column: Title & Description */}
+              <div class={styles.twoColMain}>
+                <div class={styles.twoColTitleRow}>
+                  <div
+                    class={`${styles.nodeCheckBtn} ${styles.twoColCheckbox}`}
+                    style={{ opacity: 0.4, cursor: 'default' }}
+                    title="New task"
+                  />
+                  <h2 class={styles.twoColTitleText}>
+                    {addStepModalParentTask.chainTitle || addStepModalParentTask.title}
+                  </h2>
+                </div>
 
-            {/* Task Label */}
-            <div class={styles.modalField}>
-              <label class={styles.modalFieldLabel}>Task Label</label>
-              <div class={styles.modalLabelsGrid}>
-                {customTags.value.map((tag) => {
-                  const isSelected = addStepModalLabel.toLowerCase() === tag.name.toLowerCase();
-                  return (
-                    <button
-                      key={tag.name}
-                      type="button"
-                      class={`${styles.modalLabelPill} ${
-                        isSelected ? styles.modalLabelPillSelected : ''
-                      }`}
-                      style={
-                        isSelected
-                          ? {
-                              backgroundColor: `${tag.color}20`,
-                              borderColor: tag.color,
-                              color: tag.color,
-                            }
-                          : undefined
-                      }
-                      onClick={() => setAddStepModalLabel(isSelected ? '' : tag.name)}
-                    >
-                      <span
-                        style={{
-                          width: 7,
-                          height: 7,
-                          borderRadius: '50%',
-                          backgroundColor: tag.color,
-                        }}
-                      />
-                      <span>{tag.name}</span>
-                    </button>
-                  );
-                })}
+                <div>
+                  <label class={styles.twoColDescriptionLabel}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="14" height="14">
+                      <line x1="4" y1="6" x2="20" y2="6" />
+                      <line x1="4" y1="12" x2="20" y2="12" />
+                      <line x1="4" y1="18" x2="14" y2="18" />
+                    </svg>
+                    <span>Description</span>
+                  </label>
+                  <textarea
+                    rows={7}
+                    class={styles.twoColDescriptionArea}
+                    value={addStepModalDescription}
+                    onInput={(e) => setAddStepModalDescription((e.target as HTMLTextAreaElement).value)}
+                    placeholder="Add description or personal study notes..."
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Schedule Task */}
-            <div class={styles.modalField}>
-              <label class={styles.modalFieldLabel}>Schedule Date</label>
-              <div class={styles.modalDateActions}>
-                <button
-                  type="button"
-                  class={`${styles.modalQuickDateBtn} ${
-                    addStepModalDueDate === getTodayStr() ? styles.modalQuickDateBtnActive : ''
-                  }`}
-                  onClick={() => setAddStepModalDueDate(getTodayStr())}
-                >
-                  Today
-                </button>
-                <button
-                  type="button"
-                  class={`${styles.modalQuickDateBtn} ${
-                    addStepModalDueDate === getTomorrowStr() ? styles.modalQuickDateBtnActive : ''
-                  }`}
-                  onClick={() => setAddStepModalDueDate(getTomorrowStr())}
-                >
-                  Tomorrow
-                </button>
-                <input
-                  type="date"
-                  class={styles.modalInput}
-                  style={{ width: 'auto', flex: 1, minWidth: '130px' }}
-                  value={addStepModalDueDate || ''}
-                  onChange={(e) =>
-                    setAddStepModalDueDate((e.target as HTMLInputElement).value || undefined)
-                  }
-                />
-                {addStepModalDueDate && (
+              {/* Right Column: Properties Sidebar */}
+              <div class={styles.twoColSidebar}>
+                {/* Project Origin */}
+                <div class={styles.sidebarSection}>
+                  <span class={styles.sidebarSectionTitle}>Project</span>
+                  <div class={styles.sidebarOriginBadge}>
+                    <span style={{ color: 'var(--accent-primary, #6366f1)' }}>#</span>
+                    <span>{currentSubject?.name || 'Subject'} / {currentChapter?.name || 'Chapter'}</span>
+                  </div>
+                </div>
+
+                {/* Task Label */}
+                <div class={styles.sidebarSection}>
+                  <span class={styles.sidebarSectionTitle}>Task Label</span>
+                  <div class={styles.modalLabelsGrid}>
+                    {customTags.value.map((tag) => {
+                      const isSelected = addStepModalLabel.toLowerCase() === tag.name.toLowerCase();
+                      return (
+                        <button
+                          key={tag.name}
+                          type="button"
+                          class={`${styles.modalLabelPill} ${isSelected ? styles.modalLabelPillSelected : ''}`}
+                          style={
+                            isSelected
+                              ? {
+                                  backgroundColor: `${tag.color}20`,
+                                  borderColor: tag.color,
+                                  color: tag.color,
+                                }
+                              : undefined
+                          }
+                          onClick={() => {
+                            setAddStepModalLabel(tag.name);
+                            if (tag.name.toLowerCase() !== 'lecture') {
+                              setAddStepModalDurationHours('');
+                              setAddStepModalDurationMinutes('');
+                            }
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: 7,
+                              height: 7,
+                              borderRadius: '50%',
+                              backgroundColor: tag.color,
+                            }}
+                          />
+                          <span>{tag.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Schedule Date */}
+                <div class={styles.sidebarSection}>
+                  <div class={styles.sidebarSectionHeader}>
+                    <span class={styles.sidebarSectionTitle}>Schedule Date</span>
+                    {addStepModalDueDate && (
+                      <button
+                        type="button"
+                        class={styles.modalClearDateTextBtn}
+                        onClick={() => setAddStepModalDueDate(undefined)}
+                        title="Clear date"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <input
+                      type="date"
+                      class={styles.modalInput}
+                      value={addStepModalDueDate || ''}
+                      onChange={(e) =>
+                        setAddStepModalDueDate((e.target as HTMLInputElement).value || undefined)
+                      }
+                    />
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <button
+                        type="button"
+                        class={`${styles.modalQuickDateBtnSmall} ${
+                          addStepModalDueDate === getTodayStr() ? styles.modalQuickDateBtnActive : ''
+                        }`}
+                        style={{ flex: 1 }}
+                        onClick={() => setAddStepModalDueDate(getTodayStr())}
+                      >
+                        Today
+                      </button>
+                      <button
+                        type="button"
+                        class={`${styles.modalQuickDateBtnSmall} ${
+                          addStepModalDueDate === getTomorrowStr() ? styles.modalQuickDateBtnActive : ''
+                        }`}
+                        style={{ flex: 1 }}
+                        onClick={() => setAddStepModalDueDate(getTomorrowStr())}
+                      >
+                        Tomorrow
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lecture Duration */}
+                <div class={styles.sidebarSection}>
+                  <span class={styles.sidebarSectionTitle}>Lecture Duration</span>
+                  <div class={styles.durationInputGroup}>
+                    <div class={styles.durationUnitBox}>
+                      <input
+                        type="number"
+                        min="0"
+                        max="24"
+                        class={`${styles.durationMiniInput} ${
+                          addStepModalLabel.toLowerCase() !== 'lecture' ? styles.modalInputDisabled : ''
+                        }`}
+                        disabled={addStepModalLabel.toLowerCase() !== 'lecture'}
+                        value={addStepModalLabel.toLowerCase() === 'lecture' ? addStepModalDurationHours : ''}
+                        onInput={(e) => setAddStepModalDurationHours((e.target as HTMLInputElement).value)}
+                        placeholder={addStepModalLabel.toLowerCase() === 'lecture' ? '0' : '—'}
+                        title="Hours"
+                      />
+                      <span class={styles.durationUnitLabel}>h</span>
+                    </div>
+                    <div class={styles.durationUnitBox}>
+                      <input
+                        type="number"
+                        min="0"
+                        max="59"
+                        class={`${styles.durationMiniInput} ${
+                          addStepModalLabel.toLowerCase() !== 'lecture' ? styles.modalInputDisabled : ''
+                        }`}
+                        disabled={addStepModalLabel.toLowerCase() !== 'lecture'}
+                        value={addStepModalLabel.toLowerCase() === 'lecture' ? addStepModalDurationMinutes : ''}
+                        onInput={(e) => setAddStepModalDurationMinutes((e.target as HTMLInputElement).value)}
+                        placeholder={addStepModalLabel.toLowerCase() === 'lecture' ? '00' : '—'}
+                        title="Minutes"
+                      />
+                      <span class={styles.durationUnitLabel}>m</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions: Add Task and Cancel */}
+                <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)', display: 'flex', gap: '8px' }}>
                   <button
                     type="button"
-                    class={styles.modalClearDateBtn}
-                    onClick={() => setAddStepModalDueDate(undefined)}
+                    class={styles.modalCancelBtn}
+                    style={{ flex: 1 }}
+                    onClick={() => setAddStepModalParentTask(null)}
                   >
-                    Clear Date
+                    Cancel
                   </button>
-                )}
-              </div>
-            </div>
-
-            {/* Modal Actions */}
-            <div class={styles.modalFooter} style={{ justifyContent: 'flex-end' }}>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  type="button"
-                  class={styles.modalCancelBtn}
-                  onClick={() => setAddStepModalParentTask(null)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  class={styles.modalSaveBtn}
-                  disabled={!addStepModalTitle.trim()}
-                  style={
-                    !addStepModalTitle.trim()
-                      ? { opacity: 0.5, cursor: 'not-allowed' }
-                      : undefined
-                  }
-                  onClick={handleSaveAddStep}
-                >
-                  Add Task
-                </button>
+                  <button
+                    type="button"
+                    class={styles.modalSaveBtn}
+                    style={{ flex: 1.5, ...(!addStepModalLabel.trim() ? { opacity: 0.5, cursor: 'not-allowed' } : {}) }}
+                    disabled={!addStepModalLabel.trim()}
+                    onClick={handleSaveAddStep}
+                  >
+                    Add Task
+                  </button>
+                </div>
               </div>
             </div>
           </div>
