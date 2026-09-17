@@ -23,3 +23,10 @@ assets/store_listing.md
 store_listing.md
 pip/
 skip-Silence/
+*.tsbuildinfo
+assets/ae assets/
+assets/pw.live-*
+assets/Comp *
+assets/girl*
+assets/440-280.png
+assets/imgi_*
