@@ -38,8 +38,8 @@ export function applySettingsHTML(settings?: HideSettings): void {
 
   (Object.keys(classMap) as (keyof HideSettings)[]).forEach((key) => {
     const className = classMap[key];
-    const isEnabled = shouldHideDistraction(key, currentSettings);
-    if (isEnabled) {
+    const shouldHide = shouldHideDistraction(key, currentSettings);
+    if (shouldHide) {
       root.classList.add(className);
     } else {
       root.classList.remove(className);
