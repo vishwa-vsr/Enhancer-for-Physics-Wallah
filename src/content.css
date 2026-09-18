@@ -354,16 +354,7 @@ html.pwc-hide-timetext .vjs-current-time,
 html.pwc-hide-timetext .vjs-duration,
 html.pwc-hide-timetext .vjs-time-divider,
 html.pwc-hide-timetext .vjs-remaining-time,
-html.pwc-hide-timetext .vjs-time-control,
-html.pwc-hide-timetext [class*="time-display"]:not([class*="pwc-"]):not([id*="pwc-"]),
-html.pwc-hide-timetext [class*="time-text"]:not([class*="pwc-"]):not([id*="pwc-"]),
-html.pwc-hide-timetext [class*="current-time"]:not([class*="pwc-"]):not([id*="pwc-"]),
-html.pwc-hide-timetext [class*="duration"]:not([class*="pwc-"]):not([id*="pwc-"]),
-html.pwc-hide-timetext [class*="video-time"]:not([class*="pwc-"]):not([id*="pwc-"]),
-html.pwc-hide-timetext .current-time:not([class*="pwc-"]):not([id*="pwc-"]),
-html.pwc-hide-timetext .duration:not([class*="pwc-"]):not([id*="pwc-"]),
-html.pwc-hide-timetext .time-display:not([class*="pwc-"]):not([id*="pwc-"]),
-html.pwc-hide-timetext .time-text:not([class*="pwc-"]):not([id*="pwc-"]) {
+html.pwc-hide-timetext .vjs-time-control {
   display: none !important;
 }
 

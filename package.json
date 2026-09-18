@@ -1,13 +1,13 @@
 {
   "name": "enhancer-for-physics-wallah",
-  "version": "1.0.8.3",
+  "version": "1.0.8.4",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "build:fast": "vite build",
-    "zip": "tar -a -c -f dist/pw-chrome-v1.0.8.3.zip -C dist/chrome * && tar -a -c -f dist/pw-firefox-v1.0.8.3.zip -C dist/firefox * && tar -a -c -f dist/pw-edge-v1.0.8.3.zip -C dist/edge *",
+    "zip": "tar -a -c -f dist/pw-chrome-v1.0.8.4.zip -C dist/chrome * && tar -a -c -f dist/pw-firefox-v1.0.8.4.zip -C dist/firefox * && tar -a -c -f dist/pw-edge-v1.0.8.4.zip -C dist/edge *",
     "package": "npm run build && npm run zip",
     "lint": "eslint src --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\""
