@@ -18,7 +18,7 @@ export function findVideos(root: Document | ShadowRoot | Element = document): HT
       // Search shadow roots only in candidate player containers if no video is found directly
       if (videos.length === 0) {
         const containers = root.querySelectorAll(
-          '#video-player-container, .video-player-app, [class*="player" i]'
+          '#video-player-container, .video-player-app, [class*="player" i]',
         );
         for (let i = 0; i < containers.length; i++) {
           const el = containers[i];
@@ -40,15 +40,18 @@ export function getActiveVideo(): HTMLVideoElement | null {
   if (
     cachedVideo &&
     cachedVideo.isConnected &&
-    (cachedVideo.offsetWidth > 0 ||
-      cachedVideo.videoWidth > 0 ||
+    (cachedVideo.videoWidth > 0 ||
+      cachedVideo.offsetWidth > 0 ||
       document.pictureInPictureElement === cachedVideo)
   ) {
     return cachedVideo;
   }
 
   // 2. If a video is currently in Picture-in-Picture, it is definitely the active one!
-  if (document.pictureInPictureElement && document.pictureInPictureElement instanceof HTMLVideoElement) {
+  if (
+    document.pictureInPictureElement &&
+    document.pictureInPictureElement instanceof HTMLVideoElement
+  ) {
     cachedVideo = document.pictureInPictureElement;
     return document.pictureInPictureElement;
   }

@@ -42,6 +42,7 @@ export const skipSilenceDynamicThreshold = signal(true);
 export const skipSilenceMute = signal(false);
 export const skipSilenceTimeSaved = signal(0);
 export const skipSilenceMinDuration = signal(0.5);
+export const skipSilenceLowCpu = signal(false);
 
 // ===== Review prompt signals =====
 export const installDate = signal(0);
@@ -92,6 +93,7 @@ export async function initStore() {
   skipSilenceMute.value = !!s.skipSilenceMute;
   skipSilenceTimeSaved.value = s.skipSilenceTimeSaved ?? 0;
   skipSilenceMinDuration.value = s.skipSilenceMinDuration ?? 0.5;
+  skipSilenceLowCpu.value = !!s.skipSilenceLowCpu;
 
   installDate.value = s.installDate || 0;
   reviewPromptStatus.value = s.reviewPromptStatus || 'pending';

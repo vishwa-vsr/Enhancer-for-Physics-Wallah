@@ -9,18 +9,14 @@ interface FeatureRowProps {
   children: ComponentChildren;
 }
 
-export function FeatureRow({
-  label,
-  sublabel,
-  htmlFor,
-  disabled,
-  children,
-}: FeatureRowProps) {
+export function FeatureRow({ label, sublabel, htmlFor, disabled, children }: FeatureRowProps) {
   return (
     <div class={`${styles.featureRow} ${disabled ? styles.disabled : ''}`}>
       <div class={styles.featureInfo}>
         {htmlFor ? (
-          <label class={styles.featureTitle} htmlFor={htmlFor}>{label}</label>
+          <label class={styles.featureTitle} htmlFor={htmlFor}>
+            {label}
+          </label>
         ) : (
           <span class={styles.featureTitle}>{label}</span>
         )}

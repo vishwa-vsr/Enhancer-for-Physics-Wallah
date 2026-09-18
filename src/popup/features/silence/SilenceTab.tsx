@@ -10,6 +10,7 @@ import {
   skipSilenceMute,
   skipSilenceTimeSaved,
   skipSilenceMinDuration,
+  skipSilenceLowCpu,
 } from '@popup/store';
 import styles from './SilenceTab.module.css';
 
@@ -143,6 +144,18 @@ export function SilenceTab() {
           />
         </FeatureRow>
 
+        {/* Low CPU / Battery Saver Mode */}
+        <FeatureRow label="Low CPU / Battery Saver" htmlFor="ss-lowcpu-toggle">
+          <Toggle
+            checked={skipSilenceLowCpu.value}
+            onChange={(val) => {
+              skipSilenceLowCpu.value = val;
+              saveSetting('skipSilenceLowCpu', val);
+            }}
+            ariaLabel="Toggle Low CPU Battery Saver"
+          />
+        </FeatureRow>
+
         {/* Time Saved Display */}
         <div class={`${styles.featureRow} ${styles.ssTimeSavedCard}`}>
           <div class={styles.featureInfo}>
@@ -160,7 +173,15 @@ export function SilenceTab() {
               title="Reset Time Saved"
               aria-label="Reset Time Saved"
             >
-              <svg class={styles.resetIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <svg
+                class={styles.resetIcon}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                 <path d="M3 3v5h5" />
               </svg>
@@ -172,7 +193,8 @@ export function SilenceTab() {
       <div class={styles.ssConflictTip}>
         <span class={styles.ssTipIcon}>💡</span>
         <span class={styles.ssTipText}>
-          <strong>Tip:</strong> If Skip Silence doesn't activate, check if another sound or volume booster extension is running.
+          <strong>Tip:</strong> If Skip Silence doesn't activate, check if another sound or volume
+          booster extension is running.
         </span>
       </div>
     </section>

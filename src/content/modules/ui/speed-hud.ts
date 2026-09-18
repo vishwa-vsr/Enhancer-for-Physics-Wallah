@@ -301,7 +301,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
       updateSliderBackground(slider, val);
       saveSpeed(val);
     },
-    { passive: false }
+    { passive: false },
   );
 }
 
@@ -345,7 +345,9 @@ export function buildSpeedControl(container: HTMLElement): void {
   slider.min = '0';
   slider.max = '1000';
   slider.step = '1';
-  slider.value = String(Math.round(speedToSliderPercent(state.currentSpeed, state.snapPoints) * 10));
+  slider.value = String(
+    Math.round(speedToSliderPercent(state.currentSpeed, state.snapPoints) * 10),
+  );
   slider.setAttribute('aria-label', 'Playback speed slider');
   slider.setAttribute('aria-valuetext', `${formatSpeed(state.currentSpeed)}x`);
   sliderWrapper.appendChild(slider);
@@ -379,9 +381,14 @@ export function injectSpeedControl(): void {
     return;
   }
 
+  const existingContainer = document.getElementById('pwc-speed-control') as HTMLElement | null;
+  if (existingContainer && existingContainer.isConnected) {
+    applyAlwaysExpandState(existingContainer);
+    return;
+  }
+
   const toolbar = findPWToolbar();
   if (toolbar) {
-    const existingContainer = document.getElementById('pwc-speed-control') as HTMLElement | null;
     if (!existingContainer) {
       const container = document.createElement('div');
       container.id = 'pwc-speed-control';

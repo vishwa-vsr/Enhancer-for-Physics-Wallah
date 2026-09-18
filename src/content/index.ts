@@ -1,7 +1,15 @@
 import { state, initState, subscribeState } from './state';
 import { applySpeedToActiveVideo, setVideoPlaybackRate } from './modules/video/controller';
-import { initQualityController, applyQuality, syncConstantQuality } from './modules/video/quality-controller';
-import { applySettingsHTML, applyDistractorsState, classMap } from './modules/distractions/focus-css';
+import {
+  initQualityController,
+  applyQuality,
+  syncConstantQuality,
+} from './modules/video/quality-controller';
+import {
+  applySettingsHTML,
+  applyDistractorsState,
+  classMap,
+} from './modules/distractions/focus-css';
 import { applyAlwaysExpandState, updatePlayerTicks } from './modules/ui/speed-hud';
 import { injectFinishTimeBadge, updateFinishTime } from './modules/ui/finish-time';
 import {
@@ -12,17 +20,23 @@ import {
   getSSAudioContext,
   getSSGainNode,
   initGlobalGestureUnlock,
+  syncSSLowCpuMode,
 } from './modules/audio/skip-silence';
 import { getActiveVideo } from './modules/video/detector';
 import { initKeyboardShortcuts } from './modules/shortcuts/keyboard';
 import { initSpaceHold } from './modules/shortcuts/space-hold';
 import { initAutoPause } from './modules/visibility/auto-pause';
 import { initFocusLock, deactivateFocusLock } from './modules/ui/focus-lock';
-import { startDomObserver } from './modules/dom/observer';
+import { startDomObserver, throttledMonitor } from './modules/dom/observer';
 import { HideSettings } from './types';
 
 // Entry point initialization
 function init(): void {
+  // Guard against non-video subframes (e.g. payment, quizzes, chat frames)
+  if (window.top !== window.self && !document.querySelector('video')) {
+    return;
+  }
+
   // 1. Subscribe to reactive state updates from storage
   let previousSkipSilenceEnabled = state.skipSilenceEnabled;
 
@@ -111,6 +125,10 @@ function init(): void {
       }
     }
 
+    if (changedKeys.includes('skipSilenceLowCpu')) {
+      syncSSLowCpuMode(currentState.skipSilenceLowCpu);
+    }
+
     if (changedKeys.includes('snapPoints')) {
       updatePlayerTicks(currentState.snapPoints);
     }
@@ -157,6 +175,10 @@ function init(): void {
 
   // 5. Start DOM observer for dynamic injections
   startDomObserver();
+
+  // 6. Refresh controls upon full-screen toggling or window resize
+  document.addEventListener('fullscreenchange', throttledMonitor);
+  window.addEventListener('resize', throttledMonitor);
 }
 
 // Execute immediately upon content script injection

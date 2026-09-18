@@ -62,9 +62,7 @@ function requestPlayerFullscreen(): void {
   try {
     const request = container.requestFullscreen({ navigationUI: 'hide' });
     if (request && typeof request.then === 'function') {
-      request
-        .then(() => removeInterstitial())
-        .catch(() => showInterstitial());
+      request.then(() => removeInterstitial()).catch(() => showInterstitial());
     }
   } catch (_e) {
     showInterstitial();
@@ -283,7 +281,7 @@ function updateFocusLockButton(): void {
   btn.classList.toggle('active', focusLockActive);
   btn.setAttribute(
     'title',
-    focusLockActive ? 'Exit Focus Lock' : 'Focus Lock (Full screen study session)'
+    focusLockActive ? 'Exit Focus Lock' : 'Focus Lock (Full screen study session)',
   );
 }
 

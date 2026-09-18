@@ -184,9 +184,15 @@ export function injectQualityControl(): void {
     return;
   }
 
+  const existing = document.getElementById('pwc-quality-control') as HTMLElement | null;
+  if (existing && existing.isConnected) {
+    existing.style.display = state.hideSettings.hideQuality ? 'none' : '';
+    return;
+  }
+
   const toolbar = findPWToolbar();
   if (toolbar) {
-    let container = document.getElementById('pwc-quality-control') as HTMLElement | null;
+    let container = existing;
     if (!container) {
       container = document.createElement('div');
       container.id = 'pwc-quality-control';

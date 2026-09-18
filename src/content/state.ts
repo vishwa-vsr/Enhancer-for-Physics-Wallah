@@ -41,6 +41,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   skipSilenceMute: false,
   skipSilenceTimeSaved: 0,
   skipSilenceMinDuration: 0.5,
+  skipSilenceLowCpu: false,
 
   extensionEnabled: true,
   themeMode: 'dark',
@@ -142,6 +143,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'skipSilenceMute',
         'skipSilenceTimeSaved',
         'skipSilenceMinDuration',
+        'skipSilenceLowCpu',
         'autoPauseOnHide',
         'themeMode',
       ],
@@ -153,7 +155,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         } catch (_e) {
           // Ignored: extension context invalidated
         }
-      }
+      },
     );
   } catch (_err) {
     // Ignored: chrome runtime unavailable
@@ -216,11 +218,7 @@ export function initState(onLoaded?: () => void): void {
     state.keySlowDown = result.keySlowDown || 'j';
     state.keyReset = result.keyReset || 'l';
 
-    if (
-      result.snapPoints &&
-      Array.isArray(result.snapPoints) &&
-      result.snapPoints.length === 4
-    ) {
+    if (result.snapPoints && Array.isArray(result.snapPoints) && result.snapPoints.length === 4) {
       state.snapPoints = sanitizeSnapPoints(result.snapPoints);
     }
 
@@ -230,16 +228,13 @@ export function initState(onLoaded?: () => void): void {
         ? parseFloat(result.skipSilenceSilenceSpeed)
         : 3.0;
     state.skipSilenceThreshold =
-      result.skipSilenceThreshold !== undefined
-        ? parseInt(result.skipSilenceThreshold, 10)
-        : -40;
+      result.skipSilenceThreshold !== undefined ? parseInt(result.skipSilenceThreshold, 10) : -40;
     state.skipSilenceDynamicThreshold = result.skipSilenceDynamicThreshold !== false;
     state.skipSilenceMute = !!result.skipSilenceMute;
     state.skipSilenceTimeSaved = result.skipSilenceTimeSaved || 0;
     state.skipSilenceMinDuration =
-      result.skipSilenceMinDuration !== undefined
-        ? parseFloat(result.skipSilenceMinDuration)
-        : 0.5;
+      result.skipSilenceMinDuration !== undefined ? parseFloat(result.skipSilenceMinDuration) : 0.5;
+    state.skipSilenceLowCpu = !!result.skipSilenceLowCpu;
 
     state.showFinishTime = result.showFinishTime !== false;
     state.finishTimeFormat = result.finishTimeFormat || 'minimal';
@@ -273,7 +268,10 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'themeMode')) {
               state.themeMode = (changes.themeMode.newValue as ThemeMode) || 'dark';
               if (typeof document !== 'undefined' && document.documentElement) {
-                document.documentElement.classList.toggle('pwc-light-theme', state.themeMode === 'light');
+                document.documentElement.classList.toggle(
+                  'pwc-light-theme',
+                  state.themeMode === 'light',
+                );
               }
               changedKeys.push('themeMode');
             }
@@ -283,7 +281,8 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('extensionEnabled');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'preferredQuality')) {
-              state.preferredQuality = (changes.preferredQuality.newValue as VideoQuality) || '720p';
+              state.preferredQuality =
+                (changes.preferredQuality.newValue as VideoQuality) || '720p';
               changedKeys.push('preferredQuality');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'constantVideoQuality')) {
@@ -377,6 +376,10 @@ export function initState(onLoaded?: () => void): void {
               state.skipSilenceMinDuration =
                 parseFloat(String(changes.skipSilenceMinDuration.newValue)) || 0.5;
               changedKeys.push('skipSilenceMinDuration');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceLowCpu')) {
+              state.skipSilenceLowCpu = !!changes.skipSilenceLowCpu.newValue;
+              changedKeys.push('skipSilenceLowCpu');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'snapPoints')) {
               state.snapPoints = sanitizeSnapPoints(changes.snapPoints.newValue);

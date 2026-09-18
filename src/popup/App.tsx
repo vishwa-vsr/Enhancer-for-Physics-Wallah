@@ -22,34 +22,61 @@ const tabs = [
     id: 'speed-tab',
     label: 'Speed',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        width="16"
+        height="16"
+      >
         <circle cx="12" cy="12" r="10" />
         <polyline points="12 6 12 12 16 14" />
       </svg>
-    )
+    ),
   },
   {
     id: 'focus-tab',
     label: 'Focus',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        width="16"
+        height="16"
+      >
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
       </svg>
-    )
+    ),
   },
   {
     id: 'silence-tab',
     label: 'Silence',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        width="16"
+        height="16"
+      >
         <line x1="3" y1="10" x2="3" y2="14" />
         <line x1="7" y1="6" x2="7" y2="18" />
         <line x1="11" y1="3" x2="11" y2="21" />
         <polyline points="15 8 19 12 15 16" />
         <line x1="21" y1="8" x2="21" y2="16" />
       </svg>
-    )
-  }
+    ),
+  },
 ];
 
 export const App = () => {
@@ -62,11 +89,29 @@ export const App = () => {
     <div class={styles.popupContainer}>
       {isLoading.value && <LoadingOverlay />}
       <Header />
-      <TabBar tabs={tabs} activeTab={activeTab.value} onTabChange={(id) => { activeTab.value = id; }} />
+      <TabBar
+        tabs={tabs}
+        activeTab={activeTab.value}
+        onTabChange={(id) => {
+          activeTab.value = id;
+        }}
+      />
       <main class={styles.popupContent}>
-        {activeTab.value === 'speed-tab' && <div class={styles.tabPanel}><SpeedTab /></div>}
-        {activeTab.value === 'focus-tab' && <div class={styles.tabPanel}><FocusTab /></div>}
-        {activeTab.value === 'silence-tab' && <div class={styles.tabPanel}><SilenceTab /></div>}
+        {activeTab.value === 'speed-tab' && (
+          <div class={styles.tabPanel}>
+            <SpeedTab />
+          </div>
+        )}
+        {activeTab.value === 'focus-tab' && (
+          <div class={styles.tabPanel}>
+            <FocusTab />
+          </div>
+        )}
+        {activeTab.value === 'silence-tab' && (
+          <div class={styles.tabPanel}>
+            <SilenceTab />
+          </div>
+        )}
       </main>
       <Footer />
       <ReviewModal />

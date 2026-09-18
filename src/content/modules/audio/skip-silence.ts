@@ -15,7 +15,15 @@ class VolumeProcessor extends AudioWorkletProcessor {
     this._rms = 0;
     this._count = 0;
     this._enabled = true;
-    this.port.onmessage = (e) => { this._enabled = e.data; };
+    this._batch = 1024;
+    this.port.onmessage = (e) => {
+      if (typeof e.data === 'boolean') {
+        this._enabled = e.data;
+      } else if (e.data && typeof e.data === 'object') {
+        if (e.data.enabled !== undefined) this._enabled = e.data.enabled;
+        if (e.data.lowCpu !== undefined) this._batch = e.data.lowCpu ? 2400 : 1024;
+      }
+    };
   }
   process(inputs, outputs) {
     const input = inputs[0];
@@ -28,8 +36,8 @@ class VolumeProcessor extends AudioWorkletProcessor {
     }
     this._rms += sum / samples.length;
     this._count += 1;
-    // Report every ~1024 samples (~23ms at 44.1kHz)
-    if (this._count >= Math.ceil(1024 / samples.length)) {
+    // Report every ~1024 samples (~23ms) or ~2400 samples (~54ms in Low CPU mode)
+    if (this._count >= Math.ceil(this._batch / samples.length)) {
       if (this._enabled) {
         this.port.postMessage(Math.sqrt(this._rms / this._count));
       }
@@ -131,7 +139,10 @@ export function manualThresholdToDb(val: number): number {
 }
 
 // Calculate effective thresholds with 3dB Hysteresis (Schmitt Trigger)
-export function getEffectiveThresholds(): { silenceThresholdDb: number; speechThresholdDb: number } {
+export function getEffectiveThresholds(): {
+  silenceThresholdDb: number;
+  speechThresholdDb: number;
+} {
   let baseDb: number;
   if (state.skipSilenceDynamicThreshold) {
     baseDb = ssCalculatedNoiseFloorDb;
@@ -149,12 +160,14 @@ export function getEffectiveThresholds(): { silenceThresholdDb: number; speechTh
 export function updateDynamicNoiseFloor(db: number): void {
   if (!Number.isFinite(db)) return;
   ssVolumeHistory.push(db);
-  if (ssVolumeHistory.length > 470) {
+  const maxHistory = state.skipSilenceLowCpu ? 240 : 470;
+  if (ssVolumeHistory.length > maxHistory) {
     ssVolumeHistory.shift();
   }
-  // Recalculate roughly once every ~23 samples (~500ms)
+  // Recalculate roughly once every ~23 samples (~500ms) or ~46 samples in Low CPU mode
+  const calcInterval = state.skipSilenceLowCpu ? 46 : 23;
   ssSamplesSinceCalc++;
-  if (ssSamplesSinceCalc >= 23 && ssVolumeHistory.length >= 47) {
+  if (ssSamplesSinceCalc >= calcInterval && ssVolumeHistory.length >= Math.min(47, maxHistory)) {
     ssSamplesSinceCalc = 0;
     const sorted = ssVolumeHistory.slice().sort((a, b) => a - b);
     const p15Index = Math.floor(sorted.length * 0.15);
@@ -225,9 +238,11 @@ export function resumeAudioContextOnInteraction(audioCtx: AudioContext): void {
 export function startAnalyserLoop(analyser: AnalyserNode): void {
   stopAnalyserLoop();
   const buffer = new Float32Array(analyser.fftSize);
+  const intervalMs = state.skipSilenceLowCpu ? 55 : 25;
   ssAnalyserInterval = setInterval(() => {
     if (!ssEngineRunning || isUserHoldingSpace()) return;
-    const video = getActiveVideo();
+    const video =
+      ssConnectedVideo && ssConnectedVideo.isConnected ? ssConnectedVideo : getActiveVideo();
     if (!video || video.paused || video.ended || video.readyState < 2) {
       ssIsSilentNow = false;
       ssSilentMsAccumulated = 0;
@@ -243,7 +258,7 @@ export function startAnalyserLoop(analyser: AnalyserNode): void {
     const db = rmsToDb(rms);
     ssLastVolumeDb = db;
     ssProcessVolume(db);
-  }, 25);
+  }, intervalMs);
 }
 
 export function stopAnalyserLoop(): void {
@@ -304,7 +319,9 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
             err.name === 'InvalidStateError' ||
             (err.message && err.message.includes('already connected'))
           ) {
-            console.warn('PW Control: Video element was already connected to an audio source node. Attempting stream fallback...');
+            console.warn(
+              'PW Control: Video element was already connected to an audio source node. Attempting stream fallback...',
+            );
             const existingGraph = enhancedVideo._pwcAudioGraph || videoAudioGraphs.get(video);
             if (existingGraph && existingGraph.context === audioCtx) return existingGraph;
 
@@ -318,10 +335,15 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
                   isStream = true;
                   enhancedVideo._pwcSourceNode = sourceNode;
                   enhancedVideo._pwcIsStreamSource = true;
-                  console.info('PW Control: Successfully attached using MediaStreamAudioSourceNode fallback.');
+                  console.info(
+                    'PW Control: Successfully attached using MediaStreamAudioSourceNode fallback.',
+                  );
                 }
               } catch (streamErr: unknown) {
-                console.warn('PW Control: captureStream fallback failed:', (streamErr as Error)?.message);
+                console.warn(
+                  'PW Control: captureStream fallback failed:',
+                  (streamErr as Error)?.message,
+                );
               }
             }
           }
@@ -369,7 +391,10 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
         workletNode = new AudioWorkletNode(audioCtx, 'pwc-volume-processor');
         sourceNode.connect(workletNode);
       } catch (workletErr: unknown) {
-        console.info('PW Control: Using native AnalyserNode volume meter (AudioWorklet fallback):', (workletErr as Error)?.message);
+        console.info(
+          'PW Control: Using native AnalyserNode volume meter (AudioWorklet fallback):',
+          (workletErr as Error)?.message,
+        );
         analyserNode = audioCtx.createAnalyser();
         analyserNode.fftSize = 256;
         sourceNode.connect(analyserNode);
@@ -428,7 +453,7 @@ export async function ssInit(): Promise<void> {
 
     if (ssWorkletNode) {
       stopAnalyserLoop();
-      ssWorkletNode.port.postMessage(true);
+      ssWorkletNode.port.postMessage({ enabled: true, lowCpu: !!state.skipSilenceLowCpu });
       ssWorkletNode.port.onmessage = (event) => {
         if (!ssEngineRunning || isUserHoldingSpace()) return;
         ssLastVolumeLevel = event.data;
@@ -632,5 +657,14 @@ export function onSSVideoPause(): void {
       ssExitSilence();
     }
     updateSkipSilenceUI();
+  }
+}
+
+// Synchronize low-CPU sensor mode in real-time
+export function syncSSLowCpuMode(isLowCpu: boolean): void {
+  if (ssWorkletNode) {
+    ssWorkletNode.port.postMessage({ lowCpu: isLowCpu });
+  } else if (ssAnalyserNode && ssEngineRunning) {
+    startAnalyserLoop(ssAnalyserNode);
   }
 }

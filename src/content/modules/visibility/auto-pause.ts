@@ -16,12 +16,7 @@ export function initAutoPause(): void {
     if (document.hidden) {
       // Auto-pause on tab hide (user setting). If Focus Lock is running,
       // its own dedicated guard handles pausing and showing the reminder.
-      if (
-        state.autoPauseOnHide &&
-        !isFocusLockActive() &&
-        video &&
-        !video.paused
-      ) {
+      if (state.autoPauseOnHide && !isFocusLockActive() && video && !video.paused) {
         try {
           video.pause();
         } catch (_e) {

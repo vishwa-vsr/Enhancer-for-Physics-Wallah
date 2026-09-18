@@ -14,13 +14,13 @@ interface TabBarProps {
 }
 
 export function TabBar({ tabs, activeTab, onTabChange }: TabBarProps) {
-  const activeIndex = tabs.findIndex(tab => tab.id === activeTab);
+  const activeIndex = tabs.findIndex((tab) => tab.id === activeTab);
   const safeIndex = activeIndex >= 0 ? activeIndex : 0;
-  
+
   return (
     <div class={styles.tabNavigation}>
-      <div 
-        class={styles.tabIndicator} 
+      <div
+        class={styles.tabIndicator}
         style={{ transform: `translateX(calc(${safeIndex * 100}% + ${safeIndex * 3}px))` }}
       />
       {tabs.map((tab) => (

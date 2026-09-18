@@ -125,7 +125,12 @@
     isConstantQualityEnabled = localStorage.getItem('pwc_constant_quality') === 'true';
   } catch (_e) {}
 
-  console.log('[PWC-QUALITY] Engine Bridge initialized at document_start. Constant quality active:', isConstantQualityEnabled, 'Default target:', targetQuality);
+  console.log(
+    '[PWC-QUALITY] Engine Bridge initialized at document_start. Constant quality active:',
+    isConstantQualityEnabled,
+    'Default target:',
+    targetQuality,
+  );
 
   // 1. Pre-seed localStorage bandwidth for VHS before player boots (only if constant quality is active)
   if (isConstantQualityEnabled) {
@@ -182,16 +187,21 @@
   function getPlayer(): VideoJsPlayer | null {
     try {
       // 1. Check video elements and parents
-      const videoEl = document.querySelector('video') as (HTMLVideoElement & { player?: VideoJsPlayer }) | null;
+      const videoEl = document.querySelector('video') as
+        (HTMLVideoElement & { player?: VideoJsPlayer }) | null;
       if (videoEl && videoEl.player) {
         return videoEl.player;
       }
-      if (videoEl?.parentElement && (videoEl.parentElement as HTMLElement & { player?: VideoJsPlayer }).player) {
+      if (
+        videoEl?.parentElement &&
+        (videoEl.parentElement as HTMLElement & { player?: VideoJsPlayer }).player
+      ) {
         return (videoEl.parentElement as HTMLElement & { player?: VideoJsPlayer }).player!;
       }
 
       // 2. Check Video.js containers
-      const vjsEl = document.querySelector('.video-js, .video-player-app, [id^="vjs_video_"]') as (HTMLElement & { player?: VideoJsPlayer }) | null;
+      const vjsEl = document.querySelector('.video-js, .video-player-app, [id^="vjs_video_"]') as
+        (HTMLElement & { player?: VideoJsPlayer }) | null;
       if (vjsEl && vjsEl.player) {
         return vjsEl.player;
       }
@@ -231,7 +241,8 @@
     if (!levels || levels.length === 0) {
       // Check VHS representations if qualityLevels plugin not populated
       const player = getPlayer();
-      const tech = typeof player?.tech === 'function' ? player.tech({ IWillNotUseThisInPlugins: true }) : null;
+      const tech =
+        typeof player?.tech === 'function' ? player.tech({ IWillNotUseThisInPlugins: true }) : null;
       const reps = tech?.vhs?.representations ? tech.vhs.representations() : null;
       if (reps && reps.length > 0) {
         const heights: number[] = [];
@@ -290,12 +301,15 @@
           currentQuality: current,
           availableQualities: available,
         },
-      })
+      }),
     );
   }
 
   // Shared helper to find the closest item index by resolution height
-  function findClosestIndexByHeight(items: Array<{ height?: number }>, targetHeight: number): number {
+  function findClosestIndexByHeight(
+    items: Array<{ height?: number }>,
+    targetHeight: number,
+  ): number {
     if (!items || items.length === 0) return -1;
     const exact = items.findIndex((item) => item.height === targetHeight);
     if (exact !== -1) return exact;
@@ -319,7 +333,8 @@
     player.__pwc_abr_hooked = true;
 
     try {
-      const tech = typeof player.tech === 'function' ? player.tech({ IWillNotUseThisInPlugins: true }) : null;
+      const tech =
+        typeof player.tech === 'function' ? player.tech({ IWillNotUseThisInPlugins: true }) : null;
       const vhs = tech?.vhs;
       if (vhs && typeof vhs.selectPlaylist === 'function') {
         const origSelectPlaylist = vhs.selectPlaylist;
@@ -334,15 +349,20 @@
             const clean = targetQuality.replace('p', '');
             const targetHeight = parseInt(clean, 10);
             const master = vhs.playlists?.master;
-            const playlists = (arguments && arguments[0] && Array.isArray(arguments[0]))
-              ? (arguments[0] as PlaylistEntry[])
-              : (master && Array.isArray(master.playlists) ? master.playlists : null);
+            const playlists =
+              arguments && arguments[0] && Array.isArray(arguments[0])
+                ? (arguments[0] as PlaylistEntry[])
+                : master && Array.isArray(master.playlists)
+                  ? master.playlists
+                  : null;
             if (playlists && playlists.length > 0) {
               const heights = playlists.map((p) => ({ height: p.attributes?.RESOLUTION?.height }));
               const bestIdx = findClosestIndexByHeight(heights, targetHeight);
               if (bestIdx >= 0 && playlists[bestIdx]) {
                 const chosen = playlists[bestIdx];
-                console.log(`[PWC-QUALITY] selectPlaylist picked initial ${chosen.attributes?.RESOLUTION?.height}p rendition`);
+                console.log(
+                  `[PWC-QUALITY] selectPlaylist picked initial ${chosen.attributes?.RESOLUTION?.height}p rendition`,
+                );
                 return chosen;
               }
             }
@@ -418,11 +438,13 @@
 
         for (let i = 0; i < levels.length; i++) {
           if (levels[i]) {
-            levels[i].enabled = (i === matchIdx);
+            levels[i].enabled = i === matchIdx;
           }
         }
         if (matchIdx >= 0 && levels[matchIdx]) {
-          console.log(`[PWC-QUALITY] Locked qualityLevels[${matchIdx}] (${levels[matchIdx].height}p) enabled=true`);
+          console.log(
+            `[PWC-QUALITY] Locked qualityLevels[${matchIdx}] (${levels[matchIdx].height}p) enabled=true`,
+          );
         }
         applied = matchIdx !== -1;
       }
@@ -432,7 +454,10 @@
     // Layer 2: Apply via VHS representations API (fallback if qualityLevels not present)
     if (!applied && player) {
       try {
-        const tech = typeof player.tech === 'function' ? player.tech({ IWillNotUseThisInPlugins: true }) : null;
+        const tech =
+          typeof player.tech === 'function'
+            ? player.tech({ IWillNotUseThisInPlugins: true })
+            : null;
         const reps = tech?.vhs?.representations
           ? tech.vhs.representations()
           : typeof tech?.representations === 'function'
@@ -440,7 +465,9 @@
             : null;
         if (reps && reps.length > 0) {
           if (isAuto) {
-            reps.forEach((r: VhsRepresentation) => typeof r.enabled === 'function' && r.enabled(true));
+            reps.forEach(
+              (r: VhsRepresentation) => typeof r.enabled === 'function' && r.enabled(true),
+            );
             applied = true;
           } else {
             const matchIdx = findClosestIndexByHeight(reps, targetHeight);
@@ -541,19 +568,27 @@
   startQualityEnforcementLoop();
 
   // Monitor video lifecycle events: loadstart and loadedmetadata only
-  document.addEventListener('loadstart', (e: Event) => {
-    if (isConstantQualityEnabled && e.target instanceof HTMLVideoElement) {
-      console.log('[PWC-QUALITY] Video loadstart detected');
-      startQualityEnforcementLoop();
-    }
-  }, true);
+  document.addEventListener(
+    'loadstart',
+    (e: Event) => {
+      if (isConstantQualityEnabled && e.target instanceof HTMLVideoElement) {
+        console.log('[PWC-QUALITY] Video loadstart detected');
+        startQualityEnforcementLoop();
+      }
+    },
+    true,
+  );
 
-  document.addEventListener('loadedmetadata', (e: Event) => {
-    if (isConstantQualityEnabled && e.target instanceof HTMLVideoElement) {
-      console.log('[PWC-QUALITY] Video loadedmetadata detected -> enforcing quality');
-      const player = getPlayer();
-      if (player) hookPlayerABR(player);
-      applyQuality(targetQuality);
-    }
-  }, true);
+  document.addEventListener(
+    'loadedmetadata',
+    (e: Event) => {
+      if (isConstantQualityEnabled && e.target instanceof HTMLVideoElement) {
+        console.log('[PWC-QUALITY] Video loadedmetadata detected -> enforcing quality');
+        const player = getPlayer();
+        if (player) hookPlayerABR(player);
+        applyQuality(targetQuality);
+      }
+    },
+    true,
+  );
 })();

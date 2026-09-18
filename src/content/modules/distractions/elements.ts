@@ -5,6 +5,7 @@ let cachedFullscreenBtn: Element | null = null;
 let cachedTimeline: Element | null = null;
 let cachedTimeTexts: Element[] | null = null;
 let cachedNativeSpeedBadges: Element[] | null = null;
+let cachedToolbar: Element | null = null;
 
 export function resetDistractionCaches(): void {
   cachedSettingsBtn = null;
@@ -12,6 +13,7 @@ export function resetDistractionCaches(): void {
   cachedTimeline = null;
   cachedTimeTexts = null;
   cachedNativeSpeedBadges = null;
+  cachedToolbar = null;
 }
 
 // Helper to hide or show an element with !important
@@ -32,7 +34,11 @@ export function isDrawingToolbarElement(el: Element): boolean {
     const className = (current.getAttribute('class') || '').toLowerCase();
     const id = (current.id || '').toLowerCase();
 
-    if (className.includes('dashboard') || id.includes('dashboard') || className.includes('page-manager')) {
+    if (
+      className.includes('dashboard') ||
+      id.includes('dashboard') ||
+      className.includes('page-manager')
+    ) {
       return false;
     }
     if (/canvas|draw|paint|board|palette/i.test(className + ' ' + id)) {
@@ -99,7 +105,7 @@ export function findSettingsButton(): Element | null {
 
   const el = playerContainer.querySelector(
     '[class*="setting" i], [id*="setting" i], [title*="setting" i], ' +
-      '[class*="gear" i], [class*="config" i], [class*="quality" i]'
+      '[class*="gear" i], [class*="config" i], [class*="quality" i]',
   );
   if (el) {
     const btn = getControlButton(el);
@@ -123,7 +129,7 @@ export function scanShadowForSettings(root: Document | Element | ShadowRoot): El
     if (item.shadowRoot) {
       const el = item.shadowRoot.querySelector(
         '[class*="setting" i], [id*="setting" i], [title*="setting" i], ' +
-          '[class*="gear" i], [class*="config" i], [class*="quality" i]'
+          '[class*="gear" i], [class*="config" i], [class*="quality" i]',
       );
       if (el && !isDrawingToolbarElement(el)) return getControlButton(el);
       const found = scanShadowForSettings(item.shadowRoot);
@@ -143,7 +149,9 @@ export function findFullscreenButton(): Element | null {
 
   const settingsBtn = findSettingsButton();
   if (settingsBtn) {
-    const settingsWrapper = settingsBtn.closest('.flex-col') || (settingsBtn.parentNode && settingsBtn.parentNode.parentNode);
+    const settingsWrapper =
+      settingsBtn.closest('.flex-col') ||
+      (settingsBtn.parentNode && settingsBtn.parentNode.parentNode);
     if (settingsWrapper && (settingsWrapper as Element).nextElementSibling) {
       const fsSvg = (settingsWrapper as Element).nextElementSibling?.querySelector('svg');
       if (fsSvg) {
@@ -161,7 +169,7 @@ export function findFullscreenButton(): Element | null {
 
   const el = playerContainer.querySelector(
     '[class*="fullscreen" i], [id*="fullscreen" i], [title*="fullscreen" i], ' +
-      '[class*="full-screen" i], [id*="full-screen" i], [title*="full-screen" i]'
+      '[class*="full-screen" i], [id*="full-screen" i], [title*="full-screen" i]',
   );
   if (el) {
     const btn = getControlButton(el);
@@ -185,7 +193,7 @@ export function scanShadowForFullscreen(root: Document | Element | ShadowRoot): 
     if (item.shadowRoot) {
       const el = item.shadowRoot.querySelector(
         '[class*="fullscreen" i], [id*="fullscreen" i], [title*="fullscreen" i], ' +
-          '[class*="full-screen" i], [id*="full-screen" i], [title*="full-screen" i]'
+          '[class*="full-screen" i], [id*="full-screen" i], [title*="full-screen" i]',
       );
       if (el && !isDrawingToolbarElement(el)) return getControlButton(el);
       const found = scanShadowForFullscreen(item.shadowRoot);
@@ -214,9 +222,9 @@ export function getToolbarContainer(el: Element | null): Element | null {
 // Find native speed pills (like "1.1x") located next to the time display
 export function findNativeSpeedBadges(): Element[] {
   if (
-    cachedNativeSpeedBadges &&
-    cachedNativeSpeedBadges.length > 0 &&
-    cachedNativeSpeedBadges.every((el) => (el as any).isConnected)
+    cachedNativeSpeedBadges !== null &&
+    (cachedNativeSpeedBadges.length === 0 ||
+      cachedNativeSpeedBadges.every((el) => (el as any).isConnected))
   ) {
     return cachedNativeSpeedBadges;
   }
@@ -267,7 +275,11 @@ export function getDistractorType(el: Element): string | null {
   const ariaLabel = (el.getAttribute('aria-label') || '').toLowerCase();
 
   // Safety check: Never match the dashboard or main page manager layouts
-  if (className.includes('dashboard') || id.includes('dashboard') || className.includes('page-manager')) {
+  if (
+    className.includes('dashboard') ||
+    id.includes('dashboard') ||
+    className.includes('page-manager')
+  ) {
     return null;
   }
 
@@ -279,16 +291,27 @@ export function getDistractorType(el: Element): string | null {
   const leafText = isLeaf ? (el.textContent || '').trim().toLowerCase() : '';
 
   // 1. Ask AI feature
-  if (attrs.includes('ask ai') || attrs.includes('askai') || attrs.includes('ask-ai') || /\bai\b/.test(attrs)) {
+  if (
+    attrs.includes('ask ai') ||
+    attrs.includes('askai') ||
+    attrs.includes('ask-ai') ||
+    /\bai\b/.test(attrs)
+  ) {
     return 'askai';
   }
   if (leafText === 'ask ai') return 'askai';
 
   // 2. Notes / Study materials — PW Live uses title="Add note" on its notes button
-  if (/\bnote(s)?\b/.test(attrs) || attrs.includes('study') || attrs.includes('pdf') || attrs.includes('attachment')) {
+  if (
+    /\bnote(s)?\b/.test(attrs) ||
+    attrs.includes('study') ||
+    attrs.includes('pdf') ||
+    attrs.includes('attachment')
+  ) {
     return 'notes';
   }
-  if (isLeaf && (leafText === 'notes' || leafText === 'study notes' || leafText === 'add note')) return 'notes';
+  if (isLeaf && (leafText === 'notes' || leafText === 'study notes' || leafText === 'add note'))
+    return 'notes';
 
   // 4. Doubt / Q&A controls
   if (attrs.includes('doubt') || attrs.includes('qna') || attrs.includes('question')) {
@@ -303,8 +326,17 @@ export function getDistractorType(el: Element): string | null {
   if (isLeaf && leafText === 'chat') return 'chat';
 
   // 6. Note Timeline controls (avoid matching video progress timeline seekbar)
-  if (!className.includes('progress') && !className.includes('play-progress') && !id.includes('video-progress')) {
-    if (className.includes('timeline') || id.includes('timeline') || title.includes('timeline') || ariaLabel.includes('timeline')) {
+  if (
+    !className.includes('progress') &&
+    !className.includes('play-progress') &&
+    !id.includes('video-progress')
+  ) {
+    if (
+      className.includes('timeline') ||
+      id.includes('timeline') ||
+      title.includes('timeline') ||
+      ariaLabel.includes('timeline')
+    ) {
       return 'notetimeline';
     }
   }
@@ -334,8 +366,15 @@ export function checkElementOrChildType(el: Element): string | null {
 
 // Bulletproof PW Control Bar Finder: locates bottom control bar regardless of layout changes
 export function findPWToolbar(): Element | null {
+  if (cachedToolbar && (cachedToolbar as any).isConnected) {
+    return cachedToolbar;
+  }
+
   const fRight = document.getElementById('footer-right-section');
-  if (fRight) return fRight;
+  if (fRight) {
+    cachedToolbar = fRight;
+    return fRight;
+  }
 
   const video = getActiveVideo();
   if (!video) return null;
@@ -360,6 +399,7 @@ export function findPWToolbar(): Element | null {
 
   if (toolbars.length > 0) {
     toolbars.sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length);
+    cachedToolbar = toolbars[0];
     return toolbars[0];
   }
 
@@ -367,7 +407,11 @@ export function findPWToolbar(): Element | null {
   const fullscreenBtn = findFullscreenButton();
   const refBtn = settingsBtn || fullscreenBtn;
   if (refBtn) {
-    return getToolbarContainer(refBtn);
+    const container = getToolbarContainer(refBtn);
+    if (container) {
+      cachedToolbar = container;
+      return container;
+    }
   }
 
   return null;
@@ -388,7 +432,7 @@ export function findTimeline(): Element | null {
   const el = playerContainer.querySelector(
     '.vjs-progress-control, .vjs-progress-holder, ' +
       '[class*="progress-control" i], [class*="progress-bar" i], ' +
-      '[class*="seekbar" i], [class*="seek-bar" i]'
+      '[class*="seekbar" i], [class*="seek-bar" i]',
   );
   if (el) {
     const className = el.getAttribute('class') || '';
@@ -420,7 +464,7 @@ export function findTimeTexts(): Element[] {
     '.vjs-current-time, .vjs-duration, .vjs-time-divider, .vjs-remaining-time, .vjs-time-control, ' +
       '[class*="time-display" i], [class*="time-text" i], ' +
       '[class*="current-time" i], [class*="duration" i], [class*="video-time" i], ' +
-      '.current-time, .duration, .time-display, .time-text'
+      '.current-time, .duration, .time-display, .time-text',
   );
 
   const list = Array.from(elements).filter((el) => {
@@ -432,7 +476,11 @@ export function findTimeTexts(): Element[] {
     }
 
     // 2. Exclude elements that contain interactive buttons or SVGs
-    if (el.querySelector('button') || el.querySelector('svg') || el.querySelector('[role="button"]')) {
+    if (
+      el.querySelector('button') ||
+      el.querySelector('svg') ||
+      el.querySelector('[role="button"]')
+    ) {
       return false;
     }
 

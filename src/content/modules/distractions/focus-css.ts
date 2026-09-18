@@ -78,7 +78,9 @@ export function applyDistractorsState(): void {
 
         // Find settings button index in the native buttons list
         const settingsIdx = nativeButtons.findIndex((el) => {
-          return el === settingsBtn || el.id === 'setting-icon' || el.querySelector('#setting-icon');
+          return (
+            el === settingsBtn || el.id === 'setting-icon' || el.querySelector('#setting-icon')
+          );
         });
 
         if (settingsIdx !== -1) {
@@ -166,7 +168,10 @@ export function applyDistractorsState(): void {
   // Handle quality widget hiding
   const qualityContainer = document.getElementById('pwc-quality-control');
   if (qualityContainer) {
-    setHidden(qualityContainer, !state.extensionEnabled || !state.constantVideoQuality || activeSettings.hideQuality);
+    setHidden(
+      qualityContainer,
+      !state.extensionEnabled || !state.constantVideoQuality || activeSettings.hideQuality,
+    );
   }
 
   // Handle timeline hiding

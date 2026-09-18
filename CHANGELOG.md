@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.0.8.4] - 2026-09-18
 
+### Performance & Battery (Old Laptop Fixes)
+- **Zero-Lag on Older Laptops**: Stopped repeated background scans and measurements so Physics Wallah stays smooth without freezing or crashing on budget computers.
+- **Smart Control Memory**: Remembers player controls once found instead of re-searching the page multiple times every second.
+- **Live Class Optimization**: Ignores incoming chat messages so fast-moving live lectures never spike your computer's processor.
+- **Skip Silence Battery Saver**: Added a "Low CPU / Battery Saver" toggle in the Skip Silence tab to cut audio processing load in half.
+
 ### Changed
 - **Focus Lock** now only handles fullscreen + pause-on-exit. It no longer auto-hides chat, doubts, notes, or Ask AI when activated. Use the individual Focus Toggles to hide those elements instead [#17](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/17).
 

@@ -51,6 +51,7 @@ export interface ContentState {
   skipSilenceMute: boolean;
   skipSilenceTimeSaved: number;
   skipSilenceMinDuration: number;
+  skipSilenceLowCpu: boolean;
 
   // Extension status
   extensionEnabled: boolean;
@@ -83,4 +84,3 @@ export interface PWCEnhancedVideoElement extends HTMLVideoElement {
 export interface PWCEnhancedWindow extends Window {
   __pwcAudioContext?: AudioContext | null;
 }
-

@@ -5,10 +5,23 @@ import { Stepper } from '@shared/components/Stepper';
 import { saveSetting } from '@shared/storage';
 import type { VideoQuality } from '@shared/types';
 import {
-  preferredSpeed, constantVideoQuality, preferredQuality, snapPoints, hideSpeed, hideQuality, alwaysExpandWidget,
-  showFinishTime, finishTimeFormat, enableHotkeys, disableScroll,
-  holdSpaceSpeedUp, holdSpaceSpeed, enableInstantHide,
-  keySpeedUp, keySlowDown, keyReset,
+  preferredSpeed,
+  constantVideoQuality,
+  preferredQuality,
+  snapPoints,
+  hideSpeed,
+  hideQuality,
+  alwaysExpandWidget,
+  showFinishTime,
+  finishTimeFormat,
+  enableHotkeys,
+  disableScroll,
+  holdSpaceSpeedUp,
+  holdSpaceSpeed,
+  enableInstantHide,
+  keySpeedUp,
+  keySlowDown,
+  keyReset,
 } from '@popup/store';
 import styles from './SpeedTab.module.css';
 
@@ -26,11 +39,11 @@ function speedToSliderPercent(speed: number, points: number[]): number {
   if (s <= pts[2]) {
     const span = pts[2] - pts[1];
     const frac = span > 0 ? (s - pts[1]) / span : 0;
-    return (100 / 3) + frac * (100 / 3);
+    return 100 / 3 + frac * (100 / 3);
   }
   const span = pts[3] - pts[2];
   const frac = span > 0 ? (s - pts[2]) / span : 0;
-  return (200 / 3) + frac * (100 / 3);
+  return 200 / 3 + frac * (100 / 3);
 }
 
 function sliderPercentToSpeed(pct: number, points: number[]): number {
@@ -38,15 +51,15 @@ function sliderPercentToSpeed(pct: number, points: number[]): number {
   const p = Math.max(0, Math.min(100, pct));
   if (p <= 0) return pts[0];
   if (p >= 100) return pts[3];
-  if (p <= (100 / 3)) {
+  if (p <= 100 / 3) {
     const frac = p / (100 / 3);
     return pts[0] + frac * (pts[1] - pts[0]);
   }
-  if (p <= (200 / 3)) {
-    const frac = (p - (100 / 3)) / (100 / 3);
+  if (p <= 200 / 3) {
+    const frac = (p - 100 / 3) / (100 / 3);
     return pts[1] + frac * (pts[2] - pts[1]);
   }
-  const frac = (p - (200 / 3)) / (100 / 3);
+  const frac = (p - 200 / 3) / (100 / 3);
   return pts[2] + frac * (pts[3] - pts[2]);
 }
 
@@ -152,7 +165,10 @@ export function SpeedTab() {
     (e.target as HTMLInputElement).value = 'Press key...';
   };
 
-  const handleHotkeyDown = (keyType: 'keySpeedUp' | 'keySlowDown' | 'keyReset', e: KeyboardEvent) => {
+  const handleHotkeyDown = (
+    keyType: 'keySpeedUp' | 'keySlowDown' | 'keyReset',
+    e: KeyboardEvent,
+  ) => {
     e.preventDefault();
     if (['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) return;
     const boundKey = e.key === ' ' ? 'Space' : e.key;
@@ -185,7 +201,15 @@ export function SpeedTab() {
               title="Reset speed to 1.0x"
               aria-label="Reset speed"
             >
-              <svg class={styles.resetIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <svg
+                class={styles.resetIcon}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                 <path d="M3 3v5h5" />
               </svg>
@@ -198,7 +222,15 @@ export function SpeedTab() {
               title="Customize Speed Snap Points"
               aria-label="Customize Speed Snap Points"
             >
-              <svg class={styles.settingsIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <svg
+                class={styles.settingsIcon}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <circle cx="12" cy="12" r="3" />
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
               </svg>
@@ -240,7 +272,11 @@ export function SpeedTab() {
         {/* Snap Points Collapsible Editor with Smooth 2-way Animation */}
         <div
           class={`${styles.presetsEditorContainer} ${
-            editorState === 'expanded' ? styles.expanded : editorState === 'collapsing' ? styles.collapsing : ''
+            editorState === 'expanded'
+              ? styles.expanded
+              : editorState === 'collapsing'
+                ? styles.collapsing
+                : ''
           }`}
         >
           <div class={styles.presetsEditorSection}>
@@ -252,7 +288,16 @@ export function SpeedTab() {
                 onClick={resetSnapDefaults}
                 title="Reset Snap Points to 1.0x, 1.5x, 2.0x, 2.5x"
               >
-                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="11"
+                  height="11"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                   <path d="M3 3v5h5" />
                 </svg>
@@ -271,7 +316,9 @@ export function SpeedTab() {
                       step="0.1"
                       value={pt.toFixed(1)}
                       class={styles.snapEditInput}
-                      onChange={(e) => handleSnapInputChange(i, (e.target as HTMLInputElement).value)}
+                      onChange={(e) =>
+                        handleSnapInputChange(i, (e.target as HTMLInputElement).value)
+                      }
                     />
                     <span class={styles.snapUnit}>x</span>
                   </div>
@@ -283,34 +330,61 @@ export function SpeedTab() {
 
         {/* Integrated Speed Widget Footer Rows */}
         <div class={styles.hudFooterRow}>
-          <label class={styles.hudFooterTitle} onClick={() => { hideSpeed.value = !hideSpeed.value; saveSetting('hideSpeed', hideSpeed.value); }}>
+          <label
+            class={styles.hudFooterTitle}
+            onClick={() => {
+              hideSpeed.value = !hideSpeed.value;
+              saveSetting('hideSpeed', hideSpeed.value);
+            }}
+          >
             Hide Speed Widget
           </label>
           <Toggle
             checked={hideSpeed.value}
-            onChange={(v) => { hideSpeed.value = v; saveSetting('hideSpeed', v); }}
+            onChange={(v) => {
+              hideSpeed.value = v;
+              saveSetting('hideSpeed', v);
+            }}
             ariaLabel="Toggle Hide Speed Widget"
           />
         </div>
 
         <div class={styles.hudFooterRow}>
-          <label class={styles.hudFooterTitle} onClick={() => { alwaysExpandWidget.value = !alwaysExpandWidget.value; saveSetting('alwaysExpandWidget', alwaysExpandWidget.value); }}>
+          <label
+            class={styles.hudFooterTitle}
+            onClick={() => {
+              alwaysExpandWidget.value = !alwaysExpandWidget.value;
+              saveSetting('alwaysExpandWidget', alwaysExpandWidget.value);
+            }}
+          >
             Always Expand Speed Bar
           </label>
           <Toggle
             checked={alwaysExpandWidget.value}
-            onChange={(v) => { alwaysExpandWidget.value = v; saveSetting('alwaysExpandWidget', v); }}
+            onChange={(v) => {
+              alwaysExpandWidget.value = v;
+              saveSetting('alwaysExpandWidget', v);
+            }}
             ariaLabel="Toggle Always Expand Speed Bar"
           />
         </div>
 
         <div class={styles.hudFooterRow}>
-          <label class={styles.hudFooterTitle} onClick={() => { constantVideoQuality.value = !constantVideoQuality.value; saveSetting('constantVideoQuality', constantVideoQuality.value); }}>
+          <label
+            class={styles.hudFooterTitle}
+            onClick={() => {
+              constantVideoQuality.value = !constantVideoQuality.value;
+              saveSetting('constantVideoQuality', constantVideoQuality.value);
+            }}
+          >
             Constant Video Quality <span class={styles.betaBadge}>BETA</span>
           </label>
           <Toggle
             checked={constantVideoQuality.value}
-            onChange={(v) => { constantVideoQuality.value = v; saveSetting('constantVideoQuality', v); }}
+            onChange={(v) => {
+              constantVideoQuality.value = v;
+              saveSetting('constantVideoQuality', v);
+            }}
             ariaLabel="Toggle Constant Video Quality"
           />
         </div>
@@ -360,7 +434,13 @@ export function SpeedTab() {
         )}
 
         <div class={styles.hudFooterRow}>
-          <label class={styles.hudFooterTitle} onClick={() => { showFinishTime.value = !showFinishTime.value; saveSetting('showFinishTime', showFinishTime.value); }}>
+          <label
+            class={styles.hudFooterTitle}
+            onClick={() => {
+              showFinishTime.value = !showFinishTime.value;
+              saveSetting('showFinishTime', showFinishTime.value);
+            }}
+          >
             Show Finish Time
           </label>
           <div class={styles.finishTimeControls}>
@@ -380,7 +460,10 @@ export function SpeedTab() {
             </select>
             <Toggle
               checked={showFinishTime.value}
-              onChange={(v) => { showFinishTime.value = v; saveSetting('showFinishTime', v); }}
+              onChange={(v) => {
+                showFinishTime.value = v;
+                saveSetting('showFinishTime', v);
+              }}
               ariaLabel="Toggle Show Finish Time"
             />
           </div>
@@ -395,7 +478,10 @@ export function SpeedTab() {
             <FeatureRow label="Enable Keyboard Hotkeys">
               <Toggle
                 checked={enableHotkeys.value}
-                onChange={(v) => { enableHotkeys.value = v; saveSetting('enableHotkeys', v); }}
+                onChange={(v) => {
+                  enableHotkeys.value = v;
+                  saveSetting('enableHotkeys', v);
+                }}
                 ariaLabel="Toggle Keyboard Hotkeys"
               />
             </FeatureRow>
@@ -409,7 +495,9 @@ export function SpeedTab() {
                     class={styles.hotkeyInput}
                     value={keySpeedUp.value}
                     onFocus={handleHotkeyFocus}
-                    onBlur={() => { if (keySpeedUp.value === 'Press key...') keySpeedUp.value = 'h'; }}
+                    onBlur={() => {
+                      if (keySpeedUp.value === 'Press key...') keySpeedUp.value = 'h';
+                    }}
                     onKeyDown={(e) => handleHotkeyDown('keySpeedUp', e as unknown as KeyboardEvent)}
                     aria-label="Speed Up Hotkey"
                   />
@@ -422,8 +510,12 @@ export function SpeedTab() {
                     class={styles.hotkeyInput}
                     value={keySlowDown.value}
                     onFocus={handleHotkeyFocus}
-                    onBlur={() => { if (keySlowDown.value === 'Press key...') keySlowDown.value = 'j'; }}
-                    onKeyDown={(e) => handleHotkeyDown('keySlowDown', e as unknown as KeyboardEvent)}
+                    onBlur={() => {
+                      if (keySlowDown.value === 'Press key...') keySlowDown.value = 'j';
+                    }}
+                    onKeyDown={(e) =>
+                      handleHotkeyDown('keySlowDown', e as unknown as KeyboardEvent)
+                    }
                     aria-label="Slow Down Hotkey"
                   />
                 </div>
@@ -435,7 +527,9 @@ export function SpeedTab() {
                     class={styles.hotkeyInput}
                     value={keyReset.value}
                     onFocus={handleHotkeyFocus}
-                    onBlur={() => { if (keyReset.value === 'Press key...') keyReset.value = 'l'; }}
+                    onBlur={() => {
+                      if (keyReset.value === 'Press key...') keyReset.value = 'l';
+                    }}
                     onKeyDown={(e) => handleHotkeyDown('keyReset', e as unknown as KeyboardEvent)}
                     aria-label="Reset Speed Hotkey"
                   />
@@ -447,7 +541,10 @@ export function SpeedTab() {
           <FeatureRow label="Disable Scroll Wheel Adjust">
             <Toggle
               checked={disableScroll.value}
-              onChange={(v) => { disableScroll.value = v; saveSetting('disableScroll', v); }}
+              onChange={(v) => {
+                disableScroll.value = v;
+                saveSetting('disableScroll', v);
+              }}
               ariaLabel="Toggle Scroll Wheel Adjust"
             />
           </FeatureRow>
@@ -456,7 +553,10 @@ export function SpeedTab() {
             <FeatureRow label="Hold Space to Speed Up">
               <Toggle
                 checked={holdSpaceSpeedUp.value}
-                onChange={(v) => { holdSpaceSpeedUp.value = v; saveSetting('holdSpaceSpeedUp', v); }}
+                onChange={(v) => {
+                  holdSpaceSpeedUp.value = v;
+                  saveSetting('holdSpaceSpeedUp', v);
+                }}
                 ariaLabel="Toggle Hold Space"
               />
             </FeatureRow>
@@ -469,7 +569,10 @@ export function SpeedTab() {
                   max={4.0}
                   step={0.1}
                   unit="x"
-                  onChange={(v) => { holdSpaceSpeed.value = v; saveSetting('holdSpaceSpeed', v); }}
+                  onChange={(v) => {
+                    holdSpaceSpeed.value = v;
+                    saveSetting('holdSpaceSpeed', v);
+                  }}
                 />
               </div>
             )}
@@ -478,7 +581,10 @@ export function SpeedTab() {
           <FeatureRow label="Instant Hide Button">
             <Toggle
               checked={enableInstantHide.value}
-              onChange={(v) => { enableInstantHide.value = v; saveSetting('enableInstantHide', v); }}
+              onChange={(v) => {
+                enableInstantHide.value = v;
+                saveSetting('enableInstantHide', v);
+              }}
               ariaLabel="Toggle Instant Hide Button"
             />
           </FeatureRow>

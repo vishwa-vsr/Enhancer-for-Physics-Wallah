@@ -32,10 +32,15 @@ export function injectSkipSilenceButton(): void {
     return;
   }
 
+  let container = document.getElementById('pwc-ss-container');
+  if (container && container.isConnected) {
+    updateSkipSilenceUI();
+    return;
+  }
+
   const toolbar = findPWToolbar();
   if (!toolbar) return;
 
-  let container = document.getElementById('pwc-ss-container');
   if (!container) {
     container = document.createElement('div');
     container.id = 'pwc-ss-container';

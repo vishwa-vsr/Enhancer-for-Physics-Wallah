@@ -27,6 +27,10 @@ export function injectInstantHideButton(): void {
     return;
   }
 
+  if (exactBtn && exactBtn.isConnected) {
+    return;
+  }
+
   // Determine the control bar container to inject into
   const footerRight = document.getElementById('footer-right-section');
   const controlBar = footerRight ? footerRight.parentElement : null;

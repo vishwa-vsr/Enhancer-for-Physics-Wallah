@@ -8,14 +8,11 @@
   justify-content: center;
   height: 100%;
   margin: 0 6px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   user-select: none;
   position: relative;
   flex-shrink: 0 !important;
 }
-
-
-
 
 /* Slider Container (slides out on hover to the right) */
 .pwc-speed-slider-container {
@@ -97,7 +94,9 @@
   outline: none !important;
   box-shadow: none !important;
   overflow: hidden !important;
-  transition: color 0.2s ease, background 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
 }
 
 .pwc-speed-badge:hover {
@@ -153,7 +152,7 @@
   display: none !important;
 }
 
-.pwc-speed-badge-input[aria-invalid="true"] {
+.pwc-speed-badge-input[aria-invalid='true'] {
   color: #fb7185 !important;
   box-shadow: inset 0 -1px 0 #fb7185 !important;
 }
@@ -272,7 +271,7 @@
 
 /* Timeline Node Dots DEAD CENTER ON THE WHITE SPEED LINE */
 .pwc-tick-label::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 9.5px;
   width: 5px;
@@ -280,7 +279,10 @@
   background-color: #ffffff;
   border-radius: 50%;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
-  transition: transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
   z-index: 1;
 }
 
@@ -304,17 +306,15 @@
    ========================================================================== */
 
 /* --- Hide Notes: PW Live toolbar button has title="Add note" --- */
-html.pwc-hide-notes #footer-right-section > [title*="note" i] {
+html.pwc-hide-notes #footer-right-section > [title*='note' i] {
   display: none !important;
 }
 
-
-
 /* --- Hide Note Timeline Sidebar Panel --- */
-html.pwc-hide-notetimeline [class*="timeline-sidebar"],
-html.pwc-hide-notetimeline [id*="timeline-sidebar"],
-html.pwc-hide-notetimeline [class*="Timeline_sidebar"],
-html.pwc-hide-notetimeline [class*="Timeline_container"] {
+html.pwc-hide-notetimeline [class*='timeline-sidebar'],
+html.pwc-hide-notetimeline [id*='timeline-sidebar'],
+html.pwc-hide-notetimeline [class*='Timeline_sidebar'],
+html.pwc-hide-notetimeline [class*='Timeline_container'] {
   display: none !important;
 }
 
@@ -330,11 +330,11 @@ html.pwc-hide-quality #pwc-quality-control {
 
 /* --- Hide Settings Icon: VideoJS setting icon or any gear/quality controls --- */
 html.pwc-hide-setting #setting-icon,
-html.pwc-hide-setting [id*="setting-icon"],
+html.pwc-hide-setting [id*='setting-icon'],
 html.pwc-hide-setting .vjs-setting-button,
 html.pwc-hide-setting .vjs-setting-menu,
-html.pwc-hide-setting [class*="setting-icon"],
-html.pwc-hide-setting [class*="gear-icon"] {
+html.pwc-hide-setting [class*='setting-icon'],
+html.pwc-hide-setting [class*='gear-icon'] {
   display: none !important;
 }
 
@@ -342,10 +342,11 @@ html.pwc-hide-setting [class*="gear-icon"] {
 html.pwc-hide-timeline .vjs-progress-control,
 html.pwc-hide-timeline .vjs-progress-holder,
 html.pwc-hide-timeline .vjs-play-progress,
-html.pwc-hide-timeline [class*="progress-control"],
-html.pwc-hide-timeline [class*="progress-bar"]:not(.pwc-speed-container):not(.pwc-speed-slider-container),
-html.pwc-hide-timeline [class*="seekbar"],
-html.pwc-hide-timeline [class*="seek-bar"] {
+html.pwc-hide-timeline [class*='progress-control'],
+html.pwc-hide-timeline
+  [class*='progress-bar']:not(.pwc-speed-container):not(.pwc-speed-slider-container),
+html.pwc-hide-timeline [class*='seekbar'],
+html.pwc-hide-timeline [class*='seek-bar'] {
   display: none !important;
 }
 
@@ -374,7 +375,10 @@ html.pwc-hide-timetext .vjs-time-control {
   border: none !important;
   color: rgba(255, 255, 255, 0.75) !important;
   cursor: pointer !important;
-  transition: color 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease !important;
+  transition:
+    color 0.2s ease,
+    transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    opacity 0.25s ease !important;
   padding: 0 !important;
   margin: 0 6px !important;
 }
@@ -397,9 +401,11 @@ html.pwc-hide-timetext .vjs-time-control {
 .vjs-control-bar,
 #footer-right-section,
 #footer-right-section + div,
-[class*="control-bar"],
-[class*="controls-container"] {
-  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s ease !important;
+[class*='control-bar'],
+[class*='controls-container'] {
+  transition:
+    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.35s ease !important;
 }
 
 /* --- Focus Mode: Hide everything on the webpage except the video element --- */
@@ -440,7 +446,8 @@ html.pwc-collapsed-state * {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif !important;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, Helvetica, Arial, sans-serif !important;
   animation: pwc-focus-fade-in 0.22s ease !important;
 }
 
@@ -504,7 +511,9 @@ html.pwc-collapsed-state * {
   background: transparent !important;
   color: #cbd5e1 !important;
   cursor: pointer !important;
-  transition: background 0.18s ease, color 0.18s ease !important;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease !important;
 }
 
 .pwc-focus-lock-quit:hover {
@@ -567,13 +576,15 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   padding: 10px 18px !important;
   border-radius: 999px !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   font-size: 13.5px !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
   animation: pwc-focus-fade-in 0.25s ease !important;
-  transition: background 0.2s ease, color 0.2s ease !important;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease !important;
 }
 
 .pwc-focus-lock-interstitial:hover {
@@ -589,12 +600,6 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
     opacity: 1;
   }
 }
-
-
-
-
-
-
 
 /* ==========================================================================
    Skip Silence Player Controls
@@ -621,7 +626,9 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   justify-content: center;
   height: 100%;
   outline: none;
-  transition: color 0.2s ease, filter 0.2s ease;
+  transition:
+    color 0.2s ease,
+    filter 0.2s ease;
 }
 
 .pwc-ss-toggle svg {
@@ -677,7 +684,9 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   max-height: 16px;
   background: #4ade80;
   border-radius: 1px;
-  transition: height 0.1s ease-out, background 0.2s ease;
+  transition:
+    height 0.1s ease-out,
+    background 0.2s ease;
 }
 
 .pwc-ss-visualizer.silence .pwc-ss-bar {
@@ -692,7 +701,7 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   white-space: nowrap;
   letter-spacing: 0.02em;
   opacity: 0.9;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Dynamic Lecture Finish Time Badge (Matches native PW player time text) */
@@ -703,7 +712,14 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   background: transparent;
   border: none;
   padding: 0;
-  font-family: 'RedditSans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    'RedditSans',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   font-size: 13px;
   line-height: 1.4;
   user-select: none;
@@ -718,13 +734,13 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 .pwc-finish-icon {
   width: 13px;
   height: 13px;
-  stroke: #B5BBC5;
+  stroke: #b5bbc5;
   flex-shrink: 0;
   opacity: 0.85;
 }
 
 .pwc-finish-prefix {
-  color: #B5BBC5;
+  color: #b5bbc5;
   font-weight: 500;
 }
 
@@ -736,7 +752,7 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 }
 
 .pwc-finish-left {
-  color: #B5BBC5;
+  color: #b5bbc5;
   font-weight: 500;
   font-variant-numeric: tabular-nums !important;
 }
@@ -752,7 +768,13 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   justify-content: center;
   height: 100%;
   margin: 0 4px;
-  font-family: 'RedditSans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    'RedditSans',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   user-select: none;
 }
 
@@ -820,7 +842,9 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 2000;
 }
 
@@ -855,7 +879,9 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   font-weight: 500;
   cursor: pointer;
   text-align: left;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
   font-family: inherit;
 }
 

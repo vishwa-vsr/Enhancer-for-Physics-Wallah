@@ -13,6 +13,30 @@ let monitorTimeout: any = null;
 let monitorIntervalId: any = null;
 let observer: MutationObserver | null = null;
 
+// Helper to check if all necessary extension controls are already placed and connected
+export function areControlsHealthy(): boolean {
+  if (!state.extensionEnabled) return true;
+  const speedCtrl = document.getElementById('pwc-speed-control');
+  if (!speedCtrl || !speedCtrl.isConnected) return false;
+
+  if (state.showFinishTime) {
+    const finishBadge = document.getElementById('pwc-finish-time-badge');
+    if (!finishBadge || !finishBadge.isConnected) return false;
+  }
+
+  if (state.constantVideoQuality) {
+    const qualityCtrl = document.getElementById('pwc-quality-control');
+    if (!qualityCtrl || !qualityCtrl.isConnected) return false;
+  }
+
+  if (state.enableInstantHide) {
+    const hideBtn = document.getElementById('pwc-instant-hide-btn');
+    if (!hideBtn || !hideBtn.isConnected) return false;
+  }
+
+  return true;
+}
+
 // Throttled execution of DOM monitoring to optimize performance
 export function throttledMonitor(): void {
   if (monitorTimeout) return;
@@ -28,8 +52,12 @@ export function manageMonitorInterval(): void {
   const cached = getCachedVideo();
   const hasVideo = !!(cached && (cached as any).isConnected);
   if (hasVideo && !monitorIntervalId) {
-    // Video found — start the safety-net interval
-    monitorIntervalId = setInterval(throttledMonitor, 1000);
+    // Video found — start a relaxed safety-net interval
+    monitorIntervalId = setInterval(() => {
+      // If controls are already alive and healthy, do zero work
+      if (areControlsHealthy()) return;
+      throttledMonitor();
+    }, 2000);
   } else if (!hasVideo && monitorIntervalId) {
     // No video — stop the interval to save CPU
     clearInterval(monitorIntervalId);
@@ -45,6 +73,14 @@ export function monitor(): void {
     if (video !== getActiveVideoElement()) {
       setupVideoListeners(video);
     }
+    // Fast path: if all controls are already in the DOM and connected, skip injection cycle
+    if (areControlsHealthy()) {
+      if (state.skipSilenceEnabled && !isSSEngineRunning() && !video.paused) {
+        ssInit();
+      }
+      return;
+    }
+
     isModifyingDOM = true;
     try {
       injectSpeedControl();
@@ -65,9 +101,48 @@ export function monitor(): void {
 export function startDomObserver(): void {
   if (observer) return;
 
-  observer = new MutationObserver(() => {
+  observer = new MutationObserver((mutations) => {
     if (isModifyingDOM) return;
-    throttledMonitor();
+
+    let hasRelevantMutation = false;
+    for (let i = 0; i < mutations.length; i++) {
+      const mut = mutations[i];
+      const target = mut.target as HTMLElement;
+
+      // Skip mutations strictly inside chat, doubt, or comment containers
+      if (
+        target &&
+        typeof target.closest === 'function' &&
+        (target.closest('[class*="chat" i]') ||
+          target.closest('[id*="chat" i]') ||
+          target.closest('[class*="doubt" i]') ||
+          target.closest('[class*="comment" i]') ||
+          target.closest('[class*="poll" i]'))
+      ) {
+        continue;
+      }
+
+      // Skip mutations where only pwc elements were added
+      if (mut.addedNodes.length > 0) {
+        let onlySelf = true;
+        for (let j = 0; j < mut.addedNodes.length; j++) {
+          const node = mut.addedNodes[j] as HTMLElement;
+          const id = node.id || '';
+          const cls = typeof node.className === 'string' ? node.className : '';
+          if (id.startsWith('pwc-') || cls.includes('pwc-')) continue;
+          onlySelf = false;
+          break;
+        }
+        if (onlySelf) continue;
+      }
+
+      hasRelevantMutation = true;
+      break;
+    }
+
+    if (hasRelevantMutation) {
+      throttledMonitor();
+    }
   });
 
   observer.observe(document.documentElement, {

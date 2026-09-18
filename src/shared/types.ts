@@ -46,6 +46,7 @@ export interface PopupSettings {
   skipSilenceMute: boolean;
   skipSilenceTimeSaved: number; // milliseconds
   skipSilenceMinDuration: number; // seconds, e.g. 0.5
+  skipSilenceLowCpu: boolean;
 
   // Extension state
   extensionEnabled: boolean;
@@ -95,6 +96,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   skipSilenceMute: false,
   skipSilenceTimeSaved: 0,
   skipSilenceMinDuration: 0.5,
+  skipSilenceLowCpu: false,
 
   extensionEnabled: true,
   themeMode: 'dark',

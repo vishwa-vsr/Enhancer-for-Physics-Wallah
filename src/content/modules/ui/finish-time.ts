@@ -98,10 +98,15 @@ export function injectFinishTimeBadge(): void {
     return;
   }
 
+  let badge = document.getElementById('pwc-finish-time-badge');
+  if (badge && badge.isConnected) {
+    updateFinishTime();
+    return;
+  }
+
   const toolbar = findPWToolbar();
   if (!toolbar) return;
 
-  let badge = document.getElementById('pwc-finish-time-badge');
   if (!badge) {
     badge = document.createElement('div');
     badge.id = 'pwc-finish-time-badge';

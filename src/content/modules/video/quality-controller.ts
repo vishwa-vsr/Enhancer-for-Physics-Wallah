@@ -64,7 +64,7 @@ export function syncConstantQuality(enabled: boolean): void {
   window.dispatchEvent(
     new CustomEvent('PWC_SET_CONSTANT_QUALITY_ENABLED', {
       detail: { enabled },
-    })
+    }),
   );
 
   updateQualityHUD();
@@ -80,7 +80,7 @@ export function applyQuality(quality: VideoQuality): void {
   window.dispatchEvent(
     new CustomEvent('PWC_SET_QUALITY', {
       detail: { quality: target },
-    })
+    }),
   );
 }
 

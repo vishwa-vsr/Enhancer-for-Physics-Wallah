@@ -50,7 +50,14 @@ export function Stepper({ value, onChange, min, max, step, unit = 'x' }: Stepper
 
   return (
     <div class={styles.stepperBox}>
-      <button class={styles.stepperBtn} onClick={handleDecrement} aria-label="Decrease" type="button">−</button>
+      <button
+        class={styles.stepperBtn}
+        onClick={handleDecrement}
+        aria-label="Decrease"
+        type="button"
+      >
+        −
+      </button>
       <div class={styles.stepperValueWrapper}>
         <input
           class={styles.stepperInput}
@@ -65,7 +72,14 @@ export function Stepper({ value, onChange, min, max, step, unit = 'x' }: Stepper
         />
         {unit && <span class={styles.stepperUnit}>{unit}</span>}
       </div>
-      <button class={styles.stepperBtn} onClick={handleIncrement} aria-label="Increase" type="button">+</button>
+      <button
+        class={styles.stepperBtn}
+        onClick={handleIncrement}
+        aria-label="Increase"
+        type="button"
+      >
+        +
+      </button>
     </div>
   );
 }
