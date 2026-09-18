@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.8.4] - 2026-09-18
 
 ### Fixed
-- **Hide Time Display** no longer hides all player icons. Only time numbers are hidden now.
+- **focus mode hide time display** now focus mode only lock full screen, user have to hide ui elements from focus toggles.
 
 ---
 
