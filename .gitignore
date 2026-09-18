@@ -4,7 +4,9 @@ node_modules/
 /backup/
 /docs/
 /pages/
-assets/promo-posters/
+assets/promo-posters/*
+!assets/promo-posters/Comp 2.png
+!assets/promo-posters/Comp 3.png
 assets/skip silence/
 assets/ae assets/
 assets/440-280.png

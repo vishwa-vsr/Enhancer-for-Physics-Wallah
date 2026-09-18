@@ -21,6 +21,10 @@
 
   **Enhancer for Physics Wallah** gives students total control over their learning workflow on Physics Wallah student portals. Speed up lectures up to 4.0x, automatically skip teacher pauses with real-time audio detection, calculate dynamic finish times, auto-pause when switching tabs, and instantly declutter on-screen distractions with 1 click.
 
+  <p align="center">
+    <img src="assets/promo-posters/Comp%202.png" alt="Enhancer for Physics Wallah On-Player Controls" width="100%" />
+  </p>
+
   [Install](#-installation) • [Features](#-features) • [Hotkeys](#-keyboard-shortcuts) • [FAQ](#-frequently-asked-questions) • [Privacy](#-privacy--security) • [Contributing](CONTRIBUTING.md)
 </div>
 
@@ -39,6 +43,10 @@ Install the extension directly with one click from your browser's official store
 ---
 
 ## ✨ Features
+
+<p align="center">
+  <img src="assets/promo-posters/Comp%203.png" alt="Enhancer for Physics Wallah Popup Controls" width="100%" />
+</p>
 
 ### ⚡ 1. Video Playback & Speed HUD
 * **Extended Speed Range:** Fine-tune video playback speed from `0.5x` up to `4.0x` in precise `0.1x` steps.
