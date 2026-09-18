@@ -109,7 +109,7 @@ export function startDomObserver(): void {
       const mut = mutations[i];
       const target = mut.target as HTMLElement;
 
-      // Skip mutations strictly inside chat, doubt, or comment containers
+      // Skip mutations strictly inside chat, doubt, comment, emote, or live interactive containers
       if (
         target &&
         typeof target.closest === 'function' &&
@@ -117,7 +117,11 @@ export function startDomObserver(): void {
           target.closest('[id*="chat" i]') ||
           target.closest('[class*="doubt" i]') ||
           target.closest('[class*="comment" i]') ||
-          target.closest('[class*="poll" i]'))
+          target.closest('[class*="poll" i]') ||
+          target.closest('[class*="emote" i]') ||
+          target.closest('[id*="emote" i]') ||
+          target.closest('#interactive-layer-wrapper') ||
+          target.closest('#player-animation'))
       ) {
         continue;
       }
