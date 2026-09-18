@@ -13,42 +13,8 @@ import {
   hideTimeSeparators,
 } from './elements';
 
-// Distraction keys that Focus Lock force-hides for a clean study session.
-// Playback aids (speed, quality, timeline, time text) stay visible so the
-// student can still control the lecture while locked in.
-const FOCUS_LOCK_HIDE_KEYS: ReadonlyArray<keyof HideSettings> = [
-  'hideAskAI',
-  'hideDoubt',
-  'hideChat',
-  'hideNotes',
-  'hideNoteTimeline',
-  'hideSetting',
-];
-
-// When Focus Lock is active, distraction toggles are forced ON temporarily
-// without mutating the user's persisted hideSettings.
-let focusLockOverride = false;
-
-export function isFocusLockOverride(): boolean {
-  return focusLockOverride;
-}
-
-// Enable/disable the Focus Lock distraction override and re-apply hiding state
-export function setFocusLockOverride(active: boolean): void {
-  if (focusLockOverride === active) return;
-  focusLockOverride = active;
-  applySettingsHTML();
-  applyDistractorsState();
-}
-
-function isFocusLockKey(key: keyof HideSettings): boolean {
-  return FOCUS_LOCK_HIDE_KEYS.includes(key);
-}
-
 function shouldEnableDistraction(key: keyof HideSettings, currentSettings: HideSettings): boolean {
-  return focusLockOverride
-    ? isFocusLockKey(key)
-    : state.extensionEnabled && currentSettings[key] === true;
+  return state.extensionEnabled && currentSettings[key] === true;
 }
 
 // Toggle mapping keys to documentElement class names

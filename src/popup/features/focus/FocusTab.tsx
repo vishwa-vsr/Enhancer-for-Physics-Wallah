@@ -94,8 +94,8 @@ function FocusLockSection({ lockUnavailable, lockActive, onToggle }: FocusLockSe
             lockUnavailable
               ? 'Open a lecture video to start'
               : lockActive
-                ? 'Active — auto-hiding chat, doubts, notes & settings'
-                : 'Fullscreen & distraction-free'
+                ? 'Running — pauses if you leave full screen'
+                : 'Plays full screen & pauses if you leave'
           }
           disabled={lockUnavailable}
         >

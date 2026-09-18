@@ -2,15 +2,13 @@ import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { cancelSpaceHold } from '../shortcuts/space-hold';
 import { isUserTyping } from '../shortcuts/keyboard';
-import { setFocusLockOverride } from '../distractions/focus-css';
 import { showInfoToast } from './toast';
 
 /**
- * Focus Lock Mode — strict distraction-free study session.
+ * Focus Lock Mode — strict full screen study session.
  *
- * One click puts the player into a clean fullscreen view, shields the student
- * from all chats, doubts, Ask AI panels and clutter, and pauses playback with
- * a reminder modal if they try to exit fullscreen or leave the lecture tab.
+ * One click puts the player into full screen and pauses playback with
+ * a reminder modal if the student tries to exit fullscreen or leave the lecture tab.
  */
 
 const FOCUS_LOCK_BTN_ID = 'pwc-focus-lock-btn';
@@ -87,18 +85,14 @@ export function activateFocusLock(): boolean {
   pausedByGuard = false;
   intentionalFullscreenExit = false;
 
-  // 1. Hide all distracting elements at once (chat, doubts, Ask AI, notes,
-  //    note timeline and settings) via the existing distraction modules.
-  setFocusLockOverride(true);
-
-  // 2. Mark the document so CSS hooks can react to the locked session.
+  // 1. Mark the document so CSS hooks can react to the locked session.
   document.documentElement.classList.add('pwc-focus-lock-active');
 
-  // 3. Clean fullscreen presentation.
+  // 2. Clean fullscreen presentation.
   requestPlayerFullscreen();
 
   updateFocusLockButton();
-  showInfoToast('Focus Lock ON — distractions hidden');
+  showInfoToast('Focus Lock ON — pauses if you leave full screen');
   return true;
 }
 
@@ -107,8 +101,6 @@ export function deactivateFocusLock(): void {
   focusLockActive = false;
   pausedByGuard = false;
 
-  // Restore the user's own distraction-hiding preferences.
-  setFocusLockOverride(false);
   document.documentElement.classList.remove('pwc-focus-lock-active');
   removeModal();
   removeInterstitial();
@@ -291,7 +283,7 @@ function updateFocusLockButton(): void {
   btn.classList.toggle('active', focusLockActive);
   btn.setAttribute(
     'title',
-    focusLockActive ? 'Exit Focus Lock' : 'Focus Lock (Distraction-Free Study Session)'
+    focusLockActive ? 'Exit Focus Lock' : 'Focus Lock (Full screen study session)'
   );
 }
 
