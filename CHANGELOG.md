@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.8.4] - 2026-09-18
 
 ### Fixed
-- **Hide Time Display no longer hides icons** — turning on "Hide Time Display" was accidentally wiping out all player buttons (play, settings, fullscreen, etc.). The root cause was overly broad CSS selectors added in v1.0.8.3 that matched the button bar's class names. Reverted to letting the smart script hide only the actual time numbers and dividers, leaving all icons untouched. Closes [#17](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/17).
+- **Hide Time Display** no longer hides all player icons. Only time numbers are hidden now.
 
 ---
 
