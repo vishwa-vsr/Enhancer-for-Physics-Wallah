@@ -2,12 +2,10 @@
   <img src="assets/logo_300.png" width="120" height="120" alt="Enhancer for Physics Wallah Logo" />
   
   # Enhancer for Physics Wallah
-  ### Supercharge your lecture experience on `pw.live` with speed controls, smart silence skipping, and 1-click focus tools
+  ### Enhance your lecture experience on `pw.live` Speed up lectures up to 4.0x with speed widget, automatically skip teacher pauses with real-time audio detection, constant 720p HD video quality, calculate real finish times, auto-pause when switching tabs, customizable Keyboard Shortcuts, and instantly hide all icon with one click.
 
   [![Version: 1.0.8.3](https://img.shields.io/badge/version-1.0.8.3-blue.svg)](#)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-  [![Preact](https://img.shields.io/badge/Preact-10-673AB8?logo=preact&logoColor=white)](https://preactjs.com/)
   [![Manifest V3](https://img.shields.io/badge/Manifest-V3-success)](#)
   [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-brightgreen)](#-privacy--security)
 
@@ -18,8 +16,6 @@
     &nbsp;&nbsp;
     <a href="https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan"><img src="https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png" alt="Get it from Microsoft Edge" height="46"></a>
   </p>
-
-  **Enhancer for Physics Wallah** gives students total control over their learning workflow on Physics Wallah student portals. Speed up lectures up to 4.0x, automatically skip teacher pauses with real-time audio detection, calculate dynamic finish times, auto-pause when switching tabs, and instantly declutter on-screen distractions with 1 click.
 
   <p align="center">
     <img src="assets/promo-posters/Comp%202.png" alt="Enhancer for Physics Wallah On-Player Controls" width="100%" />
@@ -51,7 +47,6 @@ Install the extension directly with one click from your browser's official store
 ### ⚡ 1. Video Playback & Speed HUD
 * **Extended Speed Range:** Fine-tune video playback speed from `0.5x` up to `4.0x` in precise `0.1x` steps.
 * **4-Point Segmented Slider:** Equal-distance quick-snap slider with magnetic point attraction (customizable defaults: `1.0x`, `2.0x`, `3.0x`, `4.0x`).
-* **SVG Speedometer Dial:** Real-time animated dial needle reflecting your exact playback speed.
 * **Mouse Wheel Adjustment:** Hover over the on-player speed badge and scroll your mouse wheel to quickly step speeds up or down by `0.1x`.
 * **Hold Space to Accelerate:** Hold down <kbd>Spacebar</kbd> to temporarily boost speed (default `2.0x`), releasing it to instantly return to your normal speed. Quick-tap toggles Play/Pause.
 
