@@ -8,11 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.0.8.4] - 2026-09-18
 
-### Fixed
-- **Hide Time Display** no longer hides all player icons. Only time numbers are hidden now. Fixes [#17](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/17).
-
 ### Changed
-- **Focus Lock** now only handles fullscreen + pause-on-exit. It no longer auto-hides chat, doubts, notes, or Ask AI when activated. Use the individual Focus Toggles to hide those elements instead.
+- **Focus Lock** now only handles fullscreen + pause-on-exit. It no longer auto-hides chat, doubts, notes, or Ask AI when activated. Use the individual Focus Toggles to hide those elements instead [#17](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/17).
 
 ---
 
