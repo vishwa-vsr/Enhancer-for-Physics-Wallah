@@ -68,9 +68,9 @@ No. It only measures the volume level of the lecture audio in real-time RAM to d
 - **Host permissions**: https://*.pw.live/*, https://*.penpencil.co/*, https://*.penpencil.xyz/*, https://*.pwnet.in/*
 
 ## Links
-- Website: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/
+- Website: https://enhancerforpw.vercel.app/
 - Source Code: https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah
-- FAQ: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/faq.html
-- Privacy Policy: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/privacy.html
+- FAQ: https://enhancerforpw.vercel.app/faq
+- Privacy Policy: https://enhancerforpw.vercel.app/privacy
 - Issue Tracker: https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues
 - Releases: https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/releases

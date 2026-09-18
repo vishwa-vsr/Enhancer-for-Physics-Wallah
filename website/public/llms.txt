@@ -23,7 +23,7 @@
 - Open source under MIT License
 
 ## Links
-- Website: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/
+- Website: https://enhancerforpw.vercel.app/
 - Source Code: https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah
-- FAQ: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/faq.html
-- Privacy Policy: https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/privacy.html
+- FAQ: https://enhancerforpw.vercel.app/faq
+- Privacy Policy: https://enhancerforpw.vercel.app/privacy

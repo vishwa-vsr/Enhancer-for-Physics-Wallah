@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <loc>https://enhancerforpw.vercel.app/</loc>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/faq.html</loc>
-    <lastmod>2026-09-11</lastmod>
+    <loc>https://enhancerforpw.vercel.app/faq</loc>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vishwa-vsr.github.io/Enhancer-for-Physics-Wallah/privacy.html</loc>
-    <lastmod>2026-09-11</lastmod>
+    <loc>https://enhancerforpw.vercel.app/privacy</loc>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
