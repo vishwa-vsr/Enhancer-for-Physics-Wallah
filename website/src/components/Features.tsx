@@ -1,30 +1,30 @@
 import React from 'react';
-import { Keyboard, VolumeX, EyeOff, ShieldCheck, Clock, PauseCircle } from 'lucide-react';
+import { Keyboard, VolumeX, EyeOff, Monitor, Clock, PauseCircle } from 'lucide-react';
 
 const FEATURE_LIST = [
   {
-    icon: Keyboard,
-    title: 'Muscle-Memory Hotkeys',
-    subtitle: 'Tap H to speed up, J to slow down, L to reset, and hold Space for turbo boost. Never touch your mouse while locking in.',
-    badge: 'Zero Friction',
+    icon: VolumeX,
+    title: 'Skip Silence',
+    subtitle: 'Automatically speeds up when the teacher stops talking or writes on the board, and returns to normal the second they speak.',
+    badge: '100% On-Device',
   },
   {
-    icon: VolumeX,
-    title: 'Smart Skip Silence',
-    subtitle: 'Auto-accelerates through silent board writing and teacher pauses, returning to normal the moment speech resumes.',
-    badge: '100% On-Device',
+    icon: Monitor,
+    title: 'Constant 720p HD Quality',
+    subtitle: 'Never wait 30 seconds for blurry video to buffer. Automatically locks crisp 720p HD quality so lectures stay clear from start to finish.',
+    badge: 'Always Crisp',
+  },
+  {
+    icon: Keyboard,
+    title: 'Customizable Keyboard Shortcuts',
+    subtitle: 'Control speed with default keys (H to speed up, J to slow down), or customize them to any keys you like in settings.',
+    badge: 'Zero Friction',
   },
   {
     icon: EyeOff,
     title: '1-Click Focus Mode',
-    subtitle: 'Nuke live chat drama, doubt box spam, and AI popups. Leaves only the whiteboard on screen so you can study in peace.',
+    subtitle: 'Instantly hide live chat, doubt box, Ask AI, and other on-screen icons so you can focus in peace.',
     badge: 'Zero Distractions',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Instant HD Quality',
-    subtitle: 'Never wait 30 seconds for blurry potato video to buffer. Automatically locks your preferred 720p or 1080p resolution.',
-    badge: 'Always Crisp',
   },
   {
     icon: Clock,
@@ -50,8 +50,8 @@ export const Features: React.FC = () => {
         >
           Exam bagal mein <em className="not-italic text-muted-foreground">aa gaya hai!</em>
         </h2>
-        <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          Speed controls, skip silence, focus mode, and HD quality lock — everything you need to finish Physics Wallah lectures faster.
+        <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          Speed up lectures up to 4.0x with speed widget, skip silence with real-time audio detection, constant 720p HD video quality, customizable Keyboard Shortcuts, and instantly hide all icons with one click on pw.live.
         </p>
       </div>
 

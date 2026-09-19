@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowDown, Users, Star } from 'lucide-react';
 import { ChromeIcon, FirefoxIcon, EdgeIcon } from './Icons';
 import { VerticalCutReveal, type VerticalCutRevealRef } from './ui/vertical-cut-reveal';
+import TextLoop from './ui/text-loop';
 
 export const Hero: React.FC = () => {
   const [chromeUsers, setChromeUsers] = useState('650+ users');
@@ -107,16 +108,26 @@ export const Hero: React.FC = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-[#021422]/50 via-transparent to-[#021422] z-[1] pointer-events-none" />
 
       {/* Hero Centerpiece: Headline + SEO Subtitle */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-5xl mx-auto my-auto pt-24 sm:pt-28 pb-4">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-6xl mx-auto my-auto pt-24 sm:pt-28 pb-4">
         <h1
-          className="animate-fade-rise text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-[1.05] sm:leading-[0.95] tracking-tight sm:tracking-[-2.46px] font-normal text-foreground"
+          className="animate-fade-rise text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] tracking-tight sm:tracking-[-2px] font-normal text-foreground whitespace-normal sm:whitespace-nowrap"
           style={{ fontFamily: "'Instrument Serif', serif" }}
         >
-          Kyun nahi ho rahi <em className="not-italic text-muted-foreground">padhai?!</em>
+          Enhance your lecture experience
         </h1>
-        <p className="animate-fade-rise-delay mt-4 text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
-          Speed up Physics Wallah lectures up to 4x, auto-skip silence, remove distractions, and lock HD quality — free extension for Chrome, Firefox & Edge.
-        </p>
+        <div className="animate-fade-rise-delay mt-1 sm:mt-3 flex justify-center">
+          <TextLoop
+            staticText="with"
+            rotatingTexts={['Skip Silence', 'Constant HD Quality', 'Focus Toggles', 'Speed Widget']}
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal tracking-tight leading-[1.05]"
+            staticTextClassName="text-white font-normal mr-2 sm:mr-4"
+            rotatingTextClassName="bg-gradient-to-r from-sky-300 via-cyan-300 to-sky-200 font-normal pr-2"
+            backgroundClassName="bg-gradient-to-r from-transparent via-sky-500/20 to-sky-400/30"
+            cursorClassName="bg-sky-400 w-[3px] md:w-[5px]"
+            interval={2400}
+          />
+        </div>
       </div>
 
       {/* Bottom Bar: Vertical Store Cards on Left, Scroll Indicator on Right */}

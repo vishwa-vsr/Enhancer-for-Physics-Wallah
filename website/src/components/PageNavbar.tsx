@@ -3,7 +3,7 @@ import { Menu, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { GithubIcon } from './Icons';
 
 interface PageNavbarProps {
-  currentPage?: 'home' | 'privacy' | 'faq';
+  currentPage?: 'home' | 'privacy' | 'faq' | 'blog';
 }
 
 export const PageNavbar: React.FC<PageNavbarProps> = ({ currentPage }) => {
@@ -75,6 +75,14 @@ export const PageNavbar: React.FC<PageNavbarProps> = ({ currentPage }) => {
           >
             Privacy
           </a>
+          <a
+            href="./blog.html"
+            className={`text-sm transition-colors ${
+              currentPage === 'blog' ? 'text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Blog
+          </a>
         </div>
 
         {/* Desktop Right Side: GitHub + About Dropdown */}
@@ -115,12 +123,12 @@ export const PageNavbar: React.FC<PageNavbarProps> = ({ currentPage }) => {
                     <span className="text-xs text-muted-foreground">↗</span>
                   </a>
                   <a
-                    href="./faq.html#blog"
+                    href="./blog.html"
                     onClick={() => setAboutOpen(false)}
                     className="flex items-center justify-between px-3 py-2 rounded-xl text-white/90 hover:bg-white/10 hover:text-white transition-colors"
                   >
-                    <span>Blog & Guides</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground font-mono">Soon</span>
+                    <span>Blog & Updates</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 font-mono">New</span>
                   </a>
                   <a
                     href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/releases"
@@ -219,12 +227,14 @@ export const PageNavbar: React.FC<PageNavbarProps> = ({ currentPage }) => {
             FAQ
           </a>
           <a
-            href="./faq.html#blog"
+            href="./blog.html"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-sm text-muted-foreground hover:text-foreground py-1 flex items-center justify-between"
+            className={`text-sm py-1 flex items-center justify-between ${
+              currentPage === 'blog' ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
-            <span>Blog & Guides</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/10 text-muted-foreground font-mono">Soon</span>
+            <span>Blog & Updates</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 font-mono">New</span>
           </a>
           <a
             href="./privacy.html"

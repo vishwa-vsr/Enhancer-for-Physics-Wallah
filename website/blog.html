@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Making Lectures Smoother: Speed Fixes, Focus Lock, and Battery Saver — Enhancer for PW</title>
+    <meta name="description" content="What changed in Enhancer for Physics Wallah after v1.0.8.2. Reworked speed controls, direct typing, focus mode fixes, low-end PC optimization, and battery saver." />
+    <link rel="canonical" href="https://enhancerforpw.vercel.app/blog" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Making Lectures Smoother: Speed Fixes, Focus Lock, and Battery Saver" />
+    <meta property="og:description" content="What changed in Enhancer for Physics Wallah after v1.0.8.2. Speed slider improvements, Focus Lock, and zero-lag fixes for older computers." />
+    <meta property="og:url" content="https://enhancerforpw.vercel.app/blog" />
+    <meta property="og:image" content="https://enhancerforpw.vercel.app/logo.png" />
+    <meta property="og:site_name" content="Enhancer for PW" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Making Lectures Smoother: Speed Fixes, Focus Lock, and Battery Saver" />
+    <meta name="twitter:description" content="Fixing speed slider lag, direct typing, focus mode improvements, and battery saver for Physics Wallah students." />
+    <meta name="twitter:image" content="https://enhancerforpw.vercel.app/logo.png" />
+
+    <!-- Preconnect for fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- JSON-LD: BlogPosting -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "Making Lectures Smoother: Speed Fixes, Focus Lock, and Battery Saver",
+      "description": "What changed in Enhancer for Physics Wallah after v1.0.8.2. Reworked speed controls, direct typing, focus mode fixes, low-end PC optimization, and battery saver.",
+      "datePublished": "2026-09-19",
+      "author": {
+        "@type": "Person",
+        "name": "Enhancer for PW Team"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Enhancer for PW",
+        "url": "https://enhancerforpw.vercel.app/"
+      }
+    }
+    </script>
+  </head>
+  <body class="bg-background text-foreground antialiased selection:bg-white/20 selection:text-white min-h-screen">
+    <div id="root">
+      <!-- Static HTML shell for crawlers and no-JS fallback -->
+      <header style="max-width:840px;margin:0 auto;padding:2rem 1rem">
+        <a href="/">← Back to Enhancer for PW</a>
+        <p><small>Published September 19, 2026 · Updates v1.0.8.3 & v1.0.8.4</small></p>
+        <h1>Making lectures smoother: speed fixes, focus lock, and battery saver</h1>
+        <p>When you study for hours every day, small glitches get in your way. A laggy slider or a freezing tab breaks your study groove.</p>
+        <p>Over the past two weeks, students shared honest feedback and opened issues on our GitHub repository. We listened to those complaints, fixed the annoying bugs, and made playback much lighter on older laptops.</p>
+      </header>
+      <main style="max-width:840px;margin:0 auto;padding:0 1rem">
+        <section>
+          <h2>Fixing the speed slider and lag</h2>
+          <p>A student named Pranshu pointed out an annoying problem with our speed control. When you held down the mouse button to drag the slider, the video player thought you wanted 2x fast-forward. The slider also stuttered and lagged while moving.</p>
+          <ul>
+            <li><strong>Wider slider bar:</strong> We made the speed slider wider (200 pixels) so it is easy to grab with your mouse without misclicking.</li>
+            <li><strong>No more stutter:</strong> The slider no longer calculates heavy math while you drag. It updates smoothly and only saves when you let go of your mouse.</li>
+            <li><strong>Direct speed typing:</strong> A student contributor named Mayank Mahaur added a new way to pick your speed. You can now click right on the speed number (like 1.0x) and type exact numbers like 1.25x or 1.75x.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Focus lock and the missing buttons bug</h2>
+          <p>Another student contributor named Parth built Focus Lock mode to help you stay in the zone.</p>
+          <p>With one click, Focus Lock puts your lecture into full screen. If you get distracted and leave full screen, your video pauses right away so you never miss what the teacher is explaining.</p>
+          <p>In our first release of this feature, we ran into a frustrating bug. Turning on the option to hide the video timer accidentally hid the play, settings, and full screen buttons.</p>
+          <p>We fixed that issue. Focus Lock now keeps things simple by handling full screen and pausing on exit. If you want to hide live chat, student doubts, or notes, you can turn those off one by one using the normal switches.</p>
+        </section>
+        <section>
+          <h2>No more website freezes on budget laptops</h2>
+          <p>Some students told us that the extension made Physics Wallah lag or crash on older computers. That was our fault, and we tracked down why it happened.</p>
+          <p>The extension was scanning the web page multiple times every second to find the video player controls. On top of that, live classes with thousands of floating reaction emojis forced the extension to do extra work.</p>
+          <ul>
+            <li>It now finds the video player controls once and remembers them.</li>
+            <li>It ignores live class emoji animations so your computer does not waste power.</li>
+            <li>The video player now runs smoothly without freezing your web browser.</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Battery saver for skip silence</h2>
+          <p>Skip Silence automatically cuts out quiet gaps when a teacher pauses or writes on the board.</p>
+          <p>Listening to audio in real time takes extra battery power. If you are studying on a laptop without a charger nearby, your battery drains faster and the fans can get loud.</p>
+          <p>We added a new "Low CPU / Battery Saver" switch inside the Skip Silence settings tab. Turning it on cuts the audio workload in half so your laptop runs cooler and your battery lasts longer.</p>
+        </section>
+      </main>
+      <footer style="max-width:840px;margin:0 auto;padding:2rem 1rem;font-size:0.875rem">
+        <nav>
+          <a href="/">Home</a> ·
+          <a href="/faq">FAQ</a> ·
+          <a href="/privacy">Privacy</a> ·
+          <a href="/blog">Blog</a> ·
+          <a href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah">GitHub</a>
+        </nav>
+      </footer>
+    </div>
+    <script type="module" src="/src/blog.tsx"></script>
+  </body>
+</html>

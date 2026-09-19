@@ -72,6 +72,12 @@ export const Navbar: React.FC = () => {
           >
             FAQ
           </a>
+          <a
+            href="./blog.html"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Blog
+          </a>
         </div>
 
         {/* Desktop Right Side: GitHub Icon + About Dropdown */}
@@ -115,12 +121,12 @@ export const Navbar: React.FC = () => {
                     <span className="text-xs text-muted-foreground">↗</span>
                   </a>
                   <a
-                    href="./faq.html#blog"
+                    href="./blog.html"
                     onClick={() => setAboutOpen(false)}
                     className="flex items-center justify-between px-3 py-2 rounded-xl text-white/90 hover:bg-white/10 hover:text-white transition-colors"
                   >
-                    <span>Blog & Guides</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground font-mono">Soon</span>
+                    <span>Blog & Updates</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 font-mono">New</span>
                   </a>
                   <a
                     href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/releases"
@@ -234,12 +240,12 @@ export const Navbar: React.FC = () => {
             FAQ
           </a>
           <a
-            href="./faq.html#blog"
+            href="./blog.html"
             onClick={() => setMobileMenuOpen(false)}
             className="text-sm text-muted-foreground hover:text-foreground py-1 flex items-center justify-between"
           >
-            <span>Blog & Guides</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/10 text-muted-foreground font-mono">Soon</span>
+            <span>Blog & Updates</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 font-mono">New</span>
           </a>
           <a
             href="./privacy.html"

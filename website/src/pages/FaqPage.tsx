@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PageNavbar } from '../components/PageNavbar';
 import { Footer } from '../components/Footer';
-import { ChevronDown, ChevronUp, CheckCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import KineticGrid from '@/components/ui/kinetic-grid';
 import SmoothScroll from '@/components/ui/smooth-scroll';
 
@@ -13,14 +13,19 @@ interface FaqItem {
 
 const FAQS: FaqItem[] = [
   {
-    category: 'Installation',
-    question: 'How do I install Enhancer for PW?',
-    answer: 'Click your browser button on our homepage or search "Enhancer for Physics Wallah" on the Chrome Web Store, Firefox Add-ons, or Microsoft Edge Add-on Store. Once installed, pin the extension to your toolbar. When you open any lecture, your speed bar and focus controls appear automatically.',
+    category: 'General',
+    question: 'What is Enhancer for PW?',
+    answer: 'Enhancer for PW is a 100% free and open-source browser extension designed for Physics Wallah students on pw.live. It adds playback speed up to 4.0x with a quick speed widget, automatic real-time silence skipping, constant 720p HD video quality, customizable keyboard shortcuts, and a 1-click focus mode to hide chat distractions.',
+  },
+  {
+    category: 'General',
+    question: 'Which browsers are supported?',
+    answer: 'Enhancer for PW is officially available for Google Chrome, Mozilla Firefox, and Microsoft Edge. You can install it directly with one click from their official extension web stores.',
   },
   {
     category: 'Installation',
-    question: 'Do I need to pay or create an account?',
-    answer: 'No. Enhancer for PW is 100% free and open-source. There are no subscriptions, no premium paywalls, and zero account sign-ups.',
+    question: 'How do I install Enhancer for PW?',
+    answer: 'Click your browser button on our homepage or search "Enhancer for Physics Wallah" on the Chrome Web Store, Firefox Add-ons, or Microsoft Edge Add-on Store. Once installed, pin the extension to your toolbar. When you open any lecture, your speed bar and focus controls appear automatically.',
   },
   {
     category: 'Keyboard Shortcuts',
@@ -86,19 +91,6 @@ export const FaqPage: React.FC = () => {
           <p className="text-muted-foreground text-sm sm:text-lg mt-2 sm:mt-3 leading-relaxed">
             Quick solutions to common player questions, keyboard shortcut tips, and account safety.
           </p>
-        </div>
-
-        {/* Quick Help Callout */}
-        <div className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl liquid-glass-card border border-white/10 mb-8 sm:mb-10 flex items-start gap-3.5 sm:gap-4">
-          <div className="p-2 sm:p-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
-            <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
-          <div>
-            <h3 className="text-sm sm:text-base font-semibold text-white">Quick Golden Rule for Hotkeys</h3>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">
-              If hotkeys (<code className="text-white bg-white/10 px-1 py-0.5 rounded">H</code>, <code className="text-white bg-white/10 px-1 py-0.5 rounded">J</code>, <code className="text-white bg-white/10 px-1 py-0.5 rounded">L</code>) don't respond, simply click once on the video screen. Browsers require the video player to be focused before accepting keyboard commands.
-            </p>
-          </div>
         </div>
 
         {/* FAQ Accordion List */}
