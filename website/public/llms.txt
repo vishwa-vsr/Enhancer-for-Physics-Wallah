@@ -24,7 +24,6 @@
 
 ## Links
 - Website: https://enhancerforpw.vercel.app/
-- PW Extensions Guide: https://enhancerforpw.vercel.app/pw-extensions
 - Blog: https://enhancerforpw.vercel.app/blog
 - FAQ: https://enhancerforpw.vercel.app/faq
 - Privacy Policy: https://enhancerforpw.vercel.app/privacy

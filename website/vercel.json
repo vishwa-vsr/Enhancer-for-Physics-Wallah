@@ -4,7 +4,6 @@
   "rewrites": [
     { "source": "/faq", "destination": "/faq.html" },
     { "source": "/privacy", "destination": "/privacy.html" },
-    { "source": "/blog", "destination": "/blog.html" },
-    { "source": "/pw-extensions", "destination": "/pw-extensions.html" }
+    { "source": "/blog", "destination": "/blog.html" }
   ]
 }

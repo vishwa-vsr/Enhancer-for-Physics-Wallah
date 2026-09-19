@@ -18,7 +18,6 @@ export default defineConfig({
         privacy: resolve(__dirname, 'privacy.html'),
         faq: resolve(__dirname, 'faq.html'),
         blog: resolve(__dirname, 'blog.html'),
-        pwExtensions: resolve(__dirname, 'pw-extensions.html'),
       },
     },
   },

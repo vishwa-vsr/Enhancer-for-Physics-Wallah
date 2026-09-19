@@ -78,9 +78,6 @@ export const Footer: React.FC<FooterProps> = () => {
         <a href="./faq.html" className="hover:text-white transition-colors text-white/90">
           FAQ & Help Guide
         </a>
-        <a href="./pw-extensions.html" className="hover:text-white transition-colors text-sky-400 font-medium">
-          PW Extensions Guide
-        </a>
         <a href="./blog.html" className="hover:text-white transition-colors">
           Blog
         </a>

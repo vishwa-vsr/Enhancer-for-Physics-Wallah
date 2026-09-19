@@ -69,7 +69,6 @@ No. It only measures the volume level of the lecture audio in real-time RAM to d
 
 ## Links
 - Website: https://enhancerforpw.vercel.app/
-- PW Extensions Guide: https://enhancerforpw.vercel.app/pw-extensions
 - Blog: https://enhancerforpw.vercel.app/blog
 - FAQ: https://enhancerforpw.vercel.app/faq
 - Privacy Policy: https://enhancerforpw.vercel.app/privacy
