@@ -5,7 +5,7 @@
 ## What It Does
 - Watch lectures at up to 4.0x speed (with 0.1x precision)
 - Auto-skip teacher silence and board-writing pauses
-- 1-click Focus Mode to remove chat, doubt boxes, and AI popups
+- 1-click Focus Mode to remove chat, doubt boxes, and Ask AI buttons
 - Lock HD video quality (720p/1080p) automatically
 - Real-time finish clock showing when your lecture will end
 - Smart tab auto-pause (pauses when you switch tabs)
@@ -24,6 +24,8 @@
 
 ## Links
 - Website: https://enhancerforpw.vercel.app/
-- Source Code: https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah
+- PW Extensions Guide: https://enhancerforpw.vercel.app/pw-extensions
+- Blog: https://enhancerforpw.vercel.app/blog
 - FAQ: https://enhancerforpw.vercel.app/faq
 - Privacy Policy: https://enhancerforpw.vercel.app/privacy
+- Source Code: https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah

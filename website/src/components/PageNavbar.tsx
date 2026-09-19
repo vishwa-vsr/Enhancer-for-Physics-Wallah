@@ -3,7 +3,7 @@ import { Menu, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { GithubIcon } from './Icons';
 
 interface PageNavbarProps {
-  currentPage?: 'home' | 'privacy' | 'faq' | 'blog';
+  currentPage?: 'home' | 'privacy' | 'faq' | 'blog' | 'pw-extensions';
 }
 
 export const PageNavbar: React.FC<PageNavbarProps> = ({ currentPage }) => {
