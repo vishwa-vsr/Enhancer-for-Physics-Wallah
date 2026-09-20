@@ -45,28 +45,6 @@ const StarIcon = () => (
   </svg>
 );
 
-const RedditIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2.2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    width="12"
-    height="12"
-  >
-    <ellipse cx="12" cy="13.5" rx="6.5" ry="4.5" />
-    <circle cx="5" cy="13.5" r="1.5" />
-    <circle cx="19" cy="13.5" r="1.5" />
-    <path d="M12 9l1.8-5h3.2" />
-    <circle cx="18" cy="4" r="1" fill="currentColor" />
-    <circle cx="9.5" cy="13" r="0.75" fill="currentColor" />
-    <circle cx="14.5" cy="13" r="0.75" fill="currentColor" />
-    <path d="M10 15.2c.7.6 1.3.8 2 .8s1.3-.2 2-.8" />
-  </svg>
-);
-
 export const Footer = () => {
   const openLink = (url: string) => {
     if (typeof chrome !== 'undefined' && chrome.tabs) {
@@ -123,17 +101,6 @@ export const Footer = () => {
       >
         <StarIcon />
         Rate Us
-      </a>
-      <a
-        href="#"
-        class={styles.link}
-        onClick={(e) => {
-          e.preventDefault();
-          openLink('https://www.reddit.com/user/Icy-prime-01/');
-        }}
-      >
-        <RedditIcon />
-        Reddit
       </a>
     </footer>
   );
