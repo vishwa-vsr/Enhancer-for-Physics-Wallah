@@ -8,6 +8,7 @@
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![Manifest V3](https://img.shields.io/badge/Manifest-V3-success)](#)
   [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-brightgreen)](#-privacy--security)
+  [![Official Website](https://img.shields.io/badge/Website-enhancerforpw.vercel.app-blueviolet)](https://enhancerforpw.vercel.app/)
 
   <p align="center">
     <a href="https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj"><img src="https://developer.chrome.com/static/docs/webstore/branding/image/206x58-chrome-web-bcb82d15b2486.png" alt="Available in the Chrome Web Store" height="46"></a>
@@ -21,7 +22,7 @@
     <img src="assets/promo-posters/Comp%202.png" alt="Enhancer for Physics Wallah On-Player Controls" width="100%" />
   </p>
 
-  [Install](#-installation) • [Features](#-features) • [Hotkeys](#-keyboard-shortcuts) • [FAQ](#-frequently-asked-questions) • [Privacy](#-privacy--security) • [Contributing](CONTRIBUTING.md)
+  [Website](https://enhancerforpw.vercel.app/) • [Install](#-installation) • [Features](#-features) • [Hotkeys](#-keyboard-shortcuts) • [FAQ](#-frequently-asked-questions) • [Privacy](#-privacy--security) • [Contributing](CONTRIBUTING.md)
 </div>
 
 ---
