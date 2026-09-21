@@ -12,6 +12,7 @@ import {
 } from './modules/distractions/focus-css';
 import { applyAlwaysExpandState, updatePlayerTicks } from './modules/ui/speed-hud';
 import { injectFinishTimeBadge, updateFinishTime } from './modules/ui/finish-time';
+import { injectInstantHideButton } from './modules/ui/focus-mode';
 import {
   ssInit,
   ssDestroy,
@@ -67,6 +68,7 @@ function init(): void {
         // session so all distraction hiding is restored cleanly.
         deactivateFocusLock();
       }
+      injectInstantHideButton();
       focusChanged = true;
     }
 
@@ -78,6 +80,7 @@ function init(): void {
     }
 
     if (changedKeys.includes('enableInstantHide')) {
+      injectInstantHideButton();
       focusChanged = true;
     }
 

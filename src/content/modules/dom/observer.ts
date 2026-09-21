@@ -29,9 +29,11 @@ export function areControlsHealthy(): boolean {
     if (!qualityCtrl || !qualityCtrl.isConnected) return false;
   }
 
+  const hideBtn = document.getElementById('pwc-instant-hide-btn');
   if (state.enableInstantHide) {
-    const hideBtn = document.getElementById('pwc-instant-hide-btn');
     if (!hideBtn || !hideBtn.isConnected) return false;
+  } else if (hideBtn) {
+    return false;
   }
 
   return true;

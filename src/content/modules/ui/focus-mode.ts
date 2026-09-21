@@ -10,9 +10,6 @@ let lastCollapsedTime = 0;
 
 // Inject and manage the arrow hide button inside the controls bar
 export function injectInstantHideButton(): void {
-  const video = getActiveVideo();
-  if (!video) return;
-
   const exactBtn = document.getElementById('pwc-instant-hide-btn');
 
   // If disabled, remove the button if it exists
@@ -26,6 +23,9 @@ export function injectInstantHideButton(): void {
     }
     return;
   }
+
+  const video = getActiveVideo();
+  if (!video) return;
 
   if (exactBtn && exactBtn.isConnected) {
     return;
