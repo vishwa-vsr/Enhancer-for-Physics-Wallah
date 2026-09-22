@@ -28,7 +28,7 @@ import { initKeyboardShortcuts } from './modules/shortcuts/keyboard';
 import { initSpaceHold } from './modules/shortcuts/space-hold';
 import { initAutoPause } from './modules/visibility/auto-pause';
 import { initFocusLock, deactivateFocusLock } from './modules/ui/focus-lock';
-import { startDomObserver, throttledMonitor } from './modules/dom/observer';
+import { startDomObserver, throttledMonitor, initWakeupTriggers } from './modules/dom/observer';
 import { HideSettings } from './types';
 
 // Entry point initialization
@@ -175,6 +175,7 @@ function init(): void {
   initSpaceHold();
   initAutoPause();
   initFocusLock();
+  initWakeupTriggers();
 
   // 5. Start DOM observer for dynamic injections
   startDomObserver();

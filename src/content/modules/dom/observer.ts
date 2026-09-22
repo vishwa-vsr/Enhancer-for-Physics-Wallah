@@ -1,6 +1,7 @@
 import { state } from '../../state';
-import { getActiveVideo, getCachedVideo } from '../video/detector';
-import { getActiveVideoElement, setupVideoListeners } from '../video/controller';
+import { getActiveVideo, getCachedVideo, clearVideoCache } from '../video/detector';
+import { getActiveVideoElement, setupVideoListeners, setActiveVideoElement } from '../video/controller';
+import { resetDistractionCaches } from '../distractions/elements';
 import { injectSpeedControl } from '../ui/speed-hud';
 import { injectQualityControl } from '../ui/quality-hud';
 import { injectSkipSilenceButton } from '../ui/silence-hud';
@@ -49,22 +50,81 @@ export function throttledMonitor(): void {
   }, 150);
 }
 
-// Start or stop the safety-net interval based on whether a video exists
+export function isLecturePage(): boolean {
+  return (
+    (typeof location !== 'undefined' && location.href.includes('/watch')) ||
+    !!document.getElementById('video-player-container') ||
+    !!document.getElementById('pw_auth-flow') ||
+    !!document.querySelector('video')
+  );
+}
+
+let lastUrl = typeof location !== 'undefined' ? location.href : '';
+
+export function checkUrlChange(): void {
+  if (typeof location === 'undefined') return;
+  if (location.href !== lastUrl) {
+    lastUrl = location.href;
+    onLectureChanged();
+  }
+}
+
+export function onLectureChanged(): void {
+  clearVideoCache();
+  setActiveVideoElement(null);
+  resetDistractionCaches();
+  throttledMonitor();
+  manageMonitorInterval();
+}
+
+// Start or stop the safety-net interval: runs only while waiting for controls on lecture pages
 export function manageMonitorInterval(): void {
-  const cached = getCachedVideo();
-  const hasVideo = !!(cached && (cached as any).isConnected);
-  if (hasVideo && !monitorIntervalId) {
-    // Video found — start a relaxed safety-net interval
-    monitorIntervalId = setInterval(() => {
-      // If controls are already alive and healthy, do zero work
-      if (areControlsHealthy()) return;
-      throttledMonitor();
-    }, 2000);
-  } else if (!hasVideo && monitorIntervalId) {
-    // No video — stop the interval to save CPU
+  const onWatch = isLecturePage();
+  const healthy = areControlsHealthy();
+
+  // If on a lecture page and controls are not yet healthy, pulse once a second
+  if (onWatch && !healthy) {
+    if (!monitorIntervalId) {
+      monitorIntervalId = setInterval(() => {
+        checkUrlChange();
+        if (areControlsHealthy()) {
+          // Stop timer completely once controls are in place and healthy to save CPU
+          clearInterval(monitorIntervalId);
+          monitorIntervalId = null;
+          return;
+        }
+        throttledMonitor();
+      }, 1000);
+    }
+  } else if ((!onWatch || healthy) && monitorIntervalId) {
+    // Controls are healthy or navigated away from lecture pages — stop timer completely
     clearInterval(monitorIntervalId);
     monitorIntervalId = null;
   }
+}
+
+let wakeupInitialized = false;
+
+// Global wake-up triggers on user interaction, navigation, and video playback
+export function initWakeupTriggers(): void {
+  if (wakeupInitialized || typeof window === 'undefined') return;
+  wakeupInitialized = true;
+
+  const onInteractionOrPlay = () => {
+    checkUrlChange();
+    if (areControlsHealthy()) return;
+    throttledMonitor();
+  };
+
+  // User interactions: click, touch, or keypress anywhere on the page
+  window.addEventListener('pointerdown', onInteractionOrPlay, { capture: true, passive: true });
+  window.addEventListener('keydown', onInteractionOrPlay, { capture: true, passive: true });
+
+  // Media play event: capture play events from any video on the page
+  window.addEventListener('play', onInteractionOrPlay, { capture: true, passive: true });
+
+  // Browser back/forward navigation
+  window.addEventListener('popstate', onInteractionOrPlay, { passive: true });
 }
 
 // Main monitoring function
@@ -122,7 +182,6 @@ export function startDomObserver(): void {
           target.closest('[class*="poll" i]') ||
           target.closest('[class*="emote" i]') ||
           target.closest('[id*="emote" i]') ||
-          target.closest('#interactive-layer-wrapper') ||
           target.closest('#player-animation'))
       ) {
         continue;

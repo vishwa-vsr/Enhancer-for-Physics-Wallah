@@ -8,6 +8,10 @@ export function setCachedVideo(video: HTMLVideoElement | null): void {
   cachedVideo = video;
 }
 
+export function clearVideoCache(): void {
+  cachedVideo = null;
+}
+
 // Helper to find video elements cleanly without expensive querySelectorAll('*')
 export function findVideos(root: Document | ShadowRoot | Element = document): HTMLVideoElement[] {
   let videos: HTMLVideoElement[] = [];
