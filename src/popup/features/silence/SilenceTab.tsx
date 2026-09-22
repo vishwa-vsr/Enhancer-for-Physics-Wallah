@@ -52,39 +52,35 @@ export function SilenceTab() {
             />
           </FeatureRow>
 
-          {constantVideoQuality.value && (
-            <>
-              <FeatureRow label="Default Video Quality">
-                <select
-                  class={styles.qualitySelect}
-                  value={preferredQuality.value}
-                  onChange={(e) => {
-                    const val = (e.target as HTMLSelectElement).value as VideoQuality;
-                    preferredQuality.value = val;
-                    saveSetting('preferredQuality', val);
-                  }}
-                  aria-label="Default Video Quality"
-                >
-                  <option value="720p">720p (High)</option>
-                  <option value="480p">480p (Standard)</option>
-                  <option value="360p">360p (Medium)</option>
-                  <option value="240p">240p (Data Saver)</option>
-                  <option value="auto">Auto (PW Default)</option>
-                </select>
-              </FeatureRow>
+          <FeatureRow label="Default Video Quality">
+            <select
+              class={styles.qualitySelect}
+              value={preferredQuality.value}
+              onChange={(e) => {
+                const val = (e.target as HTMLSelectElement).value as VideoQuality;
+                preferredQuality.value = val;
+                saveSetting('preferredQuality', val);
+              }}
+              aria-label="Default Video Quality"
+            >
+              <option value="720p">720p (High)</option>
+              <option value="480p">480p (Standard)</option>
+              <option value="360p">360p (Medium)</option>
+              <option value="240p">240p (Data Saver)</option>
+              <option value="auto">Auto (PW Default)</option>
+            </select>
+          </FeatureRow>
 
-              <FeatureRow label="Hide Quality Widget">
-                <Toggle
-                  checked={hideQuality.value}
-                  onChange={(val) => {
-                    hideQuality.value = val;
-                    saveSetting('hideQuality', val);
-                  }}
-                  ariaLabel="Toggle Hide Quality Widget"
-                />
-              </FeatureRow>
-            </>
-          )}
+          <FeatureRow label="Hide Quality Widget">
+            <Toggle
+              checked={hideQuality.value}
+              onChange={(val) => {
+                hideQuality.value = val;
+                saveSetting('hideQuality', val);
+              }}
+              ariaLabel="Toggle Hide Quality Widget"
+            />
+          </FeatureRow>
         </div>
       </section>
 
