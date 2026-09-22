@@ -6,15 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.0.8.5] - 2026-09-22
+
+### Improved & Reorganized
+
+- **Cleaner Tab Names**: Renamed "Speed" to **Playback** and "Silence" to **Media** (with a fresh media sliders icon).
+- **Smarter Feature Locations**: Moved Finish Time and Instant Hide into **Focus**, and gave Video Quality its own dedicated card in **Media**.
+- **Extra Controls**: Grouped keyboard hotkeys, spacebar boost, and auto-pause neatly inside the Playback tab.
+- **Stable Quality Card**: The Video Quality card no longer shrinks or jumps when turned off—all options stay visible and easy to configure.
+
 ## [1.0.8.4] - 2026-09-18
 
 ### Performance & Battery (Old Laptop Fixes)
+
 - **Zero-Lag on Older Laptops**: Stopped repeated background scans and measurements so Physics Wallah stays smooth without freezing or crashing on budget computers.
 - **Smart Control Memory**: Remembers player controls once found instead of re-searching the page multiple times every second.
 - **Live Class Optimization**: Ignores incoming chat messages so fast-moving live lectures never spike your computer's processor.
 - **Skip Silence Battery Saver**: Added a "Low CPU / Battery Saver" toggle in the Skip Silence tab to cut audio processing load in half.
 
 ### Changed
+
 - **Focus Lock** now only handles fullscreen + pause-on-exit. It no longer auto-hides chat, doubts, notes, or Ask AI when activated. Use the individual Focus Toggles to hide those elements instead [#17](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/17).
 
 ---
@@ -22,10 +33,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.8.3] - 2026-09-12
 
 ### Added
+
 - **Direct Speed Typing**: Click the speed number (like `1.0x`) to type exact speeds like `1.25x` or `1.75x` (contributed by [@MAYANK-MAHAUR](https://github.com/MAYANK-MAHAUR) in [#13](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/pull/13)).
 - **Focus Lock Mode**: 1-click fullscreen study session that pauses when you get distracted (contributed by [@undefined-parth](https://github.com/undefined-parth) in [#12](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/pull/12)).
 
 ### Fixed & Improved
+
 - **Rock-Solid Skip Silence**: Starts reliably upon playing lectures, with automatic sound recovery that prevents freezes even if other audio tools are present.
 - **New Soundwave Icon**: Replaced the old "mute" speaker icon with a clean soundwave skip icon on the video toolbar and popup menu.
 - **Wider Speed Slider**: Made the speed slider wider so it is much easier and smoother to drag.
@@ -38,14 +51,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.8.2] - 2026-09-02
 
 ### Added & Improved
+
 - **Constant Video Quality**: Automatically starts lectures in your preferred resolution (like 720p HD) with no initial blurriness. Includes an option to hide or show the on-player quality button.
 
 ### Performance & UI Polish
+
 - **Faster & Lighter Popup**: Completely rebuilt the popup interface to open instantly and use less browser memory.
 - **Smoother Animations**: Butter-smooth animations when opening speed settings and adjusting playback controls.
 - **Refined Controls**: Crisp, tactile buttons, switches, and icons for a cleaner look in both Dark and Light mode.
 
 ### Under the Hood & Architecture
+
 - **Modern TypeScript & Preact Engine**: Migrated the popup codebase from plain JavaScript to modern TypeScript and Preact, establishing a clean modular foundation for the upcoming Study Planner dashboard.
 
 ---
@@ -53,14 +69,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.8.1] - 2026-08-30
 
 ### Added & Improved
+
 - **Auto-Pause on Tab Switch**: Automatically pauses lecture playback when switching tabs or minimizing the browser, and resumes seamlessly upon return (contributed by [@undefined-parth](https://github.com/undefined-parth) in [#8](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/pull/8)).
 
 ### Performance & Battery
+
 - **Faster Video Detection**: Video player is now remembered instantly, cutting CPU load and preventing video lag.
 - **Battery & Storage Saver**: Skip Silence saves data gently in batches instead of saving dozens of times per second.
 - **Smart Timer Cleanup**: Background visualizer timers now stop automatically when not in use.
 
 ### Offline & Reliability
+
 - **100% Offline Popup**: Removed internet font downloads; popup now opens instantly offline using clean system fonts.
 - **Smoother Speed Slider**: Dragging the slider is smoother and only saves once you release your mouse.
 - **Spacebar Safety**: Switching apps or clicking outside the browser now safely resets temporary speed boosts.
@@ -70,6 +89,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.8] - 2026-08-26
 
 ### Added & Improved
+
 - **Lecture Finish Time**: Automatically shows the exact clock time your lecture will finish based on your active speed.
 - **Cleaner Speed Slider**: Evenly spaced speed points, smooth decimal adjustment, and automatic sorting.
 - **1-Click Quick Reset**: Added easy reset buttons for playback speed (`1.0x`), custom presets, and saved silence time.
@@ -77,6 +97,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Review Prompt**: Added a friendly, non-intrusive rating reminder after 1 day of use.
 
 ### Removed
+
 - **Picture-in-Picture (PiP)**: Removed the floating window button and toggle to keep player controls clean and simple.
 
 ---
@@ -84,6 +105,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.7.6] - 2026-08-25
 
 ### Fixed & Improved
+
 - **Auto Silence Speed Restoration (Fixes #5)**: Fixed a bug where video playback speed reset back to `1.0x` after silent sections ended instead of restoring the user's active lecture speed.
 - **Unified Speed Control**: Removed redundant "Speech Speed" option from the Silence settings tab to maintain a single, clean speed controller across the extension.
 - **Silence Control Lock**: Locked manual speed controls and hotkeys while silent sections are fast-forwarding to prevent accidental speed overrides.
@@ -93,6 +115,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.7.5] - 2026-08-22
 
 ### Added & Improved
+
 - **Feedback Link in Popup**: Added a quick Feedback button with a matching message icon in the bottom footer of the popup menu.
 - **Automatic Uninstall Feedback Survey**: Added a background service worker that automatically opens an exit feedback survey whenever the extension is uninstalled.
 
@@ -101,6 +124,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.7] - 2026-08-20
 
 ### Added & Redesigned
+
 - **Modern Dashboard Popup UI**: Redesigned the entire extension popup interface into a clean, modern dashboard aesthetic.
 - **Borderless Pure White Cards**: Setting sections now sit on crisp, pure white cards with zero harsh outlines or borders.
 - **Cool Ice-Gray Canvas (Light Mode)**: Soft, cool ice-gray background canvas that creates clear, distinct contrast with the white cards.
@@ -126,6 +150,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.6] - 2026-08-05
 
 ### Added & Improved
+
 - **Always Expand Speed Bar**: Added a new toggle switch in the extension popup menu allowing users to keep the video speed slider permanently expanded on the player control bar.
 - **Hover Buffer & Gap Fix**: Fixed widget hover collapsing by replacing margin gaps with hoverable padding and adding a 250ms safety buffer.
 - **Removed Custom Speed Toast**: Removed custom video screen speed toast popups to declutter the video frame and prevent overlay conflicts.
@@ -135,6 +160,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.5] - 2026-08-01
 
 ### Rebranded
+
 - **Official Rebranding**: Renamed the extension from `PW Control` to **Enhancer for Physics Wallah** across all manifests, code assets, documentation, and promotional packages.
 
 ---
@@ -142,6 +168,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.4] - 2026-08-01
 
 ### Added & Redesigned
+
 - **Picture-in-Picture (PiP) Mode**: Added a dedicated Picture-in-Picture button on the player control bar next to the fullscreen button. Clicking it lets users watch lectures in a floating, always-on-top window.
 - **Redesigned Pure White 28px Sharp Edge PiP Icon**: Redesigned Picture-in-Picture icon with pure `#ffffff` color, `28px` x `28px` bounds matching native PW toolbar icons (Chat, Q&A, Notes, Gear, Fullscreen), and 100% sharp 90-degree rectangular line geometry (`rx="0"`, `stroke-linejoin="miter"`).
 - **shadcn/ui Switch Redesign**: Redesigned all popup toggle switches to match shadcn / Radix UI switch specifications (`44px` x `24px` pill, `18px` white thumb, Electric Cyan active state with subtle glow).
@@ -157,6 +184,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Dead & Useless Code Cleanup**: Removed obsolete `.preset-btn` DOM queries and iteration loops from `popup.js`, and eliminated 30 lines of duplicate static CSS rules from `content.css`, shrinking production bundle sizes.
 
 ### Fixed
+
 - **PiP Button Center Click Fix**: Applied `pointer-events: none` to inner SVG child shapes and set `z-index: 999999` so center clicks hit the PiP button container directly on the first click.
 - **On-Player Slider Tick Alignment**: Mathematically aligned `.pwc-slider-ticks` with thumb radius offsets (`left: 5.5px`, `width: calc(100% - 11px)`), positioning `1x`, `2x`, `3x`, and `4x` dead-center under the slider thumb.
 - **Settings Gear Dark Hover Box**: Replaced dark background overlay with subtle theme-adaptive hover and smooth 90° gear icon rotation.
@@ -165,6 +193,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.3] - 2026-07-13
 
 ### Added
+
 - **Instant Hide Button (Focus Mode)**: Added a sleek arrow button in the bottom-left area of the player controls (next to the play/pause button). Clicking it instantly hides all webpage icons, whiteboard drawing tools, page headers, player control bars, and the mouse cursor, leaving only the video playing on a solid black screen.
 - **Popup Settings Toggle**: Added an option in the Focus tab of the settings popup to enable or disable the arrow button.
 - **Instant Reveal**: Moving the mouse or touching the screen over the video player instantly restores the mouse cursor and all hidden page elements.
@@ -175,6 +204,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **CONTRIBUTING.md File**: Created a setup and contribution guide for developers looking to build new features.
 
 ### Changed
+
 - **Edge "Rate Us" Link**: Updated the feedback link to open the official Edge store listing page directly instead of the generic home page.
 - **Git Configurations**: Cleaned up `.gitignore` to prevent tracking built binaries and store packaging ZIP archives.
 - **Popup Settings Organization**: Moved "Hide Speed Widget" and "Instant Hide Button" configuration toggles from the Focus tab to the Speed tab under the "Shortcut & Mouse Wheel Settings" section.
@@ -182,6 +212,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Updated Default Keyboard Shortcuts**: Set the default keys to 'h' (Speed Up), 'j' (Slow Down), and 'l' (Reset Speed) to provide a more intuitive and comfortable keyboard layout. Displayed keys are now automatically shown in uppercase (e.g., 'L' instead of 'l') to prevent visual confusion with the number '1'.
 
 ### Fixed
+
 - **6-7 Second Page Freeze (Lag Fix)**: Optimized DOM elements lookup by implementing a caching mechanism with connectivity checks and throttling DOM mutation observer scans. Page settings toggles are now completely instant.
 - **Hold-Space Permanent Speed Boost Bug**: Fixed a race condition where holding Spacebar to boost speed and then clicking into a text field (like a search bar) would permanently lock the playback speed at the boosted rate with no way to undo it except reloading the page. Now the original speed is always restored when the Spacebar is released, regardless of where focus has moved. Also added a safety check that resets the speed if you switch tabs while holding Spacebar.
 - **Extension Enable/Disable Toggle Ignored**: Fixed a bug where the popup settings always treated the extension as enabled, ignoring the stored enable/disable state. The popup now correctly respects the saved state.
@@ -198,11 +229,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.2] - 2026-07-09
 
 ### Added
+
 - **Light & Dark Mode**: Added a sun/moon button in the top corner of the control panel to switch between a bright style and a dark slate style. Your selection is automatically saved.
 - **Smart "Rate Us" Link**: Added a feedback button in the footer that automatically detects your web browser (Chrome, Firefox, or Edge) and opens the correct store page so you can rate the extension.
 - **Direct Changelog Link**: Turned the version number in the footer into a link that opens the list of updates on GitHub.
 
 ### Changed
+
 - **Dynamic Screen Refreshing**: Improved the extension to automatically trigger a page resize event when settings change. This forces the browser to refresh the video controls layout, preventing visual glitches or misaligned buttons.
 - **Keyboard Shortcut Defaults**: Removed the default keyboard keys (`>` to speed up, `<` to slow down, `r` to reset) so shortcuts are empty by default, preventing unexpected button presses.
 - **Enable Shortcuts Toggle**: Inverted the keyboard hotkey setting logic. Keyboard shortcuts are now "Enabled" rather than "Disabled" by default, so they will only work if you check the box to turn them on.
@@ -212,6 +245,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Chrome Build Folder Rename**: Updated the extension builder script to place Chrome files in a folder named `pw-chrome` instead of the generic name `pw-dist`.
 
 ### Fixed
+
 - **Space Hold Focus Fix**: Fixed a bug where holding the Spacebar to speed up wouldn't work if you had just adjusted the video speed slider (because the slider kept focus and the extension thought you were typing in a text field). The key holds now work immediately even if the slider is focused.
 
 ---
@@ -219,6 +253,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.1] - 2026-07-08
 
 ### Added
+
 - **Hold Space to Speed Up**: Press and hold Spacebar to temporarily play at a custom speed (default `2.0x`). Releasing restores original speed. Custom rate is configurable in the popup Speed tab.
 - **Hide Settings Gear Icon**: Option to hide the player settings/quality gear icon.
 - **Hide Timeline Line**: Option to hide the horizontal seek/progress bar.
@@ -226,11 +261,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **GitHub Repository Link**: Added a direct GitHub link in the footer.
 
 ### Changed
+
 - **UI/UX Rebrand**: Updated design language to match the new Physics Wallah study portal (`study-v2/study`) using its signature Royal Blue (`#5A4BDA`) and obsidian slate-dark card layouts.
 - **Minimalist Header**: Removed header subtitle and stripped the stroke/shadow frame around the logo, centering it at `32px`.
 - **Footer Realignment**: Removed the "Focus Command Panel" text and aligned the GitHub link to the far-left and version display (`v1.0.1`) to the far-right.
 
 ### Fixed
+
 - **Slash Separator Bug**: Resolved the layout bug where raw text slashes (`/`) remained visible when time text was disabled.
 - **Space Double-Toggle Bug**: Resolved a race condition where tapping Space caused the video to play/pause for a microsecond by using capture-phase event listeners to isolate Spacebar interactions from page scripts.
 
@@ -239,6 +276,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.0] - 2026-07-02
 
 ### Added
+
 - **Speed Control Panel:** Adjustable speed from `0.5x` up to `4.0x` in steps of `0.1x`.
 - **Keyboard Shortcuts:** Configurable shortcuts to speed up (`>`), slow down (`<`), and reset (`r`).
 - **Scroll Wheel Support:** Scroll up/down over the speed badge to quickly tune playback rate.

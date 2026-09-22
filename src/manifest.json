@@ -1,16 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Enhancer for Physics Wallah",
-  "version": "1.0.8.4",
+  "version": "1.0.8.5",
   "description": "Supercharge your PhysicsWallah lectures! Skip Silence, Lock HD Quality, and 1-click decluttering on pw.live.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage"],
   "background": {
     "service_worker": "background.js"
   },
@@ -30,9 +28,7 @@
         "*://*.penpencil.xyz/*",
         "*://*.pwnet.in/*"
       ],
-      "js": [
-        "engine-bridge.js"
-      ],
+      "js": ["engine-bridge.js"],
       "world": "MAIN",
       "run_at": "document_start",
       "all_frames": true
@@ -44,21 +40,15 @@
         "*://*.penpencil.xyz/*",
         "*://*.pwnet.in/*"
       ],
-      "js": [
-        "content.js"
-      ],
-      "css": [
-        "content.css"
-      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
       "run_at": "document_start",
       "all_frames": true
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "engine-bridge.js"
-      ],
+      "resources": ["engine-bridge.js"],
       "matches": [
         "*://*.pw.live/*",
         "*://*.penpencil.co/*",
