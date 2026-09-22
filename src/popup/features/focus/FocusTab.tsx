@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { Toggle } from '@shared/components/Toggle';
 import { FeatureRow } from '@shared/components/FeatureRow';
 import { saveSetting } from '@shared/storage';
+import type { FinishTimeFormat } from '@shared/types';
 import {
   hideAskAI,
   hideDoubt,
@@ -213,7 +214,7 @@ function FocusTogglesSection() {
               class={styles.finishTimeFormatSelect}
               value={finishTimeFormat.value}
               onChange={(e) => {
-                const val = (e.target as HTMLSelectElement).value as typeof finishTimeFormat.value;
+                const val = (e.target as HTMLSelectElement).value as FinishTimeFormat;
                 finishTimeFormat.value = val;
                 saveSetting('finishTimeFormat', val);
               }}

@@ -286,14 +286,3 @@
 .qualitySelect:focus {
   box-shadow: 0 0 0 2px var(--accent-primary);
 }
-
-.betaBadge {
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--accent-primary);
-  background: var(--accent-glow);
-  padding: 1px 4px;
-  border-radius: 4px;
-  margin-left: 4px;
-  vertical-align: middle;
-}
