@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.0.8.5] - 2026-09-22
 
+### Fixed
+
+- **Cloudflare Verification Fix**: Extension now loads automatically on lectures with Cloudflare verification—no more clicking the popup or flipping toggles to wake it up.
+- **Instant Next-Lecture Detection**: Automatically connects and applies your preferred speed/quality when switching lectures in your playlist without reloading the page.
+
 ### Improved & Reorganized
 
 - **Cleaner Tab Names**: Renamed "Speed" to **Playback** and "Silence" to **Media** (with a fresh media sliders icon).
