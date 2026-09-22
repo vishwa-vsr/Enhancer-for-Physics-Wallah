@@ -11,7 +11,9 @@ import {
   hideSetting,
   hideTimeLine,
   hideTimeText,
-  autoPauseOnHide,
+  enableInstantHide,
+  showFinishTime,
+  finishTimeFormat,
 } from '@popup/store';
 import styles from './FocusTab.module.css';
 
@@ -123,6 +125,16 @@ function FocusTogglesSection() {
     <section>
       <h2 class={styles.sectionTitle}>Focus Toggles</h2>
       <div class={styles.settingsGroupCard}>
+        <FeatureRow label="Instant Hide Button">
+          <Toggle
+            checked={enableInstantHide.value}
+            onChange={(v) => {
+              enableInstantHide.value = v;
+              saveSetting('enableInstantHide', v);
+            }}
+            ariaLabel="Toggle Instant Hide Button"
+          />
+        </FeatureRow>
         <FeatureRow label="Hide 'Ask AI'">
           <Toggle
             checked={hideAskAI.value}
@@ -195,14 +207,31 @@ function FocusTogglesSection() {
             }}
           />
         </FeatureRow>
-        <FeatureRow label="Auto-pause on Tab Switch">
-          <Toggle
-            checked={autoPauseOnHide.value}
-            onChange={(v) => {
-              autoPauseOnHide.value = v;
-              saveSetting('autoPauseOnHide', v);
-            }}
-          />
+        <FeatureRow label="Show Finish Time">
+          <div class={styles.finishTimeControls}>
+            <select
+              class={styles.finishTimeFormatSelect}
+              value={finishTimeFormat.value}
+              onChange={(e) => {
+                const val = (e.target as HTMLSelectElement).value as typeof finishTimeFormat.value;
+                finishTimeFormat.value = val;
+                saveSetting('finishTimeFormat', val);
+              }}
+              aria-label="Finish Time Format"
+            >
+              <option value="minimal">Minimal (Time Only)</option>
+              <option value="clock">Clock with Label</option>
+              <option value="full">Full (Clock + Left)</option>
+            </select>
+            <Toggle
+              checked={showFinishTime.value}
+              onChange={(v) => {
+                showFinishTime.value = v;
+                saveSetting('showFinishTime', v);
+              }}
+              ariaLabel="Toggle Show Finish Time"
+            />
+          </div>
         </FeatureRow>
       </div>
     </section>

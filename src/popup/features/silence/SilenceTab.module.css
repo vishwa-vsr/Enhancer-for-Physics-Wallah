@@ -1,3 +1,15 @@
+.mediaContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qualitySection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .silenceSection {
   display: flex;
   flex-direction: column;
@@ -251,4 +263,37 @@
 
 .ssTipText {
   flex: 1;
+}
+
+.qualitySelect {
+  background: var(--bg-control);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 6px;
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.qualitySelect:hover {
+  background: var(--bg-control-hover);
+}
+
+.qualitySelect:focus {
+  box-shadow: 0 0 0 2px var(--accent-primary);
+}
+
+.betaBadge {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  background: var(--accent-glow);
+  padding: 1px 4px;
+  border-radius: 4px;
+  margin-left: 4px;
+  vertical-align: middle;
 }

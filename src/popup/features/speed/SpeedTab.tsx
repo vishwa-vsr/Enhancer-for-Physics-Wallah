@@ -3,25 +3,19 @@ import { Toggle } from '@shared/components/Toggle';
 import { FeatureRow } from '@shared/components/FeatureRow';
 import { Stepper } from '@shared/components/Stepper';
 import { saveSetting } from '@shared/storage';
-import type { VideoQuality } from '@shared/types';
 import {
   preferredSpeed,
-  constantVideoQuality,
-  preferredQuality,
   snapPoints,
   hideSpeed,
-  hideQuality,
   alwaysExpandWidget,
-  showFinishTime,
-  finishTimeFormat,
   enableHotkeys,
   disableScroll,
   holdSpaceSpeedUp,
   holdSpaceSpeed,
-  enableInstantHide,
   keySpeedUp,
   keySlowDown,
   keyReset,
+  autoPauseOnHide,
 } from '@popup/store';
 import styles from './SpeedTab.module.css';
 
@@ -373,106 +367,26 @@ export function SpeedTab() {
           <label
             class={styles.hudFooterTitle}
             onClick={() => {
-              constantVideoQuality.value = !constantVideoQuality.value;
-              saveSetting('constantVideoQuality', constantVideoQuality.value);
+              disableScroll.value = !disableScroll.value;
+              saveSetting('disableScroll', disableScroll.value);
             }}
           >
-            Constant Video Quality <span class={styles.betaBadge}>BETA</span>
+            Disable Scroll Wheel Adjust
           </label>
           <Toggle
-            checked={constantVideoQuality.value}
+            checked={disableScroll.value}
             onChange={(v) => {
-              constantVideoQuality.value = v;
-              saveSetting('constantVideoQuality', v);
+              disableScroll.value = v;
+              saveSetting('disableScroll', v);
             }}
-            ariaLabel="Toggle Constant Video Quality"
+            ariaLabel="Toggle Disable Scroll Wheel Adjust"
           />
-        </div>
-
-        {constantVideoQuality.value && (
-          <div class={styles.qualitySubOptionsBox}>
-            <div class={styles.qualitySubOptionRow}>
-              <span class={styles.subOptionLabel}>Default Video Quality</span>
-              <select
-                class={styles.qualitySelect}
-                value={preferredQuality.value}
-                onChange={(e) => {
-                  const val = (e.target as HTMLSelectElement).value as VideoQuality;
-                  preferredQuality.value = val;
-                  saveSetting('preferredQuality', val);
-                }}
-                aria-label="Default Video Quality"
-              >
-                <option value="720p">720p (High)</option>
-                <option value="480p">480p (Standard)</option>
-                <option value="360p">360p (Medium)</option>
-                <option value="240p">240p (Data Saver)</option>
-                <option value="auto">Auto (PW Default)</option>
-              </select>
-            </div>
-
-            <div class={styles.qualitySubOptionRow}>
-              <span
-                class={styles.subOptionLabel}
-                onClick={() => {
-                  hideQuality.value = !hideQuality.value;
-                  saveSetting('hideQuality', hideQuality.value);
-                }}
-              >
-                Hide Quality Widget
-              </span>
-              <Toggle
-                checked={hideQuality.value}
-                onChange={(v) => {
-                  hideQuality.value = v;
-                  saveSetting('hideQuality', v);
-                }}
-                ariaLabel="Toggle Hide Quality Widget"
-              />
-            </div>
-          </div>
-        )}
-
-        <div class={styles.hudFooterRow}>
-          <label
-            class={styles.hudFooterTitle}
-            onClick={() => {
-              showFinishTime.value = !showFinishTime.value;
-              saveSetting('showFinishTime', showFinishTime.value);
-            }}
-          >
-            Show Finish Time
-          </label>
-          <div class={styles.finishTimeControls}>
-            <select
-              class={styles.finishTimeFormatSelect}
-              value={finishTimeFormat.value}
-              onChange={(e) => {
-                const val = (e.target as HTMLSelectElement).value as typeof finishTimeFormat.value;
-                finishTimeFormat.value = val;
-                saveSetting('finishTimeFormat', val);
-              }}
-              aria-label="Finish Time Format"
-            >
-              <option value="minimal">Minimal (Time Only)</option>
-              <option value="clock">Clock with Label</option>
-              <option value="full">Full (Clock + Left)</option>
-            </select>
-            <Toggle
-              checked={showFinishTime.value}
-              onChange={(v) => {
-                showFinishTime.value = v;
-                saveSetting('showFinishTime', v);
-              }}
-              ariaLabel="Toggle Show Finish Time"
-            />
-          </div>
         </div>
       </section>
 
-      {/* === 2. Shortcuts & Controls Card === */}
+      {/* === 2. Extra Controls Card === */}
       <section class={styles.shortcutsSection}>
-        <h2 class={styles.sectionTitle}>Shortcuts & Controls</h2>
+        <h2 class={styles.sectionTitle}>Extra Controls</h2>
         <div class={styles.settingsGroupCard}>
           <div class={styles.settingRowGroup}>
             <FeatureRow label="Enable Keyboard Hotkeys">
@@ -538,17 +452,6 @@ export function SpeedTab() {
             )}
           </div>
 
-          <FeatureRow label="Disable Scroll Wheel Adjust">
-            <Toggle
-              checked={disableScroll.value}
-              onChange={(v) => {
-                disableScroll.value = v;
-                saveSetting('disableScroll', v);
-              }}
-              ariaLabel="Toggle Scroll Wheel Adjust"
-            />
-          </FeatureRow>
-
           <div class={styles.settingRowGroup}>
             <FeatureRow label="Hold Space to Speed Up">
               <Toggle
@@ -578,14 +481,14 @@ export function SpeedTab() {
             )}
           </div>
 
-          <FeatureRow label="Instant Hide Button">
+          <FeatureRow label="Auto-pause on Tab Switch">
             <Toggle
-              checked={enableInstantHide.value}
+              checked={autoPauseOnHide.value}
               onChange={(v) => {
-                enableInstantHide.value = v;
-                saveSetting('enableInstantHide', v);
+                autoPauseOnHide.value = v;
+                saveSetting('autoPauseOnHide', v);
               }}
-              ariaLabel="Toggle Instant Hide Button"
+              ariaLabel="Toggle Auto-pause on Tab Switch"
             />
           </FeatureRow>
         </div>
