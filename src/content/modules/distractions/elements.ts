@@ -549,3 +549,95 @@ export function hideTimeSeparators(timeElement: Element, shouldHide: boolean): v
     }
   });
 }
+
+// ===== Button Locators for Focus Shortcuts (Issue #14) =====
+
+function getToolbarButtonByType(
+  targetType: 'notes' | 'notetimeline' | 'doubt' | 'chat',
+): Element | null {
+  const settingsBtn = findSettingsButton();
+  const fullscreenBtn = findFullscreenButton();
+  const refBtn = settingsBtn || fullscreenBtn;
+  if (!refBtn) return null;
+
+  const parent = getToolbarContainer(refBtn);
+  if (!parent) return null;
+
+  const siblings = Array.from(parent.children);
+  const nativeButtons = siblings.filter((el) => {
+    return el.nodeType === 1 && el.id !== 'pwc-speed-control' && el.id !== 'pwc-quality-control';
+  });
+
+  const settingsIdx = nativeButtons.findIndex((el) => {
+    return el === settingsBtn || el.id === 'setting-icon' || el.querySelector('#setting-icon');
+  });
+
+  const targetOffset =
+    targetType === 'notes' ? 1 : targetType === 'notetimeline' ? 2 : targetType === 'doubt' ? 3 : 4;
+
+  if (settingsIdx !== -1 && settingsIdx >= targetOffset) {
+    const candidate = nativeButtons[settingsIdx - targetOffset];
+    if (candidate) return candidate;
+  }
+
+  // Fallback: search by attribute classification
+  for (const btn of nativeButtons) {
+    const type = checkElementOrChildType(btn);
+    if (type === targetType) return btn;
+  }
+
+  return null;
+}
+
+export function findNotesButton(): Element | null {
+  return (
+    getToolbarButtonByType('notes') ||
+    document.querySelector('[title*="note" i], [aria-label*="note" i]')
+  );
+}
+
+export function findTimelineButton(): Element | null {
+  return (
+    getToolbarButtonByType('notetimeline') ||
+    document.querySelector('[title*="timeline" i], [aria-label*="timeline" i]')
+  );
+}
+
+export function findDoubtButton(): Element | null {
+  return (
+    getToolbarButtonByType('doubt') ||
+    document.querySelector('[title*="doubt" i], [aria-label*="doubt" i], [title*="qna" i]')
+  );
+}
+
+export function findChatButton(): Element | null {
+  return (
+    getToolbarButtonByType('chat') ||
+    document.querySelector('[title*="chat" i], [aria-label*="chat" i], [title*="comment" i]')
+  );
+}
+
+export function findBackButton(): Element | null {
+  const video = getActiveVideo();
+  const playerContainer =
+    document.getElementById('video-player-container') ||
+    (video && video.closest('.video-player-app')) ||
+    (video && video.parentElement) ||
+    document;
+
+  const header = playerContainer.querySelector('.player-header');
+  if (header) {
+    const svgOrBtn = header.querySelector('svg.player-icon, button, [role="button"], svg');
+    if (svgOrBtn) {
+      return getControlButton(svgOrBtn) || svgOrBtn;
+    }
+  }
+
+  const direct = playerContainer.querySelector(
+    '[class*="back-icon" i], [class*="back-btn" i], [id*="back" i], [aria-label*="back" i]',
+  );
+  if (direct) return direct;
+
+  return null;
+}
+

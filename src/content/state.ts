@@ -34,6 +34,17 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   keyReset: 'l',
   autoPauseOnHide: false,
 
+  keyChat: 'c',
+  keyTimeline: 't',
+  keyNotes: 'n',
+  keyDoubt: 'd',
+  keyFullscreen: 'f',
+  keyExit: 'e',
+
+  autoHideControls: false,
+  autoHideDelay: 0.8,
+  autoHideWhenPaused: false,
+
   skipSilenceEnabled: false,
   skipSilenceSilenceSpeed: 3.0,
   skipSilenceThreshold: -40,
@@ -134,6 +145,15 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'keySpeedUp',
         'keySlowDown',
         'keyReset',
+        'keyChat',
+        'keyTimeline',
+        'keyNotes',
+        'keyDoubt',
+        'keyFullscreen',
+        'keyExit',
+        'autoHideControls',
+        'autoHideDelay',
+        'autoHideWhenPaused',
         'snapPoints',
         'extensionEnabled',
         'skipSilenceEnabled',
@@ -217,6 +237,18 @@ export function initState(onLoaded?: () => void): void {
     state.keySpeedUp = result.keySpeedUp || 'h';
     state.keySlowDown = result.keySlowDown || 'j';
     state.keyReset = result.keyReset || 'l';
+
+    state.keyChat = result.keyChat || 'c';
+    state.keyTimeline = result.keyTimeline || 't';
+    state.keyNotes = result.keyNotes || 'n';
+    state.keyDoubt = result.keyDoubt || 'd';
+    state.keyFullscreen = result.keyFullscreen || 'f';
+    state.keyExit = result.keyExit || 'e';
+
+    state.autoHideControls = !!result.autoHideControls;
+    state.autoHideDelay =
+      result.autoHideDelay !== undefined ? parseFloat(result.autoHideDelay) : 0.8;
+    state.autoHideWhenPaused = !!result.autoHideWhenPaused;
 
     if (result.snapPoints && Array.isArray(result.snapPoints) && result.snapPoints.length === 4) {
       state.snapPoints = sanitizeSnapPoints(result.snapPoints);
@@ -392,6 +424,43 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'autoPauseOnHide')) {
               state.autoPauseOnHide = !!changes.autoPauseOnHide.newValue;
               changedKeys.push('autoPauseOnHide');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'keyChat')) {
+              state.keyChat = String(changes.keyChat.newValue || 'c');
+              changedKeys.push('keyChat');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'keyTimeline')) {
+              state.keyTimeline = String(changes.keyTimeline.newValue || 't');
+              changedKeys.push('keyTimeline');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'keyNotes')) {
+              state.keyNotes = String(changes.keyNotes.newValue || 'n');
+              changedKeys.push('keyNotes');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'keyDoubt')) {
+              state.keyDoubt = String(changes.keyDoubt.newValue || 'd');
+              changedKeys.push('keyDoubt');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'keyFullscreen')) {
+              state.keyFullscreen = String(changes.keyFullscreen.newValue || 'f');
+              changedKeys.push('keyFullscreen');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'keyExit')) {
+              state.keyExit = String(changes.keyExit.newValue || 'e');
+              changedKeys.push('keyExit');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'autoHideControls')) {
+              state.autoHideControls = !!changes.autoHideControls.newValue;
+              changedKeys.push('autoHideControls');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'autoHideDelay')) {
+              state.autoHideDelay =
+                parseFloat(String(changes.autoHideDelay.newValue)) || 0.8;
+              changedKeys.push('autoHideDelay');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'autoHideWhenPaused')) {
+              state.autoHideWhenPaused = !!changes.autoHideWhenPaused.newValue;
+              changedKeys.push('autoHideWhenPaused');
             }
 
             if (changedKeys.length > 0) {

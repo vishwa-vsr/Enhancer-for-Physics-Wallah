@@ -29,6 +29,7 @@ import { initSpaceHold } from './modules/shortcuts/space-hold';
 import { initAutoPause } from './modules/visibility/auto-pause';
 import { initFocusLock, deactivateFocusLock } from './modules/ui/focus-lock';
 import { startDomObserver, throttledMonitor, initWakeupTriggers } from './modules/dom/observer';
+import { initAutoHide, syncAutoHide } from './modules/ui/autohide';
 import { HideSettings } from './types';
 
 // Entry point initialization
@@ -50,6 +51,7 @@ function init(): void {
       applySettingsHTML(currentState.hideSettings);
       applyDistractorsState();
       applySpeedToActiveVideo();
+      syncAutoHide();
       syncConstantQuality(currentState.constantVideoQuality);
       if (currentState.constantVideoQuality) {
         applyQuality(currentState.preferredQuality);
@@ -154,6 +156,14 @@ function init(): void {
       }
     }
 
+    if (
+      changedKeys.includes('autoHideControls') ||
+      changedKeys.includes('autoHideDelay') ||
+      changedKeys.includes('autoHideWhenPaused')
+    ) {
+      syncAutoHide();
+    }
+
     if (focusChanged) {
       applySettingsHTML(currentState.hideSettings);
       applyDistractorsState();
@@ -172,6 +182,7 @@ function init(): void {
   // 4. Register user interactions & global listeners
   initGlobalGestureUnlock();
   initKeyboardShortcuts();
+  initAutoHide();
   initSpaceHold();
   initAutoPause();
   initFocusLock();

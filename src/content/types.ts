@@ -43,6 +43,19 @@ export interface ContentState {
   keyReset: string;
   autoPauseOnHide: boolean;
 
+  // Focus shortcuts (Issue #14)
+  keyChat: string;
+  keyTimeline: string;
+  keyNotes: string;
+  keyDoubt: string;
+  keyFullscreen: string;
+  keyExit: string;
+
+  // Auto-hide controls & cursor (Issue #14)
+  autoHideControls: boolean;
+  autoHideDelay: number;
+  autoHideWhenPaused: boolean;
+
   // Skip Silence settings
   skipSilenceEnabled: boolean;
   skipSilenceSilenceSpeed: number;

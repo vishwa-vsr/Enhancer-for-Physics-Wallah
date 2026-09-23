@@ -38,6 +38,19 @@ export interface PopupSettings {
   keyReset: string;
   autoPauseOnHide: boolean;
 
+  // Focus shortcuts (Issue #14)
+  keyChat: string;
+  keyTimeline: string;
+  keyNotes: string;
+  keyDoubt: string;
+  keyFullscreen: string;
+  keyExit: string;
+
+  // Auto-hide controls & cursor (Issue #14)
+  autoHideControls: boolean;
+  autoHideDelay: number;
+  autoHideWhenPaused: boolean;
+
   // Skip Silence settings
   skipSilenceEnabled: boolean;
   skipSilenceSilenceSpeed: number;
@@ -88,6 +101,17 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   keySlowDown: 'j',
   keyReset: 'l',
   autoPauseOnHide: false,
+
+  keyChat: 'c',
+  keyTimeline: 't',
+  keyNotes: 'n',
+  keyDoubt: 'd',
+  keyFullscreen: 'f',
+  keyExit: 'e',
+
+  autoHideControls: false,
+  autoHideDelay: 0.8,
+  autoHideWhenPaused: false,
 
   skipSilenceEnabled: false,
   skipSilenceSilenceSpeed: 3.0,

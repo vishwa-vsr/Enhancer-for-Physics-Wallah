@@ -34,6 +34,19 @@ export const alwaysExpandWidget = signal(false);
 export const showFinishTime = signal(true);
 export const finishTimeFormat = signal<FinishTimeFormat>('minimal');
 
+// ===== Focus shortcuts signals (Issue #14) =====
+export const keyChat = signal('c');
+export const keyTimeline = signal('t');
+export const keyNotes = signal('n');
+export const keyDoubt = signal('d');
+export const keyFullscreen = signal('f');
+export const keyExit = signal('e');
+
+// ===== Auto-hide controls & cursor signals (Issue #14) =====
+export const autoHideControls = signal(false);
+export const autoHideDelay = signal(0.8);
+export const autoHideWhenPaused = signal(false);
+
 // ===== Skip Silence signals =====
 export const skipSilenceEnabled = signal(false);
 export const skipSilenceSilenceSpeed = signal(3.0);
@@ -86,6 +99,17 @@ export async function initStore() {
   showFinishTime.value = s.showFinishTime !== false; // defaults to true
   finishTimeFormat.value = s.finishTimeFormat || 'minimal';
 
+  keyChat.value = s.keyChat || 'c';
+  keyTimeline.value = s.keyTimeline || 't';
+  keyNotes.value = s.keyNotes || 'n';
+  keyDoubt.value = s.keyDoubt || 'd';
+  keyFullscreen.value = s.keyFullscreen || 'f';
+  keyExit.value = s.keyExit || 'e';
+
+  autoHideControls.value = !!s.autoHideControls;
+  autoHideDelay.value = s.autoHideDelay ?? 0.8;
+  autoHideWhenPaused.value = !!s.autoHideWhenPaused;
+
   skipSilenceEnabled.value = !!s.skipSilenceEnabled;
   skipSilenceSilenceSpeed.value = s.skipSilenceSilenceSpeed ?? 3.0;
   skipSilenceThreshold.value = s.skipSilenceThreshold ?? -40;
@@ -101,6 +125,18 @@ export async function initStore() {
 
   // Listen for real-time updates from content script (e.g., time saved or quality)
   onSettingsChanged((changes) => {
+    if (changes.finishTimeFormat !== undefined) {
+      finishTimeFormat.value = (changes.finishTimeFormat as FinishTimeFormat) || 'minimal';
+    }
+    if (changes.keyChat !== undefined) keyChat.value = changes.keyChat;
+    if (changes.keyTimeline !== undefined) keyTimeline.value = changes.keyTimeline;
+    if (changes.keyNotes !== undefined) keyNotes.value = changes.keyNotes;
+    if (changes.keyDoubt !== undefined) keyDoubt.value = changes.keyDoubt;
+    if (changes.keyFullscreen !== undefined) keyFullscreen.value = changes.keyFullscreen;
+    if (changes.keyExit !== undefined) keyExit.value = changes.keyExit;
+    if (changes.autoHideControls !== undefined) autoHideControls.value = !!changes.autoHideControls;
+    if (changes.autoHideDelay !== undefined) autoHideDelay.value = changes.autoHideDelay;
+    if (changes.autoHideWhenPaused !== undefined) autoHideWhenPaused.value = !!changes.autoHideWhenPaused;
     if (changes.skipSilenceTimeSaved !== undefined) {
       skipSilenceTimeSaved.value = changes.skipSilenceTimeSaved;
     }

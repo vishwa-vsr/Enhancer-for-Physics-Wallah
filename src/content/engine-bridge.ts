@@ -117,6 +117,112 @@
   if (pwcWin.__PWC_ENGINE_BRIDGE_INITIALIZED__) return;
   pwcWin.__PWC_ENGINE_BRIDGE_INITIALIZED__ = true;
 
+  // ===== Quick Exit & beforeunload Silencing Setup (Issue #14) =====
+  let isQuickExiting = false;
+
+  interface BeforeUnloadRecord {
+    target: EventTarget;
+    type: string;
+    orig: EventListenerOrEventListenerObject;
+    wrapped: EventListenerOrEventListenerObject;
+    options?: boolean | AddEventListenerOptions;
+  }
+
+  const registeredBeforeUnloadRecords: BeforeUnloadRecord[] = [];
+  const beforeUnloadListenerMap = new WeakMap<object, EventListenerOrEventListenerObject>();
+
+  const origEventTargetAddEventListener = EventTarget.prototype.addEventListener;
+  const origEventTargetRemoveEventListener = EventTarget.prototype.removeEventListener;
+
+  EventTarget.prototype.addEventListener = function (
+    this: EventTarget,
+    type: string,
+    listener: any,
+    options?: boolean | AddEventListenerOptions,
+  ) {
+    if (type === 'beforeunload' && listener) {
+      const key = typeof listener === 'object' ? listener : (listener as object);
+      let wrapped = beforeUnloadListenerMap.get(key);
+      if (!wrapped) {
+        wrapped = function (this: any, event: any) {
+          if (isQuickExiting) {
+            // Silently suppress - prevents PW's handler from setting returnValue or calling preventDefault
+            return;
+          }
+          return typeof listener === 'function'
+            ? listener.apply(this, arguments)
+            : listener.handleEvent(event);
+        };
+        beforeUnloadListenerMap.set(key, wrapped);
+      }
+
+      registeredBeforeUnloadRecords.push({
+        target: this,
+        type,
+        orig: listener,
+        wrapped,
+        options,
+      });
+
+      return origEventTargetAddEventListener.call(this, type, wrapped, options);
+    }
+    return origEventTargetAddEventListener.apply(this, arguments as any);
+  };
+
+  EventTarget.prototype.removeEventListener = function (
+    this: EventTarget,
+    type: string,
+    listener: any,
+    options?: boolean | EventListenerOptions,
+  ) {
+    if (type === 'beforeunload' && listener) {
+      const wrapped = beforeUnloadListenerMap.get(listener);
+      if (wrapped) {
+        const idx = registeredBeforeUnloadRecords.findIndex(
+          (r) => r.target === this && (r.orig === listener || r.wrapped === wrapped),
+        );
+        if (idx !== -1) {
+          registeredBeforeUnloadRecords.splice(idx, 1);
+        }
+        return origEventTargetRemoveEventListener.call(this, type, wrapped, options);
+      }
+    }
+    return origEventTargetRemoveEventListener.apply(this, arguments as any);
+  };
+
+  // Intercept window.onbeforeunload property assignment
+  let customOnBeforeUnload: any = null;
+  try {
+    const winProto = Object.getPrototypeOf(window);
+    const desc =
+      Object.getOwnPropertyDescriptor(window, 'onbeforeunload') ||
+      Object.getOwnPropertyDescriptor(winProto, 'onbeforeunload');
+
+    Object.defineProperty(window, 'onbeforeunload', {
+      configurable: true,
+      enumerable: true,
+      get() {
+        if (isQuickExiting) return null;
+        return customOnBeforeUnload;
+      },
+      set(val) {
+        if (typeof val === 'function') {
+          customOnBeforeUnload = function (this: any, ...args: any[]) {
+            if (isQuickExiting) return undefined;
+            return val.apply(this, args);
+          };
+        } else {
+          customOnBeforeUnload = val;
+        }
+        if (desc && desc.set) {
+          try {
+            desc.set.call(window, customOnBeforeUnload);
+          } catch (_) {}
+        }
+      },
+    });
+  } catch (_) {}
+
   let targetQuality: string = pwcWin.__PWC_LAST_TARGET_QUALITY__ || '720p';
   let activePollTimer: number | undefined = undefined;
 
@@ -591,4 +697,106 @@
     },
     true,
   );
+
+  // ===== Quick Exit & beforeunload Silencing (Issue #14) =====
+  function purgeBeforeUnload(): void {
+    isQuickExiting = true;
+
+    // 1. Physically unregister all active beforeunload listeners
+    while (registeredBeforeUnloadRecords.length > 0) {
+      const r = registeredBeforeUnloadRecords.pop()!;
+      try {
+        origEventTargetRemoveEventListener.call(r.target, r.type, r.wrapped, r.options);
+      } catch (_) {}
+      try {
+        origEventTargetRemoveEventListener.call(r.target, r.type, r.orig, r.options);
+      } catch (_) {}
+    }
+
+    // 2. Clear property handlers on window, document, and top
+    try {
+      window.onbeforeunload = null;
+    } catch (_) {}
+    try {
+      (document as any).onbeforeunload = null;
+    } catch (_) {}
+    if (document.body) {
+      try {
+        (document.body as any).onbeforeunload = null;
+      } catch (_) {}
+    }
+    try {
+      if (window.top && window.top !== window) {
+        window.top.onbeforeunload = null;
+      }
+    } catch (_) {}
+  }
+
+  window.addEventListener('PWC_QUICK_EXIT', () => {
+    purgeBeforeUnload();
+
+    // 1. Exit HTML5 fullscreen if currently active
+    if (document.fullscreenElement && document.exitFullscreen) {
+      try {
+        document.exitFullscreen();
+      } catch (_) {}
+    }
+
+    const currentUrl = window.location.href;
+
+    // 2. Locate PW's top-left back button
+    const header = document.querySelector('.player-header');
+    const backBtn =
+      document.querySelector('.player-header path[d*="M19 12H5"]')?.closest('svg') ||
+      header?.querySelector('svg.player-icon, button, svg, [role="button"]') ||
+      document.querySelector('[class*="back-icon" i], [class*="back-btn" i], [aria-label*="back" i]');
+
+    let clickAttempted = false;
+    if (backBtn instanceof HTMLElement || backBtn instanceof SVGElement) {
+      try {
+        (backBtn as any).click();
+        backBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+        clickAttempted = true;
+      } catch (_) {}
+
+      if (backBtn.parentElement instanceof HTMLElement) {
+        try {
+          backBtn.parentElement.click();
+          backBtn.parentElement.dispatchEvent(
+            new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
+          );
+          clickAttempted = true;
+        } catch (_) {}
+      }
+    }
+
+    // 3. Fallback navigation: ONLY execute if clicking didn't navigate away!
+    setTimeout(() => {
+      // Re-purge in case PW attempted to attach anything during click
+      purgeBeforeUnload();
+
+      if (window.location.href === currentUrl) {
+        if (window.history.length > 1) {
+          try {
+            window.history.back();
+          } catch (_) {}
+        } else {
+          // If lecture was opened directly in a new tab without history
+          try {
+            const batchSlug = new URLSearchParams(window.location.search).get('batchSlug');
+            if (batchSlug) {
+              window.location.href = `/study/batches/${batchSlug}/batch-overview`;
+            } else {
+              window.location.href = '/study/batches';
+            }
+          } catch (_) {}
+        }
+      }
+    }, clickAttempted ? 120 : 0);
+
+    // Keep suppression active for 4 seconds during navigation
+    setTimeout(() => {
+      isQuickExiting = false;
+    }, 4000);
+  });
 })();
