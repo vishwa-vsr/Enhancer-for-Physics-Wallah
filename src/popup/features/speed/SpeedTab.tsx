@@ -467,6 +467,7 @@ export function SpeedTab() {
               <div class={styles.featureConfigRow}>
                 <span class={styles.configLabel}>Speed Up Rate</span>
                 <Stepper
+                  className={styles.stepperCard}
                   value={holdSpaceSpeed.value}
                   min={1.1}
                   max={4.0}

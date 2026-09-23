@@ -34,6 +34,11 @@ export function isUserTyping(): boolean {
 export function matchKey(event: KeyboardEvent, targetKey: string): boolean {
   if (!targetKey) return false;
 
+  // Never hijack standard browser/system combinations (Ctrl+C, Ctrl+F, Ctrl+T, Cmd+C, Alt, etc.)
+  if (event.ctrlKey || event.metaKey || event.altKey) {
+    return false;
+  }
+
   if (targetKey === '>') {
     return event.key === '>' || (event.shiftKey && event.key === '.');
   }
@@ -49,23 +54,23 @@ export function matchKey(event: KeyboardEvent, targetKey: string): boolean {
 
 function clickElement(el: Element | null): boolean {
   if (!el) return false;
-  let clicked = false;
-  if (el instanceof HTMLElement || el instanceof SVGElement) {
+  if (el instanceof HTMLElement) {
     try {
-      (el as any).click();
+      el.click();
       el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-      clicked = true;
-    } catch (_) {}
-  }
-  const parent = el.parentElement;
-  if (parent instanceof HTMLElement) {
+      return true;
+    } catch {
+      /* ignore */
+    }
+  } else if (el instanceof SVGElement) {
     try {
-      parent.click();
-      parent.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-      clicked = true;
-    } catch (_) {}
+      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+      return true;
+    } catch {
+      /* ignore */
+    }
   }
-  return clicked;
+  return false;
 }
 
 function toggleFullscreen(): void {
@@ -76,7 +81,13 @@ function toggleFullscreen(): void {
 
   // Fallback to HTML5 fullscreen API
   if (document.fullscreenElement) {
-    if (document.exitFullscreen) document.exitFullscreen();
+    if (document.exitFullscreen) {
+      try {
+        document.exitFullscreen();
+      } catch {
+        /* ignore */
+      }
+    }
   } else {
     const video = getActiveVideo();
     const container =
@@ -85,7 +96,11 @@ function toggleFullscreen(): void {
       (video && video.parentElement) ||
       video;
     if (container && container.requestFullscreen) {
-      container.requestFullscreen();
+      try {
+        container.requestFullscreen();
+      } catch {
+        /* ignore */
+      }
     }
   }
 }
@@ -95,13 +110,17 @@ function executeQuickExit(): void {
   if (document.fullscreenElement && document.exitFullscreen) {
     try {
       document.exitFullscreen();
-    } catch (_) {}
+    } catch {
+      /* ignore */
+    }
   }
 
   // 2. Dispatch event to engine-bridge in the MAIN world to silence beforeunload and handle exit navigation
   try {
     window.dispatchEvent(new CustomEvent('PWC_QUICK_EXIT'));
-  } catch (_) {}
+  } catch {
+    /* ignore */
+  }
 }
 
 let isInitialized = false;

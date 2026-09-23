@@ -617,27 +617,4 @@ export function findChatButton(): Element | null {
   );
 }
 
-export function findBackButton(): Element | null {
-  const video = getActiveVideo();
-  const playerContainer =
-    document.getElementById('video-player-container') ||
-    (video && video.closest('.video-player-app')) ||
-    (video && video.parentElement) ||
-    document;
-
-  const header = playerContainer.querySelector('.player-header');
-  if (header) {
-    const svgOrBtn = header.querySelector('svg.player-icon, button, [role="button"], svg');
-    if (svgOrBtn) {
-      return getControlButton(svgOrBtn) || svgOrBtn;
-    }
-  }
-
-  const direct = playerContainer.querySelector(
-    '[class*="back-icon" i], [class*="back-btn" i], [id*="back" i], [aria-label*="back" i]',
-  );
-  if (direct) return direct;
-
-  return null;
-}
 

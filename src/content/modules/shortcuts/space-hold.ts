@@ -40,6 +40,7 @@ export function initSpaceHold(): void {
     (e: KeyboardEvent) => {
       if (!state.extensionEnabled) return;
       if (e.key !== ' ' && e.code !== 'Space') return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
 
       // Safety check: Ignore if typing in text fields
       if (isUserTyping()) return;

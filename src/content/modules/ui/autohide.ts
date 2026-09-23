@@ -33,9 +33,6 @@ function isMenuOrPopupOpen(): boolean {
 }
 
 function wakeUp(): void {
-  if (document.documentElement.classList.contains('pwc-collapsed-state')) {
-    document.documentElement.classList.remove('pwc-collapsed-state');
-  }
   const container = getPlayerContainer();
   if (container) {
     container.classList.remove('pwc-autohide-inactive');
@@ -63,9 +60,7 @@ function sleep(): void {
     return;
   }
 
-  // Activate instant-hide focus mode (hides all controls & cursor, leaving pure video)
-  document.documentElement.classList.add('pwc-collapsed-state');
-
+  // Fade out player controls and hide cursor (without collapsing outer page layout)
   const container = getPlayerContainer();
   if (container) {
     container.classList.add('pwc-autohide-inactive');
@@ -113,6 +108,7 @@ export function initAutoHide(): void {
   window.addEventListener('mousedown', onUserActivity, options);
   window.addEventListener('keydown', onUserActivity, options);
   window.addEventListener('touchstart', onUserActivity, options);
+  window.addEventListener('wheel', onUserActivity, options);
 
   // Monitor play/pause on active video to update hide behavior
   document.addEventListener(

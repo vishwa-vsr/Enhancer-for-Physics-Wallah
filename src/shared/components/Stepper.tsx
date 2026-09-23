@@ -8,9 +8,18 @@ interface StepperProps {
   max: number;
   step: number;
   unit?: string;
+  className?: string;
 }
 
-export function Stepper({ value, onChange, min, max, step, unit = 'x' }: StepperProps) {
+export function Stepper({
+  value,
+  onChange,
+  min,
+  max,
+  step,
+  unit = 'x',
+  className = '',
+}: StepperProps) {
   const [inputValue, setInputValue] = useState(value.toFixed(1));
 
   useEffect(() => {
@@ -49,7 +58,7 @@ export function Stepper({ value, onChange, min, max, step, unit = 'x' }: Stepper
   };
 
   return (
-    <div class={styles.stepperBox}>
+    <div class={`${styles.stepperBox} ${className}`.trim()}>
       <button
         class={styles.stepperBtn}
         onClick={handleDecrement}

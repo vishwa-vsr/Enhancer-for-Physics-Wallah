@@ -137,20 +137,20 @@
   EventTarget.prototype.addEventListener = function (
     this: EventTarget,
     type: string,
-    listener: any,
+    listener: EventListenerOrEventListenerObject | null,
     options?: boolean | AddEventListenerOptions,
   ) {
     if (type === 'beforeunload' && listener) {
       const key = typeof listener === 'object' ? listener : (listener as object);
       let wrapped = beforeUnloadListenerMap.get(key);
       if (!wrapped) {
-        wrapped = function (this: any, event: any) {
+        wrapped = function (this: unknown, event: Event) {
           if (isQuickExiting) {
             // Silently suppress - prevents PW's handler from setting returnValue or calling preventDefault
             return;
           }
           return typeof listener === 'function'
-            ? listener.apply(this, arguments)
+            ? listener.call(this, event)
             : listener.handleEvent(event);
         };
         beforeUnloadListenerMap.set(key, wrapped);
@@ -172,7 +172,7 @@
   EventTarget.prototype.removeEventListener = function (
     this: EventTarget,
     type: string,
-    listener: any,
+    listener: EventListenerOrEventListenerObject | null,
     options?: boolean | EventListenerOptions,
   ) {
     if (type === 'beforeunload' && listener) {
@@ -191,7 +191,7 @@
   };
 
   // Intercept window.onbeforeunload property assignment
-  let customOnBeforeUnload: any = null;
+  let customOnBeforeUnload: ((this: Window, ev: BeforeUnloadEvent) => unknown) | null = null;
   try {
     const winProto = Object.getPrototypeOf(window);
     const desc =
@@ -205,11 +205,11 @@
         if (isQuickExiting) return null;
         return customOnBeforeUnload;
       },
-      set(val) {
+      set(val: ((this: Window, ev: BeforeUnloadEvent) => unknown) | null) {
         if (typeof val === 'function') {
-          customOnBeforeUnload = function (this: any, ...args: any[]) {
+          customOnBeforeUnload = function (this: Window, ev: BeforeUnloadEvent) {
             if (isQuickExiting) return undefined;
-            return val.apply(this, args);
+            return val.call(this, ev);
           };
         } else {
           customOnBeforeUnload = val;
@@ -217,11 +217,15 @@
         if (desc && desc.set) {
           try {
             desc.set.call(window, customOnBeforeUnload);
-          } catch (_) {}
+          } catch {
+            /* ignore */
+          }
         }
       },
     });
-  } catch (_) {}
+  } catch {
+    /* ignore */
+  }
 
   let targetQuality: string = pwcWin.__PWC_LAST_TARGET_QUALITY__ || '720p';
   let activePollTimer: number | undefined = undefined;
@@ -739,62 +743,34 @@
     if (document.fullscreenElement && document.exitFullscreen) {
       try {
         document.exitFullscreen();
-      } catch (_) {}
+      } catch {
+        /* ignore */
+      }
     }
 
-    const currentUrl = window.location.href;
-
-    // 2. Locate PW's top-left back button
+    // 2. Locate PW's top-left back button and trigger clean exit
     const header = document.querySelector('.player-header');
     const backBtn =
       document.querySelector('.player-header path[d*="M19 12H5"]')?.closest('svg') ||
       header?.querySelector('svg.player-icon, button, svg, [role="button"]') ||
       document.querySelector('[class*="back-icon" i], [class*="back-btn" i], [aria-label*="back" i]');
 
-    let clickAttempted = false;
-    if (backBtn instanceof HTMLElement || backBtn instanceof SVGElement) {
+    if (backBtn instanceof HTMLElement) {
       try {
-        (backBtn as any).click();
+        backBtn.click();
         backBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-        clickAttempted = true;
-      } catch (_) {}
-
-      if (backBtn.parentElement instanceof HTMLElement) {
-        try {
-          backBtn.parentElement.click();
-          backBtn.parentElement.dispatchEvent(
-            new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
-          );
-          clickAttempted = true;
-        } catch (_) {}
+      } catch {
+        /* ignore */
+      }
+    } else if (backBtn instanceof SVGElement) {
+      try {
+        backBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+      } catch {
+        /* ignore */
       }
     }
 
-    // 3. Fallback navigation: ONLY execute if clicking didn't navigate away!
-    setTimeout(() => {
-      // Re-purge in case PW attempted to attach anything during click
-      purgeBeforeUnload();
-
-      if (window.location.href === currentUrl) {
-        if (window.history.length > 1) {
-          try {
-            window.history.back();
-          } catch (_) {}
-        } else {
-          // If lecture was opened directly in a new tab without history
-          try {
-            const batchSlug = new URLSearchParams(window.location.search).get('batchSlug');
-            if (batchSlug) {
-              window.location.href = `/study/batches/${batchSlug}/batch-overview`;
-            } else {
-              window.location.href = '/study/batches';
-            }
-          } catch (_) {}
-        }
-      }
-    }, clickAttempted ? 120 : 0);
-
-    // Keep suppression active for 4 seconds during navigation
+    // Keep suppression active for 4 seconds during exit navigation
     setTimeout(() => {
       isQuickExiting = false;
     }, 4000);

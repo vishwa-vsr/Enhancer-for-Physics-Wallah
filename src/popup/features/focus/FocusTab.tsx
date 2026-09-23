@@ -132,37 +132,51 @@ function FocusLockSection({ lockUnavailable, lockActive, onToggle }: FocusLockSe
   );
 }
 
+type FocusKeyType =
+  | 'keyChat'
+  | 'keyTimeline'
+  | 'keyNotes'
+  | 'keyDoubt'
+  | 'keyFullscreen'
+  | 'keyExit';
+
+const FOCUS_KEY_SIGNALS: Record<FocusKeyType, { value: string }> = {
+  keyChat,
+  keyTimeline,
+  keyNotes,
+  keyDoubt,
+  keyFullscreen,
+  keyExit,
+};
+
 function FocusTogglesSection() {
   const handleHotkeyFocus = (e: Event) => {
     (e.target as HTMLInputElement).value = 'Press key...';
   };
 
-  const handleHotkeyDown = (
-    keyType: 'keyChat' | 'keyTimeline' | 'keyNotes' | 'keyDoubt' | 'keyFullscreen' | 'keyExit',
-    e: KeyboardEvent,
-  ) => {
+  const handleHotkeyBlur = (keyType: FocusKeyType, e: Event) => {
+    const input = e.target as HTMLInputElement;
+    if (input.value === 'Press key...') {
+      input.value = FOCUS_KEY_SIGNALS[keyType].value;
+    }
+  };
+
+  const handleHotkeyDown = (keyType: FocusKeyType, e: KeyboardEvent) => {
     e.preventDefault();
     if (['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) return;
     if (e.key === 'Backspace' || e.key === 'Delete') {
-      if (keyType === 'keyChat') keyChat.value = '';
-      else if (keyType === 'keyTimeline') keyTimeline.value = '';
-      else if (keyType === 'keyNotes') keyNotes.value = '';
-      else if (keyType === 'keyDoubt') keyDoubt.value = '';
-      else if (keyType === 'keyFullscreen') keyFullscreen.value = '';
-      else if (keyType === 'keyExit') keyExit.value = '';
+      FOCUS_KEY_SIGNALS[keyType].value = '';
       saveSetting(keyType, '');
       (e.target as HTMLInputElement).blur();
       return;
     }
-    const boundKey = e.key === ' ' ? 'Space' : e.key;
-    if (keyType === 'keyChat') keyChat.value = boundKey;
-    else if (keyType === 'keyTimeline') keyTimeline.value = boundKey;
-    else if (keyType === 'keyNotes') keyNotes.value = boundKey;
-    else if (keyType === 'keyDoubt') keyDoubt.value = boundKey;
-    else if (keyType === 'keyFullscreen') keyFullscreen.value = boundKey;
-    else if (keyType === 'keyExit') keyExit.value = boundKey;
-    saveSetting(keyType, boundKey);
-    (e.target as HTMLInputElement).blur();
+    // Only allow single alphanumeric keys (A-Z, 0-9), keeping Spacebar reserved
+    if (/^[a-zA-Z0-9]$/.test(e.key)) {
+      const boundKey = e.key.toLowerCase();
+      FOCUS_KEY_SIGNALS[keyType].value = boundKey;
+      saveSetting(keyType, boundKey);
+      (e.target as HTMLInputElement).blur();
+    }
   };
 
   return (
@@ -202,10 +216,8 @@ function FocusTogglesSection() {
                   : 'Doubt shortcut key (Backspace to clear)'
               }
               onFocus={handleHotkeyFocus}
-              onBlur={() => {
-                if (keyDoubt.value === 'Press key...') keyDoubt.value = 'd';
-              }}
-              onKeyDown={(e) => handleHotkeyDown('keyDoubt', e as unknown as KeyboardEvent)}
+              onBlur={(e) => handleHotkeyBlur('keyDoubt', e)}
+              onKeyDown={(e) => handleHotkeyDown('keyDoubt', e)}
               aria-label="Doubt Shortcut Key"
             />
             <Toggle
@@ -231,10 +243,8 @@ function FocusTogglesSection() {
                   : 'Chat shortcut key (Backspace to clear)'
               }
               onFocus={handleHotkeyFocus}
-              onBlur={() => {
-                if (keyChat.value === 'Press key...') keyChat.value = 'c';
-              }}
-              onKeyDown={(e) => handleHotkeyDown('keyChat', e as unknown as KeyboardEvent)}
+              onBlur={(e) => handleHotkeyBlur('keyChat', e)}
+              onKeyDown={(e) => handleHotkeyDown('keyChat', e)}
               aria-label="Live Chat Shortcut Key"
             />
             <Toggle
@@ -260,10 +270,8 @@ function FocusTogglesSection() {
                   : 'Study Notes shortcut key (Backspace to clear)'
               }
               onFocus={handleHotkeyFocus}
-              onBlur={() => {
-                if (keyNotes.value === 'Press key...') keyNotes.value = 'n';
-              }}
-              onKeyDown={(e) => handleHotkeyDown('keyNotes', e as unknown as KeyboardEvent)}
+              onBlur={(e) => handleHotkeyBlur('keyNotes', e)}
+              onKeyDown={(e) => handleHotkeyDown('keyNotes', e)}
               aria-label="Study Notes Shortcut Key"
             />
             <Toggle
@@ -289,10 +297,8 @@ function FocusTogglesSection() {
                   : 'Note Timeline shortcut key (Backspace to clear)'
               }
               onFocus={handleHotkeyFocus}
-              onBlur={() => {
-                if (keyTimeline.value === 'Press key...') keyTimeline.value = 't';
-              }}
-              onKeyDown={(e) => handleHotkeyDown('keyTimeline', e as unknown as KeyboardEvent)}
+              onBlur={(e) => handleHotkeyBlur('keyTimeline', e)}
+              onKeyDown={(e) => handleHotkeyDown('keyTimeline', e)}
               aria-label="Note Timeline Shortcut Key"
             />
             <Toggle
@@ -366,10 +372,8 @@ function FocusTogglesSection() {
             value={keyFullscreen.value}
             title="Fullscreen shortcut key (Backspace to clear)"
             onFocus={handleHotkeyFocus}
-            onBlur={() => {
-              if (keyFullscreen.value === 'Press key...') keyFullscreen.value = 'f';
-            }}
-            onKeyDown={(e) => handleHotkeyDown('keyFullscreen', e as unknown as KeyboardEvent)}
+            onBlur={(e) => handleHotkeyBlur('keyFullscreen', e)}
+            onKeyDown={(e) => handleHotkeyDown('keyFullscreen', e)}
             aria-label="Fullscreen Shortcut Key"
           />
         </FeatureRow>
@@ -381,10 +385,8 @@ function FocusTogglesSection() {
             value={keyExit.value}
             title="Quick Exit shortcut key (Backspace to clear)"
             onFocus={handleHotkeyFocus}
-            onBlur={() => {
-              if (keyExit.value === 'Press key...') keyExit.value = 'e';
-            }}
-            onKeyDown={(e) => handleHotkeyDown('keyExit', e as unknown as KeyboardEvent)}
+            onBlur={(e) => handleHotkeyBlur('keyExit', e)}
+            onKeyDown={(e) => handleHotkeyDown('keyExit', e)}
             aria-label="Quick Exit Shortcut Key"
           />
         </FeatureRow>
@@ -413,6 +415,7 @@ function AutoHideSection() {
             <div class={styles.featureConfigRow}>
               <span class={styles.configLabel}>Inactivity Delay</span>
               <Stepper
+                className={styles.stepperCard}
                 value={autoHideDelay.value}
                 min={0.5}
                 max={5.0}
