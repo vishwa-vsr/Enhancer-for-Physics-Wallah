@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.0.8.6] - 2026-09-24
+
+### Added
+
+- **Auto-Hide Controls & Cursor**: Automatically hides the player bar and mouse cursor when inactive for clean viewing [#14](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/14).
+- **Custom Focus Hotkeys**: Assign your own keys for Live Chat, Notes, Timeline, Doubt Q&A, Fullscreen, and Quick Exit [#14](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/14).
+
 ## [1.0.8.5] - 2026-09-22
 
 ### Fixed
