@@ -12,7 +12,7 @@ export const Footer: React.FC<FooterProps> = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-10 sm:mb-12">
         <div className="flex items-center gap-3">
           <img
-            src="./logo.png"
+            src="/logo.png"
             alt="Enhancer for PW Logo"
             className="w-7 h-7 rounded-lg border border-white/20 object-cover"
           />
@@ -66,22 +66,22 @@ export const Footer: React.FC<FooterProps> = () => {
 
       {/* Footer Navigation Links */}
       <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2.5 mb-8 text-xs text-muted-foreground">
-        <a href="./index.html" className="hover:text-white transition-colors">
+        <a href="/" className="hover:text-white transition-colors">
           Home
         </a>
-        <a href="./index.html#features" className="hover:text-white transition-colors">
+        <a href="/#features" className="hover:text-white transition-colors">
           Extension Features
         </a>
-        <a href="./index.html#reviews" className="hover:text-white transition-colors">
+        <a href="/#reviews" className="hover:text-white transition-colors">
           Student Reviews
         </a>
-        <a href="./faq.html" className="hover:text-white transition-colors text-white/90">
+        <a href="/faq" className="hover:text-white transition-colors text-white/90">
           FAQ & Help Guide
         </a>
-        <a href="./blog.html" className="hover:text-white transition-colors">
+        <a href="/blog" className="hover:text-white transition-colors">
           Blog
         </a>
-        <a href="./privacy.html" className="hover:text-white transition-colors">
+        <a href="/privacy" className="hover:text-white transition-colors">
           Privacy Policy
         </a>
         <a
@@ -90,7 +90,7 @@ export const Footer: React.FC<FooterProps> = () => {
           rel="noreferrer"
           className="hover:text-white transition-colors"
         >
-          Releases (v1.0.8.3)
+          Releases (v1.0.8.6)
         </a>
         <a
           href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah"

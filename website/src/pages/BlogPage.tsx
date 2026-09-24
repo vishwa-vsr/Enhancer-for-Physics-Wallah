@@ -18,7 +18,7 @@ export const BlogPage: React.FC = () => {
           {/* Back Link */}
           <div className="mb-6">
             <a
-              href="./index.html"
+              href="/"
               className="inline-flex items-center gap-2 text-xs sm:text-sm text-muted-foreground hover:text-white transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />

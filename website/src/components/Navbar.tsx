@@ -32,9 +32,9 @@ export const Navbar: React.FC = () => {
     <header className="absolute top-0 left-0 right-0 z-20 w-full bg-transparent">
       <nav className="flex row items-center justify-between px-4 sm:px-8 py-4 sm:py-6 max-w-7xl mx-auto">
         {/* Brand Logo */}
-        <a href="#" className="flex items-center gap-2.5 sm:gap-3 group">
+        <a href="/" className="flex items-center gap-2.5 sm:gap-3 group">
           <img
-            src="./logo.png"
+            src="/logo.png"
             alt="Enhancer for PW Logo"
             className="w-7 h-7 sm:w-9 sm:h-9 rounded-xl border border-white/20 shadow-md group-hover:scale-105 transition-transform object-cover"
           />
@@ -49,7 +49,7 @@ export const Navbar: React.FC = () => {
         {/* Desktop Nav Links — exposed so Google can crawl them */}
         <div className="hidden md:flex items-center gap-8">
           <a
-            href="#"
+            href="/"
             className="text-sm text-foreground font-medium transition-colors"
           >
             Home
@@ -67,13 +67,13 @@ export const Navbar: React.FC = () => {
             Reviews
           </a>
           <a
-            href="./faq.html"
+            href="/faq"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             FAQ
           </a>
           <a
-            href="./blog.html"
+            href="/blog"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Blog
@@ -113,7 +113,7 @@ export const Navbar: React.FC = () => {
               <div className="absolute right-0 mt-3 w-64 rounded-2xl liquid-glass-card p-3 border border-white/15 shadow-2xl z-50 animate-fade-rise text-sm">
                 <div className="space-y-1">
                   <a
-                    href="./faq.html"
+                    href="/faq"
                     onClick={() => setAboutOpen(false)}
                     className="flex items-center justify-between px-3 py-2 rounded-xl text-white/90 hover:bg-white/10 hover:text-white transition-colors"
                   >
@@ -121,7 +121,7 @@ export const Navbar: React.FC = () => {
                     <span className="text-xs text-muted-foreground">↗</span>
                   </a>
                   <a
-                    href="./blog.html"
+                    href="/blog"
                     onClick={() => setAboutOpen(false)}
                     className="flex items-center justify-between px-3 py-2 rounded-xl text-white/90 hover:bg-white/10 hover:text-white transition-colors"
                   >
@@ -135,7 +135,7 @@ export const Navbar: React.FC = () => {
                     onClick={() => setAboutOpen(false)}
                     className="flex items-center justify-between px-3 py-2 rounded-xl text-white/90 hover:bg-white/10 hover:text-white transition-colors"
                   >
-                    <span>Release log (v1.0.8.3)</span>
+                    <span>Release log (v1.0.8.6)</span>
                     <span className="text-xs text-muted-foreground">↗</span>
                   </a>
                 </div>
@@ -175,7 +175,7 @@ export const Navbar: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <a
-                    href="./privacy.html"
+                    href="/privacy"
                     onClick={() => setAboutOpen(false)}
                     className="flex items-center justify-between px-3 py-2 rounded-xl text-white/90 hover:bg-white/10 hover:text-white transition-colors"
                   >
@@ -212,7 +212,7 @@ export const Navbar: React.FC = () => {
       {mobileMenuOpen && (
         <div className="md:hidden px-6 py-5 mx-4 rounded-2xl liquid-glass-card border border-white/10 flex flex-col gap-4 animate-fade-rise">
           <a
-            href="#"
+            href="/"
             onClick={() => setMobileMenuOpen(false)}
             className="text-sm text-foreground font-medium py-1"
           >
@@ -233,14 +233,14 @@ export const Navbar: React.FC = () => {
             Reviews
           </a>
           <a
-            href="./faq.html"
+            href="/faq"
             onClick={() => setMobileMenuOpen(false)}
             className="text-sm text-muted-foreground hover:text-foreground py-1"
           >
             FAQ
           </a>
           <a
-            href="./blog.html"
+            href="/blog"
             onClick={() => setMobileMenuOpen(false)}
             className="text-sm text-muted-foreground hover:text-foreground py-1 flex items-center justify-between"
           >
@@ -248,7 +248,7 @@ export const Navbar: React.FC = () => {
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 font-mono">New</span>
           </a>
           <a
-            href="./privacy.html"
+            href="/privacy"
             onClick={() => setMobileMenuOpen(false)}
             className="text-sm text-muted-foreground hover:text-foreground py-1"
           >
