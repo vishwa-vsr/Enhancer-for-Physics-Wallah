@@ -57,7 +57,6 @@ function clickElement(el: Element | null): boolean {
   if (el instanceof HTMLElement) {
     try {
       el.click();
-      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
       return true;
     } catch {
       /* ignore */
@@ -73,6 +72,16 @@ function clickElement(el: Element | null): boolean {
   return false;
 }
 
+export function exitFullscreen(): void {
+  if (document.fullscreenElement && document.exitFullscreen) {
+    try {
+      document.exitFullscreen();
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 function toggleFullscreen(): void {
   const fsBtn = findFullscreenButton();
   if (fsBtn && clickElement(fsBtn)) {
@@ -81,13 +90,7 @@ function toggleFullscreen(): void {
 
   // Fallback to HTML5 fullscreen API
   if (document.fullscreenElement) {
-    if (document.exitFullscreen) {
-      try {
-        document.exitFullscreen();
-      } catch {
-        /* ignore */
-      }
-    }
+    exitFullscreen();
   } else {
     const video = getActiveVideo();
     const container =
@@ -107,13 +110,7 @@ function toggleFullscreen(): void {
 
 function executeQuickExit(): void {
   // 1. Exit HTML5 fullscreen if currently active
-  if (document.fullscreenElement && document.exitFullscreen) {
-    try {
-      document.exitFullscreen();
-    } catch {
-      /* ignore */
-    }
-  }
+  exitFullscreen();
 
   // 2. Dispatch event to engine-bridge in the MAIN world to silence beforeunload and handle exit navigation
   try {
@@ -154,7 +151,7 @@ export function initKeyboardShortcuts(): void {
     }
 
     // 2. Focus & Player Shortcuts (Issue #14)
-    // Rule: If an item is HIDDEN by focus mode, its shortcut is BLOCKED.
+    // Rule: If an item is HIDDEN by focus mode, its action is blocked, but we consume the key to avoid page side-effects.
 
     // Fullscreen (F)
     if (state.keyFullscreen && matchKey(e, state.keyFullscreen)) {
@@ -172,8 +169,8 @@ export function initKeyboardShortcuts(): void {
 
     // Live Chat (C)
     if (state.keyChat && matchKey(e, state.keyChat)) {
+      e.preventDefault();
       if (!state.hideSettings.hideChat) {
-        e.preventDefault();
         clickElement(findChatButton());
       }
       return;
@@ -181,8 +178,8 @@ export function initKeyboardShortcuts(): void {
 
     // Note Timeline (T)
     if (state.keyTimeline && matchKey(e, state.keyTimeline)) {
+      e.preventDefault();
       if (!state.hideSettings.hideNoteTimeline) {
-        e.preventDefault();
         clickElement(findTimelineButton());
       }
       return;
@@ -190,8 +187,8 @@ export function initKeyboardShortcuts(): void {
 
     // Study Notes (N / A)
     if (state.keyNotes && matchKey(e, state.keyNotes)) {
+      e.preventDefault();
       if (!state.hideSettings.hideNotes) {
-        e.preventDefault();
         clickElement(findNotesButton());
       }
       return;
@@ -199,8 +196,8 @@ export function initKeyboardShortcuts(): void {
 
     // Doubt Q&A (D)
     if (state.keyDoubt && matchKey(e, state.keyDoubt)) {
+      e.preventDefault();
       if (!state.hideSettings.hideDoubt) {
-        e.preventDefault();
         clickElement(findDoubtButton());
       }
       return;

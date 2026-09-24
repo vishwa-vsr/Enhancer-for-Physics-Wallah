@@ -1,5 +1,6 @@
 import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
+import { isUserTyping } from '../shortcuts/keyboard';
 
 let idleTimer: number | null = null;
 let isInitialized = false;
@@ -12,6 +13,26 @@ function getPlayerContainer(): HTMLElement | null {
     video.closest<HTMLElement>('.video-player-app') ||
     (video.parentElement as HTMLElement | null)
   );
+}
+
+function isEventInsidePlayer(e: Event): boolean {
+  if (e.type === 'keydown') {
+    return !isUserTyping();
+  }
+  const container = getPlayerContainer();
+  if (!container) return false;
+
+  const target = e.target;
+  if (target instanceof Node && container.contains(target)) {
+    return true;
+  }
+  if (typeof e.composedPath === 'function') {
+    const path = e.composedPath();
+    if (path.includes(container)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function isMenuOrPopupOpen(): boolean {
@@ -82,7 +103,8 @@ function scheduleNextCheck(): void {
   idleTimer = window.setTimeout(sleep, delayMs);
 }
 
-function onUserActivity(): void {
+function onUserActivity(e: Event): void {
+  if (!isEventInsidePlayer(e)) return;
   wakeUp();
   scheduleNextCheck();
 }

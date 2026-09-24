@@ -1,5 +1,5 @@
 import { state } from '../../state';
-import { getActiveVideo, getCachedVideo, clearVideoCache } from '../video/detector';
+import { getActiveVideo, clearVideoCache } from '../video/detector';
 import { getActiveVideoElement, setupVideoListeners, setActiveVideoElement } from '../video/controller';
 import { resetDistractionCaches } from '../distractions/elements';
 import { injectSpeedControl } from '../ui/speed-hud';
@@ -8,10 +8,11 @@ import { injectSkipSilenceButton } from '../ui/silence-hud';
 import { injectInstantHideButton } from '../ui/focus-mode';
 import { injectFinishTimeBadge } from '../ui/finish-time';
 import { isSSEngineRunning, ssInit } from '../audio/skip-silence';
+import { isUserTyping } from '../shortcuts/keyboard';
 
 let isModifyingDOM = false;
-let monitorTimeout: any = null;
-let monitorIntervalId: any = null;
+let monitorTimeout: ReturnType<typeof setTimeout> | null = null;
+let monitorIntervalId: ReturnType<typeof setInterval> | null = null;
 let observer: MutationObserver | null = null;
 
 // Helper to check if all necessary extension controls are already placed and connected
@@ -89,14 +90,16 @@ export function manageMonitorInterval(): void {
         checkUrlChange();
         if (areControlsHealthy()) {
           // Stop timer completely once controls are in place and healthy to save CPU
-          clearInterval(monitorIntervalId);
-          monitorIntervalId = null;
+          if (monitorIntervalId !== null) {
+            clearInterval(monitorIntervalId);
+            monitorIntervalId = null;
+          }
           return;
         }
         throttledMonitor();
       }, 1000);
     }
-  } else if ((!onWatch || healthy) && monitorIntervalId) {
+  } else if ((!onWatch || healthy) && monitorIntervalId !== null) {
     // Controls are healthy or navigated away from lecture pages — stop timer completely
     clearInterval(monitorIntervalId);
     monitorIntervalId = null;
@@ -118,7 +121,14 @@ export function initWakeupTriggers(): void {
 
   // User interactions: click, touch, or keypress anywhere on the page
   window.addEventListener('pointerdown', onInteractionOrPlay, { capture: true, passive: true });
-  window.addEventListener('keydown', onInteractionOrPlay, { capture: true, passive: true });
+  window.addEventListener(
+    'keydown',
+    () => {
+      if (isUserTyping()) return;
+      onInteractionOrPlay();
+    },
+    { capture: true, passive: true },
+  );
 
   // Media play event: capture play events from any video on the page
   window.addEventListener('play', onInteractionOrPlay, { capture: true, passive: true });

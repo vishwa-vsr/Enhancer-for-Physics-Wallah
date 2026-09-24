@@ -166,7 +166,7 @@
 
       return origEventTargetAddEventListener.call(this, type, wrapped, options);
     }
-    return origEventTargetAddEventListener.apply(this, arguments as any);
+    return origEventTargetAddEventListener.call(this, type, listener, options);
   };
 
   EventTarget.prototype.removeEventListener = function (
@@ -187,7 +187,7 @@
         return origEventTargetRemoveEventListener.call(this, type, wrapped, options);
       }
     }
-    return origEventTargetRemoveEventListener.apply(this, arguments as any);
+    return origEventTargetRemoveEventListener.call(this, type, listener, options);
   };
 
   // Intercept window.onbeforeunload property assignment
@@ -711,64 +711,88 @@
       const r = registeredBeforeUnloadRecords.pop()!;
       try {
         origEventTargetRemoveEventListener.call(r.target, r.type, r.wrapped, r.options);
-      } catch (_) {}
+      } catch {
+        /* ignore */
+      }
       try {
         origEventTargetRemoveEventListener.call(r.target, r.type, r.orig, r.options);
-      } catch (_) {}
-    }
-
-    // 2. Clear property handlers on window, document, and top
-    try {
-      window.onbeforeunload = null;
-    } catch (_) {}
-    try {
-      (document as any).onbeforeunload = null;
-    } catch (_) {}
-    if (document.body) {
-      try {
-        (document.body as any).onbeforeunload = null;
-      } catch (_) {}
-    }
-    try {
-      if (window.top && window.top !== window) {
-        window.top.onbeforeunload = null;
-      }
-    } catch (_) {}
-  }
-
-  window.addEventListener('PWC_QUICK_EXIT', () => {
-    purgeBeforeUnload();
-
-    // 1. Exit HTML5 fullscreen if currently active
-    if (document.fullscreenElement && document.exitFullscreen) {
-      try {
-        document.exitFullscreen();
       } catch {
         /* ignore */
       }
     }
 
-    // 2. Locate PW's top-left back button and trigger clean exit
+    // 2. Clear property handlers on window, document, and top
+    try {
+      window.onbeforeunload = null;
+    } catch {
+      /* ignore */
+    }
+    try {
+      (document as unknown as { onbeforeunload: unknown }).onbeforeunload = null;
+    } catch {
+      /* ignore */
+    }
+    if (document.body) {
+      try {
+        (document.body as unknown as { onbeforeunload: unknown }).onbeforeunload = null;
+      } catch {
+        /* ignore */
+      }
+    }
+    try {
+      if (window.top && window.top !== window) {
+        window.top.onbeforeunload = null;
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  window.addEventListener('PWC_QUICK_EXIT', () => {
+    purgeBeforeUnload();
+
+    const currentUrl = window.location.href;
+
+    // 1. Locate PW's top-left back button and trigger clean exit
     const header = document.querySelector('.player-header');
     const backBtn =
       document.querySelector('.player-header path[d*="M19 12H5"]')?.closest('svg') ||
       header?.querySelector('svg.player-icon, button, svg, [role="button"]') ||
       document.querySelector('[class*="back-icon" i], [class*="back-btn" i], [aria-label*="back" i]');
 
+    let clickAttempted = false;
     if (backBtn instanceof HTMLElement) {
       try {
         backBtn.click();
-        backBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+        clickAttempted = true;
       } catch {
         /* ignore */
       }
     } else if (backBtn instanceof SVGElement) {
       try {
-        backBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+        backBtn.dispatchEvent(
+          new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
+        );
+        clickAttempted = true;
       } catch {
         /* ignore */
       }
     }
+
+    // 2. Fallback navigation: if button was not found or click did not navigate away, trigger browser back
+    setTimeout(
+      () => {
+        purgeBeforeUnload();
+        if (window.location.href === currentUrl) {
+          try {
+            window.history.back();
+          } catch {
+            /* ignore */
+          }
+        }
+      },
+      clickAttempted ? 120 : 0,
+    );
 
     // Keep suppression active for 4 seconds during exit navigation
     setTimeout(() => {

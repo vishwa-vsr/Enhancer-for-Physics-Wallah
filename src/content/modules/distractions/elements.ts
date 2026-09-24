@@ -565,9 +565,19 @@ function getToolbarButtonByType(
 
   const siblings = Array.from(parent.children);
   const nativeButtons = siblings.filter((el) => {
-    return el.nodeType === 1 && el.id !== 'pwc-speed-control' && el.id !== 'pwc-quality-control';
+    if (el.nodeType !== 1) return false;
+    const id = el.id || '';
+    const className = el.getAttribute('class') || '';
+    return !id.startsWith('pwc-') && !className.includes('pwc-');
   });
 
+  // 1. Primary: search by attribute classification
+  for (const btn of nativeButtons) {
+    const type = checkElementOrChildType(btn);
+    if (type === targetType) return btn;
+  }
+
+  // 2. Secondary: fallback to positional offset relative to Settings button
   const settingsIdx = nativeButtons.findIndex((el) => {
     return el === settingsBtn || el.id === 'setting-icon' || el.querySelector('#setting-icon');
   });
@@ -578,12 +588,6 @@ function getToolbarButtonByType(
   if (settingsIdx !== -1 && settingsIdx >= targetOffset) {
     const candidate = nativeButtons[settingsIdx - targetOffset];
     if (candidate) return candidate;
-  }
-
-  // Fallback: search by attribute classification
-  for (const btn of nativeButtons) {
-    const type = checkElementOrChildType(btn);
-    if (type === targetType) return btn;
   }
 
   return null;

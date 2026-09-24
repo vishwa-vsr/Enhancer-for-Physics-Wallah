@@ -920,8 +920,12 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 .pwc-autohide-inactive #footer-right-section,
 .pwc-autohide-inactive #progress-control,
 .pwc-autohide-inactive #pwc-speed-control,
-.pwc-autohide-inactive #pwc-quality-control {
+.pwc-autohide-inactive #pwc-quality-control,
+.pwc-autohide-inactive #pwc-ss-container,
+.pwc-autohide-inactive #pwc-finish-time-badge,
+.pwc-autohide-inactive #pwc-instant-hide-btn {
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 0.35s ease-out !important;
 }
+
