@@ -12,12 +12,21 @@ import {
   onSSVideoPause,
   resetSSSessionSaved,
 } from '../audio/skip-silence';
-import { isUserHoldingSpace } from '../shortcuts/space-hold';
+import {
+  isUserHoldingSpace,
+  isPointerHolding,
+  isPointerDown,
+  isPointerReleasing,
+  activatePointerHold,
+  cancelPointerHold,
+  NATIVE_HOLD_SPEED,
+} from '../shortcuts/space-hold';
 import { autoApplyPreferredQuality } from './quality-controller';
 
 let activeVideo: HTMLVideoElement | null = null;
 let isSettingRate = false;
-let settingRateTimer: any = null;
+let lastSetRate: number | null = null;
+let settingRateTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function getActiveVideoElement(): HTMLVideoElement | null {
   return activeVideo;
@@ -34,12 +43,25 @@ export function setVideoPlaybackRate(rate: number): void {
   const clamped = Math.round(rate * 100) / 100;
   if (Math.abs(video.playbackRate - clamped) > 0.02) {
     isSettingRate = true;
+    lastSetRate = clamped;
     video.playbackRate = clamped;
     if (settingRateTimer) clearTimeout(settingRateTimer);
     settingRateTimer = setTimeout(() => {
       isSettingRate = false;
     }, 150);
   }
+}
+
+// Restore user's preferred speed (or active silence speed) after releasing PW native hold-click
+export function restoreSpeedAfterPointerHold(): void {
+  if (isUserHoldingSpace() || isPointerHolding()) return;
+  if (state.skipSilenceEnabled && isSSEngineRunning() && getSSCurrentState() === 'silence') {
+    setVideoPlaybackRate(state.skipSilenceSilenceSpeed);
+  } else {
+    const normalSpeed = state.extensionEnabled ? state.currentSpeed : 1.0;
+    setVideoPlaybackRate(normalSpeed);
+  }
+  updateUI();
 }
 
 // Helper to step speed up or down by 0.1, clamped to 0.5–4.0
@@ -64,6 +86,7 @@ export function applySpeedToActiveVideo(): void {
 
   if (Math.abs(video.playbackRate - targetSpeed) > 0.02) {
     isSettingRate = true;
+    lastSetRate = targetSpeed;
     video.playbackRate = targetSpeed;
     if (settingRateTimer) clearTimeout(settingRateTimer);
     settingRateTimer = setTimeout(() => {
@@ -119,20 +142,55 @@ export function setupVideoListeners(video: HTMLVideoElement): void {
 
 // Update speed UI when speed changes (syncs with native controls)
 export function onRateChange(): void {
-  if (isSettingRate || !activeVideo) return;
+  if (!activeVideo) return;
+  if (
+    isSettingRate &&
+    lastSetRate !== null &&
+    Math.abs(activeVideo.playbackRate - lastSetRate) <= 0.02
+  ) {
+    return;
+  }
+  if (isUserHoldingSpace()) return;
+
+  // Detect PW native hold-click to 2x while pointer is pressed on the player
+  if (
+    isPointerDown() &&
+    !isPointerHolding() &&
+    Math.abs(activeVideo.playbackRate - NATIVE_HOLD_SPEED) < 0.05
+  ) {
+    activatePointerHold();
+  }
+
+  // Ignore intermediate ratechange events while releasing pointer hold and snap back to target speed
+  if (isPointerReleasing()) {
+    restoreSpeedAfterPointerHold();
+    return;
+  }
 
   // If Skip Silence is running, never let automated or native player events overwrite user's preferred speed
   if (state.skipSilenceEnabled && isSSEngineRunning()) {
-    if (getSSCurrentState() === 'silence') return;
-    // If in speech mode, enforce that video stays at the user's preferred speed
-    const expectedSpeed = state.extensionEnabled ? state.currentSpeed : 1.0;
+    if (getSSCurrentState() === 'silence') {
+      const targetSilenceSpeed = isPointerHolding()
+        ? Math.max(NATIVE_HOLD_SPEED, state.skipSilenceSilenceSpeed)
+        : state.skipSilenceSilenceSpeed;
+      if (Math.abs(activeVideo.playbackRate - targetSilenceSpeed) > 0.05) {
+        setVideoPlaybackRate(targetSilenceSpeed);
+      }
+      return;
+    }
+    // If in speech mode, enforce that video stays at the user's preferred speed (or 2x during native hold-click)
+    const expectedSpeed = isPointerHolding()
+      ? NATIVE_HOLD_SPEED
+      : state.extensionEnabled
+        ? state.currentSpeed
+        : 1.0;
     if (Math.abs(activeVideo.playbackRate - expectedSpeed) > 0.05) {
       setVideoPlaybackRate(expectedSpeed);
     }
     return;
   }
 
-  if (isUserHoldingSpace()) return;
+  if (isPointerHolding()) return;
   state.currentSpeed = activeVideo.playbackRate;
   updateUI();
 }
@@ -153,6 +211,7 @@ export function onVideoPlay(): void {
 
 // Reset silence states when video is paused or ended
 export function onVideoPause(): void {
+  cancelPointerHold();
   onSSVideoPause();
 }
 
@@ -187,7 +246,7 @@ export function togglePlayPause(): void {
     } else {
       video.pause();
     }
-  } catch (e) {
+  } catch {
     // Fallback 2: click the video element
     video.click();
   }
@@ -200,6 +259,7 @@ export function applyTemporarySpeed(speed: number): void {
   if (video) {
     if (Math.abs(video.playbackRate - speed) > 0.02) {
       isSettingRate = true;
+      lastSetRate = speed;
       video.playbackRate = speed;
       if (settingRateTimer) clearTimeout(settingRateTimer);
       settingRateTimer = setTimeout(() => {

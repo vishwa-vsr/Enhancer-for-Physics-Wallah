@@ -3,7 +3,11 @@ import { state, safeSetSettings } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { setVideoPlaybackRate } from '../video/controller';
 import { showInfoToast } from '../ui/toast';
-import { isUserHoldingSpace } from '../shortcuts/space-hold';
+import {
+  isUserHoldingSpace,
+  isPointerHolding,
+  NATIVE_HOLD_SPEED,
+} from '../shortcuts/space-hold';
 import { updateSkipSilenceUI, manageSSVisualizerInterval } from '../ui/silence-hud';
 import { updateUI } from '../ui/speed-hud';
 
@@ -498,7 +502,11 @@ export function ssEnterSilence(): void {
 
 // Smoothly exit silence state (restore speed + exponential fade in)
 export function ssExitSilence(): void {
-  const normalSpeed = state.extensionEnabled ? state.currentSpeed : 1.0;
+  const normalSpeed = isPointerHolding()
+    ? NATIVE_HOLD_SPEED
+    : state.extensionEnabled
+      ? state.currentSpeed
+      : 1.0;
   setVideoPlaybackRate(normalSpeed);
   if (ssGainNode && ssAudioContext) {
     const now = ssAudioContext.currentTime;
@@ -539,7 +547,11 @@ export function ssDestroy(): void {
   // Restore normal playback speed
   const video = getActiveVideo();
   if (video && !isUserHoldingSpace()) {
-    const normalSpeed = state.extensionEnabled ? state.currentSpeed : 1.0;
+    const normalSpeed = isPointerHolding()
+      ? NATIVE_HOLD_SPEED
+      : state.extensionEnabled
+        ? state.currentSpeed
+        : 1.0;
     if (video.playbackRate !== normalSpeed) {
       setVideoPlaybackRate(normalSpeed);
     }
@@ -587,15 +599,24 @@ export function ssProcessVolume(db: number): void {
       }
 
       // Tick-based speed ramp over 200ms (zero setInterval)
-      const baseSpeed = state.extensionEnabled ? state.currentSpeed : 1.0;
-      if (!isUserHoldingSpace() && prevSilentMs < minSilenceMs + 200) {
-        const progress = Math.min((ssSilentMsAccumulated - minSilenceMs) / 200, 1);
-        const targetSpeed = baseSpeed + (state.skipSilenceSilenceSpeed - baseSpeed) * progress;
-        setVideoPlaybackRate(targetSpeed);
+      const holdClickActive = isPointerHolding();
+      const normalBaseSpeed = state.extensionEnabled ? state.currentSpeed : 1.0;
+      const baseSpeed = holdClickActive ? NATIVE_HOLD_SPEED : normalBaseSpeed;
+      const targetSilenceSpeed = holdClickActive
+        ? Math.max(NATIVE_HOLD_SPEED, state.skipSilenceSilenceSpeed)
+        : state.skipSilenceSilenceSpeed;
+      if (!isUserHoldingSpace()) {
+        if (prevSilentMs < minSilenceMs + 200) {
+          const progress = Math.min((ssSilentMsAccumulated - minSilenceMs) / 200, 1);
+          const targetSpeed = baseSpeed + (targetSilenceSpeed - baseSpeed) * progress;
+          setVideoPlaybackRate(targetSpeed);
+        } else if (Math.abs(video.playbackRate - targetSilenceSpeed) > 0.05) {
+          setVideoPlaybackRate(targetSilenceSpeed);
+        }
       }
 
       // Track time saved in memory
-      const saved = windowMs * (1 - baseSpeed / state.skipSilenceSilenceSpeed);
+      const saved = windowMs * Math.max(0, 1 - normalBaseSpeed / targetSilenceSpeed);
       state.skipSilenceTimeSaved += saved;
       skipSilenceSessionSaved += saved;
       scheduleSkipSilenceSave();
