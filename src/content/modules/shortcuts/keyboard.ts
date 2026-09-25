@@ -1,6 +1,7 @@
 import { state } from '../../state';
 import { stepSpeed, saveSpeed } from '../video/controller';
 import { getSSCurrentState } from '../audio/skip-silence';
+import { isPointerHolding, isUserHoldingSpace } from './space-hold';
 import {
   findNotesButton,
   findTimelineButton,
@@ -134,7 +135,12 @@ export function initKeyboardShortcuts(): void {
     if (isUserTyping()) return;
 
     // 1. Video Speed Hotkeys (controlled by state.enableHotkeys master switch)
-    if (state.enableHotkeys && !(state.skipSilenceEnabled && getSSCurrentState() === 'silence')) {
+    if (
+      state.enableHotkeys &&
+      !isPointerHolding() &&
+      !isUserHoldingSpace() &&
+      !(state.skipSilenceEnabled && getSSCurrentState() === 'silence')
+    ) {
       if (matchKey(e, state.keySpeedUp)) {
         e.preventDefault();
         saveSpeed(stepSpeed(1));
@@ -204,4 +210,3 @@ export function initKeyboardShortcuts(): void {
     }
   });
 }
-

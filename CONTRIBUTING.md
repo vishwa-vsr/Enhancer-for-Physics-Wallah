@@ -74,7 +74,7 @@ src/
 │       │   └── skip-silence.ts   # Inline AudioWorklet processor & noise floor calibration
 │       ├── shortcuts/
 │       │   ├── keyboard.ts       # Hotkeys listener (h, j, l) with input protection
-│       │   └── space-hold.ts     # Capture-phase spacebar speed boost & tap play/pause
+│       │   └── space-hold.ts     # Capture-phase spacebar speed boost, tap play/pause & native 2x hold-click sync
 │       ├── visibility/
 │       │   └── auto-pause.ts     # Auto pause/resume when switching tabs
 │       └── dom/

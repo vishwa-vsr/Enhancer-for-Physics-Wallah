@@ -1,5 +1,9 @@
 import { state, initState, subscribeState } from './state';
-import { applySpeedToActiveVideo, setVideoPlaybackRate } from './modules/video/controller';
+import {
+  applySpeedToActiveVideo,
+  setVideoPlaybackRate,
+  getEffectiveSilenceSpeed,
+} from './modules/video/controller';
 import {
   initQualityController,
   applyQuality,
@@ -25,7 +29,7 @@ import {
 } from './modules/audio/skip-silence';
 import { getActiveVideo } from './modules/video/detector';
 import { initKeyboardShortcuts } from './modules/shortcuts/keyboard';
-import { initSpaceHold } from './modules/shortcuts/space-hold';
+import { initSpaceHold, cancelPointerHold, cancelSpaceHold } from './modules/shortcuts/space-hold';
 import { initAutoPause } from './modules/visibility/auto-pause';
 import { initFocusLock, deactivateFocusLock } from './modules/ui/focus-lock';
 import { startDomObserver, throttledMonitor, initWakeupTriggers } from './modules/dom/observer';
@@ -69,6 +73,8 @@ function init(): void {
         // Turning the extension off must also end any running Focus Lock
         // session so all distraction hiding is restored cleanly.
         deactivateFocusLock();
+        cancelPointerHold();
+        cancelSpaceHold();
       }
       injectInstantHideButton();
       focusChanged = true;
@@ -114,7 +120,7 @@ function init(): void {
 
     if (changedKeys.includes('skipSilenceSilenceSpeed')) {
       if (isSSEngineRunning() && getSSCurrentState() === 'silence') {
-        setVideoPlaybackRate(currentState.skipSilenceSilenceSpeed);
+        setVideoPlaybackRate(getEffectiveSilenceSpeed());
       }
     }
 

@@ -35,24 +35,29 @@ export function isPointerReleasing(): boolean {
   return isReleasingPointerHold;
 }
 
-export function activatePointerHold(): void {
-  if (!isPointerDownOnPlayer) return;
+function clearPointerHoldTimer(): void {
   if (pointerHoldTimer) {
     clearTimeout(pointerHoldTimer);
     pointerHoldTimer = null;
   }
-  isPointerHoldActive = true;
 }
 
-export function cancelPointerHold(): void {
-  if (pointerHoldTimer) {
-    clearTimeout(pointerHoldTimer);
-    pointerHoldTimer = null;
-  }
+function clearPointerReleaseTimer(): void {
   if (pointerReleaseTimer) {
     clearTimeout(pointerReleaseTimer);
     pointerReleaseTimer = null;
   }
+}
+
+export function activatePointerHold(): void {
+  if (!isPointerDownOnPlayer) return;
+  clearPointerHoldTimer();
+  isPointerHoldActive = true;
+}
+
+export function cancelPointerHold(): void {
+  clearPointerHoldTimer();
+  clearPointerReleaseTimer();
   isPointerDownOnPlayer = false;
   isPointerHoldActive = false;
   isReleasingPointerHold = false;
@@ -62,7 +67,10 @@ function isInteractiveControlTarget(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) return false;
   return Boolean(
     target.closest(
-      '.player-footer, .player-header, .vjs-control-bar, .vjs-menu, .vjs-setting-menu, ' +
+      '.player-footer, .player-header, #footer-left-section, #footer-right-section, ' +
+        '#progress-control, .vjs-progress-control, .vjs-progress-holder, ' +
+        '[class*="progress-control" i], [class*="progress-bar" i], [class*="seekbar" i], [class*="seek-bar" i], ' +
+        '.vjs-control-bar, .vjs-menu, .vjs-setting-menu, [data-headlessui-state], ' +
         '#pwc-speed-control, #pwc-ss-container, #pwc-quality-control, #pwc-instant-hide-btn, ' +
         '#pwc-finish-time-badge, button, input, select, textarea, a, ' +
         '[role="button"], [role="slider"], [role="menu"], [role="menuitem"]',
@@ -77,8 +85,9 @@ export function cancelSpaceHold(): void {
     spacePressTimer = null;
   }
   if (isHoldingSpace) {
-    applyTemporarySpeed(speedBeforeHold);
     isHoldingSpace = false;
+    state.currentSpeed = speedBeforeHold;
+    restoreSpeedAfterPointerHold();
   }
 }
 
@@ -134,8 +143,9 @@ export function initSpaceHold(): void {
         }
 
         if (isHoldingSpace) {
-          applyTemporarySpeed(speedBeforeHold);
           isHoldingSpace = false;
+          state.currentSpeed = speedBeforeHold;
+          restoreSpeedAfterPointerHold();
         } else {
           // Only toggle play/pause if user is not typing in a text field
           if (!isUserTyping()) {
@@ -149,6 +159,7 @@ export function initSpaceHold(): void {
 
   // Track screen hold state for PW native hold-click to 2x
   const startHold = (e: Event) => {
+    if (!state.extensionEnabled) return;
     if (e instanceof MouseEvent && e.button !== 0) return;
     if (isInteractiveControlTarget(e.target)) return;
 
@@ -159,35 +170,23 @@ export function initSpaceHold(): void {
       video.closest('.video-player-app') ||
       video.parentElement;
     if (playerContainer && e.target && playerContainer.contains(e.target as Node)) {
-      if (pointerReleaseTimer) {
-        clearTimeout(pointerReleaseTimer);
-        pointerReleaseTimer = null;
-        isReleasingPointerHold = false;
-      }
+      clearPointerReleaseTimer();
+      isReleasingPointerHold = false;
       isPointerDownOnPlayer = true;
       if (!pointerHoldTimer) {
-        // Fallback when playbackRate is already 2.0x (where setting 2.0x won't fire ratechange)
         pointerHoldTimer = setTimeout(() => {
           pointerHoldTimer = null;
           const activeVid = getActiveVideoElement() || getCachedVideo() || getActiveVideo();
-          if (
-            isPointerDownOnPlayer &&
-            activeVid &&
-            !activeVid.paused &&
-            Math.abs(activeVid.playbackRate - NATIVE_HOLD_SPEED) < 0.05
-          ) {
+          if (state.extensionEnabled && isPointerDownOnPlayer && activeVid && !activeVid.paused) {
             isPointerHoldActive = true;
           }
-        }, 350);
+        }, 300);
       }
     }
   };
 
   const endHold = () => {
-    if (pointerHoldTimer) {
-      clearTimeout(pointerHoldTimer);
-      pointerHoldTimer = null;
-    }
+    clearPointerHoldTimer();
     const wasHoldActive = isPointerHoldActive;
     isPointerDownOnPlayer = false;
     isPointerHoldActive = false;
@@ -197,7 +196,7 @@ export function initSpaceHold(): void {
       setTimeout(() => {
         restoreSpeedAfterPointerHold();
       }, 0);
-      if (pointerReleaseTimer) clearTimeout(pointerReleaseTimer);
+      clearPointerReleaseTimer();
       pointerReleaseTimer = setTimeout(() => {
         pointerReleaseTimer = null;
         isReleasingPointerHold = false;
@@ -222,4 +221,3 @@ export function initSpaceHold(): void {
   document.addEventListener('contextmenu', endHold, true);
   document.addEventListener('dragstart', endHold, true);
 }
-

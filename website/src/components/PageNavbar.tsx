@@ -137,7 +137,7 @@ export const PageNavbar: React.FC<PageNavbarProps> = ({ currentPage }) => {
                     onClick={() => setAboutOpen(false)}
                     className="flex items-center justify-between px-3 py-2 rounded-xl text-white/90 hover:bg-white/10 hover:text-white transition-colors"
                   >
-                    <span>Release log (v1.0.8.6)</span>
+                    <span>Release log (v1.0.8.7)</span>
                     <span className="text-xs text-muted-foreground">↗</span>
                   </a>
                 </div>

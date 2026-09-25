@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.0.8.7] - 2026-09-25
+
+### Fixed
+
+- **Hold-Click 2x Speed**: Fixed PW's hold-click 2x speed not working when Skip Silence is on [#19](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/19).
+
 ## [1.0.8.6] - 2026-09-24
 
 ### Added

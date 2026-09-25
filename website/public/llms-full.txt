@@ -61,7 +61,7 @@ No. The extension works entirely locally on your browser. It doesn't send automa
 No. It only measures the volume level of the lecture audio in real-time RAM to detect silent moments. No audio is ever saved, downloaded, or transmitted.
 
 ## Technical Details
-- **Version**: 1.0.8.6
+- **Version**: 1.0.8.7
 - **License**: MIT
 - **Manifest**: V3
 - **Required permissions**: storage

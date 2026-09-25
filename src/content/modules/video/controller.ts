@@ -36,6 +36,20 @@ export function setActiveVideoElement(video: HTMLVideoElement | null): void {
   activeVideo = video;
 }
 
+// Resolve normal (speech) playback speed, respecting active PW 2x hold-click
+export function getEffectiveNormalSpeed(): number {
+  if (isPointerHolding()) return NATIVE_HOLD_SPEED;
+  return state.extensionEnabled ? state.currentSpeed : 1.0;
+}
+
+// Resolve silence-skip playback speed, using the faster speed when holding click for 2x
+export function getEffectiveSilenceSpeed(): number {
+  if (isPointerHolding()) {
+    return Math.max(NATIVE_HOLD_SPEED, state.skipSilenceSilenceSpeed);
+  }
+  return state.skipSilenceSilenceSpeed;
+}
+
 // Safely set video playback rate without event loop oscillation
 export function setVideoPlaybackRate(rate: number): void {
   const video = getActiveVideo();
@@ -56,10 +70,9 @@ export function setVideoPlaybackRate(rate: number): void {
 export function restoreSpeedAfterPointerHold(): void {
   if (isUserHoldingSpace() || isPointerHolding()) return;
   if (state.skipSilenceEnabled && isSSEngineRunning() && getSSCurrentState() === 'silence') {
-    setVideoPlaybackRate(state.skipSilenceSilenceSpeed);
+    setVideoPlaybackRate(getEffectiveSilenceSpeed());
   } else {
-    const normalSpeed = state.extensionEnabled ? state.currentSpeed : 1.0;
-    setVideoPlaybackRate(normalSpeed);
+    setVideoPlaybackRate(getEffectiveNormalSpeed());
   }
   updateUI();
 }
@@ -82,17 +95,7 @@ export function applySpeedToActiveVideo(): void {
     setupVideoListeners(video);
   }
 
-  const targetSpeed = state.extensionEnabled ? state.currentSpeed : 1.0;
-
-  if (Math.abs(video.playbackRate - targetSpeed) > 0.02) {
-    isSettingRate = true;
-    lastSetRate = targetSpeed;
-    video.playbackRate = targetSpeed;
-    if (settingRateTimer) clearTimeout(settingRateTimer);
-    settingRateTimer = setTimeout(() => {
-      isSettingRate = false;
-    }, 150);
-  }
+  setVideoPlaybackRate(getEffectiveNormalSpeed());
   updateUI();
 }
 
@@ -150,7 +153,12 @@ export function onRateChange(): void {
   ) {
     return;
   }
-  if (isUserHoldingSpace()) return;
+  if (isUserHoldingSpace()) {
+    if (Math.abs(activeVideo.playbackRate - state.holdSpaceSpeed) > 0.05) {
+      setVideoPlaybackRate(state.holdSpaceSpeed);
+    }
+    return;
+  }
 
   // Detect PW native hold-click to 2x while pointer is pressed on the player
   if (
@@ -169,21 +177,8 @@ export function onRateChange(): void {
 
   // If Skip Silence is running, never let automated or native player events overwrite user's preferred speed
   if (state.skipSilenceEnabled && isSSEngineRunning()) {
-    if (getSSCurrentState() === 'silence') {
-      const targetSilenceSpeed = isPointerHolding()
-        ? Math.max(NATIVE_HOLD_SPEED, state.skipSilenceSilenceSpeed)
-        : state.skipSilenceSilenceSpeed;
-      if (Math.abs(activeVideo.playbackRate - targetSilenceSpeed) > 0.05) {
-        setVideoPlaybackRate(targetSilenceSpeed);
-      }
-      return;
-    }
-    // If in speech mode, enforce that video stays at the user's preferred speed (or 2x during native hold-click)
-    const expectedSpeed = isPointerHolding()
-      ? NATIVE_HOLD_SPEED
-      : state.extensionEnabled
-        ? state.currentSpeed
-        : 1.0;
+    const expectedSpeed =
+      getSSCurrentState() === 'silence' ? getEffectiveSilenceSpeed() : getEffectiveNormalSpeed();
     if (Math.abs(activeVideo.playbackRate - expectedSpeed) > 0.05) {
       setVideoPlaybackRate(expectedSpeed);
     }
@@ -255,17 +250,6 @@ export function togglePlayPause(): void {
 // Set temporary speed without saving it permanently to storage
 export function applyTemporarySpeed(speed: number): void {
   state.currentSpeed = speed;
-  const video = getActiveVideo();
-  if (video) {
-    if (Math.abs(video.playbackRate - speed) > 0.02) {
-      isSettingRate = true;
-      lastSetRate = speed;
-      video.playbackRate = speed;
-      if (settingRateTimer) clearTimeout(settingRateTimer);
-      settingRateTimer = setTimeout(() => {
-        isSettingRate = false;
-      }, 150);
-    }
-  }
+  setVideoPlaybackRate(speed);
   updateUI();
 }

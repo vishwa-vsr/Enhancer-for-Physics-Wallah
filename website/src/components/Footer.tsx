@@ -90,7 +90,7 @@ export const Footer: React.FC<FooterProps> = () => {
           rel="noreferrer"
           className="hover:text-white transition-colors"
         >
-          Releases (v1.0.8.6)
+          Releases (v1.0.8.7)
         </a>
         <a
           href="https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah"

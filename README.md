@@ -4,7 +4,7 @@
   # Enhancer for Physics Wallah
   ### Enhance your lecture experience on `pw.live` Speed up lectures up to 4.0x with speed widget, automatically skip teacher pauses with real-time audio detection, constant 720p HD video quality, calculate real finish times, auto-pause when switching tabs, customizable Keyboard Shortcuts, and instantly hide all icon with one click.
 
-  [![Version: 1.0.8.6](https://img.shields.io/badge/version-1.0.8.6-blue.svg)](#)
+  [![Version: 1.0.8.7](https://img.shields.io/badge/version-1.0.8.7-blue.svg)](#)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![Manifest V3](https://img.shields.io/badge/Manifest-V3-success)](#)
   [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-brightgreen)](#-privacy--security)

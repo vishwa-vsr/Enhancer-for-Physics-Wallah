@@ -1,7 +1,7 @@
 # Privacy Policy for Enhancer for Physics Wallah
 
 **Effective Date:** September 9, 2026  
-**Latest Version:** 1.0.8.6  
+**Latest Version:** 1.0.8.7  
 **Official Web Version:** [https://enhancerforpw.vercel.app/privacy](https://enhancerforpw.vercel.app/privacy)
 
 At **Enhancer for Physics Wallah** (also known as **PW Control**), we believe your privacy should always come first. This Privacy Policy explains clearly and transparently how our browser extension operates and how user data is handled.
