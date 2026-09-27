@@ -1,5 +1,6 @@
 import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
+import { getOuterPlayerContainer } from '../distractions/elements';
 import { cancelSpaceHold } from '../shortcuts/space-hold';
 import { isUserTyping } from '../shortcuts/keyboard';
 import { showInfoToast } from './toast';
@@ -27,14 +28,7 @@ export function isFocusLockActive(): boolean {
 // Resolve the outermost player container (fullscreen target), consistent with
 // the container resolution used across the extension's modules.
 function getPlayerContainer(): HTMLElement | null {
-  const video = getActiveVideo();
-  if (!video) return null;
-  return (
-    (document.getElementById('video-player-container') as HTMLElement | null) ||
-    (video.closest('.video-player-app') as HTMLElement | null) ||
-    (video.closest('[class*="video-player" i]') as HTMLElement | null) ||
-    (video.parentElement as HTMLElement | null)
-  );
+  return getOuterPlayerContainer();
 }
 
 function pauseActiveVideo(): void {

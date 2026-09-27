@@ -184,8 +184,9 @@ export function injectQualityControl(): void {
     return;
   }
 
+  const fRight = document.getElementById('footer-right-section');
   const existing = document.getElementById('pwc-quality-control') as HTMLElement | null;
-  if (existing && existing.isConnected) {
+  if (existing && existing.isConnected && (!fRight || fRight.contains(existing))) {
     existing.style.display = state.hideSettings.hideQuality ? 'none' : '';
     return;
   }
@@ -198,18 +199,18 @@ export function injectQualityControl(): void {
       container.id = 'pwc-quality-control';
       container.className = 'pwc-quality-container';
       buildQualityControl(container);
+    }
 
-      // Insert right next to speed control for neat grouping
-      const speedCtrl = document.getElementById('pwc-speed-control');
-      if (speedCtrl && speedCtrl.nextSibling) {
-        toolbar.insertBefore(container, speedCtrl.nextSibling);
-      } else if (speedCtrl) {
-        toolbar.appendChild(container);
-      } else if (toolbar.firstChild) {
-        toolbar.insertBefore(container, toolbar.firstChild);
-      } else {
-        toolbar.appendChild(container);
-      }
+    // Insert right next to speed control for neat grouping
+    const speedCtrl = document.getElementById('pwc-speed-control');
+    if (speedCtrl && speedCtrl.parentElement === toolbar && speedCtrl.nextSibling) {
+      toolbar.insertBefore(container, speedCtrl.nextSibling);
+    } else if (speedCtrl && speedCtrl.parentElement === toolbar) {
+      toolbar.appendChild(container);
+    } else if (toolbar.firstChild) {
+      toolbar.insertBefore(container, toolbar.firstChild);
+    } else {
+      toolbar.appendChild(container);
     }
 
     if (container) {

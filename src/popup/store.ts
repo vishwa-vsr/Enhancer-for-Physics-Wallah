@@ -41,6 +41,7 @@ export const keyNotes = signal('n');
 export const keyDoubt = signal('d');
 export const keyFullscreen = signal('f');
 export const keyExit = signal('e');
+export const allowShortcutsWhenHidden = signal(false);
 
 // ===== Auto-hide controls & cursor signals (Issue #14) =====
 export const autoHideControls = signal(false);
@@ -99,12 +100,13 @@ export async function initStore() {
   showFinishTime.value = s.showFinishTime !== false; // defaults to true
   finishTimeFormat.value = s.finishTimeFormat || 'minimal';
 
-  keyChat.value = s.keyChat || 'c';
-  keyTimeline.value = s.keyTimeline || 't';
-  keyNotes.value = s.keyNotes || 'n';
-  keyDoubt.value = s.keyDoubt || 'd';
-  keyFullscreen.value = s.keyFullscreen || 'f';
-  keyExit.value = s.keyExit || 'e';
+  keyChat.value = s.keyChat ?? 'c';
+  keyTimeline.value = s.keyTimeline ?? 't';
+  keyNotes.value = s.keyNotes ?? 'n';
+  keyDoubt.value = s.keyDoubt ?? 'd';
+  keyFullscreen.value = s.keyFullscreen ?? 'f';
+  keyExit.value = s.keyExit ?? 'e';
+  allowShortcutsWhenHidden.value = !!s.allowShortcutsWhenHidden;
 
   autoHideControls.value = !!s.autoHideControls;
   autoHideDelay.value = s.autoHideDelay ?? 0.8;
@@ -134,6 +136,9 @@ export async function initStore() {
     if (changes.keyDoubt !== undefined) keyDoubt.value = changes.keyDoubt;
     if (changes.keyFullscreen !== undefined) keyFullscreen.value = changes.keyFullscreen;
     if (changes.keyExit !== undefined) keyExit.value = changes.keyExit;
+    if (changes.allowShortcutsWhenHidden !== undefined) {
+      allowShortcutsWhenHidden.value = !!changes.allowShortcutsWhenHidden;
+    }
     if (changes.autoHideControls !== undefined) autoHideControls.value = !!changes.autoHideControls;
     if (changes.autoHideDelay !== undefined) autoHideDelay.value = changes.autoHideDelay;
     if (changes.autoHideWhenPaused !== undefined) autoHideWhenPaused.value = !!changes.autoHideWhenPaused;

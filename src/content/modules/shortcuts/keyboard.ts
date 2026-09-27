@@ -8,7 +8,9 @@ import {
   findDoubtButton,
   findChatButton,
   findFullscreenButton,
+  getOuterPlayerContainer,
 } from '../distractions/elements';
+import { applyDistractorsState } from '../distractions/focus-css';
 import { getActiveVideo } from '../video/detector';
 
 // Helper to check if user is typing in a text entry field
@@ -53,21 +55,83 @@ export function matchKey(event: KeyboardEvent, targetKey: string): boolean {
   return event.key.toLowerCase() === targetKey.toLowerCase();
 }
 
-function clickElement(el: Element | null): boolean {
-  if (!el) return false;
-  if (el instanceof HTMLElement) {
+// Wake PW's interactive overlay DOM if the user presses a shortcut before ever hovering/clicking the player
+function wakePlayerControlsDom(): void {
+  if (document.getElementById('footer-right-section')) return;
+  const targets = [
+    getOuterPlayerContainer(),
+    document.getElementById('interactive-layer-wrapper'),
+    getActiveVideo(),
+  ];
+  for (const t of targets) {
+    if (!t) continue;
     try {
-      el.click();
-      return true;
+      t.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true, cancelable: true, view: window }));
+      t.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, cancelable: true, view: window }));
+      t.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, cancelable: true, view: window }));
     } catch {
       /* ignore */
     }
-  } else if (el instanceof SVGElement) {
-    try {
-      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+  }
+}
+
+function clickElement(el: Element | null): boolean {
+  if (!el) return false;
+
+  const root = document.documentElement;
+  const hadHideNotesClass = root.classList.contains('pwc-hide-notes');
+
+  const restoreList: Array<{ node: HTMLElement | SVGElement; val: string; priority: string }> = [];
+  let curr: Element | null = el;
+  while (
+    curr &&
+    curr !== document.body &&
+    curr.id !== 'footer-right-section' &&
+    curr.id !== 'interactive-layer-wrapper' &&
+    curr.id !== 'video-player-container'
+  ) {
+    if (curr instanceof HTMLElement || curr instanceof SVGElement) {
+      const inlineDisplay = curr.style.getPropertyValue('display');
+      if (inlineDisplay === 'none') {
+        restoreList.push({
+          node: curr,
+          val: inlineDisplay,
+          priority: curr.style.getPropertyPriority('display'),
+        });
+        curr.style.removeProperty('display');
+      }
+    }
+    curr = curr.parentElement;
+  }
+
+  if (hadHideNotesClass) {
+    root.classList.remove('pwc-hide-notes');
+  }
+
+  try {
+    const innerBtn =
+      typeof el.querySelector === 'function'
+        ? el.querySelector<HTMLElement>('button, [role="button"]')
+        : null;
+    const clickTarget = innerBtn || el;
+
+    if (clickTarget instanceof HTMLElement) {
+      clickTarget.click();
       return true;
-    } catch {
-      /* ignore */
+    } else if (clickTarget instanceof SVGElement) {
+      clickTarget.dispatchEvent(
+        new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
+      );
+      return true;
+    }
+  } catch {
+    /* ignore */
+  } finally {
+    for (const item of restoreList) {
+      item.node.style.setProperty('display', item.val, item.priority);
+    }
+    if (hadHideNotesClass) {
+      root.classList.add('pwc-hide-notes');
     }
   }
   return false;
@@ -76,37 +140,44 @@ function clickElement(el: Element | null): boolean {
 export function exitFullscreen(): void {
   if (document.fullscreenElement && document.exitFullscreen) {
     try {
-      document.exitFullscreen();
+      void document.exitFullscreen();
     } catch {
       /* ignore */
     }
   }
 }
 
-function toggleFullscreen(): void {
-  const fsBtn = findFullscreenButton();
-  if (fsBtn && clickElement(fsBtn)) {
+function applyFallbackFullscreen(wasFullscreen: boolean): void {
+  if (!!document.fullscreenElement !== wasFullscreen) {
     return;
   }
-
-  // Fallback to HTML5 fullscreen API
-  if (document.fullscreenElement) {
+  if (wasFullscreen) {
     exitFullscreen();
   } else {
-    const video = getActiveVideo();
-    const container =
-      document.getElementById('video-player-container') ||
-      (video && video.closest('.video-player-app')) ||
-      (video && video.parentElement) ||
-      video;
+    const container = getOuterPlayerContainer() || getActiveVideo();
     if (container && container.requestFullscreen) {
       try {
-        container.requestFullscreen();
+        void container.requestFullscreen();
       } catch {
         /* ignore */
       }
     }
   }
+}
+
+function toggleFullscreen(): void {
+  wakePlayerControlsDom();
+  const wasFullscreen = !!document.fullscreenElement;
+  const fsBtn = findFullscreenButton();
+
+  if (fsBtn && clickElement(fsBtn)) {
+    window.setTimeout(() => {
+      applyFallbackFullscreen(wasFullscreen);
+    }, 60);
+    return;
+  }
+
+  applyFallbackFullscreen(wasFullscreen);
 }
 
 function executeQuickExit(): void {
@@ -157,7 +228,7 @@ export function initKeyboardShortcuts(): void {
     }
 
     // 2. Focus & Player Shortcuts (Issue #14)
-    // Rule: If an item is HIDDEN by focus mode, its action is blocked, but we consume the key to avoid page side-effects.
+    // Rule: If an item is HIDDEN by focus mode, its action is blocked unless allowShortcutsWhenHidden is enabled.
 
     // Fullscreen (F)
     if (state.keyFullscreen && matchKey(e, state.keyFullscreen)) {
@@ -173,11 +244,22 @@ export function initKeyboardShortcuts(): void {
       return;
     }
 
+    const triggerPanelButton = (finder: () => Element | null) => {
+      if (document.documentElement.classList.contains('pwc-collapsed-state')) {
+        document.documentElement.classList.remove('pwc-collapsed-state');
+      }
+      wakePlayerControlsDom();
+      clickElement(finder());
+      window.requestAnimationFrame(() => {
+        applyDistractorsState();
+      });
+    };
+
     // Live Chat (C)
     if (state.keyChat && matchKey(e, state.keyChat)) {
       e.preventDefault();
-      if (!state.hideSettings.hideChat) {
-        clickElement(findChatButton());
+      if (!state.hideSettings.hideChat || state.allowShortcutsWhenHidden) {
+        triggerPanelButton(findChatButton);
       }
       return;
     }
@@ -185,8 +267,8 @@ export function initKeyboardShortcuts(): void {
     // Note Timeline (T)
     if (state.keyTimeline && matchKey(e, state.keyTimeline)) {
       e.preventDefault();
-      if (!state.hideSettings.hideNoteTimeline) {
-        clickElement(findTimelineButton());
+      if (!state.hideSettings.hideNoteTimeline || state.allowShortcutsWhenHidden) {
+        triggerPanelButton(findTimelineButton);
       }
       return;
     }
@@ -194,8 +276,8 @@ export function initKeyboardShortcuts(): void {
     // Study Notes (N / A)
     if (state.keyNotes && matchKey(e, state.keyNotes)) {
       e.preventDefault();
-      if (!state.hideSettings.hideNotes) {
-        clickElement(findNotesButton());
+      if (!state.hideSettings.hideNotes || state.allowShortcutsWhenHidden) {
+        triggerPanelButton(findNotesButton);
       }
       return;
     }
@@ -203,8 +285,8 @@ export function initKeyboardShortcuts(): void {
     // Doubt Q&A (D)
     if (state.keyDoubt && matchKey(e, state.keyDoubt)) {
       e.preventDefault();
-      if (!state.hideSettings.hideDoubt) {
-        clickElement(findDoubtButton());
+      if (!state.hideSettings.hideDoubt || state.allowShortcutsWhenHidden) {
+        triggerPanelButton(findDoubtButton);
       }
       return;
     }

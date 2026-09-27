@@ -32,10 +32,15 @@ export function injectSkipSilenceButton(): void {
     return;
   }
 
+  const fRight = document.getElementById('footer-right-section');
   let container = document.getElementById('pwc-ss-container');
-  if (container && container.isConnected) {
+  if (container && container.isConnected && (!fRight || fRight.contains(container))) {
     updateSkipSilenceUI();
     return;
+  }
+  if (container && fRight && !fRight.contains(container)) {
+    container.remove();
+    container = null;
   }
 
   const toolbar = findPWToolbar();

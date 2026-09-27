@@ -1,23 +1,18 @@
 import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
+import { getOuterPlayerContainer } from '../distractions/elements';
 import { isUserTyping } from '../shortcuts/keyboard';
 
 let idleTimer: number | null = null;
 let isInitialized = false;
 
 function getPlayerContainer(): HTMLElement | null {
-  const video = getActiveVideo();
-  if (!video) return null;
-  return (
-    document.getElementById('video-player-container') ||
-    video.closest<HTMLElement>('.video-player-app') ||
-    (video.parentElement as HTMLElement | null)
-  );
+  return getOuterPlayerContainer();
 }
 
 function isEventInsidePlayer(e: Event): boolean {
-  if (e.type === 'keydown') {
-    return !isUserTyping();
+  if (document.fullscreenElement) {
+    return true;
   }
   const container = getPlayerContainer();
   if (!container) return false;
@@ -36,28 +31,39 @@ function isEventInsidePlayer(e: Event): boolean {
 }
 
 function isMenuOrPopupOpen(): boolean {
-  // Check headlessui open menus (settings gear, dropdowns)
-  const openHeadless = document.querySelector(
-    '[data-headlessui-state*="open"], [aria-expanded="true"]',
+  if (isUserTyping()) return true;
+
+  const scope = getPlayerContainer() || document;
+
+  // Check headlessui open menus (settings gear, dropdowns), excluding our own speed badge
+  const openHeadless = scope.querySelector(
+    '[data-headlessui-state*="open"], [aria-expanded="true"]:not(.pwc-speed-badge)',
   );
   if (openHeadless) return true;
+
+  // Check open dialogs or sidebars inside the player
+  const openPanel = scope.querySelector<HTMLElement>(
+    '[role="dialog"], [aria-modal="true"], [class*="timeline-sidebar" i], [id*="timeline-sidebar" i], [class*="Timeline_sidebar"], [class*="Timeline_container"]',
+  );
+  if (openPanel && openPanel.offsetWidth > 0 && openPanel.offsetHeight > 0) {
+    return true;
+  }
 
   // Check our custom quality menu
   const qualityMenu = document.querySelector('.pwc-quality-container.pwc-menu-open');
   if (qualityMenu) return true;
 
   // Check Video.js locked/open menus
-  const vjsMenu = document.querySelector('.vjs-menu.vjs-lock-showing');
+  const vjsMenu = scope.querySelector('.vjs-menu.vjs-lock-showing');
   if (vjsMenu && (vjsMenu as HTMLElement).offsetWidth > 0) return true;
 
   return false;
 }
 
 function wakeUp(): void {
-  const container = getPlayerContainer();
-  if (container) {
-    container.classList.remove('pwc-autohide-inactive');
-  }
+  document.querySelectorAll('.pwc-autohide-inactive').forEach((el) => {
+    el.classList.remove('pwc-autohide-inactive');
+  });
 }
 
 function sleep(): void {
@@ -128,7 +134,6 @@ export function initAutoHide(): void {
   const options = { passive: true };
   window.addEventListener('mousemove', onUserActivity, options);
   window.addEventListener('mousedown', onUserActivity, options);
-  window.addEventListener('keydown', onUserActivity, options);
   window.addEventListener('touchstart', onUserActivity, options);
   window.addEventListener('wheel', onUserActivity, options);
 

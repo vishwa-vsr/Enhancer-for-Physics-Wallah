@@ -1,7 +1,6 @@
 import { getActiveVideo } from '../video/detector';
 
 let cachedSettingsBtn: Element | null = null;
-let cachedFullscreenBtn: Element | null = null;
 let cachedTimeline: Element | null = null;
 let cachedTimeTexts: Element[] | null = null;
 let cachedNativeSpeedBadges: Element[] | null = null;
@@ -9,15 +8,112 @@ let cachedToolbar: Element | null = null;
 
 export function resetDistractionCaches(): void {
   cachedSettingsBtn = null;
-  cachedFullscreenBtn = null;
   cachedTimeline = null;
   cachedTimeTexts = null;
   cachedNativeSpeedBadges = null;
   cachedToolbar = null;
 }
 
+// Helper to check if an element is a major player layout container that must never be mistaken for a single toolbar button
+export function isProtectedPlayerStructure(el: Element | null): boolean {
+  if (!el || el === document.body || el === document.documentElement) return true;
+  const tag = el.tagName.toLowerCase();
+  if (tag === 'video') return true;
+
+  const id = (el.id || '').toLowerCase();
+  const className = (el.getAttribute('class') || '').toLowerCase();
+
+  if (id.startsWith('pwc-') || className.includes('pwc-')) return true;
+
+  if (
+    id === 'video-player-container' ||
+    id === 'interactive-layer-wrapper' ||
+    id === 'footer-right-section' ||
+    id === 'footer-left-section' ||
+    id === 'progress-control' ||
+    id.startsWith('vjs_video_')
+  ) {
+    return true;
+  }
+
+  if (
+    className.includes('video-js') ||
+    className.includes('vjs-control-bar') ||
+    className.includes('vjs-progress-control') ||
+    className.includes('video-player-app') ||
+    className.includes('player-header') ||
+    className.includes('controls-container') ||
+    className.includes('control-bar')
+  ) {
+    return true;
+  }
+
+  if (
+    typeof el.querySelector === 'function' &&
+    el.querySelector(
+      'video, #interactive-layer-wrapper, #footer-right-section, #footer-left-section, #progress-control, .vjs-control-bar',
+    )
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+// Resolve the outermost player container that wraps both the video (.video-js) and PW's custom interactive overlay (#interactive-layer-wrapper)
+export function getOuterPlayerContainer(): HTMLElement | null {
+  const byId = document.getElementById('video-player-container');
+  if (byId) return byId;
+
+  const video = getActiveVideo();
+  const interactiveLayer =
+    document.getElementById('interactive-layer-wrapper') ||
+    document.getElementById('footer-right-section') ||
+    document.getElementById('progress-control') ||
+    document.querySelector<HTMLElement>('.player-header');
+
+  if (video && interactiveLayer) {
+    let curr: HTMLElement | null = video.parentElement;
+    while (curr && curr !== document.body && curr !== document.documentElement) {
+      if (curr.contains(interactiveLayer)) {
+        return curr;
+      }
+      curr = curr.parentElement;
+    }
+  }
+
+  if (interactiveLayer && interactiveLayer.parentElement) {
+    return interactiveLayer.parentElement;
+  }
+
+  if (!video) return null;
+  const vjsRoot = video.closest<HTMLElement>('.video-js, [id^="vjs_video_"]');
+  return (
+    video.closest<HTMLElement>('.video-player-app') ||
+    video.closest<HTMLElement>('[class*="video-player" i]') ||
+    video.closest<HTMLElement>('[class*="player-container" i]') ||
+    (vjsRoot && vjsRoot.parentElement ? vjsRoot.parentElement : null) ||
+    video.parentElement
+  );
+}
+
 // Helper to hide or show an element with !important
 export function setHidden(el: Element | HTMLElement | SVGElement, shouldHide: boolean): void {
+  if (!el) return;
+  // Never allow hiding the core player wrapper, interactive layer, or entire footer bars
+  if (shouldHide) {
+    const id = (el.id || '').toLowerCase();
+    if (
+      id === 'video-player-container' ||
+      id === 'interactive-layer-wrapper' ||
+      id === 'footer-right-section' ||
+      id === 'footer-left-section' ||
+      (typeof el.querySelector === 'function' &&
+        el.querySelector('video, #interactive-layer-wrapper, #footer-right-section'))
+    ) {
+      return;
+    }
+  }
   if (el instanceof HTMLElement || el instanceof SVGElement) {
     if (shouldHide) {
       el.style.setProperty('display', 'none', 'important');
@@ -62,63 +158,65 @@ export function isNativeSpeedBadge(el: Element): boolean {
 
 // Helper to traverse up and find the actual clickable control button container
 export function getControlButton(el: Element | null): Element | null {
-  if (!el) return null;
+  if (!el || isProtectedPlayerStructure(el)) return null;
   let current: Element | null = el;
-  while (current && current !== document.body) {
+  while (current && current !== document.body && !isProtectedPlayerStructure(current)) {
     const tagName = current.tagName.toLowerCase();
     const role = current.getAttribute('role');
-    const className = current.getAttribute('class') || '';
+    const className = (current.getAttribute('class') || '').toLowerCase();
 
     if (
       tagName === 'button' ||
       role === 'button' ||
       className.includes('btn') ||
-      className.includes('button') ||
-      className.includes('control')
+      className.includes('button')
     ) {
       return current;
     }
     current = current.parentElement;
   }
-  return el;
+  return isProtectedPlayerStructure(el) ? null : el;
 }
 
 // Find settings button recursively, piercing Shadow DOMs and ignoring drawing boards
 export function findSettingsButton(): Element | null {
-  if (cachedSettingsBtn && (cachedSettingsBtn as any).isConnected) {
-    return cachedSettingsBtn;
-  }
-  const video = getActiveVideo();
-  if (!video) return null;
-
   const exact = document.getElementById('setting-icon');
-  if (exact) {
+  if (exact && exact.isConnected) {
     cachedSettingsBtn = exact;
     return exact;
   }
 
-  const playerContainer =
-    document.getElementById('video-player-container') ||
-    video.closest('.video-player-app') ||
-    video.parentElement;
+  if (
+    cachedSettingsBtn &&
+    (cachedSettingsBtn as any).isConnected &&
+    !isProtectedPlayerStructure(cachedSettingsBtn)
+  ) {
+    return cachedSettingsBtn;
+  }
+
+  const video = getActiveVideo();
+  if (!video) return null;
+
+  const playerContainer = getOuterPlayerContainer();
   if (!playerContainer) return null;
 
   const el = playerContainer.querySelector(
-    '[class*="setting" i], [id*="setting" i], [title*="setting" i], ' +
-      '[class*="gear" i], [class*="config" i], [class*="quality" i]',
+    '#setting-icon, [id*="setting-icon" i]:not([id^="pwc-"]), ' +
+      '[title*="setting" i]:not([id^="pwc-"]):not([class*="pwc-"]), ' +
+      '[aria-label*="setting" i]:not([id^="pwc-"]):not([class*="pwc-"]), ' +
+      '[class*="setting-icon" i]:not([class*="pwc-"]), [class*="gear-icon" i]:not([class*="pwc-"])',
   );
   if (el) {
     const btn = getControlButton(el);
-    if (btn && !isDrawingToolbarElement(btn)) {
-      cachedSettingsBtn = btn;
+    if (btn && !isDrawingToolbarElement(btn) && !isProtectedPlayerStructure(btn)) {
+      if (btn.id === 'setting-icon') {
+        cachedSettingsBtn = btn;
+      }
       return btn;
     }
   }
 
   const found = scanShadowForSettings(playerContainer);
-  if (found) {
-    cachedSettingsBtn = found;
-  }
   return found;
 }
 
@@ -128,10 +226,12 @@ export function scanShadowForSettings(root: Document | Element | ShadowRoot): El
     const item = allElements[i];
     if (item.shadowRoot) {
       const el = item.shadowRoot.querySelector(
-        '[class*="setting" i], [id*="setting" i], [title*="setting" i], ' +
-          '[class*="gear" i], [class*="config" i], [class*="quality" i]',
+        '#setting-icon, [id*="setting-icon" i], [title*="setting" i], [class*="setting-icon" i], [class*="gear" i]',
       );
-      if (el && !isDrawingToolbarElement(el)) return getControlButton(el);
+      if (el && !isDrawingToolbarElement(el)) {
+        const btn = getControlButton(el);
+        if (btn && !isProtectedPlayerStructure(btn)) return btn;
+      }
       const found = scanShadowForSettings(item.shadowRoot);
       if (found) return found;
     }
@@ -141,49 +241,75 @@ export function scanShadowForSettings(root: Document | Element | ShadowRoot): El
 
 // Find fullscreen button recursively, piercing Shadow DOMs and ignoring drawing boards
 export function findFullscreenButton(): Element | null {
-  if (cachedFullscreenBtn && (cachedFullscreenBtn as any).isConnected) {
-    return cachedFullscreenBtn;
-  }
   const video = getActiveVideo();
   if (!video) return null;
 
+  // 1. Primary: locate the button immediately to the right of #setting-icon inside #footer-right-section
   const settingsBtn = findSettingsButton();
   if (settingsBtn) {
+    const fRight = document.getElementById('footer-right-section');
+    if (fRight && fRight.contains(settingsBtn)) {
+      const nativeButtons = Array.from(fRight.children).filter((el) => {
+        if (el.nodeType !== 1) return false;
+        const id = el.id || '';
+        const cls = el.getAttribute('class') || '';
+        return !id.startsWith('pwc-') && !cls.includes('pwc-');
+      });
+      const settingsIdx = nativeButtons.findIndex(
+        (el) => el === settingsBtn || el.id === 'setting-icon' || !!el.querySelector('#setting-icon'),
+      );
+      if (settingsIdx !== -1 && settingsIdx + 1 < nativeButtons.length) {
+        const fsCandidate = nativeButtons[settingsIdx + 1];
+        const clickable =
+          fsCandidate.querySelector('button, [role="button"]') ||
+          fsCandidate.querySelector('svg') ||
+          fsCandidate;
+        return clickable;
+      }
+    }
+
     const settingsWrapper =
       settingsBtn.closest('.flex-col') ||
-      (settingsBtn.parentNode && settingsBtn.parentNode.parentNode);
+      (settingsBtn.parentNode &&
+      settingsBtn.parentNode !== fRight &&
+      settingsBtn.parentNode.parentNode === fRight
+        ? (settingsBtn.parentNode as Element)
+        : null);
     if (settingsWrapper && (settingsWrapper as Element).nextElementSibling) {
-      const fsSvg = (settingsWrapper as Element).nextElementSibling?.querySelector('svg');
-      if (fsSvg) {
-        cachedFullscreenBtn = fsSvg;
-        return fsSvg;
+      const nextSib = (settingsWrapper as Element).nextElementSibling!;
+      const clickable =
+        nextSib.querySelector('button, [role="button"]') ||
+        nextSib.querySelector('svg') ||
+        nextSib;
+      if (!isProtectedPlayerStructure(clickable)) {
+        return clickable;
       }
     }
   }
 
-  const playerContainer =
-    document.getElementById('video-player-container') ||
-    video.closest('.video-player-app') ||
-    video.parentElement;
+  const playerContainer = getOuterPlayerContainer();
   if (!playerContainer) return null;
 
-  const el = playerContainer.querySelector(
-    '[class*="fullscreen" i], [id*="fullscreen" i], [title*="fullscreen" i], ' +
-      '[class*="full-screen" i], [id*="full-screen" i], [title*="full-screen" i]',
-  );
+  // Avoid matching Video.js's hidden .vjs-fullscreen-control when PW's custom overlay is present
+  const hasPWOverlay =
+    !!document.getElementById('interactive-layer-wrapper') ||
+    !!document.getElementById('footer-right-section');
+
+  const selector = hasPWOverlay
+    ? '[id*="fullscreen" i]:not(.vjs-fullscreen-control), [title*="fullscreen" i]:not(.vjs-fullscreen-control), ' +
+      '[id*="full-screen" i]:not(.vjs-fullscreen-control), [title*="full-screen" i]:not(.vjs-fullscreen-control)'
+    : '[class*="fullscreen" i], [id*="fullscreen" i], [title*="fullscreen" i], ' +
+      '[class*="full-screen" i], [id*="full-screen" i], [title*="full-screen" i]';
+
+  const el = playerContainer.querySelector(selector);
   if (el) {
     const btn = getControlButton(el);
-    if (btn && !isDrawingToolbarElement(btn)) {
-      cachedFullscreenBtn = btn;
+    if (btn && !isDrawingToolbarElement(btn) && !isProtectedPlayerStructure(btn)) {
       return btn;
     }
   }
 
-  const found = scanShadowForFullscreen(playerContainer);
-  if (found) {
-    cachedFullscreenBtn = found;
-  }
-  return found;
+  return scanShadowForFullscreen(playerContainer);
 }
 
 export function scanShadowForFullscreen(root: Document | Element | ShadowRoot): Element | null {
@@ -195,7 +321,10 @@ export function scanShadowForFullscreen(root: Document | Element | ShadowRoot): 
         '[class*="fullscreen" i], [id*="fullscreen" i], [title*="fullscreen" i], ' +
           '[class*="full-screen" i], [id*="full-screen" i], [title*="full-screen" i]',
       );
-      if (el && !isDrawingToolbarElement(el)) return getControlButton(el);
+      if (el && !isDrawingToolbarElement(el)) {
+        const btn = getControlButton(el);
+        if (btn && !isProtectedPlayerStructure(btn)) return btn;
+      }
       const found = scanShadowForFullscreen(item.shadowRoot);
       if (found) return found;
     }
@@ -206,10 +335,22 @@ export function scanShadowForFullscreen(root: Document | Element | ShadowRoot): 
 // Helper to traverse up from a control button and find the actual main toolbar container
 export function getToolbarContainer(el: Element | null): Element | null {
   if (!el) return null;
+  const fRight = document.getElementById('footer-right-section');
+  if (fRight && fRight.contains(el)) {
+    return fRight;
+  }
+
   let current: Element | null = el;
   while (current && current !== document.body) {
     const parentNode: Element | null = current.parentElement;
     if (parentNode) {
+      // Never climb up to a container that holds <video> or #interactive-layer-wrapper
+      if (
+        parentNode.querySelector('video, #interactive-layer-wrapper, #progress-control') &&
+        parentNode.id !== 'footer-right-section'
+      ) {
+        break;
+      }
       if (parentNode.children.length >= 3) {
         return parentNode;
       }
@@ -231,10 +372,7 @@ export function findNativeSpeedBadges(): Element[] {
   const video = getActiveVideo();
   if (!video) return [];
 
-  const playerContainer =
-    document.getElementById('video-player-container') ||
-    video.closest('.video-player-app') ||
-    video.parentElement;
+  const playerContainer = getOuterPlayerContainer();
   if (!playerContainer) return [];
 
   let list: Element[] = [];
@@ -366,14 +504,18 @@ export function checkElementOrChildType(el: Element): string | null {
 
 // Bulletproof PW Control Bar Finder: locates bottom control bar regardless of layout changes
 export function findPWToolbar(): Element | null {
-  if (cachedToolbar && (cachedToolbar as any).isConnected) {
-    return cachedToolbar;
-  }
-
   const fRight = document.getElementById('footer-right-section');
-  if (fRight) {
+  if (fRight && fRight.isConnected) {
     cachedToolbar = fRight;
     return fRight;
+  }
+
+  if (
+    cachedToolbar &&
+    (cachedToolbar as any).isConnected &&
+    !cachedToolbar.querySelector('video, #interactive-layer-wrapper, #progress-control')
+  ) {
+    return cachedToolbar;
   }
 
   const video = getActiveVideo();
@@ -381,25 +523,22 @@ export function findPWToolbar(): Element | null {
 
   const root = (video.getRootNode && (video.getRootNode() as Document | ShadowRoot)) || document;
   const playerContainer =
-    document.getElementById('video-player-container') ||
-    video.closest('.video-player-app') ||
-    video.closest('[class*="video-player" i]') ||
-    video.closest('[class*="player" i]') ||
-    video.parentElement ||
-    (root instanceof Element ? root : null);
+    getOuterPlayerContainer() || (root instanceof Element ? root : null);
 
   if (!playerContainer || !playerContainer.querySelectorAll) return null;
 
   // Scan all containers holding 3 or more control buttons/icons near the bottom of the player
   const candidates = Array.from(playerContainer.querySelectorAll('div, section, footer, nav'));
   const toolbars = candidates.filter((div) => {
+    if (div.classList.contains('vjs-control-bar') || div.closest('.vjs-control-bar')) return false;
+    if (div.querySelector('video, #interactive-layer-wrapper, #progress-control, .vjs-control-bar'))
+      return false;
     const btns = div.querySelectorAll('button, svg, [role="button"], [class*="icon" i]');
     return btns.length >= 3 && (div as HTMLElement).offsetWidth > 80;
   });
 
   if (toolbars.length > 0) {
     toolbars.sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length);
-    cachedToolbar = toolbars[0];
     return toolbars[0];
   }
 
@@ -408,8 +547,10 @@ export function findPWToolbar(): Element | null {
   const refBtn = settingsBtn || fullscreenBtn;
   if (refBtn) {
     const container = getToolbarContainer(refBtn);
-    if (container) {
-      cachedToolbar = container;
+    if (
+      container &&
+      !container.querySelector('video, #interactive-layer-wrapper, #progress-control')
+    ) {
       return container;
     }
   }
@@ -419,18 +560,21 @@ export function findPWToolbar(): Element | null {
 
 // Helper to find the video timeline progress bar
 export function findTimeline(): Element | null {
+  const exactProgress = document.getElementById('progress-control');
+  if (exactProgress && exactProgress.isConnected) {
+    cachedTimeline = exactProgress;
+    return exactProgress;
+  }
+
   if (cachedTimeline && (cachedTimeline as any).isConnected) {
     return cachedTimeline;
   }
   const video = getActiveVideo();
   if (!video) return null;
-  const playerContainer =
-    document.getElementById('video-player-container') ||
-    video.closest('.video-player-app') ||
-    video.parentElement;
+  const playerContainer = getOuterPlayerContainer();
   if (!playerContainer) return null;
   const el = playerContainer.querySelector(
-    '.vjs-progress-control, .vjs-progress-holder, ' +
+    '#progress-control, .vjs-progress-control, .vjs-progress-holder, ' +
       '[class*="progress-control" i], [class*="progress-bar" i], ' +
       '[class*="seekbar" i], [class*="seek-bar" i]',
   );
@@ -454,10 +598,7 @@ export function findTimeTexts(): Element[] {
   }
   const video = getActiveVideo();
   if (!video) return [];
-  const playerContainer =
-    document.getElementById('video-player-container') ||
-    video.closest('.video-player-app') ||
-    video.parentElement;
+  const playerContainer = getOuterPlayerContainer();
   if (!playerContainer) return [];
 
   const elements = playerContainer.querySelectorAll(

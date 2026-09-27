@@ -310,11 +310,11 @@ html.pwc-hide-notes #footer-right-section > [title*='note' i] {
   display: none !important;
 }
 
-/* --- Hide Note Timeline Sidebar Panel --- */
-html.pwc-hide-notetimeline [class*='timeline-sidebar'],
-html.pwc-hide-notetimeline [id*='timeline-sidebar'],
-html.pwc-hide-notetimeline [class*='Timeline_sidebar'],
-html.pwc-hide-notetimeline [class*='Timeline_container'] {
+/* --- Hide Note Timeline Sidebar Panel (unless shortcuts are allowed when hidden) --- */
+html.pwc-hide-notetimeline:not(.pwc-allow-hidden-shortcuts) [class*='timeline-sidebar'],
+html.pwc-hide-notetimeline:not(.pwc-allow-hidden-shortcuts) [id*='timeline-sidebar'],
+html.pwc-hide-notetimeline:not(.pwc-allow-hidden-shortcuts) [class*='Timeline_sidebar'],
+html.pwc-hide-notetimeline:not(.pwc-allow-hidden-shortcuts) [class*='Timeline_container'] {
   display: none !important;
 }
 

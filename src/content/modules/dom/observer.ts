@@ -2,6 +2,7 @@ import { state } from '../../state';
 import { getActiveVideo, clearVideoCache } from '../video/detector';
 import { getActiveVideoElement, setupVideoListeners, setActiveVideoElement } from '../video/controller';
 import { resetDistractionCaches } from '../distractions/elements';
+import { applyDistractorsState } from '../distractions/focus-css';
 import { injectSpeedControl } from '../ui/speed-hud';
 import { injectQualityControl } from '../ui/quality-hud';
 import { injectSkipSilenceButton } from '../ui/silence-hud';
@@ -18,17 +19,21 @@ let observer: MutationObserver | null = null;
 // Helper to check if all necessary extension controls are already placed and connected
 export function areControlsHealthy(): boolean {
   if (!state.extensionEnabled) return true;
+  const fRight = document.getElementById('footer-right-section');
   const speedCtrl = document.getElementById('pwc-speed-control');
   if (!speedCtrl || !speedCtrl.isConnected) return false;
+  if (fRight && !fRight.contains(speedCtrl)) return false;
 
   if (state.showFinishTime) {
     const finishBadge = document.getElementById('pwc-finish-time-badge');
     if (!finishBadge || !finishBadge.isConnected) return false;
+    if (fRight && !fRight.contains(finishBadge)) return false;
   }
 
   if (state.constantVideoQuality) {
     const qualityCtrl = document.getElementById('pwc-quality-control');
     if (!qualityCtrl || !qualityCtrl.isConnected) return false;
+    if (fRight && !fRight.contains(qualityCtrl)) return false;
   }
 
   const hideBtn = document.getElementById('pwc-instant-hide-btn');
@@ -145,8 +150,14 @@ export function monitor(): void {
     if (video !== getActiveVideoElement()) {
       setupVideoListeners(video);
     }
-    // Fast path: if all controls are already in the DOM and connected, skip injection cycle
+    // Fast path: if all controls are already in the DOM and connected, still ensure Focus Toggles are enforced
     if (areControlsHealthy()) {
+      isModifyingDOM = true;
+      try {
+        applyDistractorsState();
+      } finally {
+        isModifyingDOM = false;
+      }
       if (state.skipSilenceEnabled && !isSSEngineRunning() && !video.paused) {
         ssInit();
       }
@@ -160,6 +171,7 @@ export function monitor(): void {
       injectSkipSilenceButton();
       injectInstantHideButton();
       injectFinishTimeBadge();
+      applyDistractorsState();
     } finally {
       isModifyingDOM = false;
     }

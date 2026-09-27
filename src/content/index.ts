@@ -87,7 +87,7 @@ function init(): void {
       }
     }
 
-    if (changedKeys.includes('enableInstantHide')) {
+    if (changedKeys.includes('enableInstantHide') || changedKeys.includes('allowShortcutsWhenHidden')) {
       injectInstantHideButton();
       focusChanged = true;
     }
@@ -198,7 +198,10 @@ function init(): void {
   startDomObserver();
 
   // 6. Refresh controls upon full-screen toggling or window resize
-  document.addEventListener('fullscreenchange', throttledMonitor);
+  document.addEventListener('fullscreenchange', () => {
+    throttledMonitor();
+    applyDistractorsState();
+  });
   window.addEventListener('resize', throttledMonitor);
 }
 

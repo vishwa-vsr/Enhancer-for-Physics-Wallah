@@ -50,6 +50,7 @@ export interface ContentState {
   keyDoubt: string;
   keyFullscreen: string;
   keyExit: string;
+  allowShortcutsWhenHidden: boolean;
 
   // Auto-hide controls & cursor (Issue #14)
   autoHideControls: boolean;

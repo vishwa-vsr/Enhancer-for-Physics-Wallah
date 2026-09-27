@@ -11,6 +11,7 @@ import {
   findTimeline,
   findTimeTexts,
   hideTimeSeparators,
+  isProtectedPlayerStructure,
 } from './elements';
 
 function shouldHideDistraction(key: keyof HideSettings, currentSettings: HideSettings): boolean {
@@ -45,6 +46,12 @@ export function applySettingsHTML(settings?: HideSettings): void {
       root.classList.remove(className);
     }
   });
+
+  if (state.extensionEnabled && state.allowShortcutsWhenHidden) {
+    root.classList.add('pwc-allow-hidden-shortcuts');
+  } else {
+    root.classList.remove('pwc-allow-hidden-shortcuts');
+  }
 }
 
 // Hide or restore distracting elements depending on settings.
@@ -60,7 +67,7 @@ export function applyDistractorsState(): void {
   const video = getActiveVideo();
   if (video) {
     const settingsBtn = findSettingsButton();
-    if (settingsBtn) {
+    if (settingsBtn && !isProtectedPlayerStructure(settingsBtn)) {
       setHidden(settingsBtn, activeSettings.hideSetting);
     }
     const fullscreenBtn = findFullscreenButton();
@@ -68,12 +75,18 @@ export function applyDistractorsState(): void {
 
     if (refBtn) {
       const parent = getToolbarContainer(refBtn);
-      if (parent) {
+      if (
+        parent &&
+        !parent.querySelector('video, #interactive-layer-wrapper, #progress-control')
+      ) {
         const siblings = Array.from(parent.children);
 
-        // Filter out our own injected speed control and non-element nodes
+        // Filter out our own injected pwc controls and non-element nodes
         const nativeButtons = siblings.filter((el) => {
-          return el.nodeType === 1 && el.id !== 'pwc-speed-control';
+          if (el.nodeType !== 1) return false;
+          const id = el.id || '';
+          const cls = el.getAttribute('class') || '';
+          return !id.startsWith('pwc-') && !cls.includes('pwc-') && !isProtectedPlayerStructure(el);
         });
 
         // Find settings button index in the native buttons list

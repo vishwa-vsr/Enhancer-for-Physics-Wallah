@@ -22,6 +22,7 @@ import {
   keyDoubt,
   keyFullscreen,
   keyExit,
+  allowShortcutsWhenHidden,
   autoHideControls,
   autoHideDelay,
   autoHideWhenPaused,
@@ -179,6 +180,11 @@ function FocusTogglesSection() {
     }
   };
 
+  const doubtShortcutDisabled = hideDoubt.value && !allowShortcutsWhenHidden.value;
+  const chatShortcutDisabled = hideChat.value && !allowShortcutsWhenHidden.value;
+  const notesShortcutDisabled = hideNotes.value && !allowShortcutsWhenHidden.value;
+  const timelineShortcutDisabled = hideNoteTimeline.value && !allowShortcutsWhenHidden.value;
+
   return (
     <section>
       <h2 class={styles.sectionTitle}>Focus Toggles</h2>
@@ -207,11 +213,11 @@ function FocusTogglesSection() {
             <input
               type="text"
               readonly
-              class={`${styles.shortcutInput} ${hideDoubt.value ? styles.shortcutDisabled : ''}`}
+              class={`${styles.shortcutInput} ${doubtShortcutDisabled ? styles.shortcutDisabled : ''}`}
               value={keyDoubt.value}
-              disabled={hideDoubt.value}
+              disabled={doubtShortcutDisabled}
               title={
-                hideDoubt.value
+                doubtShortcutDisabled
                   ? 'Shortcut disabled because Doubt Q&A is hidden'
                   : 'Doubt shortcut key (Backspace to clear)'
               }
@@ -234,11 +240,11 @@ function FocusTogglesSection() {
             <input
               type="text"
               readonly
-              class={`${styles.shortcutInput} ${hideChat.value ? styles.shortcutDisabled : ''}`}
+              class={`${styles.shortcutInput} ${chatShortcutDisabled ? styles.shortcutDisabled : ''}`}
               value={keyChat.value}
-              disabled={hideChat.value}
+              disabled={chatShortcutDisabled}
               title={
-                hideChat.value
+                chatShortcutDisabled
                   ? 'Shortcut disabled because Live Chat is hidden'
                   : 'Chat shortcut key (Backspace to clear)'
               }
@@ -261,11 +267,11 @@ function FocusTogglesSection() {
             <input
               type="text"
               readonly
-              class={`${styles.shortcutInput} ${hideNotes.value ? styles.shortcutDisabled : ''}`}
+              class={`${styles.shortcutInput} ${notesShortcutDisabled ? styles.shortcutDisabled : ''}`}
               value={keyNotes.value}
-              disabled={hideNotes.value}
+              disabled={notesShortcutDisabled}
               title={
-                hideNotes.value
+                notesShortcutDisabled
                   ? 'Shortcut disabled because Study Notes is hidden'
                   : 'Study Notes shortcut key (Backspace to clear)'
               }
@@ -288,11 +294,11 @@ function FocusTogglesSection() {
             <input
               type="text"
               readonly
-              class={`${styles.shortcutInput} ${hideNoteTimeline.value ? styles.shortcutDisabled : ''}`}
+              class={`${styles.shortcutInput} ${timelineShortcutDisabled ? styles.shortcutDisabled : ''}`}
               value={keyTimeline.value}
-              disabled={hideNoteTimeline.value}
+              disabled={timelineShortcutDisabled}
               title={
-                hideNoteTimeline.value
+                timelineShortcutDisabled
                   ? 'Shortcut disabled because Note Timeline is hidden'
                   : 'Note Timeline shortcut key (Backspace to clear)'
               }
@@ -364,6 +370,16 @@ function FocusTogglesSection() {
           </div>
         </FeatureRow>
         <div class={styles.subSectionDivider} />
+        <FeatureRow label="Allow Shortcuts When Hidden">
+          <Toggle
+            checked={allowShortcutsWhenHidden.value}
+            onChange={(v) => {
+              allowShortcutsWhenHidden.value = v;
+              saveSetting('allowShortcutsWhenHidden', v);
+            }}
+            ariaLabel="Toggle Allow Shortcuts When Hidden"
+          />
+        </FeatureRow>
         <FeatureRow label="Toggle Fullscreen">
           <input
             type="text"

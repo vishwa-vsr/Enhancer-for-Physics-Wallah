@@ -381,8 +381,13 @@ export function injectSpeedControl(): void {
     return;
   }
 
+  const fRight = document.getElementById('footer-right-section');
   const existingContainer = document.getElementById('pwc-speed-control') as HTMLElement | null;
-  if (existingContainer && existingContainer.isConnected) {
+  if (
+    existingContainer &&
+    existingContainer.isConnected &&
+    (!fRight || fRight.contains(existingContainer))
+  ) {
     applyAlwaysExpandState(existingContainer);
     return;
   }
@@ -406,6 +411,14 @@ export function injectSpeedControl(): void {
       setupUIEventListeners(container);
       applyAlwaysExpandState(container);
     } else {
+      const finishBadge = toolbar.querySelector('#pwc-finish-time-badge');
+      if (finishBadge && finishBadge.nextSibling) {
+        toolbar.insertBefore(existingContainer, finishBadge.nextSibling);
+      } else if (toolbar.firstChild) {
+        toolbar.insertBefore(existingContainer, toolbar.firstChild);
+      } else {
+        toolbar.appendChild(existingContainer);
+      }
       applyAlwaysExpandState(existingContainer);
     }
     applyDistractorsState();
