@@ -180,10 +180,12 @@ function FocusTogglesSection() {
     }
   };
 
-  const doubtShortcutDisabled = hideDoubt.value && !allowShortcutsWhenHidden.value;
-  const chatShortcutDisabled = hideChat.value && !allowShortcutsWhenHidden.value;
-  const notesShortcutDisabled = hideNotes.value && !allowShortcutsWhenHidden.value;
-  const timelineShortcutDisabled = hideNoteTimeline.value && !allowShortcutsWhenHidden.value;
+  const isShortcutDisabled = (isHidden: boolean): boolean =>
+    isHidden && !allowShortcutsWhenHidden.value;
+  const doubtShortcutDisabled = isShortcutDisabled(hideDoubt.value);
+  const chatShortcutDisabled = isShortcutDisabled(hideChat.value);
+  const notesShortcutDisabled = isShortcutDisabled(hideNotes.value);
+  const timelineShortcutDisabled = isShortcutDisabled(hideNoteTimeline.value);
 
   return (
     <section>

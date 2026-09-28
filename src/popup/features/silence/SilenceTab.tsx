@@ -15,6 +15,7 @@ import {
   constantVideoQuality,
   preferredQuality,
   hideQuality,
+  hideSkipSilence,
 } from '@popup/store';
 import styles from './SilenceTab.module.css';
 
@@ -98,6 +99,18 @@ export function SilenceTab() {
                 saveSetting('skipSilenceEnabled', val);
               }}
               ariaLabel="Toggle Skip Silence"
+            />
+          </FeatureRow>
+
+          {/* Hide Skip Silence Icon */}
+          <FeatureRow label="Hide Skip Silence Icon">
+            <Toggle
+              checked={hideSkipSilence.value}
+              onChange={(val) => {
+                hideSkipSilence.value = val;
+                saveSetting('hideSkipSilence', val);
+              }}
+              ariaLabel="Toggle Hide Skip Silence Icon"
             />
           </FeatureRow>
 

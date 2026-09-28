@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.0.8.8] - 2026-09-28
+
+### Added
+
+- **Allow Shortcuts When Hidden**: Use Focus shortcuts (`C`, `T`, `N`, `D`) even when their player icons are hidden [#14](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/14).
+- **Hide Skip Silence Icon**: New toggle in the Media tab to hide the Skip Silence button from the player bar [#14](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/14).
+
+### Fixed
+
+- **Fullscreen & AI Timeline Fixes**: Fixed controls disappearing when pressing `F` right after opening a lecture, and fixed duplicate timeline bars on AI-chapter lectures [#14](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/14).
+
 ## [1.0.8.7] - 2026-09-25
 
 ### Fixed

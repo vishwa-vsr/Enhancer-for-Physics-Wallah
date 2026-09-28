@@ -8,6 +8,7 @@ export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideNoteTimeline: false,
   hideSpeed: false,
   hideQuality: true,
+  hideSkipSilence: false,
   hideSetting: false,
   hideTimeLine: false,
   hideTimeText: false,
@@ -132,6 +133,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'hideNoteTimeline',
         'hideSpeed',
         'hideQuality',
+        'hideSkipSilence',
         'hideSetting',
         'hideTimeLine',
         'hideTimeText',
@@ -208,6 +210,10 @@ export function safeSetSettings(data: Record<string, any>): void {
 
 let isInitialized = false;
 
+function readShortcutKey(value: unknown, fallback: string): string {
+  return value !== undefined ? String(value) : fallback;
+}
+
 // Initialize state from storage and listen to onChanged
 export function initState(onLoaded?: () => void): void {
   if (isInitialized) return;
@@ -236,16 +242,16 @@ export function initState(onLoaded?: () => void): void {
     state.holdSpaceSpeed =
       result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed) : 2.0;
     state.alwaysExpandWidget = !!result.alwaysExpandWidget;
-    state.keySpeedUp = result.keySpeedUp !== undefined ? String(result.keySpeedUp) : 'h';
-    state.keySlowDown = result.keySlowDown !== undefined ? String(result.keySlowDown) : 'j';
-    state.keyReset = result.keyReset !== undefined ? String(result.keyReset) : 'l';
+    state.keySpeedUp = result.keySpeedUp || 'h';
+    state.keySlowDown = result.keySlowDown || 'j';
+    state.keyReset = result.keyReset || 'l';
 
-    state.keyChat = result.keyChat !== undefined ? String(result.keyChat) : 'c';
-    state.keyTimeline = result.keyTimeline !== undefined ? String(result.keyTimeline) : 't';
-    state.keyNotes = result.keyNotes !== undefined ? String(result.keyNotes) : 'n';
-    state.keyDoubt = result.keyDoubt !== undefined ? String(result.keyDoubt) : 'd';
-    state.keyFullscreen = result.keyFullscreen !== undefined ? String(result.keyFullscreen) : 'f';
-    state.keyExit = result.keyExit !== undefined ? String(result.keyExit) : 'e';
+    state.keyChat = readShortcutKey(result.keyChat, 'c');
+    state.keyTimeline = readShortcutKey(result.keyTimeline, 't');
+    state.keyNotes = readShortcutKey(result.keyNotes, 'n');
+    state.keyDoubt = readShortcutKey(result.keyDoubt, 'd');
+    state.keyFullscreen = readShortcutKey(result.keyFullscreen, 'f');
+    state.keyExit = readShortcutKey(result.keyExit, 'e');
     state.allowShortcutsWhenHidden = !!result.allowShortcutsWhenHidden;
 
     state.autoHideControls = !!result.autoHideControls;
@@ -357,22 +363,15 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('holdSpaceSpeed');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keySpeedUp')) {
-              state.keySpeedUp =
-                changes.keySpeedUp.newValue !== undefined
-                  ? String(changes.keySpeedUp.newValue)
-                  : 'h';
+              state.keySpeedUp = String(changes.keySpeedUp.newValue || '') || 'h';
               changedKeys.push('keySpeedUp');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keySlowDown')) {
-              state.keySlowDown =
-                changes.keySlowDown.newValue !== undefined
-                  ? String(changes.keySlowDown.newValue)
-                  : 'j';
+              state.keySlowDown = String(changes.keySlowDown.newValue || '') || 'j';
               changedKeys.push('keySlowDown');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keyReset')) {
-              state.keyReset =
-                changes.keyReset.newValue !== undefined ? String(changes.keyReset.newValue) : 'l';
+              state.keyReset = String(changes.keyReset.newValue || '') || 'l';
               changedKeys.push('keyReset');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'alwaysExpandWidget')) {
@@ -436,37 +435,27 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('autoPauseOnHide');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keyChat')) {
-              state.keyChat =
-                changes.keyChat.newValue !== undefined ? String(changes.keyChat.newValue) : 'c';
+              state.keyChat = readShortcutKey(changes.keyChat.newValue, 'c');
               changedKeys.push('keyChat');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keyTimeline')) {
-              state.keyTimeline =
-                changes.keyTimeline.newValue !== undefined
-                  ? String(changes.keyTimeline.newValue)
-                  : 't';
+              state.keyTimeline = readShortcutKey(changes.keyTimeline.newValue, 't');
               changedKeys.push('keyTimeline');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keyNotes')) {
-              state.keyNotes =
-                changes.keyNotes.newValue !== undefined ? String(changes.keyNotes.newValue) : 'n';
+              state.keyNotes = readShortcutKey(changes.keyNotes.newValue, 'n');
               changedKeys.push('keyNotes');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keyDoubt')) {
-              state.keyDoubt =
-                changes.keyDoubt.newValue !== undefined ? String(changes.keyDoubt.newValue) : 'd';
+              state.keyDoubt = readShortcutKey(changes.keyDoubt.newValue, 'd');
               changedKeys.push('keyDoubt');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keyFullscreen')) {
-              state.keyFullscreen =
-                changes.keyFullscreen.newValue !== undefined
-                  ? String(changes.keyFullscreen.newValue)
-                  : 'f';
+              state.keyFullscreen = readShortcutKey(changes.keyFullscreen.newValue, 'f');
               changedKeys.push('keyFullscreen');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keyExit')) {
-              state.keyExit =
-                changes.keyExit.newValue !== undefined ? String(changes.keyExit.newValue) : 'e';
+              state.keyExit = readShortcutKey(changes.keyExit.newValue, 'e');
               changedKeys.push('keyExit');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'allowShortcutsWhenHidden')) {

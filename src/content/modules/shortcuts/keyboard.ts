@@ -3,12 +3,8 @@ import { stepSpeed, saveSpeed } from '../video/controller';
 import { getSSCurrentState } from '../audio/skip-silence';
 import { isPointerHolding, isUserHoldingSpace } from './space-hold';
 import {
-  findNotesButton,
-  findTimelineButton,
-  findDoubtButton,
-  findChatButton,
-  findFullscreenButton,
   getOuterPlayerContainer,
+  triggerPlayerSlot,
 } from '../distractions/elements';
 import { applyDistractorsState } from '../distractions/focus-css';
 import { getActiveVideo } from '../video/detector';
@@ -55,88 +51,6 @@ export function matchKey(event: KeyboardEvent, targetKey: string): boolean {
   return event.key.toLowerCase() === targetKey.toLowerCase();
 }
 
-// Wake PW's interactive overlay DOM if the user presses a shortcut before ever hovering/clicking the player
-function wakePlayerControlsDom(): void {
-  if (document.getElementById('footer-right-section')) return;
-  const targets = [
-    getOuterPlayerContainer(),
-    document.getElementById('interactive-layer-wrapper'),
-    getActiveVideo(),
-  ];
-  for (const t of targets) {
-    if (!t) continue;
-    try {
-      t.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true, cancelable: true, view: window }));
-      t.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, cancelable: true, view: window }));
-      t.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, cancelable: true, view: window }));
-    } catch {
-      /* ignore */
-    }
-  }
-}
-
-function clickElement(el: Element | null): boolean {
-  if (!el) return false;
-
-  const root = document.documentElement;
-  const hadHideNotesClass = root.classList.contains('pwc-hide-notes');
-
-  const restoreList: Array<{ node: HTMLElement | SVGElement; val: string; priority: string }> = [];
-  let curr: Element | null = el;
-  while (
-    curr &&
-    curr !== document.body &&
-    curr.id !== 'footer-right-section' &&
-    curr.id !== 'interactive-layer-wrapper' &&
-    curr.id !== 'video-player-container'
-  ) {
-    if (curr instanceof HTMLElement || curr instanceof SVGElement) {
-      const inlineDisplay = curr.style.getPropertyValue('display');
-      if (inlineDisplay === 'none') {
-        restoreList.push({
-          node: curr,
-          val: inlineDisplay,
-          priority: curr.style.getPropertyPriority('display'),
-        });
-        curr.style.removeProperty('display');
-      }
-    }
-    curr = curr.parentElement;
-  }
-
-  if (hadHideNotesClass) {
-    root.classList.remove('pwc-hide-notes');
-  }
-
-  try {
-    const innerBtn =
-      typeof el.querySelector === 'function'
-        ? el.querySelector<HTMLElement>('button, [role="button"]')
-        : null;
-    const clickTarget = innerBtn || el;
-
-    if (clickTarget instanceof HTMLElement) {
-      clickTarget.click();
-      return true;
-    } else if (clickTarget instanceof SVGElement) {
-      clickTarget.dispatchEvent(
-        new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
-      );
-      return true;
-    }
-  } catch {
-    /* ignore */
-  } finally {
-    for (const item of restoreList) {
-      item.node.style.setProperty('display', item.val, item.priority);
-    }
-    if (hadHideNotesClass) {
-      root.classList.add('pwc-hide-notes');
-    }
-  }
-  return false;
-}
-
 export function exitFullscreen(): void {
   if (document.fullscreenElement && document.exitFullscreen) {
     try {
@@ -166,11 +80,8 @@ function applyFallbackFullscreen(wasFullscreen: boolean): void {
 }
 
 function toggleFullscreen(): void {
-  wakePlayerControlsDom();
   const wasFullscreen = !!document.fullscreenElement;
-  const fsBtn = findFullscreenButton();
-
-  if (fsBtn && clickElement(fsBtn)) {
+  if (triggerPlayerSlot('fullscreen')) {
     window.setTimeout(() => {
       applyFallbackFullscreen(wasFullscreen);
     }, 60);
@@ -244,12 +155,11 @@ export function initKeyboardShortcuts(): void {
       return;
     }
 
-    const triggerPanelButton = (finder: () => Element | null) => {
+    const triggerPanel = (slot: 'chat' | 'notetimeline' | 'notes' | 'doubt') => {
       if (document.documentElement.classList.contains('pwc-collapsed-state')) {
         document.documentElement.classList.remove('pwc-collapsed-state');
       }
-      wakePlayerControlsDom();
-      clickElement(finder());
+      triggerPlayerSlot(slot);
       window.requestAnimationFrame(() => {
         applyDistractorsState();
       });
@@ -259,7 +169,7 @@ export function initKeyboardShortcuts(): void {
     if (state.keyChat && matchKey(e, state.keyChat)) {
       e.preventDefault();
       if (!state.hideSettings.hideChat || state.allowShortcutsWhenHidden) {
-        triggerPanelButton(findChatButton);
+        triggerPanel('chat');
       }
       return;
     }
@@ -268,7 +178,7 @@ export function initKeyboardShortcuts(): void {
     if (state.keyTimeline && matchKey(e, state.keyTimeline)) {
       e.preventDefault();
       if (!state.hideSettings.hideNoteTimeline || state.allowShortcutsWhenHidden) {
-        triggerPanelButton(findTimelineButton);
+        triggerPanel('notetimeline');
       }
       return;
     }
@@ -277,7 +187,7 @@ export function initKeyboardShortcuts(): void {
     if (state.keyNotes && matchKey(e, state.keyNotes)) {
       e.preventDefault();
       if (!state.hideSettings.hideNotes || state.allowShortcutsWhenHidden) {
-        triggerPanelButton(findNotesButton);
+        triggerPanel('notes');
       }
       return;
     }
@@ -286,7 +196,7 @@ export function initKeyboardShortcuts(): void {
     if (state.keyDoubt && matchKey(e, state.keyDoubt)) {
       e.preventDefault();
       if (!state.hideSettings.hideDoubt || state.allowShortcutsWhenHidden) {
-        triggerPanelButton(findDoubtButton);
+        triggerPanel('doubt');
       }
       return;
     }

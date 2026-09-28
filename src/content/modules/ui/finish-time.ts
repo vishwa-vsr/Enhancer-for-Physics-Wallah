@@ -1,6 +1,6 @@
 import { state } from '../../state';
 import { getActiveVideo, getCachedVideo } from '../video/detector';
-import { findPWToolbar } from '../distractions/elements';
+import { findPWToolbar, isInsidePreferredToolbar } from '../distractions/elements';
 
 // Update dynamic lecture finish time badge
 export function updateFinishTime(): void {
@@ -98,13 +98,12 @@ export function injectFinishTimeBadge(): void {
     return;
   }
 
-  const fRight = document.getElementById('footer-right-section');
   let badge = document.getElementById('pwc-finish-time-badge');
-  if (badge && badge.isConnected && (!fRight || fRight.contains(badge))) {
+  if (badge && isInsidePreferredToolbar(badge)) {
     updateFinishTime();
     return;
   }
-  if (badge && fRight && !fRight.contains(badge)) {
+  if (badge) {
     badge.remove();
     badge = null;
   }

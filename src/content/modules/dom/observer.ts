@@ -1,7 +1,7 @@
 import { state } from '../../state';
 import { getActiveVideo, clearVideoCache } from '../video/detector';
 import { getActiveVideoElement, setupVideoListeners, setActiveVideoElement } from '../video/controller';
-import { resetDistractionCaches } from '../distractions/elements';
+import { isInsidePreferredToolbar, resetDistractionCaches } from '../distractions/elements';
 import { applyDistractorsState } from '../distractions/focus-css';
 import { injectSpeedControl } from '../ui/speed-hud';
 import { injectQualityControl } from '../ui/quality-hud';
@@ -19,21 +19,15 @@ let observer: MutationObserver | null = null;
 // Helper to check if all necessary extension controls are already placed and connected
 export function areControlsHealthy(): boolean {
   if (!state.extensionEnabled) return true;
-  const fRight = document.getElementById('footer-right-section');
-  const speedCtrl = document.getElementById('pwc-speed-control');
-  if (!speedCtrl || !speedCtrl.isConnected) return false;
-  if (fRight && !fRight.contains(speedCtrl)) return false;
+  if (!isInsidePreferredToolbar(document.getElementById('pwc-speed-control'))) return false;
+  if (!isInsidePreferredToolbar(document.getElementById('pwc-ss-container'))) return false;
 
   if (state.showFinishTime) {
-    const finishBadge = document.getElementById('pwc-finish-time-badge');
-    if (!finishBadge || !finishBadge.isConnected) return false;
-    if (fRight && !fRight.contains(finishBadge)) return false;
+    if (!isInsidePreferredToolbar(document.getElementById('pwc-finish-time-badge'))) return false;
   }
 
   if (state.constantVideoQuality) {
-    const qualityCtrl = document.getElementById('pwc-quality-control');
-    if (!qualityCtrl || !qualityCtrl.isConnected) return false;
-    if (fRight && !fRight.contains(qualityCtrl)) return false;
+    if (!isInsidePreferredToolbar(document.getElementById('pwc-quality-control'))) return false;
   }
 
   const hideBtn = document.getElementById('pwc-instant-hide-btn');

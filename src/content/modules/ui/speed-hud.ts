@@ -1,5 +1,5 @@
 import { state, sanitizeSnapPoints } from '../../state';
-import { findPWToolbar } from '../distractions/elements';
+import { findPWToolbar, isInsidePreferredToolbar } from '../distractions/elements';
 import { applyDistractorsState } from '../distractions/focus-css';
 import { stepSpeed, saveSpeed } from '../video/controller';
 import { updateFinishTime } from './finish-time';
@@ -381,13 +381,8 @@ export function injectSpeedControl(): void {
     return;
   }
 
-  const fRight = document.getElementById('footer-right-section');
   const existingContainer = document.getElementById('pwc-speed-control') as HTMLElement | null;
-  if (
-    existingContainer &&
-    existingContainer.isConnected &&
-    (!fRight || fRight.contains(existingContainer))
-  ) {
+  if (existingContainer && isInsidePreferredToolbar(existingContainer)) {
     applyAlwaysExpandState(existingContainer);
     return;
   }

@@ -3,15 +3,13 @@ import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import {
   findSettingsButton,
-  findFullscreenButton,
-  getToolbarContainer,
   setHidden,
-  checkElementOrChildType,
   findNativeSpeedBadges,
-  findTimeline,
   findTimeTexts,
   hideTimeSeparators,
   isProtectedPlayerStructure,
+  resolvePlayerToolbarSlots,
+  syncTimelineVisibility,
 } from './elements';
 
 function shouldHideDistraction(key: keyof HideSettings, currentSettings: HideSettings): boolean {
@@ -27,6 +25,7 @@ export const classMap: Record<keyof HideSettings, string> = {
   hideNoteTimeline: 'pwc-hide-notetimeline',
   hideSpeed: 'pwc-hide-speed',
   hideQuality: 'pwc-hide-quality',
+  hideSkipSilence: 'pwc-hide-skipsilence',
   hideSetting: 'pwc-hide-setting',
   hideTimeLine: 'pwc-hide-timeline',
   hideTimeText: 'pwc-hide-timetext',
@@ -54,9 +53,7 @@ export function applySettingsHTML(settings?: HideSettings): void {
   }
 }
 
-// Hide or restore distracting elements depending on settings.
-// We use a unified, robust settings-offset positional mapping to identify toolbar buttons,
-// falling back to attribute classification. This is highly reliable across all browsers.
+// Hide or restore distracting elements depending on settings using the unified toolbar slot map.
 export function applyDistractorsState(): void {
   const activeSettings: Record<string, boolean> = {};
   const hideKeys = Object.keys(classMap) as (keyof HideSettings)[];
@@ -70,83 +67,13 @@ export function applyDistractorsState(): void {
     if (settingsBtn && !isProtectedPlayerStructure(settingsBtn)) {
       setHidden(settingsBtn, activeSettings.hideSetting);
     }
-    const fullscreenBtn = findFullscreenButton();
-    const refBtn = settingsBtn || fullscreenBtn;
 
-    if (refBtn) {
-      const parent = getToolbarContainer(refBtn);
-      if (
-        parent &&
-        !parent.querySelector('video, #interactive-layer-wrapper, #progress-control')
-      ) {
-        const siblings = Array.from(parent.children);
-
-        // Filter out our own injected pwc controls and non-element nodes
-        const nativeButtons = siblings.filter((el) => {
-          if (el.nodeType !== 1) return false;
-          const id = el.id || '';
-          const cls = el.getAttribute('class') || '';
-          return !id.startsWith('pwc-') && !cls.includes('pwc-') && !isProtectedPlayerStructure(el);
-        });
-
-        // Find settings button index in the native buttons list
-        const settingsIdx = nativeButtons.findIndex((el) => {
-          return (
-            el === settingsBtn || el.id === 'setting-icon' || el.querySelector('#setting-icon')
-          );
-        });
-
-        if (settingsIdx !== -1) {
-          nativeButtons.forEach((btn, index) => {
-            const offset = settingsIdx - index;
-
-            if (offset === 1) {
-              // Notes (1 button left of Settings)
-              setHidden(btn, activeSettings.hideNotes);
-            } else if (offset === 2) {
-              // Note Timeline (2 buttons left of Settings)
-              setHidden(btn, activeSettings.hideNoteTimeline);
-            } else if (offset === 3) {
-              // Doubt Q&A (3 buttons left of Settings)
-              setHidden(btn, activeSettings.hideDoubt);
-            } else if (offset === 4) {
-              // Live Chat (4 buttons left of Settings)
-              setHidden(btn, activeSettings.hideChat);
-            } else {
-              // Fallback for other buttons (like Ask AI if inside toolbar)
-              const type = checkElementOrChildType(btn);
-              if (type === 'askai') {
-                setHidden(btn, activeSettings.hideAskAI);
-              } else if (type === 'chat') {
-                setHidden(btn, activeSettings.hideChat);
-              } else if (type === 'doubt') {
-                setHidden(btn, activeSettings.hideDoubt);
-              } else if (type === 'notes') {
-                setHidden(btn, activeSettings.hideNotes);
-              } else if (type === 'notetimeline') {
-                setHidden(btn, activeSettings.hideNoteTimeline);
-              }
-            }
-          });
-        } else {
-          // Fallback if settings button is not found
-          nativeButtons.forEach((btn) => {
-            const type = checkElementOrChildType(btn);
-            if (type === 'chat') {
-              setHidden(btn, activeSettings.hideChat);
-            } else if (type === 'doubt') {
-              setHidden(btn, activeSettings.hideDoubt);
-            } else if (type === 'notes') {
-              setHidden(btn, activeSettings.hideNotes);
-            } else if (type === 'notetimeline') {
-              setHidden(btn, activeSettings.hideNoteTimeline);
-            } else if (type === 'askai') {
-              setHidden(btn, activeSettings.hideAskAI);
-            }
-          });
-        }
-      }
-    }
+    const slots = resolvePlayerToolbarSlots();
+    slots.notes.forEach((btn) => setHidden(btn, activeSettings.hideNotes));
+    slots.notetimeline.forEach((btn) => setHidden(btn, activeSettings.hideNoteTimeline));
+    slots.doubt.forEach((btn) => setHidden(btn, activeSettings.hideDoubt));
+    slots.chat.forEach((btn) => setHidden(btn, activeSettings.hideChat));
+    slots.askai.forEach((btn) => setHidden(btn, activeSettings.hideAskAI));
   }
 
   // Handle native Speed Badges next to the timer (dynamic — CSS can't target)
@@ -187,11 +114,14 @@ export function applyDistractorsState(): void {
     );
   }
 
-  // Handle timeline hiding
-  const timeline = findTimeline();
-  if (timeline) {
-    setHidden(timeline, activeSettings.hideTimeLine);
+  // Handle Skip Silence icon hiding
+  const ssContainer = document.getElementById('pwc-ss-container');
+  if (ssContainer) {
+    setHidden(ssContainer, !state.extensionEnabled || activeSettings.hideSkipSilence);
   }
+
+  // Handle timeline hiding and prevent duplicate progress bars on AI-chapter lectures
+  syncTimelineVisibility(activeSettings.hideTimeLine);
 
   // Handle time display texts hiding
   const timeTexts = findTimeTexts();

@@ -25,12 +25,6 @@ export function isFocusLockActive(): boolean {
   return focusLockActive;
 }
 
-// Resolve the outermost player container (fullscreen target), consistent with
-// the container resolution used across the extension's modules.
-function getPlayerContainer(): HTMLElement | null {
-  return getOuterPlayerContainer();
-}
-
 function pauseActiveVideo(): void {
   const video = getActiveVideo();
   if (video && !video.paused) {
@@ -48,7 +42,7 @@ function pauseActiveVideo(): void {
 // a click-to-fullscreen interstitial is shown as a graceful fallback.
 function requestPlayerFullscreen(): void {
   if (document.fullscreenElement) return;
-  const container = getPlayerContainer();
+  const container = getOuterPlayerContainer();
   if (!container) {
     showInterstitial();
     return;

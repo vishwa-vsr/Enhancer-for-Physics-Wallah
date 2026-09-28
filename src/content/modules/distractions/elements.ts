@@ -30,6 +30,7 @@ export function isProtectedPlayerStructure(el: Element | null): boolean {
     id === 'interactive-layer-wrapper' ||
     id === 'footer-right-section' ||
     id === 'footer-left-section' ||
+    id === 'progress-placeholder' ||
     id === 'progress-control' ||
     id.startsWith('vjs_video_')
   ) {
@@ -42,6 +43,7 @@ export function isProtectedPlayerStructure(el: Element | null): boolean {
     className.includes('vjs-progress-control') ||
     className.includes('video-player-app') ||
     className.includes('player-header') ||
+    className.includes('player-footer') ||
     className.includes('controls-container') ||
     className.includes('control-bar')
   ) {
@@ -97,28 +99,53 @@ export function getOuterPlayerContainer(): HTMLElement | null {
   );
 }
 
-// Helper to hide or show an element with !important
-export function setHidden(el: Element | HTMLElement | SVGElement, shouldHide: boolean): void {
+// Helper to check if an injected widget is currently connected inside PW's preferred toolbar (#footer-right-section when present)
+export function isInsidePreferredToolbar(el: Element | null): boolean {
+  if (!el || !el.isConnected) return false;
+  const fRight = document.getElementById('footer-right-section');
+  return !fRight || fRight.contains(el);
+}
+
+const previousDisplayMap = new WeakMap<Element, { value: string; priority: string }>();
+
+// Helper to hide or show an element with !important without stripping PW's own native display:none
+export function setHidden(
+  el: Element | HTMLElement | SVGElement,
+  shouldHide: boolean,
+  allowTimelineControl = false,
+): void {
   if (!el) return;
+  const id = (el.id || '').toLowerCase();
+  const isOwnWidget = id.startsWith('pwc-');
   // Never allow hiding the core player wrapper, interactive layer, or entire footer bars
-  if (shouldHide) {
-    const id = (el.id || '').toLowerCase();
-    if (
-      id === 'video-player-container' ||
-      id === 'interactive-layer-wrapper' ||
-      id === 'footer-right-section' ||
-      id === 'footer-left-section' ||
-      (typeof el.querySelector === 'function' &&
-        el.querySelector('video, #interactive-layer-wrapper, #footer-right-section'))
-    ) {
+  if (shouldHide && !isOwnWidget && isProtectedPlayerStructure(el)) {
+    const isTimelineBar =
+      allowTimelineControl &&
+      (id === 'progress-control' ||
+        (el.getAttribute('class') || '').toLowerCase().includes('vjs-progress-control'));
+    if (!isTimelineBar) {
       return;
     }
   }
   if (el instanceof HTMLElement || el instanceof SVGElement) {
     if (shouldHide) {
+      if (!el.hasAttribute('data-pwc-hidden')) {
+        previousDisplayMap.set(el, {
+          value: el.style.getPropertyValue('display'),
+          priority: el.style.getPropertyPriority('display'),
+        });
+        el.setAttribute('data-pwc-hidden', 'true');
+      }
       el.style.setProperty('display', 'none', 'important');
-    } else {
-      el.style.removeProperty('display');
+    } else if (el.hasAttribute('data-pwc-hidden')) {
+      el.removeAttribute('data-pwc-hidden');
+      const prev = previousDisplayMap.get(el);
+      previousDisplayMap.delete(el);
+      if (prev && prev.value) {
+        el.style.setProperty('display', prev.value, prev.priority);
+      } else {
+        el.style.removeProperty('display');
+      }
     }
   }
 }
@@ -140,7 +167,14 @@ export function isDrawingToolbarElement(el: Element): boolean {
     if (/canvas|draw|paint|board|palette/i.test(className + ' ' + id)) {
       return true;
     }
-    current = (current.parentNode as Element) || ((current as any).host as Element);
+    const parentNode: Node | null = current.parentNode;
+    if (parentNode instanceof Element) {
+      current = parentNode;
+    } else if (parentNode instanceof ShadowRoot) {
+      current = parentNode.host;
+    } else {
+      current = null;
+    }
   }
   return false;
 }
@@ -188,7 +222,7 @@ export function findSettingsButton(): Element | null {
 
   if (
     cachedSettingsBtn &&
-    (cachedSettingsBtn as any).isConnected &&
+    cachedSettingsBtn.isConnected &&
     !isProtectedPlayerStructure(cachedSettingsBtn)
   ) {
     return cachedSettingsBtn;
@@ -290,21 +324,35 @@ export function findFullscreenButton(): Element | null {
   const playerContainer = getOuterPlayerContainer();
   if (!playerContainer) return null;
 
-  // Avoid matching Video.js's hidden .vjs-fullscreen-control when PW's custom overlay is present
-  const hasPWOverlay =
-    !!document.getElementById('interactive-layer-wrapper') ||
-    !!document.getElementById('footer-right-section');
+  // 2. Match PW's exact fullscreen SVG path signatures (enter / exit fullscreen)
+  const fsSvgPath = playerContainer.querySelector(
+    'path[d^="M21.3369 1.75"], path[d^="M0.663085 8.66675"]',
+  );
+  if (fsSvgPath && !fsSvgPath.closest('.vjs-control-bar')) {
+    const svg = fsSvgPath.closest('svg');
+    const clickable =
+      (svg && (svg.closest('button, [role="button"]') || svg.parentElement)) || svg;
+    if (clickable && !isProtectedPlayerStructure(clickable)) {
+      return clickable;
+    }
+  }
 
-  const selector = hasPWOverlay
-    ? '[id*="fullscreen" i]:not(.vjs-fullscreen-control), [title*="fullscreen" i]:not(.vjs-fullscreen-control), ' +
-      '[id*="full-screen" i]:not(.vjs-fullscreen-control), [title*="full-screen" i]:not(.vjs-fullscreen-control)'
-    : '[class*="fullscreen" i], [id*="fullscreen" i], [title*="fullscreen" i], ' +
-      '[class*="full-screen" i], [id*="full-screen" i], [title*="full-screen" i]';
+  // Always exclude Video.js's internal .vjs-fullscreen-control so we never fullscreen .video-js alone without PW's overlay
+  const selector =
+    '[id*="fullscreen" i]:not(.vjs-fullscreen-control), [title*="fullscreen" i]:not(.vjs-fullscreen-control), ' +
+    '[id*="full-screen" i]:not(.vjs-fullscreen-control), [title*="full-screen" i]:not(.vjs-fullscreen-control), ' +
+    '[class*="fullscreen" i]:not(.vjs-fullscreen-control), [class*="full-screen" i]:not(.vjs-fullscreen-control)';
 
   const el = playerContainer.querySelector(selector);
-  if (el) {
+  if (el && !el.closest('.vjs-control-bar')) {
     const btn = getControlButton(el);
-    if (btn && !isDrawingToolbarElement(btn) && !isProtectedPlayerStructure(btn)) {
+    if (
+      btn &&
+      !btn.classList.contains('vjs-fullscreen-control') &&
+      !btn.closest('.vjs-control-bar') &&
+      !isDrawingToolbarElement(btn) &&
+      !isProtectedPlayerStructure(btn)
+    ) {
       return btn;
     }
   }
@@ -318,8 +366,8 @@ export function scanShadowForFullscreen(root: Document | Element | ShadowRoot): 
     const item = allElements[i];
     if (item.shadowRoot) {
       const el = item.shadowRoot.querySelector(
-        '[class*="fullscreen" i], [id*="fullscreen" i], [title*="fullscreen" i], ' +
-          '[class*="full-screen" i], [id*="full-screen" i], [title*="full-screen" i]',
+        '[class*="fullscreen" i]:not(.vjs-fullscreen-control), [id*="fullscreen" i]:not(.vjs-fullscreen-control), [title*="fullscreen" i]:not(.vjs-fullscreen-control), ' +
+          '[class*="full-screen" i]:not(.vjs-fullscreen-control), [id*="full-screen" i]:not(.vjs-fullscreen-control), [title*="full-screen" i]:not(.vjs-fullscreen-control)',
       );
       if (el && !isDrawingToolbarElement(el)) {
         const btn = getControlButton(el);
@@ -344,11 +392,8 @@ export function getToolbarContainer(el: Element | null): Element | null {
   while (current && current !== document.body) {
     const parentNode: Element | null = current.parentElement;
     if (parentNode) {
-      // Never climb up to a container that holds <video> or #interactive-layer-wrapper
-      if (
-        parentNode.querySelector('video, #interactive-layer-wrapper, #progress-control') &&
-        parentNode.id !== 'footer-right-section'
-      ) {
+      // Never climb up to a protected player container (other than #footer-right-section)
+      if (isProtectedPlayerStructure(parentNode) && parentNode.id !== 'footer-right-section') {
         break;
       }
       if (parentNode.children.length >= 3) {
@@ -365,7 +410,7 @@ export function findNativeSpeedBadges(): Element[] {
   if (
     cachedNativeSpeedBadges !== null &&
     (cachedNativeSpeedBadges.length === 0 ||
-      cachedNativeSpeedBadges.every((el) => (el as any).isConnected))
+      cachedNativeSpeedBadges.every((el) => el.isConnected))
   ) {
     return cachedNativeSpeedBadges;
   }
@@ -405,8 +450,33 @@ export function scanShadowForNativeSpeed(root: Document | Element | ShadowRoot):
   return list;
 }
 
-// Identify the category of any matched distractor element using structural attributes
-export function getDistractorType(el: Element): string | null {
+export type DistractorSlotType = 'notes' | 'notetimeline' | 'doubt' | 'chat' | 'askai';
+
+// Check PW's exact SVG path signatures for unlabeled toolbar icons
+function getDistractorTypeBySvgPath(el: Element): DistractorSlotType | null {
+  const checkPathD = (d: string): DistractorSlotType | null => {
+    if (!d) return null;
+    if (d.includes('M26.982 21.097')) return 'chat';
+    if (d.includes('M32.363 15.664') || d.includes('27.486 19.848')) return 'doubt';
+    if (d.startsWith('M5.1001') || d.includes('17.4846 17.1081')) return 'notetimeline';
+    if (d.includes('M17.8092 3.38739')) return 'notes';
+    return null;
+  };
+
+  if (el.tagName.toLowerCase() === 'path') {
+    return checkPathD(el.getAttribute('d') || '');
+  }
+
+  const paths = el.querySelectorAll('path[d]');
+  for (let i = 0; i < paths.length; i++) {
+    const matched = checkPathD(paths[i].getAttribute('d') || '');
+    if (matched) return matched;
+  }
+  return null;
+}
+
+// Identify the category of any matched distractor element using structural attributes or SVG path signatures
+export function getDistractorType(el: Element): DistractorSlotType | null {
   const className = (el.getAttribute('class') || '').toLowerCase();
   const id = (el.id || '').toLowerCase();
   const title = (el.getAttribute('title') || '').toLowerCase();
@@ -420,6 +490,10 @@ export function getDistractorType(el: Element): string | null {
   ) {
     return null;
   }
+
+  // 0. Check exact PW SVG path signatures first (handles unlabeled icons in recorded/AI lectures)
+  const svgMatch = getDistractorTypeBySvgPath(el);
+  if (svgMatch) return svgMatch;
 
   // Structural attributes are safe to match broadly
   const attrs = `${className} ${id} ${title} ${ariaLabel}`;
@@ -483,7 +557,7 @@ export function getDistractorType(el: Element): string | null {
 }
 
 // Helper to check the element and its shallow children for classification (2 levels deep)
-export function checkElementOrChildType(el: Element): string | null {
+export function checkElementOrChildType(el: Element): DistractorSlotType | null {
   const type = getDistractorType(el);
   if (type) return type;
 
@@ -512,8 +586,8 @@ export function findPWToolbar(): Element | null {
 
   if (
     cachedToolbar &&
-    (cachedToolbar as any).isConnected &&
-    !cachedToolbar.querySelector('video, #interactive-layer-wrapper, #progress-control')
+    cachedToolbar.isConnected &&
+    (!isProtectedPlayerStructure(cachedToolbar) || cachedToolbar.id === 'footer-right-section')
   ) {
     return cachedToolbar;
   }
@@ -530,9 +604,8 @@ export function findPWToolbar(): Element | null {
   // Scan all containers holding 3 or more control buttons/icons near the bottom of the player
   const candidates = Array.from(playerContainer.querySelectorAll('div, section, footer, nav'));
   const toolbars = candidates.filter((div) => {
-    if (div.classList.contains('vjs-control-bar') || div.closest('.vjs-control-bar')) return false;
-    if (div.querySelector('video, #interactive-layer-wrapper, #progress-control, .vjs-control-bar'))
-      return false;
+    if (isProtectedPlayerStructure(div) && div.id !== 'footer-right-section') return false;
+    if (div.closest('.vjs-control-bar')) return false;
     const btns = div.querySelectorAll('button, svg, [role="button"], [class*="icon" i]');
     return btns.length >= 3 && (div as HTMLElement).offsetWidth > 80;
   });
@@ -549,7 +622,7 @@ export function findPWToolbar(): Element | null {
     const container = getToolbarContainer(refBtn);
     if (
       container &&
-      !container.querySelector('video, #interactive-layer-wrapper, #progress-control')
+      (!isProtectedPlayerStructure(container) || container.id === 'footer-right-section')
     ) {
       return container;
     }
@@ -566,7 +639,7 @@ export function findTimeline(): Element | null {
     return exactProgress;
   }
 
-  if (cachedTimeline && (cachedTimeline as any).isConnected) {
+  if (cachedTimeline && cachedTimeline.isConnected) {
     return cachedTimeline;
   }
   const video = getActiveVideo();
@@ -587,12 +660,73 @@ export function findTimeline(): Element | null {
   return null;
 }
 
+// Synchronize video timeline visibility and prevent duplicate progress bars on AI-chapter lectures
+export function syncTimelineVisibility(shouldHide: boolean): void {
+  const placeholder = document.getElementById('progress-placeholder');
+  const exactProgress = document.getElementById('progress-control');
+
+  // Identify any custom AI chapter progress bar rendered inside #progress-placeholder alongside #progress-control
+  const customChapterBars: Element[] = [];
+  if (placeholder) {
+    Array.from(placeholder.children).forEach((child) => {
+      if (child === exactProgress || child.id === 'progress-control') return;
+      if (
+        child.querySelector('#current-time-placeholder, #total-time-placeholder, .vjs-current-time')
+      ) {
+        return;
+      }
+      customChapterBars.push(child);
+    });
+  }
+
+  if (shouldHide) {
+    if (exactProgress) {
+      setHidden(exactProgress, true, true);
+    } else {
+      const fallback = findTimeline();
+      if (fallback) setHidden(fallback, true, true);
+    }
+    customChapterBars.forEach((bar) => setHidden(bar, true, true));
+    return;
+  }
+
+  // Restore any bars that our extension previously hid via "Hide Timeline Line"
+  if (exactProgress) {
+    setHidden(exactProgress, false, true);
+  } else {
+    const fallback = findTimeline();
+    if (fallback) setHidden(fallback, false, true);
+  }
+  customChapterBars.forEach((bar) => setHidden(bar, false, true));
+
+  // If PW's segmented AI chapter bar is visibly rendered full-width inside #progress-placeholder,
+  // ensure the fallback #progress-control bar (at bottom: -15px) stays hidden so two bars never stack.
+  if (exactProgress && placeholder && customChapterBars.length > 0) {
+    const minBarWidth = Math.max(100, placeholder.offsetWidth * 0.75);
+    const hasVisibleChapterBar = customChapterBars.some((bar) => {
+      const htmlBar = bar as HTMLElement;
+      return (
+        htmlBar.offsetWidth >= minBarWidth &&
+        htmlBar.offsetHeight > 0 &&
+        htmlBar.offsetHeight <= 32
+      );
+    });
+    if (hasVisibleChapterBar) {
+      exactProgress.setAttribute('data-pwc-dup-timeline', 'true');
+      exactProgress.style.setProperty('display', 'none', 'important');
+    } else if (exactProgress.hasAttribute('data-pwc-dup-timeline')) {
+      exactProgress.removeAttribute('data-pwc-dup-timeline');
+      exactProgress.style.removeProperty('display');
+    }
+  }
+}
+
 // Helper to find video time and duration texts
 export function findTimeTexts(): Element[] {
   if (
     cachedTimeTexts &&
     cachedTimeTexts.length > 0 &&
-    cachedTimeTexts.every((el) => (el as any).isConnected)
+    cachedTimeTexts.every((el) => el.isConnected)
   ) {
     return cachedTimeTexts;
   }
@@ -653,6 +787,8 @@ export function findTimeTexts(): Element[] {
   return list;
 }
 
+const originalSeparatorTextMap = new WeakMap<Node, string>();
+
 // Helper to hide separators (like "/" text nodes or span dividers) next to time elements
 export function hideTimeSeparators(timeElement: Element, shouldHide: boolean): void {
   if (!timeElement) return;
@@ -664,15 +800,16 @@ export function hideTimeSeparators(timeElement: Element, shouldHide: boolean): v
     if (node.nodeType === 3) {
       // Text Node
       const text = (node.textContent || '').trim();
-      if (text === '/' || text === '|' || text === '-') {
+      if (text === '/' || text === '|' || text === '-' || originalSeparatorTextMap.has(node)) {
         if (shouldHide) {
-          if ((node as any).originalText === undefined) {
-            (node as any).originalText = node.textContent;
+          if (!originalSeparatorTextMap.has(node) && node.textContent !== null) {
+            originalSeparatorTextMap.set(node, node.textContent);
           }
           node.textContent = '';
         } else {
-          if ((node as any).originalText !== undefined) {
-            node.textContent = (node as any).originalText;
+          const orig = originalSeparatorTextMap.get(node);
+          if (orig !== undefined) {
+            node.textContent = orig;
           }
         }
       }
@@ -691,75 +828,220 @@ export function hideTimeSeparators(timeElement: Element, shouldHide: boolean): v
   });
 }
 
-// ===== Button Locators for Focus Shortcuts (Issue #14) =====
+// ===== Unified Player Toolbar Slot Resolver & Action Trigger (Issue #14 / Candidate #2) =====
 
-function getToolbarButtonByType(
-  targetType: 'notes' | 'notetimeline' | 'doubt' | 'chat',
-): Element | null {
+export type ToolbarSlotMap = Record<DistractorSlotType, Element[]>;
+
+// Smart match (Label first, Settings-offset Position backup):
+// Used by both focus-css.ts (hiding) and keyboard.ts (shortcuts) so they never diverge.
+export function resolvePlayerToolbarSlots(): ToolbarSlotMap {
+  const slots: ToolbarSlotMap = {
+    notes: [],
+    notetimeline: [],
+    doubt: [],
+    chat: [],
+    askai: [],
+  };
+
   const settingsBtn = findSettingsButton();
   const fullscreenBtn = findFullscreenButton();
   const refBtn = settingsBtn || fullscreenBtn;
-  if (!refBtn) return null;
+  if (!refBtn) return slots;
 
   const parent = getToolbarContainer(refBtn);
-  if (!parent) return null;
+  if (!parent || (isProtectedPlayerStructure(parent) && parent.id !== 'footer-right-section')) {
+    return slots;
+  }
 
-  const siblings = Array.from(parent.children);
-  const nativeButtons = siblings.filter((el) => {
+  const nativeButtons = Array.from(parent.children).filter((el) => {
     if (el.nodeType !== 1) return false;
     const id = el.id || '';
-    const className = el.getAttribute('class') || '';
-    return !id.startsWith('pwc-') && !className.includes('pwc-');
+    const cls = el.getAttribute('class') || '';
+    return !id.startsWith('pwc-') && !cls.includes('pwc-') && !isProtectedPlayerStructure(el);
   });
 
-  // 1. Primary: search by attribute classification
+  const classifiedButtons = new Set<Element>();
+  const claimedSlotTypes = new Set<DistractorSlotType>();
+
+  // Pass 1: Label / attribute match first (handles missing buttons in recorded lectures accurately)
   for (const btn of nativeButtons) {
+    if (
+      btn === settingsBtn ||
+      btn.id === 'setting-icon' ||
+      !!btn.querySelector('#setting-icon')
+    ) {
+      classifiedButtons.add(btn);
+      continue;
+    }
     const type = checkElementOrChildType(btn);
-    if (type === targetType) return btn;
+    if (type) {
+      slots[type].push(btn);
+      classifiedButtons.add(btn);
+      claimedSlotTypes.add(type);
+    }
   }
 
-  // 2. Secondary: fallback to positional offset relative to Settings button
-  const settingsIdx = nativeButtons.findIndex((el) => {
-    return el === settingsBtn || el.id === 'setting-icon' || el.querySelector('#setting-icon');
-  });
+  // Pass 2: Settings-offset position backup for any unlabeled buttons
+  const settingsIdx = nativeButtons.findIndex(
+    (el) => el === settingsBtn || el.id === 'setting-icon' || !!el.querySelector('#setting-icon'),
+  );
 
-  const targetOffset =
-    targetType === 'notes' ? 1 : targetType === 'notetimeline' ? 2 : targetType === 'doubt' ? 3 : 4;
+  if (settingsIdx !== -1) {
+    const offsetToSlot: Record<number, DistractorSlotType> = {
+      1: 'notes',
+      2: 'notetimeline',
+      3: 'doubt',
+      4: 'chat',
+    };
 
-  if (settingsIdx !== -1 && settingsIdx >= targetOffset) {
-    const candidate = nativeButtons[settingsIdx - targetOffset];
-    if (candidate) return candidate;
+    nativeButtons.forEach((btn, index) => {
+      if (classifiedButtons.has(btn)) return;
+      const offset = settingsIdx - index;
+      const slotType = offsetToSlot[offset];
+      if (slotType && !claimedSlotTypes.has(slotType)) {
+        slots[slotType].push(btn);
+        classifiedButtons.add(btn);
+        claimedSlotTypes.add(slotType);
+      }
+    });
   }
 
-  return null;
+  return slots;
 }
 
 export function findNotesButton(): Element | null {
+  const slots = resolvePlayerToolbarSlots();
   return (
-    getToolbarButtonByType('notes') ||
-    document.querySelector('[title*="note" i], [aria-label*="note" i]')
+    slots.notes[0] ||
+    document.querySelector('[title*="note" i]:not([class*="pwc-"]), [aria-label*="note" i]:not([class*="pwc-"])')
   );
 }
 
 export function findTimelineButton(): Element | null {
+  const slots = resolvePlayerToolbarSlots();
   return (
-    getToolbarButtonByType('notetimeline') ||
-    document.querySelector('[title*="timeline" i], [aria-label*="timeline" i]')
+    slots.notetimeline[0] ||
+    document.querySelector('[title*="timeline" i]:not([class*="pwc-"]), [aria-label*="timeline" i]:not([class*="pwc-"])')
   );
 }
 
 export function findDoubtButton(): Element | null {
+  const slots = resolvePlayerToolbarSlots();
   return (
-    getToolbarButtonByType('doubt') ||
-    document.querySelector('[title*="doubt" i], [aria-label*="doubt" i], [title*="qna" i]')
+    slots.doubt[0] ||
+    document.querySelector(
+      '[title*="doubt" i]:not([class*="pwc-"]), [aria-label*="doubt" i]:not([class*="pwc-"]), [title*="qna" i]:not([class*="pwc-"])',
+    )
   );
 }
 
 export function findChatButton(): Element | null {
+  const slots = resolvePlayerToolbarSlots();
   return (
-    getToolbarButtonByType('chat') ||
-    document.querySelector('[title*="chat" i], [aria-label*="chat" i], [title*="comment" i]')
+    slots.chat[0] ||
+    document.querySelector(
+      '[title*="chat" i]:not([class*="pwc-"]), [aria-label*="chat" i]:not([class*="pwc-"]), [title*="comment" i]:not([class*="pwc-"])',
+    )
   );
+}
+
+// Wake PW's interactive overlay DOM if the user presses a shortcut before ever hovering/clicking the player
+export function wakePlayerControlsDom(): void {
+  if (document.getElementById('footer-right-section')) return;
+  const targets = [
+    getOuterPlayerContainer(),
+    document.getElementById('interactive-layer-wrapper'),
+    getActiveVideo(),
+  ];
+  for (const t of targets) {
+    if (!t) continue;
+    try {
+      t.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true, cancelable: true, view: window }));
+      t.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, cancelable: true, view: window }));
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+// Click a toolbar element, synchronously unhiding and re-hiding it if hidden by Focus Toggles
+export function triggerToolbarElement(el: Element | null): boolean {
+  if (!el) return false;
+
+  const root = document.documentElement;
+  const hadHideNotesClass = root.classList.contains('pwc-hide-notes');
+
+  const restoreList: Array<{ node: HTMLElement | SVGElement; val: string; priority: string }> = [];
+  let curr: Element | null = el;
+  while (
+    curr &&
+    curr !== document.body &&
+    curr.id !== 'footer-right-section' &&
+    curr.id !== 'interactive-layer-wrapper' &&
+    curr.id !== 'video-player-container'
+  ) {
+    if (curr instanceof HTMLElement || curr instanceof SVGElement) {
+      const inlineDisplay = curr.style.getPropertyValue('display');
+      if (inlineDisplay === 'none') {
+        restoreList.push({
+          node: curr,
+          val: inlineDisplay,
+          priority: curr.style.getPropertyPriority('display'),
+        });
+        curr.style.removeProperty('display');
+      }
+    }
+    curr = curr.parentElement;
+  }
+
+  if (hadHideNotesClass) {
+    root.classList.remove('pwc-hide-notes');
+  }
+
+  try {
+    const innerBtn =
+      typeof el.querySelector === 'function'
+        ? el.querySelector<HTMLElement>('button, [role="button"]')
+        : null;
+    const clickTarget = innerBtn || el;
+
+    if (clickTarget instanceof HTMLElement) {
+      clickTarget.click();
+      return true;
+    } else if (clickTarget instanceof SVGElement) {
+      clickTarget.dispatchEvent(
+        new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
+      );
+      return true;
+    }
+  } catch {
+    /* ignore */
+  } finally {
+    for (const item of restoreList) {
+      item.node.style.setProperty('display', item.val, item.priority);
+    }
+    if (hadHideNotesClass) {
+      root.classList.add('pwc-hide-notes');
+    }
+  }
+  return false;
+}
+
+export function triggerPlayerSlot(
+  slot: 'notes' | 'notetimeline' | 'doubt' | 'chat' | 'fullscreen',
+): boolean {
+  wakePlayerControlsDom();
+  const target =
+    slot === 'fullscreen'
+      ? findFullscreenButton()
+      : slot === 'notes'
+        ? findNotesButton()
+        : slot === 'notetimeline'
+          ? findTimelineButton()
+          : slot === 'doubt'
+            ? findDoubtButton()
+            : findChatButton();
+  return triggerToolbarElement(target);
 }
 
 

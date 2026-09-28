@@ -13,6 +13,7 @@ export interface HideSettings {
   hideNoteTimeline: boolean;
   hideSpeed: boolean;
   hideQuality: boolean;
+  hideSkipSilence: boolean;
   hideSetting: boolean;
   hideTimeLine: boolean;
   hideTimeText: boolean;

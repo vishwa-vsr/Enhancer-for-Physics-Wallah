@@ -1,5 +1,5 @@
 import { state } from '../../state';
-import { findPWToolbar } from '../distractions/elements';
+import { findPWToolbar, isInsidePreferredToolbar, setHidden } from '../distractions/elements';
 import { getActiveVideo } from '../video/detector';
 import {
   isSSEngineRunning,
@@ -32,13 +32,12 @@ export function injectSkipSilenceButton(): void {
     return;
   }
 
-  const fRight = document.getElementById('footer-right-section');
   let container = document.getElementById('pwc-ss-container');
-  if (container && container.isConnected && (!fRight || fRight.contains(container))) {
+  if (container && isInsidePreferredToolbar(container)) {
     updateSkipSilenceUI();
     return;
   }
-  if (container && fRight && !fRight.contains(container)) {
+  if (container) {
     container.remove();
     container = null;
   }
@@ -157,6 +156,8 @@ export function injectSkipSilenceButton(): void {
 export function updateSkipSilenceUI(): void {
   const container = document.getElementById('pwc-ss-container');
   if (!container) return;
+
+  setHidden(container, !state.extensionEnabled || state.hideSettings.hideSkipSilence);
 
   const btn = document.getElementById('pwc-ss-toggle');
   const viz = document.getElementById('pwc-ss-visualizer');

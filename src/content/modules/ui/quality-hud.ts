@@ -1,6 +1,6 @@
 import { state } from '../../state';
 import { VideoQuality } from '../../types';
-import { findPWToolbar } from '../distractions/elements';
+import { findPWToolbar, isInsidePreferredToolbar } from '../distractions/elements';
 import { getCurrentQuality, saveQuality, getAvailableQualities } from '../video/quality-controller';
 
 let isMenuOpen = false;
@@ -184,9 +184,8 @@ export function injectQualityControl(): void {
     return;
   }
 
-  const fRight = document.getElementById('footer-right-section');
   const existing = document.getElementById('pwc-quality-control') as HTMLElement | null;
-  if (existing && existing.isConnected && (!fRight || fRight.contains(existing))) {
+  if (existing && isInsidePreferredToolbar(existing)) {
     existing.style.display = state.hideSettings.hideQuality ? 'none' : '';
     return;
   }

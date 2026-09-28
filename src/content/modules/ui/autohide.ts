@@ -1,20 +1,18 @@
 import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { getOuterPlayerContainer } from '../distractions/elements';
-import { isUserTyping } from '../shortcuts/keyboard';
 
 let idleTimer: number | null = null;
 let isInitialized = false;
 
-function getPlayerContainer(): HTMLElement | null {
-  return getOuterPlayerContainer();
-}
+const OPEN_PANEL_SELECTOR =
+  '[role="dialog"], [aria-modal="true"], [class*="timeline-sidebar" i], [id*="timeline-sidebar" i], [class*="Timeline_sidebar"], [class*="Timeline_container"], [class*="drawer" i], [class*="Drawer"]';
 
 function isEventInsidePlayer(e: Event): boolean {
   if (document.fullscreenElement) {
     return true;
   }
-  const container = getPlayerContainer();
+  const container = getOuterPlayerContainer();
   if (!container) return false;
 
   const target = e.target;
@@ -30,24 +28,22 @@ function isEventInsidePlayer(e: Event): boolean {
   return false;
 }
 
-function isMenuOrPopupOpen(): boolean {
-  if (isUserTyping()) return true;
+function isEventInsideOpenPanel(e: Event): boolean {
+  const target = e.target;
+  if (target instanceof Element && target.closest(OPEN_PANEL_SELECTOR)) {
+    return true;
+  }
+  return false;
+}
 
-  const scope = getPlayerContainer() || document;
+function isMenuOrPopupOpen(): boolean {
+  const scope = getOuterPlayerContainer() || document;
 
   // Check headlessui open menus (settings gear, dropdowns), excluding our own speed badge
   const openHeadless = scope.querySelector(
     '[data-headlessui-state*="open"], [aria-expanded="true"]:not(.pwc-speed-badge)',
   );
   if (openHeadless) return true;
-
-  // Check open dialogs or sidebars inside the player
-  const openPanel = scope.querySelector<HTMLElement>(
-    '[role="dialog"], [aria-modal="true"], [class*="timeline-sidebar" i], [id*="timeline-sidebar" i], [class*="Timeline_sidebar"], [class*="Timeline_container"]',
-  );
-  if (openPanel && openPanel.offsetWidth > 0 && openPanel.offsetHeight > 0) {
-    return true;
-  }
 
   // Check our custom quality menu
   const qualityMenu = document.querySelector('.pwc-quality-container.pwc-menu-open');
@@ -88,7 +84,7 @@ function sleep(): void {
   }
 
   // Fade out player controls and hide cursor (without collapsing outer page layout)
-  const container = getPlayerContainer();
+  const container = getOuterPlayerContainer();
   if (container) {
     container.classList.add('pwc-autohide-inactive');
   }
@@ -110,7 +106,9 @@ function scheduleNextCheck(): void {
 }
 
 function onUserActivity(e: Event): void {
+  if (!e.isTrusted) return;
   if (!isEventInsidePlayer(e)) return;
+  if (isEventInsideOpenPanel(e)) return;
   wakeUp();
   scheduleNextCheck();
 }

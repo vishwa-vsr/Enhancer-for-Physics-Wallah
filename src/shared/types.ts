@@ -20,6 +20,7 @@ export interface PopupSettings {
   hideNoteTimeline: boolean;
   hideSpeed: boolean;
   hideQuality: boolean;
+  hideSkipSilence: boolean;
   hideSetting: boolean;
   hideTimeLine: boolean;
   hideTimeText: boolean;
@@ -86,6 +87,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   hideNoteTimeline: false,
   hideSpeed: false,
   hideQuality: true,
+  hideSkipSilence: false,
   hideSetting: false,
   hideTimeLine: false,
   hideTimeText: false,
