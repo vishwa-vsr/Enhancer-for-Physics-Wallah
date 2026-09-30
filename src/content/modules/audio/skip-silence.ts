@@ -683,8 +683,8 @@ export function onSSVideoPause(): void {
     if (!isUserHoldingSpace()) {
       ssExitSilence();
     }
-    updateSkipSilenceUI();
   }
+  updateSkipSilenceUI();
 }
 
 // Synchronize low-CPU sensor mode in real-time

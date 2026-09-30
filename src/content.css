@@ -622,6 +622,7 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   height: 100%;
   margin: 0 4px;
   user-select: none;
+  flex-shrink: 0 !important;
 }
 
 /* Skip Silence Toggle Button */
@@ -636,6 +637,7 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   justify-content: center;
   height: 100%;
   outline: none;
+  flex-shrink: 0;
   transition:
     color 0.2s ease,
     filter 0.2s ease;
@@ -679,8 +681,12 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   display: none;
   align-items: flex-end;
   gap: 1.5px;
+  width: 22.5px;
+  min-width: 22.5px;
+  flex: 0 0 22.5px;
   height: 16px;
   padding: 0 2px;
+  box-sizing: border-box;
 }
 
 .pwc-ss-visualizer.active {
@@ -705,13 +711,26 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 
 /* Status Text */
 .pwc-ss-status {
+  display: none;
+  width: 62px;
+  min-width: 62px;
+  max-width: 62px;
+  flex: 0 0 62px;
+  box-sizing: border-box;
   font-size: 11px;
   font-weight: 600;
   color: #4ade80;
   white-space: nowrap;
+  overflow: hidden;
+  text-align: left;
+  font-variant-numeric: tabular-nums !important;
   letter-spacing: 0.02em;
   opacity: 0.9;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.pwc-ss-status.active {
+  display: inline-block;
 }
 
 /* Dynamic Lecture Finish Time Badge (Matches native PW player time text) */

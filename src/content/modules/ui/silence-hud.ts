@@ -17,16 +17,14 @@ import {
 
 let ssVisualizerInterval: ReturnType<typeof setInterval> | null = null;
 
-// Format milliseconds to human-readable time saved string
+// Format milliseconds to compact human-readable time saved string for the player toolbar
 export function formatTimeSaved(ms: number): string {
-  const totalSeconds = Math.floor(ms / 1000);
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
   if (totalSeconds < 60) return totalSeconds + 's';
   const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  if (minutes < 60) return minutes + 'm ' + seconds + 's';
+  if (minutes < 100) return minutes + 'm';
   const hours = Math.floor(minutes / 60);
-  const remMinutes = minutes % 60;
-  return hours + 'h ' + remMinutes + 'm';
+  return hours + 'h';
 }
 
 // Build and inject the Skip Silence toggle button + visualizer + status into the player toolbar
@@ -174,18 +172,25 @@ export function updateSkipSilenceUI(): void {
   const currentState = getSSCurrentState();
   const lastLevel = getSSLastVolumeLevel();
   const sessionSaved = getSSSessionSaved();
+  const activeVid = getActiveVideo();
+  const isActivelyPlaying = Boolean(activeVid && !activeVid.paused && !activeVid.ended);
 
   if (btn) {
     btn.classList.toggle('active', state.skipSilenceEnabled);
-    btn.classList.toggle('speech', state.skipSilenceEnabled && currentState === 'speech');
-    btn.classList.toggle('silence', state.skipSilenceEnabled && currentState === 'silence');
+    btn.classList.toggle(
+      'speech',
+      state.skipSilenceEnabled && isActivelyPlaying && currentState === 'speech',
+    );
+    btn.classList.toggle(
+      'silence',
+      state.skipSilenceEnabled && isActivelyPlaying && currentState === 'silence',
+    );
     if (!state.skipSilenceEnabled) {
       btn.setAttribute('title', 'Skip Silence: Off (Click to enable)');
     } else if (isRunning) {
       btn.setAttribute('title', 'Skip Silence: Active (Click to disable)');
     } else {
-      const activeVid = getActiveVideo();
-      if (activeVid && !activeVid.paused) {
+      if (isActivelyPlaying) {
         btn.setAttribute('title', 'Skip Silence: Click button or video to activate');
       } else {
         btn.setAttribute('title', 'Skip Silence: Ready (Play video to start)');
@@ -194,39 +199,35 @@ export function updateSkipSilenceUI(): void {
   }
 
   if (viz) {
-    viz.classList.toggle('active', state.skipSilenceEnabled && isRunning);
-    viz.classList.toggle('silence', currentState === 'silence');
-    // Update bar heights based on volume level
-    if (state.skipSilenceEnabled && isRunning) {
-      const bars = viz.querySelectorAll<HTMLElement>('.pwc-ss-bar');
+    viz.classList.toggle('active', state.skipSilenceEnabled);
+    viz.classList.toggle(
+      'silence',
+      state.skipSilenceEnabled && isActivelyPlaying && currentState === 'silence',
+    );
+    const bars = viz.querySelectorAll<HTMLElement>('.pwc-ss-bar');
+    if (state.skipSilenceEnabled && isRunning && isActivelyPlaying && currentState === 'speech') {
       const baseHeight = Math.min(lastLevel * 500, 1); // Normalize to 0-1
       bars.forEach((bar) => {
         const variation = 0.3 + Math.random() * 0.7;
         const h = Math.max(3, baseHeight * variation * 16);
         bar.style.height = h + 'px';
       });
+    } else {
+      bars.forEach((bar) => {
+        bar.style.height = '3px';
+      });
     }
   }
 
   if (status) {
+    status.classList.toggle('active', state.skipSilenceEnabled);
     if (!state.skipSilenceEnabled) {
       status.textContent = '';
-      status.style.display = 'none';
-    } else if (currentState === 'silence') {
-      status.textContent = 'Skipping...';
-      status.style.display = '';
+    } else if (isActivelyPlaying && currentState === 'silence') {
+      status.textContent = 'Skipping';
       status.style.color = '#fb923c';
-    } else if (currentState === 'speech') {
-      if (sessionSaved > 0) {
-        status.textContent = 'Saved ' + formatTimeSaved(sessionSaved);
-      } else {
-        status.textContent = 'Listening...';
-      }
-      status.style.display = '';
-      status.style.color = '#4ade80';
     } else {
-      status.textContent = isRunning ? 'Listening...' : '';
-      status.style.display = isRunning ? '' : 'none';
+      status.textContent = 'Saved ' + formatTimeSaved(sessionSaved);
       status.style.color = '#4ade80';
     }
   }
