@@ -227,7 +227,7 @@ export function togglePlayPause(): void {
     video.parentElement;
   if (playerContainer) {
     const playBtn = playerContainer.querySelector<HTMLElement>(
-      '.vjs-play-control, [class*="play-control" i], [class*="play-btn" i], .play-btn, .vjs-play-btn',
+      '#play-pause-action, .vjs-play-control, [class*="play-control" i], [class*="play-btn" i], .play-btn, .vjs-play-btn',
     );
     if (playBtn) {
       playBtn.click();

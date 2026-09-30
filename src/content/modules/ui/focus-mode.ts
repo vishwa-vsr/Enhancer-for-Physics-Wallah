@@ -4,6 +4,7 @@ import {
   findSettingsButton,
   findFullscreenButton,
   getToolbarContainer,
+  preventFocusSteal,
 } from '../distractions/elements';
 
 let lastCollapsedTime = 0;
@@ -56,6 +57,7 @@ export function injectInstantHideButton(): void {
     btn.id = 'pwc-instant-hide-btn';
     btn.className = 'pwc-instant-hide-btn';
     btn.type = 'button';
+    preventFocusSteal(btn);
     btn.setAttribute('title', 'Instant Focus Mode (Hide controls & cursor)');
 
     // Custom SVG Chevron down
@@ -81,9 +83,11 @@ export function injectInstantHideButton(): void {
     }
 
     // Add event listeners
+
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
+      btn.blur();
 
       // Collapse the entire page's player controls and cursor
       document.documentElement.classList.add('pwc-collapsed-state');

@@ -1,7 +1,7 @@
 import { state, sanitizeSnapPoints } from '../../state';
 import { findPWToolbar, isInsidePreferredToolbar } from '../distractions/elements';
 import { applyDistractorsState } from '../distractions/focus-css';
-import { stepSpeed, saveSpeed } from '../video/controller';
+import { stepSpeed, saveSpeed, togglePlayPause } from '../video/controller';
 import { updateFinishTime } from './finish-time';
 import { getSSCurrentState } from '../audio/skip-silence';
 
@@ -138,9 +138,24 @@ export function setupUIEventListeners(container: HTMLElement): void {
   const speedInput = container.querySelector<HTMLInputElement>('.pwc-speed-badge-input');
   if (!slider || !badge || !speedInput) return;
 
+  container.dataset.pwcInitialized = 'true';
+  slider.tabIndex = -1;
+  badge.tabIndex = -1;
+
   updateSliderBackground(slider, state.currentSpeed);
 
   let mouseLeaveTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const releaseSliderFocus = () => {
+    if (document.activeElement === slider) {
+      slider.blur();
+    }
+  };
+
+  const onSliderInteractionEnd = () => {
+    releaseSliderFocus();
+    window.setTimeout(releaseSliderFocus, 0);
+  };
 
   const resetTypedSpeed = () => {
     speedInput.value = formatSpeed(state.currentSpeed);
@@ -162,6 +177,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
 
   const closeEditing = (focusBadge = false) => {
     setBadgeEditing(container, false);
+    speedInput.blur();
     if (focusBadge) {
       badge.focus();
     } else {
@@ -191,14 +207,22 @@ export function setupUIEventListeners(container: HTMLElement): void {
 
   container.addEventListener('mouseleave', () => {
     container.classList.remove('pwc-escape-collapsed');
+    releaseSliderFocus();
     if (state.alwaysExpandWidget) return;
     mouseLeaveTimer = setTimeout(() => {
-      if (container.classList.contains('pwc-speed-editing')) saveAndCloseEditing();
+      if (container.classList.contains('pwc-speed-editing')) saveAndCloseEditing(false);
+      releaseSliderFocus();
+      if (document.activeElement === badge) badge.blur();
       setExpanded(container, false);
     }, 250);
   });
 
-  badge.addEventListener('click', () => {
+  badge.addEventListener('mousedown', (e: MouseEvent) => {
+    e.preventDefault();
+  });
+
+  badge.addEventListener('click', (e: MouseEvent) => {
+    e.stopPropagation();
     setExpanded(container, true);
     speedInput.value = formatSpeed(state.currentSpeed);
     setBadgeEditing(container, true);
@@ -214,8 +238,38 @@ export function setupUIEventListeners(container: HTMLElement): void {
     } else if (e.key === 'Escape') {
       e.preventDefault();
       e.stopPropagation();
+      badge.blur();
       collapseOnEscape(container);
     }
+  });
+
+  const bindWindowSliderRelease = () => {
+    if (container.classList.contains('pwc-speed-editing')) {
+      saveAndCloseEditing(false);
+    }
+    const cleanup = () => {
+      window.removeEventListener('pointerup', cleanup, true);
+      window.removeEventListener('mouseup', cleanup, true);
+      window.removeEventListener('touchend', cleanup, true);
+      window.removeEventListener('blur', cleanup);
+      onSliderInteractionEnd();
+    };
+    window.addEventListener('pointerup', cleanup, true);
+    window.addEventListener('mouseup', cleanup, true);
+    window.addEventListener('touchend', cleanup, true);
+    window.addEventListener('blur', cleanup);
+  };
+
+  slider.addEventListener('pointerdown', bindWindowSliderRelease);
+  slider.addEventListener('mousedown', bindWindowSliderRelease);
+  slider.addEventListener('touchstart', bindWindowSliderRelease, { passive: true });
+  slider.addEventListener('change', onSliderInteractionEnd);
+  slider.addEventListener('mouseup', onSliderInteractionEnd);
+  slider.addEventListener('pointerup', onSliderInteractionEnd);
+  slider.addEventListener('touchend', onSliderInteractionEnd, { passive: true });
+  slider.addEventListener('click', (e: MouseEvent) => {
+    e.stopPropagation();
+    onSliderInteractionEnd();
   });
 
   slider.addEventListener('input', (e: Event) => {
@@ -223,6 +277,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
     if (state.skipSilenceEnabled && getSSCurrentState() === 'silence') {
       const pct = speedToSliderPercent(state.currentSpeed, state.snapPoints);
       target.value = String(Math.round(pct * 10));
+      releaseSliderFocus();
       return;
     }
     const percent = parseFloat(target.value) / 10;
@@ -240,6 +295,11 @@ export function setupUIEventListeners(container: HTMLElement): void {
     updateSliderBackground(slider, val);
     target.setAttribute('aria-valuetext', `${formatSpeed(val)}x`);
     saveSpeed(val);
+    releaseSliderFocus();
+  });
+
+  speedInput.addEventListener('click', (e: MouseEvent) => {
+    e.stopPropagation();
   });
 
   speedInput.addEventListener('input', () => {
@@ -264,6 +324,12 @@ export function setupUIEventListeners(container: HTMLElement): void {
       e.preventDefault();
       cancelAndCloseEditing(false);
       collapseOnEscape(container);
+    } else if (e.key === ' ' || e.code === 'Space') {
+      e.preventDefault();
+      if (!e.repeat) {
+        saveAndCloseEditing(false);
+        togglePlayPause();
+      }
     }
   });
 
@@ -281,7 +347,42 @@ export function setupUIEventListeners(container: HTMLElement): void {
     if (e.key === 'Escape') {
       e.preventDefault();
       e.stopPropagation();
+      releaseSliderFocus();
       collapseOnEscape(container);
+      return;
+    }
+
+    if (e.key === ' ' || e.code === 'Space') {
+      e.preventDefault();
+      e.stopPropagation();
+      releaseSliderFocus();
+      if (!e.repeat && !state.holdSpaceSpeedUp) {
+        togglePlayPause();
+      }
+      return;
+    }
+
+    if (
+      e.key === 'ArrowLeft' ||
+      e.key === 'ArrowRight' ||
+      e.key === 'ArrowUp' ||
+      e.key === 'ArrowDown'
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      releaseSliderFocus();
+      if (document.body) {
+        document.body.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: e.key,
+            code: e.code,
+            keyCode: e.keyCode,
+            which: e.which,
+            bubbles: true,
+            cancelable: true,
+          }),
+        );
+      }
     }
   });
 
@@ -315,6 +416,7 @@ export function buildSpeedControl(container: HTMLElement): void {
   const badge = document.createElement('button');
   badge.type = 'button';
   badge.className = 'pwc-speed-badge';
+  badge.tabIndex = -1;
   badge.dataset.editHint = 'Click to edit';
   badge.setAttribute('aria-label', 'Click to edit playback speed');
   badge.setAttribute('aria-expanded', 'false');
@@ -342,6 +444,7 @@ export function buildSpeedControl(container: HTMLElement): void {
   const slider = document.createElement('input');
   slider.type = 'range';
   slider.className = 'pwc-speed-slider';
+  slider.tabIndex = -1;
   slider.min = '0';
   slider.max = '1000';
   slider.step = '1';
@@ -383,6 +486,9 @@ export function injectSpeedControl(): void {
 
   const existingContainer = document.getElementById('pwc-speed-control') as HTMLElement | null;
   if (existingContainer && isInsidePreferredToolbar(existingContainer)) {
+    if (existingContainer.dataset.pwcInitialized !== 'true') {
+      setupUIEventListeners(existingContainer);
+    }
     applyAlwaysExpandState(existingContainer);
     return;
   }
@@ -413,6 +519,9 @@ export function injectSpeedControl(): void {
         toolbar.insertBefore(existingContainer, toolbar.firstChild);
       } else {
         toolbar.appendChild(existingContainer);
+      }
+      if (existingContainer.dataset.pwcInitialized !== 'true') {
+        setupUIEventListeners(existingContainer);
       }
       applyAlwaysExpandState(existingContainer);
     }

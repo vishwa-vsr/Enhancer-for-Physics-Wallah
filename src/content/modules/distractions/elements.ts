@@ -290,7 +290,8 @@ export function findFullscreenButton(): Element | null {
         return !id.startsWith('pwc-') && !cls.includes('pwc-');
       });
       const settingsIdx = nativeButtons.findIndex(
-        (el) => el === settingsBtn || el.id === 'setting-icon' || !!el.querySelector('#setting-icon'),
+        (el) =>
+          el === settingsBtn || el.id === 'setting-icon' || !!el.querySelector('#setting-icon'),
       );
       if (settingsIdx !== -1 && settingsIdx + 1 < nativeButtons.length) {
         const fsCandidate = nativeButtons[settingsIdx + 1];
@@ -312,9 +313,7 @@ export function findFullscreenButton(): Element | null {
     if (settingsWrapper && (settingsWrapper as Element).nextElementSibling) {
       const nextSib = (settingsWrapper as Element).nextElementSibling!;
       const clickable =
-        nextSib.querySelector('button, [role="button"]') ||
-        nextSib.querySelector('svg') ||
-        nextSib;
+        nextSib.querySelector('button, [role="button"]') || nextSib.querySelector('svg') || nextSib;
       if (!isProtectedPlayerStructure(clickable)) {
         return clickable;
       }
@@ -330,8 +329,7 @@ export function findFullscreenButton(): Element | null {
   );
   if (fsSvgPath && !fsSvgPath.closest('.vjs-control-bar')) {
     const svg = fsSvgPath.closest('svg');
-    const clickable =
-      (svg && (svg.closest('button, [role="button"]') || svg.parentElement)) || svg;
+    const clickable = (svg && (svg.closest('button, [role="button"]') || svg.parentElement)) || svg;
     if (clickable && !isProtectedPlayerStructure(clickable)) {
       return clickable;
     }
@@ -409,8 +407,7 @@ export function getToolbarContainer(el: Element | null): Element | null {
 export function findNativeSpeedBadges(): Element[] {
   if (
     cachedNativeSpeedBadges !== null &&
-    (cachedNativeSpeedBadges.length === 0 ||
-      cachedNativeSpeedBadges.every((el) => el.isConnected))
+    (cachedNativeSpeedBadges.length === 0 || cachedNativeSpeedBadges.every((el) => el.isConnected))
   ) {
     return cachedNativeSpeedBadges;
   }
@@ -596,8 +593,7 @@ export function findPWToolbar(): Element | null {
   if (!video) return null;
 
   const root = (video.getRootNode && (video.getRootNode() as Document | ShadowRoot)) || document;
-  const playerContainer =
-    getOuterPlayerContainer() || (root instanceof Element ? root : null);
+  const playerContainer = getOuterPlayerContainer() || (root instanceof Element ? root : null);
 
   if (!playerContainer || !playerContainer.querySelectorAll) return null;
 
@@ -706,9 +702,7 @@ export function syncTimelineVisibility(shouldHide: boolean): void {
     const hasVisibleChapterBar = customChapterBars.some((bar) => {
       const htmlBar = bar as HTMLElement;
       return (
-        htmlBar.offsetWidth >= minBarWidth &&
-        htmlBar.offsetHeight > 0 &&
-        htmlBar.offsetHeight <= 32
+        htmlBar.offsetWidth >= minBarWidth && htmlBar.offsetHeight > 0 && htmlBar.offsetHeight <= 32
       );
     });
     if (hasVisibleChapterBar) {
@@ -865,11 +859,7 @@ export function resolvePlayerToolbarSlots(): ToolbarSlotMap {
 
   // Pass 1: Label / attribute match first (handles missing buttons in recorded lectures accurately)
   for (const btn of nativeButtons) {
-    if (
-      btn === settingsBtn ||
-      btn.id === 'setting-icon' ||
-      !!btn.querySelector('#setting-icon')
-    ) {
+    if (btn === settingsBtn || btn.id === 'setting-icon' || !!btn.querySelector('#setting-icon')) {
       classifiedButtons.add(btn);
       continue;
     }
@@ -913,7 +903,9 @@ export function findNotesButton(): Element | null {
   const slots = resolvePlayerToolbarSlots();
   return (
     slots.notes[0] ||
-    document.querySelector('[title*="note" i]:not([class*="pwc-"]), [aria-label*="note" i]:not([class*="pwc-"])')
+    document.querySelector(
+      '[title*="note" i]:not([class*="pwc-"]), [aria-label*="note" i]:not([class*="pwc-"])',
+    )
   );
 }
 
@@ -921,7 +913,9 @@ export function findTimelineButton(): Element | null {
   const slots = resolvePlayerToolbarSlots();
   return (
     slots.notetimeline[0] ||
-    document.querySelector('[title*="timeline" i]:not([class*="pwc-"]), [aria-label*="timeline" i]:not([class*="pwc-"])')
+    document.querySelector(
+      '[title*="timeline" i]:not([class*="pwc-"]), [aria-label*="timeline" i]:not([class*="pwc-"])',
+    )
   );
 }
 
@@ -956,8 +950,12 @@ export function wakePlayerControlsDom(): void {
   for (const t of targets) {
     if (!t) continue;
     try {
-      t.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true, cancelable: true, view: window }));
-      t.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, cancelable: true, view: window }));
+      t.dispatchEvent(
+        new MouseEvent('mouseenter', { bubbles: true, cancelable: true, view: window }),
+      );
+      t.dispatchEvent(
+        new MouseEvent('mouseover', { bubbles: true, cancelable: true, view: window }),
+      );
     } catch {
       /* ignore */
     }
@@ -1044,4 +1042,10 @@ export function triggerPlayerSlot(
   return triggerToolbarElement(target);
 }
 
-
+// Prevent an injected toolbar button from stealing keyboard focus away from the video player
+export function preventFocusSteal(el: HTMLElement): void {
+  el.tabIndex = -1;
+  el.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+  });
+}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Toggle } from '@shared/components/Toggle';
 import { FeatureRow } from '@shared/components/FeatureRow';
 import { Stepper } from '@shared/components/Stepper';
@@ -26,6 +26,8 @@ import {
   autoHideControls,
   autoHideDelay,
   autoHideWhenPaused,
+  getReservedShortcutWarning,
+  findConflictingShortcut,
 } from '@popup/store';
 import styles from './FocusTab.module.css';
 
@@ -134,12 +136,7 @@ function FocusLockSection({ lockUnavailable, lockActive, onToggle }: FocusLockSe
 }
 
 type FocusKeyType =
-  | 'keyChat'
-  | 'keyTimeline'
-  | 'keyNotes'
-  | 'keyDoubt'
-  | 'keyFullscreen'
-  | 'keyExit';
+  'keyChat' | 'keyTimeline' | 'keyNotes' | 'keyDoubt' | 'keyFullscreen' | 'keyExit';
 
 const FOCUS_KEY_SIGNALS: Record<FocusKeyType, { value: string }> = {
   keyChat,
@@ -151,33 +148,106 @@ const FOCUS_KEY_SIGNALS: Record<FocusKeyType, { value: string }> = {
 };
 
 function FocusTogglesSection() {
-  const handleHotkeyFocus = (e: Event) => {
-    (e.target as HTMLInputElement).value = 'Press key...';
+  const [activeHotkeyField, setActiveHotkeyField] = useState<FocusKeyType | null>(null);
+  const [hotkeyNotice, setHotkeyNotice] = useState<{
+    keyType: FocusKeyType;
+    message: string;
+  } | null>(null);
+  const noticeTimerRef = useRef<number | null>(null);
+
+  const clearNoticeTimer = () => {
+    if (noticeTimerRef.current) {
+      clearTimeout(noticeTimerRef.current);
+      noticeTimerRef.current = null;
+    }
   };
 
-  const handleHotkeyBlur = (keyType: FocusKeyType, e: Event) => {
-    const input = e.target as HTMLInputElement;
-    if (input.value === 'Press key...') {
-      input.value = FOCUS_KEY_SIGNALS[keyType].value;
+  useEffect(() => {
+    return () => {
+      clearNoticeTimer();
+    };
+  }, []);
+
+  const showHotkeyNotice = (keyType: FocusKeyType, message: string | null) => {
+    clearNoticeTimer();
+    if (!message) {
+      setHotkeyNotice(null);
+      return;
     }
+    setHotkeyNotice({ keyType, message });
+    noticeTimerRef.current = window.setTimeout(() => {
+      setHotkeyNotice(null);
+      noticeTimerRef.current = null;
+    }, 3600);
+  };
+
+  const getShortcutDisplayValue = (keyType: FocusKeyType): string =>
+    activeHotkeyField === keyType ? 'Press key...' : FOCUS_KEY_SIGNALS[keyType].value;
+
+  const handleHotkeyFocus = (keyType: FocusKeyType) => {
+    clearNoticeTimer();
+    setHotkeyNotice(null);
+    setActiveHotkeyField(keyType);
+  };
+
+  const handleHotkeyBlur = (keyType: FocusKeyType) => {
+    setActiveHotkeyField((prev) => (prev === keyType ? null : prev));
   };
 
   const handleHotkeyDown = (keyType: FocusKeyType, e: KeyboardEvent) => {
     e.preventDefault();
-    if (['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) return;
-    if (e.key === 'Backspace' || e.key === 'Delete') {
-      FOCUS_KEY_SIGNALS[keyType].value = '';
-      saveSetting(keyType, '');
-      (e.target as HTMLInputElement).blur();
+    if (['Control', 'Shift', 'Alt', 'Meta', 'CapsLock'].includes(e.key)) return;
+
+    const input = e.target as HTMLInputElement;
+    const currentSignal = FOCUS_KEY_SIGNALS[keyType];
+
+    const reservedWarning = getReservedShortcutWarning(e.key);
+    if (reservedWarning) {
+      setActiveHotkeyField(null);
+      showHotkeyNotice(keyType, reservedWarning);
+      input.blur();
       return;
     }
+
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      currentSignal.value = '';
+      setActiveHotkeyField(null);
+      saveSetting(keyType, '');
+      showHotkeyNotice(keyType, null);
+      input.blur();
+      return;
+    }
+
     // Only allow single alphanumeric keys (A-Z, 0-9), keeping Spacebar reserved
     if (/^[a-zA-Z0-9]$/.test(e.key)) {
       const boundKey = e.key.toLowerCase();
-      FOCUS_KEY_SIGNALS[keyType].value = boundKey;
+      const conflict = findConflictingShortcut(keyType, boundKey);
+      if (conflict) {
+        setActiveHotkeyField(null);
+        showHotkeyNotice(keyType, `"${boundKey.toUpperCase()}" is already used by ${conflict}.`);
+        input.blur();
+        return;
+      }
+      currentSignal.value = boundKey;
+      setActiveHotkeyField(null);
       saveSetting(keyType, boundKey);
-      (e.target as HTMLInputElement).blur();
+      showHotkeyNotice(keyType, null);
+      input.blur();
+      return;
     }
+
+    setActiveHotkeyField(null);
+    showHotkeyNotice(keyType, 'Please press a single letter (A–Z) or number (0–9).');
+    input.blur();
+  };
+
+  const renderRowNotice = (keyType: FocusKeyType) => {
+    if (!hotkeyNotice || hotkeyNotice.keyType !== keyType) return null;
+    return (
+      <div class={styles.hotkeyNotice} role="status" aria-live="polite">
+        {hotkeyNotice.message}
+      </div>
+    );
   };
 
   const isShortcutDisabled = (isHidden: boolean): boolean =>
@@ -216,15 +286,15 @@ function FocusTogglesSection() {
               type="text"
               readonly
               class={`${styles.shortcutInput} ${doubtShortcutDisabled ? styles.shortcutDisabled : ''}`}
-              value={keyDoubt.value}
+              value={getShortcutDisplayValue('keyDoubt')}
               disabled={doubtShortcutDisabled}
               title={
                 doubtShortcutDisabled
                   ? 'Shortcut disabled because Doubt Q&A is hidden'
                   : 'Doubt shortcut key (Backspace to clear)'
               }
-              onFocus={handleHotkeyFocus}
-              onBlur={(e) => handleHotkeyBlur('keyDoubt', e)}
+              onFocus={() => handleHotkeyFocus('keyDoubt')}
+              onBlur={() => handleHotkeyBlur('keyDoubt')}
               onKeyDown={(e) => handleHotkeyDown('keyDoubt', e)}
               aria-label="Doubt Shortcut Key"
             />
@@ -237,21 +307,22 @@ function FocusTogglesSection() {
             />
           </div>
         </FeatureRow>
+        {renderRowNotice('keyDoubt')}
         <FeatureRow label="Hide Live Chat">
           <div class={styles.rowControls}>
             <input
               type="text"
               readonly
               class={`${styles.shortcutInput} ${chatShortcutDisabled ? styles.shortcutDisabled : ''}`}
-              value={keyChat.value}
+              value={getShortcutDisplayValue('keyChat')}
               disabled={chatShortcutDisabled}
               title={
                 chatShortcutDisabled
                   ? 'Shortcut disabled because Live Chat is hidden'
                   : 'Chat shortcut key (Backspace to clear)'
               }
-              onFocus={handleHotkeyFocus}
-              onBlur={(e) => handleHotkeyBlur('keyChat', e)}
+              onFocus={() => handleHotkeyFocus('keyChat')}
+              onBlur={() => handleHotkeyBlur('keyChat')}
               onKeyDown={(e) => handleHotkeyDown('keyChat', e)}
               aria-label="Live Chat Shortcut Key"
             />
@@ -264,21 +335,22 @@ function FocusTogglesSection() {
             />
           </div>
         </FeatureRow>
+        {renderRowNotice('keyChat')}
         <FeatureRow label="Hide Study Notes">
           <div class={styles.rowControls}>
             <input
               type="text"
               readonly
               class={`${styles.shortcutInput} ${notesShortcutDisabled ? styles.shortcutDisabled : ''}`}
-              value={keyNotes.value}
+              value={getShortcutDisplayValue('keyNotes')}
               disabled={notesShortcutDisabled}
               title={
                 notesShortcutDisabled
                   ? 'Shortcut disabled because Study Notes is hidden'
                   : 'Study Notes shortcut key (Backspace to clear)'
               }
-              onFocus={handleHotkeyFocus}
-              onBlur={(e) => handleHotkeyBlur('keyNotes', e)}
+              onFocus={() => handleHotkeyFocus('keyNotes')}
+              onBlur={() => handleHotkeyBlur('keyNotes')}
               onKeyDown={(e) => handleHotkeyDown('keyNotes', e)}
               aria-label="Study Notes Shortcut Key"
             />
@@ -291,21 +363,22 @@ function FocusTogglesSection() {
             />
           </div>
         </FeatureRow>
+        {renderRowNotice('keyNotes')}
         <FeatureRow label="Hide Note Timeline">
           <div class={styles.rowControls}>
             <input
               type="text"
               readonly
               class={`${styles.shortcutInput} ${timelineShortcutDisabled ? styles.shortcutDisabled : ''}`}
-              value={keyTimeline.value}
+              value={getShortcutDisplayValue('keyTimeline')}
               disabled={timelineShortcutDisabled}
               title={
                 timelineShortcutDisabled
                   ? 'Shortcut disabled because Note Timeline is hidden'
                   : 'Note Timeline shortcut key (Backspace to clear)'
               }
-              onFocus={handleHotkeyFocus}
-              onBlur={(e) => handleHotkeyBlur('keyTimeline', e)}
+              onFocus={() => handleHotkeyFocus('keyTimeline')}
+              onBlur={() => handleHotkeyBlur('keyTimeline')}
               onKeyDown={(e) => handleHotkeyDown('keyTimeline', e)}
               aria-label="Note Timeline Shortcut Key"
             />
@@ -318,6 +391,7 @@ function FocusTogglesSection() {
             />
           </div>
         </FeatureRow>
+        {renderRowNotice('keyTimeline')}
         <FeatureRow label="Hide Settings Icon">
           <Toggle
             checked={hideSetting.value}
@@ -387,27 +461,29 @@ function FocusTogglesSection() {
             type="text"
             readonly
             class={styles.shortcutInput}
-            value={keyFullscreen.value}
+            value={getShortcutDisplayValue('keyFullscreen')}
             title="Fullscreen shortcut key (Backspace to clear)"
-            onFocus={handleHotkeyFocus}
-            onBlur={(e) => handleHotkeyBlur('keyFullscreen', e)}
+            onFocus={() => handleHotkeyFocus('keyFullscreen')}
+            onBlur={() => handleHotkeyBlur('keyFullscreen')}
             onKeyDown={(e) => handleHotkeyDown('keyFullscreen', e)}
             aria-label="Fullscreen Shortcut Key"
           />
         </FeatureRow>
+        {renderRowNotice('keyFullscreen')}
         <FeatureRow label="Quick Exit Class">
           <input
             type="text"
             readonly
             class={styles.shortcutInput}
-            value={keyExit.value}
+            value={getShortcutDisplayValue('keyExit')}
             title="Quick Exit shortcut key (Backspace to clear)"
-            onFocus={handleHotkeyFocus}
-            onBlur={(e) => handleHotkeyBlur('keyExit', e)}
+            onFocus={() => handleHotkeyFocus('keyExit')}
+            onBlur={() => handleHotkeyBlur('keyExit')}
             onKeyDown={(e) => handleHotkeyDown('keyExit', e)}
             aria-label="Quick Exit Shortcut Key"
           />
         </FeatureRow>
+        {renderRowNotice('keyExit')}
       </div>
     </section>
   );

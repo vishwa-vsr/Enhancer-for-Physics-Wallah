@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.0.8.9] - 2026-09-30
+
+### Fixed
+
+- **Arrow Keys & Spacebar After Dragging Speed Bar**: Dragging the speed slider or clicking extension buttons on the player no longer breaks `Left`/`Right` arrow 10s skip or `Spacebar` play/pause.
+- **Safer Shortcut Settings**: Blocks reserved player keys (`Arrow` keys, `Spacebar`, `Enter`, `Escape`, `Tab`) and duplicate shortcuts across tabs, with inline warnings right under the row you edited and `Backspace` to clear any shortcut.
+
 ## [1.0.8.8] - 2026-09-28
 
 ### Added

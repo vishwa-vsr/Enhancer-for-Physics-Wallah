@@ -1,5 +1,10 @@
 import { state } from '../../state';
-import { findPWToolbar, isInsidePreferredToolbar, setHidden } from '../distractions/elements';
+import {
+  findPWToolbar,
+  isInsidePreferredToolbar,
+  preventFocusSteal,
+  setHidden,
+} from '../distractions/elements';
 import { getActiveVideo } from '../video/detector';
 import {
   isSSEngineRunning,
@@ -55,6 +60,7 @@ export function injectSkipSilenceButton(): void {
     btn.id = 'pwc-ss-toggle';
     btn.className = 'pwc-ss-toggle';
     btn.type = 'button';
+    preventFocusSteal(btn);
     btn.setAttribute('title', 'Skip Silence (Beta)');
 
     // Waveform SVG icon
@@ -135,6 +141,7 @@ export function injectSkipSilenceButton(): void {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
+      btn.blur();
       const isRunning = isSSEngineRunning();
       const video = getActiveVideo();
 

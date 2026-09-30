@@ -16,6 +16,8 @@ import {
   keySlowDown,
   keyReset,
   autoPauseOnHide,
+  getReservedShortcutWarning,
+  findConflictingShortcut,
 } from '@popup/store';
 import styles from './SpeedTab.module.css';
 
@@ -80,9 +82,20 @@ function sanitizeAndSortSnapPoints(raw: number[]): number[] {
   return vals;
 }
 
+type SpeedKeyType = 'keySpeedUp' | 'keySlowDown' | 'keyReset';
+
+const SPEED_KEY_SIGNALS: Record<SpeedKeyType, { value: string }> = {
+  keySpeedUp,
+  keySlowDown,
+  keyReset,
+};
+
 export function SpeedTab() {
   const [editorState, setEditorState] = useState<'closed' | 'expanded' | 'collapsing'>('closed');
+  const [activeHotkeyField, setActiveHotkeyField] = useState<SpeedKeyType | null>(null);
+  const [hotkeyNotice, setHotkeyNotice] = useState<string | null>(null);
   const collapseTimerRef = useRef<number | null>(null);
+  const noticeTimerRef = useRef<number | null>(null);
   const sliderRef = useRef<HTMLInputElement>(null);
 
   const pts = snapPoints.value;
@@ -94,6 +107,31 @@ export function SpeedTab() {
       sliderRef.current.style.setProperty('--percent', `${percent}%`);
     }
   }, [percent]);
+
+  const clearNoticeTimer = () => {
+    if (noticeTimerRef.current) {
+      clearTimeout(noticeTimerRef.current);
+      noticeTimerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (collapseTimerRef.current) clearTimeout(collapseTimerRef.current);
+      clearNoticeTimer();
+    };
+  }, []);
+
+  const showHotkeyNotice = (message: string | null) => {
+    clearNoticeTimer();
+    setHotkeyNotice(message);
+    if (message) {
+      noticeTimerRef.current = window.setTimeout(() => {
+        setHotkeyNotice(null);
+        noticeTimerRef.current = null;
+      }, 3600);
+    }
+  };
 
   const toggleEditor = () => {
     if (collapseTimerRef.current) {
@@ -155,28 +193,64 @@ export function SpeedTab() {
     saveSetting('snapPoints', defaults);
   };
 
-  const handleHotkeyFocus = (e: Event) => {
-    (e.target as HTMLInputElement).value = 'Press key...';
+  const getShortcutDisplayValue = (keyType: SpeedKeyType): string =>
+    activeHotkeyField === keyType ? 'Press key...' : SPEED_KEY_SIGNALS[keyType].value;
+
+  const handleHotkeyFocus = (keyType: SpeedKeyType) => {
+    clearNoticeTimer();
+    setHotkeyNotice(null);
+    setActiveHotkeyField(keyType);
   };
 
-  const handleHotkeyDown = (
-    keyType: 'keySpeedUp' | 'keySlowDown' | 'keyReset',
-    e: KeyboardEvent,
-  ) => {
+  const handleHotkeyBlur = (keyType: SpeedKeyType) => {
+    setActiveHotkeyField((prev) => (prev === keyType ? null : prev));
+  };
+
+  const handleHotkeyDown = (keyType: SpeedKeyType, e: KeyboardEvent) => {
     e.preventDefault();
-    if (['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) return;
-    const boundKey = e.key === ' ' ? 'Space' : e.key;
-    if (keyType === 'keySpeedUp') {
-      keySpeedUp.value = boundKey;
-      saveSetting('keySpeedUp', boundKey);
-    } else if (keyType === 'keySlowDown') {
-      keySlowDown.value = boundKey;
-      saveSetting('keySlowDown', boundKey);
-    } else if (keyType === 'keyReset') {
-      keyReset.value = boundKey;
-      saveSetting('keyReset', boundKey);
+    if (['Control', 'Shift', 'Alt', 'Meta', 'CapsLock'].includes(e.key)) return;
+
+    const input = e.target as HTMLInputElement;
+    const currentSignal = SPEED_KEY_SIGNALS[keyType];
+
+    const reservedWarning = getReservedShortcutWarning(e.key);
+    if (reservedWarning) {
+      setActiveHotkeyField(null);
+      showHotkeyNotice(reservedWarning);
+      input.blur();
+      return;
     }
-    (e.target as HTMLInputElement).blur();
+
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      currentSignal.value = '';
+      setActiveHotkeyField(null);
+      saveSetting(keyType, '');
+      showHotkeyNotice(null);
+      input.blur();
+      return;
+    }
+
+    if (e.key.length !== 1 || e.key === ' ') {
+      setActiveHotkeyField(null);
+      showHotkeyNotice('Please press a single letter, number, or symbol key.');
+      input.blur();
+      return;
+    }
+
+    const boundKey = e.key.toLowerCase();
+    const conflict = findConflictingShortcut(keyType, boundKey);
+    if (conflict) {
+      setActiveHotkeyField(null);
+      showHotkeyNotice(`"${boundKey.toUpperCase()}" is already used by ${conflict}.`);
+      input.blur();
+      return;
+    }
+
+    currentSignal.value = boundKey;
+    setActiveHotkeyField(null);
+    saveSetting(keyType, boundKey);
+    showHotkeyNotice(null);
+    input.blur();
   };
 
   const tickPositions = [0, 100 / 3, 200 / 3, 100];
@@ -400,55 +474,61 @@ export function SpeedTab() {
               />
             </FeatureRow>
             {enableHotkeys.value && (
-              <div class={styles.hotkeysEditor}>
-                <div class={styles.inputRow}>
-                  <span class={styles.inputLabel}>Speed Up</span>
-                  <input
-                    type="text"
-                    readonly
-                    class={styles.hotkeyInput}
-                    value={keySpeedUp.value}
-                    onFocus={handleHotkeyFocus}
-                    onBlur={() => {
-                      if (keySpeedUp.value === 'Press key...') keySpeedUp.value = 'h';
-                    }}
-                    onKeyDown={(e) => handleHotkeyDown('keySpeedUp', e as unknown as KeyboardEvent)}
-                    aria-label="Speed Up Hotkey"
-                  />
+              <>
+                <div class={styles.hotkeysEditor}>
+                  <div class={styles.inputRow}>
+                    <span class={styles.inputLabel}>Speed Up</span>
+                    <input
+                      type="text"
+                      readonly
+                      class={styles.hotkeyInput}
+                      value={getShortcutDisplayValue('keySpeedUp')}
+                      title="Speed Up shortcut key (Backspace to clear, default: H)"
+                      onFocus={() => handleHotkeyFocus('keySpeedUp')}
+                      onBlur={() => handleHotkeyBlur('keySpeedUp')}
+                      onKeyDown={(e) =>
+                        handleHotkeyDown('keySpeedUp', e as unknown as KeyboardEvent)
+                      }
+                      aria-label="Speed Up Hotkey"
+                    />
+                  </div>
+                  <div class={styles.inputRow}>
+                    <span class={styles.inputLabel}>Slow Down</span>
+                    <input
+                      type="text"
+                      readonly
+                      class={styles.hotkeyInput}
+                      value={getShortcutDisplayValue('keySlowDown')}
+                      title="Slow Down shortcut key (Backspace to clear, default: J)"
+                      onFocus={() => handleHotkeyFocus('keySlowDown')}
+                      onBlur={() => handleHotkeyBlur('keySlowDown')}
+                      onKeyDown={(e) =>
+                        handleHotkeyDown('keySlowDown', e as unknown as KeyboardEvent)
+                      }
+                      aria-label="Slow Down Hotkey"
+                    />
+                  </div>
+                  <div class={styles.inputRow}>
+                    <span class={styles.inputLabel}>Reset Speed</span>
+                    <input
+                      type="text"
+                      readonly
+                      class={styles.hotkeyInput}
+                      value={getShortcutDisplayValue('keyReset')}
+                      title="Reset Speed shortcut key (Backspace to clear, default: L)"
+                      onFocus={() => handleHotkeyFocus('keyReset')}
+                      onBlur={() => handleHotkeyBlur('keyReset')}
+                      onKeyDown={(e) => handleHotkeyDown('keyReset', e as unknown as KeyboardEvent)}
+                      aria-label="Reset Speed Hotkey"
+                    />
+                  </div>
                 </div>
-                <div class={styles.inputRow}>
-                  <span class={styles.inputLabel}>Slow Down</span>
-                  <input
-                    type="text"
-                    readonly
-                    class={styles.hotkeyInput}
-                    value={keySlowDown.value}
-                    onFocus={handleHotkeyFocus}
-                    onBlur={() => {
-                      if (keySlowDown.value === 'Press key...') keySlowDown.value = 'j';
-                    }}
-                    onKeyDown={(e) =>
-                      handleHotkeyDown('keySlowDown', e as unknown as KeyboardEvent)
-                    }
-                    aria-label="Slow Down Hotkey"
-                  />
-                </div>
-                <div class={styles.inputRow}>
-                  <span class={styles.inputLabel}>Reset Speed</span>
-                  <input
-                    type="text"
-                    readonly
-                    class={styles.hotkeyInput}
-                    value={keyReset.value}
-                    onFocus={handleHotkeyFocus}
-                    onBlur={() => {
-                      if (keyReset.value === 'Press key...') keyReset.value = 'l';
-                    }}
-                    onKeyDown={(e) => handleHotkeyDown('keyReset', e as unknown as KeyboardEvent)}
-                    aria-label="Reset Speed Hotkey"
-                  />
-                </div>
-              </div>
+                {hotkeyNotice && (
+                  <div class={styles.hotkeyNotice} role="status" aria-live="polite">
+                    {hotkeyNotice}
+                  </div>
+                )}
+              </>
             )}
           </div>
 

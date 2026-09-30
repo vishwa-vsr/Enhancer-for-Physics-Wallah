@@ -2,12 +2,10 @@ import { state } from '../../state';
 import { stepSpeed, saveSpeed } from '../video/controller';
 import { getSSCurrentState } from '../audio/skip-silence';
 import { isPointerHolding, isUserHoldingSpace } from './space-hold';
-import {
-  getOuterPlayerContainer,
-  triggerPlayerSlot,
-} from '../distractions/elements';
+import { getOuterPlayerContainer, triggerPlayerSlot } from '../distractions/elements';
 import { applyDistractorsState } from '../distractions/focus-css';
 import { getActiveVideo } from '../video/detector';
+import { isReservedPlayerKey } from '../../../shared/shortcuts';
 
 // Helper to check if user is typing in a text entry field
 export function isUserTyping(): boolean {
@@ -29,7 +27,7 @@ export function isUserTyping(): boolean {
   return false;
 }
 
-// Helper function to match keys case-insensitively, supporting spacebar and shifts
+// Helper function to match keys case-insensitively, supporting shifts while protecting native player keys
 export function matchKey(event: KeyboardEvent, targetKey: string): boolean {
   if (!targetKey) return false;
 
@@ -38,14 +36,16 @@ export function matchKey(event: KeyboardEvent, targetKey: string): boolean {
     return false;
   }
 
+  // Never hijack built-in video player keys (Arrow keys, Spacebar, Enter, Escape, Tab)
+  if (isReservedPlayerKey(event.key) || isReservedPlayerKey(targetKey)) {
+    return false;
+  }
+
   if (targetKey === '>') {
     return event.key === '>' || (event.shiftKey && event.key === '.');
   }
   if (targetKey === '<') {
     return event.key === '<' || (event.shiftKey && event.key === ',');
-  }
-  if (targetKey === 'Space') {
-    return event.key === ' ' || event.key === 'Space';
   }
 
   return event.key.toLowerCase() === targetKey.toLowerCase();

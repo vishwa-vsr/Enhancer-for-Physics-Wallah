@@ -502,6 +502,16 @@
   box-shadow: 0 0 0 2px var(--accent-primary);
 }
 
+.hotkeyNotice {
+  background: var(--bg-control);
+  color: var(--warning-text);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  padding: 0 14px 10px 14px;
+}
+
 .featureConfigRow {
   display: flex;
   justify-content: space-between;

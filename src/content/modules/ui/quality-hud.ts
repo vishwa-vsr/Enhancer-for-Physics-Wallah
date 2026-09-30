@@ -1,6 +1,10 @@
 import { state } from '../../state';
 import { VideoQuality } from '../../types';
-import { findPWToolbar, isInsidePreferredToolbar } from '../distractions/elements';
+import {
+  findPWToolbar,
+  isInsidePreferredToolbar,
+  preventFocusSteal,
+} from '../distractions/elements';
 import { getCurrentQuality, saveQuality, getAvailableQualities } from '../video/quality-controller';
 
 let isMenuOpen = false;
@@ -41,6 +45,7 @@ function populateQualityMenuItems(menu: HTMLElement): void {
     const item = document.createElement('button');
     item.type = 'button';
     item.className = 'pwc-quality-item';
+    preventFocusSteal(item);
     item.dataset.quality = opt.value;
 
     const labelSpan = document.createElement('span');
@@ -55,6 +60,7 @@ function populateQualityMenuItems(menu: HTMLElement): void {
 
     item.addEventListener('click', (e) => {
       e.stopPropagation();
+      item.blur();
       saveQuality(opt.value);
       closeQualityMenu();
     });
@@ -70,6 +76,7 @@ export function buildQualityControl(container: HTMLElement): void {
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'pwc-quality-btn';
+  preventFocusSteal(btn);
   btn.title = 'Video Quality Settings';
   btn.setAttribute('aria-label', 'Video Quality');
 
@@ -126,6 +133,7 @@ export function buildQualityControl(container: HTMLElement): void {
   // 3. Event Listeners for smooth hover & click
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
+    btn.blur();
     toggleQualityMenu();
   });
 
@@ -164,6 +172,9 @@ function openQualityMenu(): void {
 function closeQualityMenu(): void {
   const container = document.getElementById('pwc-quality-control');
   if (!container) return;
+  if (document.activeElement instanceof HTMLElement && container.contains(document.activeElement)) {
+    document.activeElement.blur();
+  }
   container.classList.remove('pwc-menu-open');
   isMenuOpen = false;
 }

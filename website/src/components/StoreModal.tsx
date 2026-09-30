@@ -13,7 +13,7 @@ export const STORES = [
     badge: 'Most Popular',
     icon: ChromeIcon,
     href: 'https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj',
-    description: 'Chrome Web Store (v1.0.8.8)',
+    description: 'Chrome Web Store (v1.0.8.9)',
   },
   {
     name: 'Mozilla Firefox',

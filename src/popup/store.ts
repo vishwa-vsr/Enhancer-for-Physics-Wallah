@@ -1,6 +1,13 @@
 import { signal } from '@preact/signals';
-import { FinishTimeFormat, ReviewPromptStatus, VideoQuality } from '@shared/types';
-import { loadSettings, onSettingsChanged } from '@shared/storage';
+import { FinishTimeFormat, PopupSettings, ReviewPromptStatus, VideoQuality } from '@shared/types';
+import { loadSettings, onSettingsChanged, saveSettings } from '@shared/storage';
+import {
+  getReservedShortcutWarning,
+  resolveSafeSpeedShortcuts,
+  sanitizeSpeedShortcut,
+} from '@shared/shortcuts';
+
+export { getReservedShortcutWarning, sanitizeSpeedShortcut };
 
 // ===== Speed & Quality signals =====
 export const preferredSpeed = signal(1.0);
@@ -43,6 +50,49 @@ export const keyDoubt = signal('d');
 export const keyFullscreen = signal('f');
 export const keyExit = signal('e');
 export const allowShortcutsWhenHidden = signal(false);
+
+export type ShortcutKeyId =
+  | 'keySpeedUp'
+  | 'keySlowDown'
+  | 'keyReset'
+  | 'keyDoubt'
+  | 'keyChat'
+  | 'keyNotes'
+  | 'keyTimeline'
+  | 'keyFullscreen'
+  | 'keyExit';
+
+const ALL_SHORTCUT_ENTRIES: Array<{
+  id: ShortcutKeyId;
+  label: string;
+  signal: { value: string };
+}> = [
+  { id: 'keySpeedUp', label: 'Speed Up', signal: keySpeedUp },
+  { id: 'keySlowDown', label: 'Slow Down', signal: keySlowDown },
+  { id: 'keyReset', label: 'Reset Speed', signal: keyReset },
+  { id: 'keyDoubt', label: 'Doubt Q&A', signal: keyDoubt },
+  { id: 'keyChat', label: 'Live Chat', signal: keyChat },
+  { id: 'keyNotes', label: 'Study Notes', signal: keyNotes },
+  { id: 'keyTimeline', label: 'Note Timeline', signal: keyTimeline },
+  { id: 'keyFullscreen', label: 'Toggle Fullscreen', signal: keyFullscreen },
+  { id: 'keyExit', label: 'Quick Exit Class', signal: keyExit },
+];
+
+export function findConflictingShortcut(
+  currentId: ShortcutKeyId,
+  candidateKey: string,
+): string | null {
+  const normalized = candidateKey.trim().toLowerCase();
+  if (!normalized) return null;
+  for (const entry of ALL_SHORTCUT_ENTRIES) {
+    if (entry.id === currentId) continue;
+    const existing = entry.signal.value.trim().toLowerCase();
+    if (existing && existing === normalized) {
+      return entry.label;
+    }
+  }
+  return null;
+}
 
 // ===== Auto-hide controls & cursor signals (Issue #14) =====
 export const autoHideControls = signal(false);
@@ -95,9 +145,7 @@ export async function initStore() {
   disableScroll.value = !!s.disableScroll;
   holdSpaceSpeedUp.value = !!s.holdSpaceSpeedUp;
   holdSpaceSpeed.value = s.holdSpaceSpeed ?? 2.0;
-  keySpeedUp.value = s.keySpeedUp || 'h';
-  keySlowDown.value = s.keySlowDown || 'j';
-  keyReset.value = s.keyReset || 'l';
+
   alwaysExpandWidget.value = !!s.alwaysExpandWidget;
   showFinishTime.value = s.showFinishTime !== false; // defaults to true
   finishTimeFormat.value = s.finishTimeFormat || 'minimal';
@@ -109,6 +157,32 @@ export async function initStore() {
   keyFullscreen.value = s.keyFullscreen ?? 'f';
   keyExit.value = s.keyExit ?? 'e';
   allowShortcutsWhenHidden.value = !!s.allowShortcutsWhenHidden;
+
+  const resolvedSpeedKeys = resolveSafeSpeedShortcuts(s, [
+    keyChat.value,
+    keyTimeline.value,
+    keyNotes.value,
+    keyDoubt.value,
+    keyFullscreen.value,
+    keyExit.value,
+  ]);
+  keySpeedUp.value = resolvedSpeedKeys.keySpeedUp;
+  keySlowDown.value = resolvedSpeedKeys.keySlowDown;
+  keyReset.value = resolvedSpeedKeys.keyReset;
+
+  const shortcutCleanup: Partial<PopupSettings> = {};
+  if (s.keySpeedUp !== keySpeedUp.value) {
+    shortcutCleanup.keySpeedUp = keySpeedUp.value;
+  }
+  if (s.keySlowDown !== keySlowDown.value) {
+    shortcutCleanup.keySlowDown = keySlowDown.value;
+  }
+  if (s.keyReset !== keyReset.value) {
+    shortcutCleanup.keyReset = keyReset.value;
+  }
+  if (Object.keys(shortcutCleanup).length > 0) {
+    saveSettings(shortcutCleanup);
+  }
 
   autoHideControls.value = !!s.autoHideControls;
   autoHideDelay.value = s.autoHideDelay ?? 0.8;
@@ -132,6 +206,15 @@ export async function initStore() {
     if (changes.finishTimeFormat !== undefined) {
       finishTimeFormat.value = (changes.finishTimeFormat as FinishTimeFormat) || 'minimal';
     }
+    if (changes.keySpeedUp !== undefined) {
+      keySpeedUp.value = sanitizeSpeedShortcut(changes.keySpeedUp, 'h');
+    }
+    if (changes.keySlowDown !== undefined) {
+      keySlowDown.value = sanitizeSpeedShortcut(changes.keySlowDown, 'j');
+    }
+    if (changes.keyReset !== undefined) {
+      keyReset.value = sanitizeSpeedShortcut(changes.keyReset, 'l');
+    }
     if (changes.keyChat !== undefined) keyChat.value = changes.keyChat;
     if (changes.keyTimeline !== undefined) keyTimeline.value = changes.keyTimeline;
     if (changes.keyNotes !== undefined) keyNotes.value = changes.keyNotes;
@@ -143,7 +226,8 @@ export async function initStore() {
     }
     if (changes.autoHideControls !== undefined) autoHideControls.value = !!changes.autoHideControls;
     if (changes.autoHideDelay !== undefined) autoHideDelay.value = changes.autoHideDelay;
-    if (changes.autoHideWhenPaused !== undefined) autoHideWhenPaused.value = !!changes.autoHideWhenPaused;
+    if (changes.autoHideWhenPaused !== undefined)
+      autoHideWhenPaused.value = !!changes.autoHideWhenPaused;
     if (changes.skipSilenceTimeSaved !== undefined) {
       skipSilenceTimeSaved.value = changes.skipSilenceTimeSaved;
     }

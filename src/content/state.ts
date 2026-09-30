@@ -1,4 +1,5 @@
 import { ContentState, HideSettings, StateChangeListener, ThemeMode, VideoQuality } from './types';
+import { resolveSafeSpeedShortcuts, sanitizeSpeedShortcut } from '../shared/shortcuts';
 
 export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideAskAI: false,
@@ -242,9 +243,6 @@ export function initState(onLoaded?: () => void): void {
     state.holdSpaceSpeed =
       result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed) : 2.0;
     state.alwaysExpandWidget = !!result.alwaysExpandWidget;
-    state.keySpeedUp = result.keySpeedUp || 'h';
-    state.keySlowDown = result.keySlowDown || 'j';
-    state.keyReset = result.keyReset || 'l';
 
     state.keyChat = readShortcutKey(result.keyChat, 'c');
     state.keyTimeline = readShortcutKey(result.keyTimeline, 't');
@@ -253,6 +251,32 @@ export function initState(onLoaded?: () => void): void {
     state.keyFullscreen = readShortcutKey(result.keyFullscreen, 'f');
     state.keyExit = readShortcutKey(result.keyExit, 'e');
     state.allowShortcutsWhenHidden = !!result.allowShortcutsWhenHidden;
+
+    const resolvedSpeedKeys = resolveSafeSpeedShortcuts(result, [
+      state.keyChat,
+      state.keyTimeline,
+      state.keyNotes,
+      state.keyDoubt,
+      state.keyFullscreen,
+      state.keyExit,
+    ]);
+    state.keySpeedUp = resolvedSpeedKeys.keySpeedUp;
+    state.keySlowDown = resolvedSpeedKeys.keySlowDown;
+    state.keyReset = resolvedSpeedKeys.keyReset;
+
+    const shortcutFixes: Record<string, string> = {};
+    if (result.keySpeedUp !== undefined && result.keySpeedUp !== state.keySpeedUp) {
+      shortcutFixes.keySpeedUp = state.keySpeedUp;
+    }
+    if (result.keySlowDown !== undefined && result.keySlowDown !== state.keySlowDown) {
+      shortcutFixes.keySlowDown = state.keySlowDown;
+    }
+    if (result.keyReset !== undefined && result.keyReset !== state.keyReset) {
+      shortcutFixes.keyReset = state.keyReset;
+    }
+    if (Object.keys(shortcutFixes).length > 0) {
+      safeSetSettings(shortcutFixes);
+    }
 
     state.autoHideControls = !!result.autoHideControls;
     state.autoHideDelay =
@@ -363,15 +387,15 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('holdSpaceSpeed');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keySpeedUp')) {
-              state.keySpeedUp = String(changes.keySpeedUp.newValue || '') || 'h';
+              state.keySpeedUp = sanitizeSpeedShortcut(changes.keySpeedUp.newValue, 'h');
               changedKeys.push('keySpeedUp');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keySlowDown')) {
-              state.keySlowDown = String(changes.keySlowDown.newValue || '') || 'j';
+              state.keySlowDown = sanitizeSpeedShortcut(changes.keySlowDown.newValue, 'j');
               changedKeys.push('keySlowDown');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keyReset')) {
-              state.keyReset = String(changes.keyReset.newValue || '') || 'l';
+              state.keyReset = sanitizeSpeedShortcut(changes.keyReset.newValue, 'l');
               changedKeys.push('keyReset');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'alwaysExpandWidget')) {
@@ -467,8 +491,7 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('autoHideControls');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'autoHideDelay')) {
-              state.autoHideDelay =
-                parseFloat(String(changes.autoHideDelay.newValue)) || 0.8;
+              state.autoHideDelay = parseFloat(String(changes.autoHideDelay.newValue)) || 0.8;
               changedKeys.push('autoHideDelay');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'autoHideWhenPaused')) {

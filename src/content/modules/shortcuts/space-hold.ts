@@ -12,6 +12,7 @@ export const NATIVE_HOLD_SPEED = 2.0;
 
 let spacePressTimer: ReturnType<typeof setTimeout> | null = null;
 let isHoldingSpace = false;
+let spaceKeyDownIntercepted = false;
 let speedBeforeHold = 1.0;
 let isPointerDownOnPlayer = false;
 let isPointerHoldActive = false;
@@ -80,6 +81,7 @@ function isInteractiveControlTarget(target: EventTarget | null): boolean {
 
 // Safety net: Reset hold-space state when tab loses focus or window blurs
 export function cancelSpaceHold(): void {
+  spaceKeyDownIntercepted = false;
   if (spacePressTimer) {
     clearTimeout(spacePressTimer);
     spacePressTimer = null;
@@ -105,10 +107,12 @@ export function initSpaceHold(): void {
       if (e.key !== ' ' && e.code !== 'Space') return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-      // Safety check: Ignore if typing in text fields
+      // Safety check: Ignore if typing in text fields, or if key is auto-repeating from an input that just closed
       if (isUserTyping()) return;
+      if (e.repeat && !spaceKeyDownIntercepted) return;
 
       if (state.holdSpaceSpeedUp) {
+        spaceKeyDownIntercepted = true;
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
@@ -133,6 +137,9 @@ export function initSpaceHold(): void {
       if (e.key !== ' ' && e.code !== 'Space') return;
 
       if (state.holdSpaceSpeedUp) {
+        if (!spaceKeyDownIntercepted && !isHoldingSpace) return;
+        spaceKeyDownIntercepted = false;
+
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
