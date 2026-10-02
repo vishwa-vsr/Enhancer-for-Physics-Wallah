@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.0.9.0] - 2026-10-02
+
+### Added
+
+- **Ear Protection**: Stops sudden loud shouting during lectures to protect headphone users [#6](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/6).
+
 ## [1.0.8.9] - 2026-09-30
 
 ### Fixed

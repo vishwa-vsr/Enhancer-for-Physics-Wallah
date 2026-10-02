@@ -1,5 +1,5 @@
 import { signal } from '@preact/signals';
-import { FinishTimeFormat, PopupSettings, ReviewPromptStatus, VideoQuality } from '@shared/types';
+import { FinishTimeFormat, PopupSettings, ReviewPromptStatus, VideoQuality, VolumeBalancerMode } from '@shared/types';
 import { loadSettings, onSettingsChanged, saveSettings } from '@shared/storage';
 import {
   getReservedShortcutWarning,
@@ -109,6 +109,10 @@ export const skipSilenceTimeSaved = signal(0);
 export const skipSilenceMinDuration = signal(0.5);
 export const skipSilenceLowCpu = signal(false);
 
+// ===== Auto Volume Balancer & Ear Protection signals (Issue #6) =====
+export const volumeBalancerEnabled = signal(false);
+export const volumeBalancerMode = signal<VolumeBalancerMode>('balanced');
+
 // ===== Review prompt signals =====
 export const installDate = signal(0);
 export const reviewPromptStatus = signal<ReviewPromptStatus>('pending');
@@ -197,6 +201,9 @@ export async function initStore() {
   skipSilenceMinDuration.value = s.skipSilenceMinDuration ?? 0.5;
   skipSilenceLowCpu.value = !!s.skipSilenceLowCpu;
 
+  volumeBalancerEnabled.value = !!s.volumeBalancerEnabled;
+  volumeBalancerMode.value = s.volumeBalancerMode || 'balanced';
+
   installDate.value = s.installDate || 0;
   reviewPromptStatus.value = s.reviewPromptStatus || 'pending';
   reviewPromptNextShowTime.value = s.reviewPromptNextShowTime || 0;
@@ -230,6 +237,12 @@ export async function initStore() {
       autoHideWhenPaused.value = !!changes.autoHideWhenPaused;
     if (changes.skipSilenceTimeSaved !== undefined) {
       skipSilenceTimeSaved.value = changes.skipSilenceTimeSaved;
+    }
+    if (changes.volumeBalancerEnabled !== undefined) {
+      volumeBalancerEnabled.value = !!changes.volumeBalancerEnabled;
+    }
+    if (changes.volumeBalancerMode !== undefined) {
+      volumeBalancerMode.value = (changes.volumeBalancerMode as VolumeBalancerMode) || 'balanced';
     }
     if (changes.preferredQuality !== undefined) {
       preferredQuality.value = changes.preferredQuality;

@@ -3,6 +3,7 @@ export type ThemeMode = 'light' | 'dark';
 export type FinishTimeFormat = 'minimal' | 'clock' | 'full';
 export type SilenceState = 'idle' | 'speech' | 'silence';
 export type VideoQuality = 'auto' | '720p' | '480p' | '360p' | '240p';
+export type VolumeBalancerMode = 'gentle' | 'balanced' | 'max';
 
 // ===== Hide / Focus Settings =====
 export interface HideSettings {
@@ -68,6 +69,10 @@ export interface ContentState {
   skipSilenceMinDuration: number;
   skipSilenceLowCpu: boolean;
 
+  // Auto Volume Balancer & Ear Protection settings (Issue #6)
+  volumeBalancerEnabled: boolean;
+  volumeBalancerMode: VolumeBalancerMode;
+
   // Extension status
   extensionEnabled: boolean;
   themeMode: ThemeMode;
@@ -78,6 +83,8 @@ export interface AudioGraph {
   context: AudioContext;
   sourceNode: MediaElementAudioSourceNode | MediaStreamAudioSourceNode;
   delayNode?: DelayNode | null;
+  compressorNode?: DynamicsCompressorNode | null;
+  balancerGainNode?: GainNode | null;
   gainNode?: GainNode | null;
   workletNode?: AudioWorkletNode | null;
   analyserNode?: AnalyserNode | null;

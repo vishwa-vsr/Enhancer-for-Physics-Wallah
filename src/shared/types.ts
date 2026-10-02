@@ -3,6 +3,7 @@ export type ThemeMode = 'light' | 'dark';
 export type FinishTimeFormat = 'minimal' | 'clock' | 'full';
 export type ReviewPromptStatus = 'pending' | 'reviewed' | 'dismissed_permanently';
 export type VideoQuality = 'auto' | '720p' | '480p' | '360p' | '240p';
+export type VolumeBalancerMode = 'gentle' | 'balanced' | 'max';
 
 // ===== All chrome.storage keys used by the popup =====
 export interface PopupSettings {
@@ -62,6 +63,10 @@ export interface PopupSettings {
   skipSilenceTimeSaved: number; // milliseconds
   skipSilenceMinDuration: number; // seconds, e.g. 0.5
   skipSilenceLowCpu: boolean;
+
+  // Auto Volume Balancer & Ear Protection settings (Issue #6)
+  volumeBalancerEnabled: boolean;
+  volumeBalancerMode: VolumeBalancerMode;
 
   // Extension state
   extensionEnabled: boolean;
@@ -125,6 +130,9 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   skipSilenceTimeSaved: 0,
   skipSilenceMinDuration: 0.5,
   skipSilenceLowCpu: false,
+
+  volumeBalancerEnabled: false,
+  volumeBalancerMode: 'balanced',
 
   extensionEnabled: true,
   themeMode: 'dark',

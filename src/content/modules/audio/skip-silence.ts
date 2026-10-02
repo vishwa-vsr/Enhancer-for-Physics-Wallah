@@ -16,6 +16,7 @@ import {
 } from '../shortcuts/space-hold';
 import { updateSkipSilenceUI, manageSSVisualizerInterval } from '../ui/silence-hud';
 import { updateUI } from '../ui/speed-hud';
+import { applyVolumeBalancerToGraph } from './volume-balancer';
 
 // Inline AudioWorklet processor code for skip silence volume detection
 export const VOLUME_PROCESSOR_CODE = `
@@ -289,7 +290,7 @@ export function getCachedAudioGraph(video: HTMLVideoElement): AudioGraph | null 
 }
 
 // Safely creates or reuses the audio processing pipeline for a given video
-async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGraph | null> {
+export async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGraph | null> {
   const cached = getCachedAudioGraph(video);
   if (cached && cached.context && cached.context.state !== 'closed') return cached;
 
@@ -364,6 +365,8 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
       }
 
       let delayNode: DelayNode | null = null;
+      let compressorNode: DynamicsCompressorNode | null = null;
+      let balancerGainNode: GainNode | null = null;
       let gainNode: GainNode | null = null;
 
       // Only route to destination if using MediaElementAudioSourceNode.
@@ -372,11 +375,17 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
         delayNode = audioCtx.createDelay(1.0);
         delayNode.delayTime.value = 0.06;
 
+        compressorNode = audioCtx.createDynamicsCompressor();
+        balancerGainNode = audioCtx.createGain();
+
         gainNode = audioCtx.createGain();
         gainNode.gain.value = 1.0;
 
+        // Sound Pipeline: source -> delay (for skip-silence) -> compressor -> balancerGain -> muteGain -> speakers
         sourceNode.connect(delayNode);
-        delayNode.connect(gainNode);
+        delayNode.connect(compressorNode);
+        compressorNode.connect(balancerGainNode);
+        balancerGainNode.connect(gainNode);
         gainNode.connect(audioCtx.destination);
       } else {
         // Silent drain: route through gain = 0 to audio destination.
@@ -414,6 +423,8 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
         context: audioCtx,
         sourceNode: sourceNode,
         delayNode: delayNode,
+        compressorNode: compressorNode,
+        balancerGainNode: balancerGainNode,
         gainNode: gainNode,
         workletNode: workletNode,
         analyserNode: analyserNode,
@@ -422,6 +433,7 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
 
       videoAudioGraphs.set(video, graph);
       enhancedVideo._pwcAudioGraph = graph;
+      applyVolumeBalancerToGraph(graph);
       return graph;
     } catch (e: unknown) {
       console.warn('PW Control: AudioGraph creation error:', (e as Error)?.message);
@@ -433,6 +445,20 @@ async function getOrCreateAudioGraph(video: HTMLVideoElement): Promise<AudioGrap
 
   videoInitPromises.set(video, initPromise);
   return initPromise;
+}
+
+// Ensures the audio pipeline is actively running if either Skip Silence or Volume Balancer is enabled
+export async function ensureAudioPipelineRunning(): Promise<AudioGraph | null> {
+  const video = getActiveVideo();
+  if (!video || video.paused) return null;
+  const graph = await getOrCreateAudioGraph(video);
+  if (!graph) return null;
+  resumeAudioContextOnInteraction(graph.context);
+  applyVolumeBalancerToGraph(graph);
+  if (state.skipSilenceEnabled && !isSSEngineRunning()) {
+    ssInit();
+  }
+  return graph;
 }
 
 // Initialize or resume the audio pipeline for skip silence

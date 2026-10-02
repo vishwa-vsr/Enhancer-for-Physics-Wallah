@@ -26,7 +26,9 @@ import {
   getSSGainNode,
   initGlobalGestureUnlock,
   syncSSLowCpuMode,
+  ensureAudioPipelineRunning,
 } from './modules/audio/skip-silence';
+import { syncVolumeBalancer } from './modules/audio/volume-balancer';
 import { getActiveVideo } from './modules/video/detector';
 import { initKeyboardShortcuts } from './modules/shortcuts/keyboard';
 import { initSpaceHold, cancelPointerHold, cancelSpaceHold } from './modules/shortcuts/space-hold';
@@ -61,8 +63,12 @@ function init(): void {
         applyQuality(currentState.preferredQuality);
       }
       const initVid = getActiveVideo();
-      if (currentState.skipSilenceEnabled && initVid && !initVid.paused) {
-        ssInit();
+      if (
+        (currentState.skipSilenceEnabled || currentState.volumeBalancerEnabled) &&
+        initVid &&
+        !initVid.paused
+      ) {
+        ensureAudioPipelineRunning();
       }
       previousSkipSilenceEnabled = currentState.skipSilenceEnabled;
       return;
@@ -77,6 +83,7 @@ function init(): void {
         cancelSpaceHold();
       }
       injectInstantHideButton();
+      syncVolumeBalancer();
       focusChanged = true;
     }
 
@@ -138,6 +145,20 @@ function init(): void {
 
     if (changedKeys.includes('skipSilenceLowCpu')) {
       syncSSLowCpuMode(currentState.skipSilenceLowCpu);
+    }
+
+    if (changedKeys.includes('volumeBalancerEnabled')) {
+      if (currentState.volumeBalancerEnabled) {
+        const activeVid = getActiveVideo();
+        if (activeVid && !activeVid.paused) {
+          ensureAudioPipelineRunning();
+        }
+      }
+      syncVolumeBalancer();
+    }
+
+    if (changedKeys.includes('volumeBalancerMode')) {
+      syncVolumeBalancer();
     }
 
     if (changedKeys.includes('snapPoints')) {

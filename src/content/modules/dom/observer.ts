@@ -8,7 +8,7 @@ import { injectQualityControl } from '../ui/quality-hud';
 import { injectSkipSilenceButton } from '../ui/silence-hud';
 import { injectInstantHideButton } from '../ui/focus-mode';
 import { injectFinishTimeBadge } from '../ui/finish-time';
-import { isSSEngineRunning, ssInit } from '../audio/skip-silence';
+import { ensureAudioPipelineRunning } from '../audio/skip-silence';
 import { isUserTyping } from '../shortcuts/keyboard';
 
 let isModifyingDOM = false;
@@ -152,8 +152,8 @@ export function monitor(): void {
       } finally {
         isModifyingDOM = false;
       }
-      if (state.skipSilenceEnabled && !isSSEngineRunning() && !video.paused) {
-        ssInit();
+      if ((state.skipSilenceEnabled || state.volumeBalancerEnabled) && !video.paused) {
+        ensureAudioPipelineRunning();
       }
       return;
     }
@@ -169,8 +169,8 @@ export function monitor(): void {
     } finally {
       isModifyingDOM = false;
     }
-    if (state.skipSilenceEnabled && !isSSEngineRunning() && !video.paused) {
-      ssInit();
+    if ((state.skipSilenceEnabled || state.volumeBalancerEnabled) && !video.paused) {
+      ensureAudioPipelineRunning();
     }
   }
 }

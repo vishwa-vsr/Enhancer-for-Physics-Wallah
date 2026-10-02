@@ -16,6 +16,7 @@ import {
   preferredQuality,
   hideQuality,
   hideSkipSilence,
+  volumeBalancerEnabled,
 } from '@popup/store';
 import styles from './SilenceTab.module.css';
 
@@ -80,6 +81,26 @@ export function SilenceTab() {
                 saveSetting('hideQuality', val);
               }}
               ariaLabel="Toggle Hide Quality Widget"
+            />
+          </FeatureRow>
+        </div>
+      </section>
+
+      {/* Ear Protection Card (Issue #6) */}
+      <section class={styles.qualitySection} aria-label="Ear Protection Settings">
+        <h2 class={styles.sectionTitle}>Ear Protection</h2>
+        <div class={styles.settingsGroupCard}>
+          <FeatureRow
+            label="Enable Ear Protection"
+            sublabel="Stops sudden loud shouting"
+          >
+            <Toggle
+              checked={volumeBalancerEnabled.value}
+              onChange={(val) => {
+                volumeBalancerEnabled.value = val;
+                saveSetting('volumeBalancerEnabled', val);
+              }}
+              ariaLabel="Toggle Ear Protection"
             />
           </FeatureRow>
         </div>

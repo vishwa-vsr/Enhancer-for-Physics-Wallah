@@ -57,6 +57,9 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   skipSilenceMinDuration: 0.5,
   skipSilenceLowCpu: false,
 
+  volumeBalancerEnabled: false,
+  volumeBalancerMode: 'balanced',
+
   extensionEnabled: true,
   themeMode: 'dark',
 };
@@ -169,6 +172,8 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'skipSilenceTimeSaved',
         'skipSilenceMinDuration',
         'skipSilenceLowCpu',
+        'volumeBalancerEnabled',
+        'volumeBalancerMode',
         'autoPauseOnHide',
         'themeMode',
       ],
@@ -300,6 +305,9 @@ export function initState(onLoaded?: () => void): void {
     state.skipSilenceMinDuration =
       result.skipSilenceMinDuration !== undefined ? parseFloat(result.skipSilenceMinDuration) : 0.5;
     state.skipSilenceLowCpu = !!result.skipSilenceLowCpu;
+
+    state.volumeBalancerEnabled = !!result.volumeBalancerEnabled;
+    state.volumeBalancerMode = (result.volumeBalancerMode as any) || 'balanced';
 
     state.showFinishTime = result.showFinishTime !== false;
     state.finishTimeFormat = result.finishTimeFormat || 'minimal';
@@ -445,6 +453,14 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceLowCpu')) {
               state.skipSilenceLowCpu = !!changes.skipSilenceLowCpu.newValue;
               changedKeys.push('skipSilenceLowCpu');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'volumeBalancerEnabled')) {
+              state.volumeBalancerEnabled = !!changes.volumeBalancerEnabled.newValue;
+              changedKeys.push('volumeBalancerEnabled');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'volumeBalancerMode')) {
+              state.volumeBalancerMode = (changes.volumeBalancerMode.newValue as any) || 'balanced';
+              changedKeys.push('volumeBalancerMode');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'snapPoints')) {
               state.snapPoints = sanitizeSnapPoints(changes.snapPoints.newValue);
