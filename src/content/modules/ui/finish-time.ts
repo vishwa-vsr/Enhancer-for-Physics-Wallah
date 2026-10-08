@@ -118,7 +118,7 @@ export function updateFinishTime(): void {
       const leftEl = badge.querySelector<HTMLElement>('.pwc-finish-left');
 
       if (iconEl) iconEl.style.display = 'none';
-      if (dotEl) dotEl.style.display = 'inline-block';
+      if (dotEl) dotEl.style.display = 'none';
       if (prefixEl && prefixEl.textContent !== liveText) prefixEl.textContent = liveText;
       if (clockEl && clockEl.textContent !== '') clockEl.textContent = '';
       if (leftEl && leftEl.textContent !== '') leftEl.textContent = '';
