@@ -786,6 +786,34 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   font-variant-numeric: tabular-nums !important;
 }
 
+.pwc-finish-time-badge.pwc-finish-live .pwc-finish-prefix {
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.pwc-finish-time-badge .pwc-finish-live-dot {
+  display: none;
+  width: 7px;
+  height: 7px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  margin-right: 3px;
+  flex-shrink: 0;
+  animation: pwc-live-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pwc-live-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
 /* ==========================================================================
    PW Control Quality Quick-Switch Widget & Options Popup
    ========================================================================== */

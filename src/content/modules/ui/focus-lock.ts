@@ -20,9 +20,21 @@ let focusLockActive = false;
 let pausedByGuard = false;
 let intentionalFullscreenExit = false;
 let isInitialized = false;
+let onQuitCallback: (() => void) | null = null;
 
 export function isFocusLockActive(): boolean {
   return focusLockActive;
+}
+
+export function handleFocusLockExitShortcut(onConfirmExit: () => void): void {
+  if (!focusLockActive) {
+    onConfirmExit();
+    return;
+  }
+  pauseActiveVideo();
+  pausedByGuard = true;
+  onQuitCallback = onConfirmExit;
+  showModal();
 }
 
 function pauseActiveVideo(): void {
@@ -205,6 +217,7 @@ function showModal(): void {
   returnBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     e.preventDefault();
+    onQuitCallback = null;
     removeModal();
     pausedByGuard = false;
     if (!document.fullscreenElement) {
@@ -225,7 +238,12 @@ function showModal(): void {
   quitBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     e.preventDefault();
+    const cb = onQuitCallback;
+    onQuitCallback = null;
     deactivateFocusLock();
+    if (cb) {
+      cb();
+    }
   });
   actions.appendChild(quitBtn);
 
@@ -235,6 +253,7 @@ function showModal(): void {
 }
 
 function removeModal(): void {
+  onQuitCallback = null;
   document.getElementById(MODAL_ID)?.remove();
 }
 

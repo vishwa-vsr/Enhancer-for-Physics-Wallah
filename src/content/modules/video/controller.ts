@@ -105,6 +105,7 @@ export function setupVideoListeners(video: HTMLVideoElement): void {
     try {
       activeVideo.removeEventListener('ratechange', onRateChange);
       activeVideo.removeEventListener('play', onVideoPlay);
+      activeVideo.removeEventListener('play', updateFinishTime);
       activeVideo.removeEventListener('pause', onVideoPause);
       activeVideo.removeEventListener('ended', onVideoPause);
       activeVideo.removeEventListener('timeupdate', updateFinishTime);
@@ -132,6 +133,7 @@ export function setupVideoListeners(video: HTMLVideoElement): void {
 
   activeVideo.addEventListener('ratechange', onRateChange);
   activeVideo.addEventListener('play', onVideoPlay);
+  activeVideo.addEventListener('play', updateFinishTime);
   activeVideo.addEventListener('pause', onVideoPause);
   activeVideo.addEventListener('ended', onVideoPause);
   activeVideo.addEventListener('timeupdate', updateFinishTime);

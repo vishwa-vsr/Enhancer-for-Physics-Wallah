@@ -2,6 +2,31 @@ import { state } from '../../state';
 import { getActiveVideo, getCachedVideo } from '../video/detector';
 import { findPWToolbar, isInsidePreferredToolbar } from '../distractions/elements';
 
+// Helper to detect if the active video is a live stream
+export function isLiveVideo(video: HTMLVideoElement): boolean {
+  if (video.duration === Infinity) return true;
+
+  const player = video.closest('.video-js, [class*="video-player" i], #video-player-container');
+  if (player) {
+    if (
+      player.classList.contains('vjs-live') ||
+      player.classList.contains('vjs-liveui') ||
+      player.querySelector('.vjs-live-display, .vjs-live-control') !== null
+    ) {
+      return true;
+    }
+  }
+
+  const liveBadge = document.querySelector(
+    '.player-header [class*="live" i], .video-player-app [class*="live" i], [class*="live-tag" i], [class*="live-badge" i], [class*="live-indicator" i]',
+  );
+  if (liveBadge && (liveBadge.textContent || '').trim().toUpperCase().includes('LIVE')) {
+    return true;
+  }
+
+  return false;
+}
+
 // Update dynamic lecture finish time badge
 export function updateFinishTime(): void {
   const badges = document.querySelectorAll<HTMLElement>('#pwc-finish-time-badge');
@@ -15,7 +40,35 @@ export function updateFinishTime(): void {
   }
 
   const video = getCachedVideo() || getActiveVideo();
-  if (!video || !isFinite(video.duration) || video.duration <= 0) {
+  if (!video) {
+    badges.forEach((b) => {
+      b.style.display = 'none';
+    });
+    return;
+  }
+
+  const isLive = isLiveVideo(video);
+
+  if (isLive) {
+    badges.forEach((badge) => {
+      badge.style.display = 'inline-flex';
+      badge.classList.add('pwc-finish-live');
+      const iconEl = badge.querySelector<HTMLElement>('.pwc-finish-icon');
+      const dotEl = badge.querySelector<HTMLElement>('.pwc-finish-live-dot');
+      const prefixEl = badge.querySelector<HTMLElement>('.pwc-finish-prefix');
+      const clockEl = badge.querySelector<HTMLElement>('.pwc-finish-clock');
+      const leftEl = badge.querySelector<HTMLElement>('.pwc-finish-left');
+
+      if (iconEl) iconEl.style.display = 'none';
+      if (dotEl) dotEl.style.display = 'inline-block';
+      if (prefixEl && prefixEl.textContent !== 'Live Class') prefixEl.textContent = 'Live Class';
+      if (clockEl && clockEl.textContent !== '') clockEl.textContent = '';
+      if (leftEl && leftEl.textContent !== '') leftEl.textContent = '';
+    });
+    return;
+  }
+
+  if (!isFinite(video.duration) || video.duration <= 0) {
     badges.forEach((b) => {
       b.style.display = 'none';
     });
@@ -78,11 +131,14 @@ export function updateFinishTime(): void {
 
   badges.forEach((badge) => {
     badge.style.display = 'inline-flex';
+    badge.classList.remove('pwc-finish-live');
     const iconEl = badge.querySelector<HTMLElement>('.pwc-finish-icon');
+    const dotEl = badge.querySelector<HTMLElement>('.pwc-finish-live-dot');
     const prefixEl = badge.querySelector<HTMLElement>('.pwc-finish-prefix');
     const clockEl = badge.querySelector<HTMLElement>('.pwc-finish-clock');
     const leftEl = badge.querySelector<HTMLElement>('.pwc-finish-left');
 
+    if (dotEl) dotEl.style.display = 'none';
     if (iconEl) iconEl.style.display = showIcon ? 'inline-block' : 'none';
     if (prefixEl && prefixEl.textContent !== prefix) prefixEl.textContent = prefix;
     if (clockEl && clockEl.textContent !== clock) clockEl.textContent = clock;
@@ -115,6 +171,10 @@ export function injectFinishTimeBadge(): void {
     badge = document.createElement('div');
     badge.id = 'pwc-finish-time-badge';
     badge.className = 'pwc-finish-time-badge';
+
+    const dotSpan = document.createElement('span');
+    dotSpan.className = 'pwc-finish-live-dot';
+    badge.appendChild(dotSpan);
 
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');

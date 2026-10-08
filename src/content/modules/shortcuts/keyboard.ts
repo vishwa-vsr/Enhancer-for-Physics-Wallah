@@ -6,6 +6,7 @@ import { getOuterPlayerContainer, triggerPlayerSlot } from '../distractions/elem
 import { applyDistractorsState } from '../distractions/focus-css';
 import { getActiveVideo } from '../video/detector';
 import { isReservedPlayerKey } from '../../../shared/shortcuts';
+import { isFocusLockActive, handleFocusLockExitShortcut } from '../ui/focus-lock';
 
 // Helper to check if user is typing in a text entry field
 export function isUserTyping(): boolean {
@@ -151,7 +152,11 @@ export function initKeyboardShortcuts(): void {
     // Quick Exit (E)
     if (state.keyExit && matchKey(e, state.keyExit)) {
       e.preventDefault();
-      executeQuickExit();
+      if (isFocusLockActive()) {
+        handleFocusLockExitShortcut(executeQuickExit);
+      } else {
+        executeQuickExit();
+      }
       return;
     }
 
