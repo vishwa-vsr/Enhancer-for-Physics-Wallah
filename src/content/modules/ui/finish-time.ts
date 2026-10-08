@@ -27,6 +27,50 @@ export function isLiveVideo(video: HTMLVideoElement): boolean {
   return false;
 }
 
+// Calculate how many seconds behind the live edge the student currently is
+export function getLiveStreamLag(video: HTMLVideoElement): number | null {
+  try {
+    if (video.seekable && video.seekable.length > 0) {
+      const liveEnd = video.seekable.end(video.seekable.length - 1);
+      const curr = video.currentTime;
+      if (isFinite(liveEnd) && liveEnd > 0) {
+        return Math.max(0, liveEnd - curr);
+      }
+    }
+  } catch (_e) {
+    // Ignore seekable read errors
+  }
+
+  if (isFinite(video.duration) && video.duration > 0) {
+    return Math.max(0, video.duration - video.currentTime);
+  }
+
+  return null;
+}
+
+// Check if PW has a visible "Go Live" button on screen
+export function hasGoLiveButton(): boolean {
+  const candidates = document.querySelectorAll(
+    'button, [role="button"], div.vjs-live-control, [class*="live" i]',
+  );
+  for (let i = 0; i < candidates.length; i++) {
+    const text = (candidates[i].textContent || '').trim().toLowerCase();
+    if (text === 'go live' || text.startsWith('go live')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function formatLagTime(seconds: number): string {
+  const mins = Math.round(seconds / 60);
+  if (mins <= 0) return '<1m';
+  if (mins < 60) return `${mins}m`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
 // Update dynamic lecture finish time badge
 export function updateFinishTime(): void {
   const badges = document.querySelectorAll<HTMLElement>('#pwc-finish-time-badge');
@@ -50,9 +94,23 @@ export function updateFinishTime(): void {
   const isLive = isLiveVideo(video);
 
   if (isLive) {
+    const hasGoLive = hasGoLiveButton();
+    const lagSec = getLiveStreamLag(video);
+    const isBehind = hasGoLive || (lagSec !== null && lagSec > 25);
+
+    let liveText = 'Live Class';
+    if (isBehind) {
+      if (lagSec !== null && lagSec > 25) {
+        liveText = `Behind Live (-${formatLagTime(lagSec)})`;
+      } else {
+        liveText = 'Behind Live';
+      }
+    }
+
     badges.forEach((badge) => {
       badge.style.display = 'inline-flex';
       badge.classList.add('pwc-finish-live');
+      badge.classList.toggle('pwc-finish-behind-live', isBehind);
       const iconEl = badge.querySelector<HTMLElement>('.pwc-finish-icon');
       const dotEl = badge.querySelector<HTMLElement>('.pwc-finish-live-dot');
       const prefixEl = badge.querySelector<HTMLElement>('.pwc-finish-prefix');
@@ -61,7 +119,7 @@ export function updateFinishTime(): void {
 
       if (iconEl) iconEl.style.display = 'none';
       if (dotEl) dotEl.style.display = 'inline-block';
-      if (prefixEl && prefixEl.textContent !== 'Live Class') prefixEl.textContent = 'Live Class';
+      if (prefixEl && prefixEl.textContent !== liveText) prefixEl.textContent = liveText;
       if (clockEl && clockEl.textContent !== '') clockEl.textContent = '';
       if (leftEl && leftEl.textContent !== '') leftEl.textContent = '';
     });
@@ -132,6 +190,7 @@ export function updateFinishTime(): void {
   badges.forEach((badge) => {
     badge.style.display = 'inline-flex';
     badge.classList.remove('pwc-finish-live');
+    badge.classList.remove('pwc-finish-behind-live');
     const iconEl = badge.querySelector<HTMLElement>('.pwc-finish-icon');
     const dotEl = badge.querySelector<HTMLElement>('.pwc-finish-live-dot');
     const prefixEl = badge.querySelector<HTMLElement>('.pwc-finish-prefix');

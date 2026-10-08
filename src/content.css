@@ -814,6 +814,16 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   }
 }
 
+.pwc-finish-time-badge.pwc-finish-behind-live .pwc-finish-live-dot {
+  background-color: #f59e0b;
+  animation: none;
+  opacity: 0.95;
+}
+
+.pwc-finish-time-badge.pwc-finish-behind-live .pwc-finish-prefix {
+  color: #fbbf24;
+}
+
 /* ==========================================================================
    PW Control Quality Quick-Switch Widget & Options Popup
    ========================================================================== */

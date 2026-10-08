@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - **Focus Lock Exit Protection**: Pressing the lecture exit shortcut (`E`) while in Focus Lock now shows the "Stay Focused!" confirmation card with Return and Quit options, preventing accidental exits mid-lecture.
-- **Live Class Badge & Finish Time**: Live streams now clearly display a "Live Class" badge with a live indicator instead of erratic finish time calculations. Recorded lectures keep their accurate end time, and the badge remains static while paused.
+- **Live Class & Behind Live Badges**: Live streams now clearly display a pulsing "Live Class" badge when synced to real time. When rewound behind the live edge, it dynamically shows how far behind you are (e.g. "Behind Live (-18m)"). Recorded lectures keep their accurate end time, and the badge remains static while paused.
 
 ## [1.0.8.9] - 2026-09-30
 
