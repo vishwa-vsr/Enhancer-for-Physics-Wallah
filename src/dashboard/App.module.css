@@ -1,0 +1,94 @@
+.dashboardContainer {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-main);
+  overflow: hidden;
+  font-family: var(--font-sans);
+}
+
+.mainWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.scrollArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px 100px 32px;
+}
+
+.scrollArea::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollArea::-webkit-scrollbar-thumb {
+  background-color: var(--border-subtle);
+  border-radius: 6px;
+}
+
+.contentMaxWidth {
+  max-width: 896px; /* max-w-4xl in Tailwind */
+  margin: 0 auto;
+}
+
+.flowFullWidth {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+.viewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+
+
+.viewTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+
+/* Floating Action Button (+): Circular 56px matching Figma exactly */
+.fab {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6b7fd7, #8b95e8);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.2s ease;
+  z-index: 50;
+}
+
+.fab:hover {
+  transform: scale(1.06);
+  filter: brightness(1.1);
+  box-shadow: none;
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
