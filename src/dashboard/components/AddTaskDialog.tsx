@@ -2,6 +2,7 @@ import { useState, useEffect } from 'preact/hooks';
 import { subjects, chapters, addTask, updateTask, activeView } from '../store';
 import { Task } from '../types';
 import { DatePicker } from './DatePicker';
+import { SelectDropdown } from '@shared/components/SelectDropdown';
 import styles from './AddTaskDialog.module.css';
 
 interface AddTaskDialogProps {
@@ -31,6 +32,19 @@ export const AddTaskDialog = ({
   const initialChapId =
     editingTask?.chapterId || defaultChapterId || currentView.chapterId || availableChapters[0]?.id || '';
   const [selectedChapterId, setSelectedChapterId] = useState<string>(initialChapId);
+
+  const subjectOptions = subjects.value.map((s) => ({
+    value: s.id,
+    label: s.name,
+    icon: s.icon || 'book',
+    color: s.color || 'var(--accent-primary)',
+  }));
+
+  const chapterOptions = availableChapters.map((c) => ({
+    value: c.id,
+    label: c.name,
+    icon: c.icon || 'file-text',
+  }));
 
   const [title, setTitle] = useState(editingTask?.title || '');
   const [dueDate, setDueDate] = useState(editingTask?.dueDate || '');
@@ -119,37 +133,26 @@ export const AddTaskDialog = ({
           >
             <div class={styles.formGroup} style={{ marginBottom: 0 }}>
               <label class={styles.label}>Subject</label>
-              <select
-                class={styles.select}
+              <SelectDropdown
+                options={subjectOptions}
                 value={selectedSubjectId}
-                onChange={(e) => setSelectedSubjectId((e.target as HTMLSelectElement).value)}
-              >
-                {subjects.value.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setSelectedSubjectId(val)}
+                placeholder="Select Subject"
+                ariaLabel="Subject"
+              />
             </div>
 
             <div class={styles.formGroup} style={{ marginBottom: 0 }}>
               <label class={styles.label}>Chapter</label>
-              <select
-                class={styles.select}
+              <SelectDropdown
+                options={chapterOptions}
                 value={selectedChapterId}
-                onChange={(e) => setSelectedChapterId((e.target as HTMLSelectElement).value)}
+                onChange={(val) => setSelectedChapterId(val)}
+                placeholder={availableChapters.length === 0 ? 'No chapters' : 'Select Chapter'}
                 disabled={availableChapters.length === 0}
-              >
-                {availableChapters.length === 0 ? (
-                  <option value="">No chapters</option>
-                ) : (
-                  availableChapters.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))
-                )}
-              </select>
+                emptyLabel="No chapters available"
+                ariaLabel="Chapter"
+              />
             </div>
           </div>
 

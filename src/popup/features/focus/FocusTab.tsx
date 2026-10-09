@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { Toggle } from '@shared/components/Toggle';
 import { FeatureRow } from '@shared/components/FeatureRow';
 import { Stepper } from '@shared/components/Stepper';
+import { SelectDropdown } from '@shared/components/SelectDropdown';
 import { saveSetting } from '@shared/storage';
 import type { FinishTimeFormat } from '@shared/types';
 import {
@@ -66,6 +67,12 @@ function sendFocusLockMessage(action: 'get' | 'toggle'): Promise<LockStatus> {
     }
   });
 }
+
+const FINISH_TIME_FORMAT_OPTIONS = [
+  { value: 'minimal', label: 'Minimal (Time Only)' },
+  { value: 'clock', label: 'Clock with Label' },
+  { value: 'full', label: 'Full (Clock + Left)' },
+];
 
 export function FocusTab() {
   const [lockStatus, setLockStatus] = useState<LockStatus>('unknown');
@@ -421,20 +428,17 @@ function FocusTogglesSection() {
         </FeatureRow>
         <FeatureRow label="Show Finish Time">
           <div class={styles.finishTimeControls}>
-            <select
-              class={styles.finishTimeFormatSelect}
+            <SelectDropdown
+              size="sm"
+              options={FINISH_TIME_FORMAT_OPTIONS}
               value={finishTimeFormat.value}
-              onChange={(e) => {
-                const val = (e.target as HTMLSelectElement).value as FinishTimeFormat;
-                finishTimeFormat.value = val;
-                saveSetting('finishTimeFormat', val);
+              onChange={(val) => {
+                const format = val as FinishTimeFormat;
+                finishTimeFormat.value = format;
+                saveSetting('finishTimeFormat', format);
               }}
-              aria-label="Finish Time Format"
-            >
-              <option value="minimal">Minimal (Time Only)</option>
-              <option value="clock">Clock with Label</option>
-              <option value="full">Full (Clock + Left)</option>
-            </select>
+              ariaLabel="Finish Time Format"
+            />
             <Toggle
               checked={showFinishTime.value}
               onChange={(v) => {
