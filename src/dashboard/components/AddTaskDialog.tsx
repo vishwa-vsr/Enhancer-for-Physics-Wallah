@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import { subjects, chapters, addTask, updateTask, activeView } from '../store';
 import { Task } from '../types';
+import { DatePicker } from './DatePicker';
 import styles from './AddTaskDialog.module.css';
 
 interface AddTaskDialogProps {
@@ -169,11 +170,10 @@ export const AddTaskDialog = ({
           {/* Due Date */}
           <div class={styles.formGroup}>
             <label class={styles.label}>Due Date</label>
-            <input
-              type="date"
-              class={styles.input}
+            <DatePicker
               value={dueDate}
-              onInput={(e) => setDueDate((e.target as HTMLInputElement).value)}
+              onChange={(val) => setDueDate(val)}
+              placeholder="dd-mm-yyyy"
             />
           </div>
 
