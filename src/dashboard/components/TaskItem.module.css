@@ -120,19 +120,6 @@
   line-height: 1;
 }
 
-.durationBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--accent-primary, #6366f1);
-  background: rgba(99, 102, 241, 0.08);
-  padding: 3px 7px;
-  border-radius: 5px;
-  line-height: 1;
-}
-
 
 .taskActions {
   display: flex;

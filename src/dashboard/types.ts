@@ -1,5 +1,3 @@
-export type Priority = 'low' | 'medium' | 'high';
-
 export interface TagItem {
   name: string;
   color: string;
@@ -13,7 +11,6 @@ export interface Task {
   description?: string;
   completed: boolean;
   dueDate?: string;
-  priority?: Priority;
   tags: string[];
   subjectId: string;
   chapterId: string;
@@ -24,7 +21,6 @@ export interface Task {
   nextTaskId?: string;
   prevTaskId?: string;
   orderIndex?: number;
-  duration?: string;
   lectureDate?: string;
   completedDate?: string;
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
-import { subjects, chapters, addTask, updateTask, activeView } from '../store';
+import { subjects, chapters, addTask, updateTask, activeView, customTags } from '../store';
 import { Task } from '../types';
 import { DatePicker } from './DatePicker';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
@@ -46,8 +46,19 @@ export const AddTaskDialog = ({
     icon: c.icon || 'file-text',
   }));
 
+  const tagOptions = [
+    { value: '', label: 'No Label' },
+    ...customTags.value.map((t) => ({
+      value: t.name,
+      label: t.name,
+    })),
+  ];
+
   const [title, setTitle] = useState(editingTask?.title || '');
   const [dueDate, setDueDate] = useState(editingTask?.dueDate || '');
+  const [description, setDescription] = useState(editingTask?.description || '');
+  const [selectedTag, setSelectedTag] = useState<string>(editingTask?.tags?.[0] || '');
+  const [isNotesOpen, setIsNotesOpen] = useState<boolean>(!!editingTask?.description);
 
   useEffect(() => {
     if (editingTask) {
@@ -55,9 +66,15 @@ export const AddTaskDialog = ({
       setDueDate(editingTask.dueDate || '');
       setSelectedSubjectId(editingTask.subjectId);
       setSelectedChapterId(editingTask.chapterId);
+      setDescription(editingTask.description || '');
+      setSelectedTag(editingTask.tags?.[0] || '');
+      setIsNotesOpen(!!editingTask.description);
     } else {
       setTitle('');
       setDueDate('');
+      setDescription('');
+      setSelectedTag('');
+      setIsNotesOpen(false);
       const subId = defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
       setSelectedSubjectId(subId);
       const chaps = chapters.value.filter((c) => c.subjectId === subId);
@@ -80,19 +97,25 @@ export const AddTaskDialog = ({
     e.preventDefault();
     if (!title.trim() || !selectedSubjectId || !selectedChapterId) return;
 
+    const trimmedDesc = description.trim();
+    const tagsArray = selectedTag ? [selectedTag] : [];
+
     if (editingTask) {
       await updateTask(editingTask.id, {
         title: title.trim(),
+        description: trimmedDesc || undefined,
         dueDate: dueDate || undefined,
+        tags: tagsArray,
         subjectId: selectedSubjectId,
         chapterId: selectedChapterId,
       });
     } else {
       await addTask({
         title: title.trim(),
+        description: trimmedDesc || undefined,
         completed: false,
         dueDate: dueDate || undefined,
-        tags: [],
+        tags: tagsArray,
         subjectId: selectedSubjectId,
         chapterId: selectedChapterId,
       });
@@ -170,15 +193,73 @@ export const AddTaskDialog = ({
             />
           </div>
 
-          {/* Due Date */}
-          <div class={styles.formGroup}>
-            <label class={styles.label}>Due Date</label>
-            <DatePicker
-              value={dueDate}
-              onChange={(val) => setDueDate(val)}
-              placeholder="dd-mm-yyyy"
-            />
+          {/* Due Date & Study Label side-by-side */}
+          <div class={styles.twoCol}>
+            <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+              <label class={styles.label}>Due Date</label>
+              <DatePicker
+                value={dueDate}
+                onChange={(val) => setDueDate(val)}
+                placeholder="dd-mm-yyyy"
+              />
+            </div>
+
+            <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+              <label class={styles.label}>Study Label</label>
+              <SelectDropdown
+                options={tagOptions}
+                value={selectedTag}
+                onChange={(val) => setSelectedTag(val)}
+                placeholder="No Label"
+                ariaLabel="Study Label"
+              />
+            </div>
           </div>
+
+          {/* Collapsible Notes / Description */}
+          {isNotesOpen ? (
+            <div class={styles.formGroup}>
+              <div class={styles.notesHeader}>
+                <label class={styles.label} style={{ margin: 0 }}>Notes</label>
+                <button
+                  type="button"
+                  class={styles.notesRemoveBtn}
+                  onClick={() => {
+                    setDescription('');
+                    setIsNotesOpen(false);
+                  }}
+                >
+                  Remove notes
+                </button>
+              </div>
+              <textarea
+                class={styles.textarea}
+                placeholder="Add notes, formulas, or details (optional)..."
+                value={description}
+                onInput={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
+                rows={3}
+              />
+            </div>
+          ) : (
+            <button
+              type="button"
+              class={styles.notesToggleBtn}
+              onClick={() => setIsNotesOpen(true)}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.2}
+                width="14"
+                height="14"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span>Add notes</span>
+            </button>
+          )}
 
           {/* Modal Footer */}
           <div class={styles.modalFooter}>

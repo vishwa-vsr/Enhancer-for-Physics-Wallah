@@ -10,7 +10,6 @@ export const DEFAULT_TAGS: TagItem[] = [
   { name: 'Notes', color: '#8b5cf6' },
   { name: 'NCERT', color: '#06b6d4' },
   { name: 'Test', color: '#ec4899' },
-  { name: 'Urgent', color: '#ef4444' },
 ];
 
 const DEFAULT_SUBJECTS_DATA = [
