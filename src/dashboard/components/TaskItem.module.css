@@ -134,8 +134,20 @@
 }
 
 
-.deleteBtn {
+.taskActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.taskCard:hover .taskActions {
+  opacity: 1;
+}
+
+.editBtn,
+.deleteBtn {
   background: transparent;
   border: none;
   color: var(--text-muted);
@@ -148,8 +160,9 @@
   transition: all var(--transition-fast);
 }
 
-.taskCard:hover .deleteBtn {
-  opacity: 1;
+.editBtn:hover {
+  color: var(--accent-primary, #6366f1);
+  background-color: var(--accent-dim, rgba(99, 102, 241, 0.12));
 }
 
 .deleteBtn:hover {

@@ -31,6 +31,7 @@ export const App = () => {
 
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [editingChapter, setEditingChapter] = useState<Chapter | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState<{
@@ -136,6 +137,7 @@ export const App = () => {
         handleOpenAddChapter(subjects.value[0].id);
       }
     } else {
+      setEditingTask(null);
       setTaskModalOpen(true);
     }
   };
@@ -154,7 +156,10 @@ export const App = () => {
       <div class={styles.mainWrapper}>
         <Header
           onOpenAddChapter={handleOpenAddChapter}
-          onOpenAddTask={() => setTaskModalOpen(true)}
+          onOpenAddTask={() => {
+            setEditingTask(null);
+            setTaskModalOpen(true);
+          }}
         />
 
         <main class={styles.scrollArea}>
@@ -236,55 +241,58 @@ export const App = () => {
                     )}
                   </div>
                 ) : taskList.length === 0 ? (
-                  <div
-                    style={{
-                      textAlign: 'center',
-                      padding: '48px 20px',
-                      color: 'var(--text-muted)',
-                      fontSize: '13.5px',
-                      background: 'var(--bg-card)',
-                      borderRadius: '16px',
-                      border: '1px solid var(--border-subtle)',
-                      marginTop: '16px',
-                    }}
-                  >
-                    <p style={{ margin: '0 0 14px', fontSize: '14px', color: 'var(--text-primary)', fontWeight: '500' }}>
-                      {currentView.type === 'chapter'
-                        ? 'No tasks in this chapter yet.'
-                        : `No tasks for ${title.toLowerCase()}. You're all caught up!`}
-                    </p>
-                    {canAddTask && (
-                      <button
-                        type="button"
-                        onClick={() => setTaskModalOpen(true)}
-                        style={{
-                          padding: '7px 16px',
-                          borderRadius: '8px',
-                          border: 'none',
-                          background: 'var(--accent-primary, #6366f1)',
-                          color: '#ffffff',
-                          fontSize: '13px',
-                          fontWeight: '600',
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                        }}
-                      >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="13" height="13">
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        Add Task
-                      </button>
-                    )}
-                  </div>
+                  currentView.type === 'chapter' ? (
+                    <div
+                      style={{
+                        textAlign: 'center',
+                        padding: '48px 20px',
+                        color: 'var(--text-muted)',
+                        fontSize: '13.5px',
+                      }}
+                    >
+                      <p style={{ margin: '0 0 14px', fontSize: '14px', color: 'var(--text-primary)', fontWeight: '500' }}>
+                        No tasks in this chapter yet.
+                      </p>
+                      {canAddTask && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingTask(null);
+                            setTaskModalOpen(true);
+                          }}
+                          style={{
+                            padding: '7px 16px',
+                            borderRadius: '8px',
+                            border: 'none',
+                            background: 'var(--accent-primary, #6366f1)',
+                            color: '#ffffff',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="13" height="13">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                          </svg>
+                          Add Task
+                        </button>
+                      )}
+                    </div>
+                  ) : null
                 ) : (
                   taskList.map((task) => (
                     <TaskItem
                       key={task.id}
                       task={task}
                       onDeleteRequest={handleDeleteTask}
+                      onEditRequest={(t) => {
+                        setEditingTask(t);
+                        setTaskModalOpen(true);
+                      }}
                     />
                   ))
                 )}
@@ -314,7 +322,11 @@ export const App = () => {
       {/* Modals */}
       <AddTaskDialog
         open={taskModalOpen}
-        onClose={() => setTaskModalOpen(false)}
+        onClose={() => {
+          setTaskModalOpen(false);
+          setEditingTask(null);
+        }}
+        editingTask={editingTask}
         defaultSubjectId={currentView.subjectId}
         defaultChapterId={currentView.chapterId}
       />

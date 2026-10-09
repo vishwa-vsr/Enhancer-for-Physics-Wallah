@@ -31,7 +31,7 @@ export const Sidebar = ({
   // Accurate counts for Today and Upcoming views
   const todayStr = getLocalDateStr();
   const todayCount = tasks.value.filter(
-    (t) => !t.completed && (t.dueDate === todayStr || (t.dueDate && t.dueDate < todayStr)),
+    (t) => !t.completed && (!t.dueDate || t.dueDate === todayStr || t.dueDate < todayStr),
   ).length;
   const upcomingCount = tasks.value.filter(
     (t) => !t.completed && t.dueDate && t.dueDate > todayStr,

@@ -361,9 +361,10 @@ export const filteredTasks = computed(() => {
     }
   } else if (view.type === 'today') {
     const todayStr = getLocalDateStr();
-    // Today: tasks scheduled for today, OR incomplete tasks from earlier dates (overdue),
+    // Today: tasks scheduled for today, tasks without a due date, OR incomplete tasks from earlier dates (overdue),
     // OR overdue tasks that were completed today so the user can see their accomplishment
     list = list.filter((t) => {
+      if (!t.dueDate) return true;
       if (t.dueDate === todayStr) return true;
       if (!t.completed && t.dueDate && t.dueDate < todayStr) return true;
       if (t.completed && t.dueDate && t.dueDate < todayStr && t.completedDate === todayStr) return true;

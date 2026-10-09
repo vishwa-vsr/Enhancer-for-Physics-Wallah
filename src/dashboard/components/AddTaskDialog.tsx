@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'preact/hooks';
-import { subjects, chapters, addTask, activeView } from '../store';
+import { subjects, chapters, addTask, updateTask, activeView } from '../store';
+import { Task } from '../types';
 import styles from './AddTaskDialog.module.css';
 
 interface AddTaskDialogProps {
@@ -7,6 +8,7 @@ interface AddTaskDialogProps {
   onClose: () => void;
   defaultSubjectId?: string;
   defaultChapterId?: string;
+  editingTask?: Task | null;
 }
 
 export const AddTaskDialog = ({
@@ -14,20 +16,39 @@ export const AddTaskDialog = ({
   onClose,
   defaultSubjectId,
   defaultChapterId,
+  editingTask,
 }: AddTaskDialogProps) => {
   if (!open) return null;
 
   const currentView = activeView.value;
 
-  const initialSubId = defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
+  const initialSubId =
+    editingTask?.subjectId || defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(initialSubId);
 
   const availableChapters = chapters.value.filter((c) => c.subjectId === selectedSubjectId);
-  const initialChapId = defaultChapterId || currentView.chapterId || availableChapters[0]?.id || '';
+  const initialChapId =
+    editingTask?.chapterId || defaultChapterId || currentView.chapterId || availableChapters[0]?.id || '';
   const [selectedChapterId, setSelectedChapterId] = useState<string>(initialChapId);
 
-  const [title, setTitle] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [title, setTitle] = useState(editingTask?.title || '');
+  const [dueDate, setDueDate] = useState(editingTask?.dueDate || '');
+
+  useEffect(() => {
+    if (editingTask) {
+      setTitle(editingTask.title);
+      setDueDate(editingTask.dueDate || '');
+      setSelectedSubjectId(editingTask.subjectId);
+      setSelectedChapterId(editingTask.chapterId);
+    } else {
+      setTitle('');
+      setDueDate('');
+      const subId = defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
+      setSelectedSubjectId(subId);
+      const chaps = chapters.value.filter((c) => c.subjectId === subId);
+      setSelectedChapterId(defaultChapterId || currentView.chapterId || chaps[0]?.id || '');
+    }
+  }, [open, editingTask]);
 
   useEffect(() => {
     const chaps = chapters.value.filter((c) => c.subjectId === selectedSubjectId);
@@ -44,14 +65,23 @@ export const AddTaskDialog = ({
     e.preventDefault();
     if (!title.trim() || !selectedSubjectId || !selectedChapterId) return;
 
-    await addTask({
-      title: title.trim(),
-      completed: false,
-      dueDate: dueDate || undefined,
-      tags: [],
-      subjectId: selectedSubjectId,
-      chapterId: selectedChapterId,
-    });
+    if (editingTask) {
+      await updateTask(editingTask.id, {
+        title: title.trim(),
+        dueDate: dueDate || undefined,
+        subjectId: selectedSubjectId,
+        chapterId: selectedChapterId,
+      });
+    } else {
+      await addTask({
+        title: title.trim(),
+        completed: false,
+        dueDate: dueDate || undefined,
+        tags: [],
+        subjectId: selectedSubjectId,
+        chapterId: selectedChapterId,
+      });
+    }
 
     onClose();
   };
@@ -60,7 +90,7 @@ export const AddTaskDialog = ({
     <div class={styles.modalOverlay} onClick={onClose}>
       <div class={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div class={styles.modalHeader}>
-          <h2>Add New Task</h2>
+          <h2>{editingTask ? 'Edit Task' : 'Add New Task'}</h2>
           <button class={styles.closeBtn} onClick={onClose}>
             <svg
               viewBox="0 0 24 24"
@@ -157,7 +187,7 @@ export const AddTaskDialog = ({
               class={styles.submitBtn}
               disabled={!title.trim() || !selectedSubjectId || !selectedChapterId}
             >
-              Add Task
+              {editingTask ? 'Save Changes' : 'Add Task'}
             </button>
           </div>
         </form>
