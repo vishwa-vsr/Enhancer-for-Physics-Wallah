@@ -36,46 +36,7 @@ import { initAutoPause } from './modules/visibility/auto-pause';
 import { initFocusLock, deactivateFocusLock } from './modules/ui/focus-lock';
 import { startDomObserver, throttledMonitor, initWakeupTriggers } from './modules/dom/observer';
 import { initAutoHide, syncAutoHide } from './modules/ui/autohide';
-import { scrapeCurrentPwPage } from './modules/sync/scraper';
 import { HideSettings } from './types';
-
-// Listen for sync requests from popup
-if (typeof chrome !== 'undefined' && chrome.runtime?.onMessage) {
-  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-    if (message?.type === 'GET_PW_PAGE_DATA') {
-      try {
-        const data = scrapeCurrentPwPage();
-        sendResponse({ success: true, data });
-      } catch (err) {
-        sendResponse({ success: false, error: String(err) });
-      }
-      return true;
-    }
-  });
-}
-
-// Observe client-side route transitions (Next.js / React SPA)
-function initNavigationWatcher(): void {
-  window.addEventListener('popstate', () => {
-    setTimeout(throttledMonitor, 100);
-  });
-
-  const originalPushState = history.pushState;
-  history.pushState = function (...args) {
-    const res = originalPushState.apply(this, args);
-    setTimeout(throttledMonitor, 100);
-    setTimeout(throttledMonitor, 500);
-    return res;
-  };
-
-  const originalReplaceState = history.replaceState;
-  history.replaceState = function (...args) {
-    const res = originalReplaceState.apply(this, args);
-    setTimeout(throttledMonitor, 100);
-    setTimeout(throttledMonitor, 500);
-    return res;
-  };
-}
 
 // Entry point initialization
 function init(): void {
@@ -253,7 +214,6 @@ function init(): void {
   initAutoPause();
   initFocusLock();
   initWakeupTriggers();
-  initNavigationWatcher();
 
   // 5. Start DOM observer for dynamic injections
   startDomObserver();

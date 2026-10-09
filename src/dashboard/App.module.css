@@ -34,12 +34,6 @@
   margin: 0 auto;
 }
 
-.flowFullWidth {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-}
-
 .viewHeader {
   display: flex;
   align-items: center;

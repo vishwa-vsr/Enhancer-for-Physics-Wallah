@@ -10,7 +10,6 @@ import {
   deleteSubject,
   deleteChapter,
   deleteTask,
-  isAddChainModalOpen,
 } from './store';
 import { Subject, Chapter, Task } from './types';
 import { Sidebar } from './components/Sidebar';
@@ -22,7 +21,6 @@ import { AddSubjectModal } from './components/AddSubjectModal';
 import { AddChapterModal } from './components/AddChapterModal';
 import { ConfirmModal } from './components/ConfirmModal';
 import { SettingsView } from './components/SettingsView';
-import { FlowView } from './components/FlowView';
 import styles from './App.module.css';
 
 export const App = () => {
@@ -137,8 +135,6 @@ export const App = () => {
       } else {
         handleOpenAddChapter(subjects.value[0].id);
       }
-    } else if (currentView.type === 'chapter') {
-      isAddChainModalOpen.value = true;
     } else {
       setTaskModalOpen(true);
     }
@@ -162,7 +158,7 @@ export const App = () => {
         />
 
         <main class={styles.scrollArea}>
-          <div class={currentView.type === 'chapter' ? styles.flowFullWidth : styles.contentMaxWidth}>
+          <div class={styles.contentMaxWidth}>
             {currentView.type === 'settings' ? (
               <SettingsView />
             ) : (
@@ -177,75 +173,68 @@ export const App = () => {
                   </div>
                 )}
 
-                {/* Chapters are exclusively Flow View */}
-                {currentView.type === 'chapter' ? (
-                  currentView.chapterId ? (
-                    <FlowView
-                      chapterId={currentView.chapterId}
-                      subjectId={currentView.subjectId || ''}
-                    />
-                  ) : (
+                {/* If in chapter view and no chapters exist yet in subject */}
+                {currentView.type === 'chapter' && !currentView.chapterId ? (
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '60px 20px',
+                      background: 'var(--bg-card)',
+                      borderRadius: '16px',
+                      border: '1px solid var(--border-subtle)',
+                      marginTop: '20px',
+                    }}
+                  >
                     <div
                       style={{
-                        textAlign: 'center',
-                        padding: '60px 20px',
-                        background: 'var(--bg-card)',
-                        borderRadius: '16px',
-                        border: '1px solid var(--border-subtle)',
-                        marginTop: '20px',
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '50%',
+                        background: 'rgba(99, 102, 241, 0.1)',
+                        color: 'var(--accent-primary, #6366f1)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '16px',
                       }}
                     >
-                      <div
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="24" height="24">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                      </svg>
+                    </div>
+                    <h3 style={{ margin: '0 0 8px', fontSize: '16px', color: 'var(--text-primary)', fontWeight: '600' }}>
+                      No chapters in this subject yet
+                    </h3>
+                    <p style={{ margin: '0 0 20px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                      Add your first chapter to begin adding study tasks.
+                    </p>
+                    {activeSubject && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenAddChapter(activeSubject.id)}
                         style={{
-                          width: '48px',
-                          height: '48px',
-                          borderRadius: '50%',
-                          background: 'rgba(99, 102, 241, 0.1)',
-                          color: 'var(--accent-primary, #6366f1)',
+                          padding: '8px 18px',
+                          borderRadius: '8px',
+                          border: 'none',
+                          background: 'var(--accent-primary, #6366f1)',
+                          color: '#ffffff',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          cursor: 'pointer',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          justifyContent: 'center',
-                          marginBottom: '16px',
+                          gap: '6px',
                         }}
                       >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="24" height="24">
-                          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="14" height="14">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
-                      </div>
-                      <h3 style={{ margin: '0 0 8px', fontSize: '16px', color: 'var(--text-primary)', fontWeight: '600' }}>
-                        No chapters in this subject yet
-                      </h3>
-                      <p style={{ margin: '0 0 20px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                        Add your first chapter to begin creating study chains and tracking progress.
-                      </p>
-                      {activeSubject && (
-                        <button
-                          type="button"
-                          onClick={() => handleOpenAddChapter(activeSubject.id)}
-                          style={{
-                            padding: '8px 18px',
-                            borderRadius: '8px',
-                            border: 'none',
-                            background: 'var(--accent-primary, #6366f1)',
-                            color: '#ffffff',
-                            fontSize: '13px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                          }}
-                        >
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="14" height="14">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                          </svg>
-                          Add Chapter
-                        </button>
-                      )}
-                    </div>
-                  )
+                        Add Chapter
+                      </button>
+                    )}
+                  </div>
                 ) : taskList.length === 0 ? (
                   <div
                     style={{
@@ -253,9 +242,42 @@ export const App = () => {
                       padding: '48px 20px',
                       color: 'var(--text-muted)',
                       fontSize: '13.5px',
+                      background: 'var(--bg-card)',
+                      borderRadius: '16px',
+                      border: '1px solid var(--border-subtle)',
+                      marginTop: '16px',
                     }}
                   >
-                    No tasks for {title.toLowerCase()}. You're all caught up!
+                    <p style={{ margin: '0 0 14px', fontSize: '14px', color: 'var(--text-primary)', fontWeight: '500' }}>
+                      {currentView.type === 'chapter'
+                        ? 'No tasks in this chapter yet.'
+                        : `No tasks for ${title.toLowerCase()}. You're all caught up!`}
+                    </p>
+                    {canAddTask && (
+                      <button
+                        type="button"
+                        onClick={() => setTaskModalOpen(true)}
+                        style={{
+                          padding: '7px 16px',
+                          borderRadius: '8px',
+                          border: 'none',
+                          background: 'var(--accent-primary, #6366f1)',
+                          color: '#ffffff',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="13" height="13">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Add Task
+                      </button>
+                    )}
                   </div>
                 ) : (
                   taskList.map((task) => (

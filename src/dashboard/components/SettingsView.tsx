@@ -76,7 +76,7 @@ export const SettingsView = () => {
         <div class={styles.cardHeader}>
           <h2 class={styles.cardTitle}>Study Labels</h2>
           <p class={styles.cardDesc}>
-            Manage labels used to organize tasks and generate your study chains.
+            Manage labels used to organize and categorize your tasks.
           </p>
         </div>
 

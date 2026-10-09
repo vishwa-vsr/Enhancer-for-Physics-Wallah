@@ -8,7 +8,6 @@ import { injectQualityControl } from '../ui/quality-hud';
 import { injectSkipSilenceButton } from '../ui/silence-hud';
 import { injectInstantHideButton } from '../ui/focus-mode';
 import { injectFinishTimeBadge } from '../ui/finish-time';
-import { injectSyncButton } from '../sync/sync-button';
 import { ensureAudioPipelineRunning } from '../audio/skip-silence';
 import { isUserTyping } from '../shortcuts/keyboard';
 
@@ -38,12 +37,6 @@ export function areControlsHealthy(): boolean {
     return false;
   }
 
-  const parentTab = document.querySelector('[class*="_parentTab_"]');
-  if (parentTab) {
-    const syncBtn = document.getElementById('pw-sync-to-padhle-btn');
-    if (!syncBtn || !syncBtn.isConnected) return false;
-  }
-
   return true;
 }
 
@@ -62,8 +55,7 @@ export function isLecturePage(): boolean {
     (typeof location !== 'undefined' && location.href.includes('/watch')) ||
     !!document.getElementById('video-player-container') ||
     !!document.getElementById('pw_auth-flow') ||
-    !!document.querySelector('video') ||
-    !!document.querySelector('[class*="_parentTab_"]')
+    !!document.querySelector('video')
   );
 }
 
@@ -147,13 +139,6 @@ export function initWakeupTriggers(): void {
 // Main monitoring function
 export function monitor(): void {
   if (isModifyingDOM) return;
-
-  // 1. In-page Sync button injection (runs on tabbed pages regardless of video presence)
-  try {
-    injectSyncButton();
-  } catch (err) {
-    console.error('[Padhle] Error injecting sync button:', err);
-  }
 
   const video = getActiveVideo();
   if (video) {
