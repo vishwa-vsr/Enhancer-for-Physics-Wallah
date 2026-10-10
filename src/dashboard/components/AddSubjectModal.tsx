@@ -122,9 +122,9 @@ export const AddSubjectModal = ({
 
           {/* Icon Picker */}
           <div class={styles.formGroup}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <label class={styles.label} style={{ margin: 0 }}>Subject Icon</label>
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+            <div class={styles.iconHeaderRow}>
+              <label class={`${styles.label} ${styles.labelFlush}`}>Subject Icon</label>
+              <span class={styles.selectedIconLabel}>
                 {STUDY_ICONS_LIST.find((i) => i.id === icon)?.label || icon}
               </span>
             </div>
@@ -174,8 +174,7 @@ export const AddSubjectModal = ({
 
           {/* Modal Footer with Delete option on left if editing */}
           <div
-            class={styles.modalFooter}
-            style={{ justifyContent: editingSubject ? 'space-between' : 'flex-end' }}
+            class={`${styles.modalFooter} ${editingSubject ? styles.modalFooterSpaceBetween : ''}`}
           >
             {editingSubject && (
               <button type="button" class={styles.deleteActionBtn} onClick={handleDelete}>
@@ -195,7 +194,7 @@ export const AddSubjectModal = ({
               </button>
             )}
 
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <div class={styles.footerRightActions}>
               <button type="button" class={styles.cancelBtn} onClick={onClose}>
                 Cancel
               </button>

@@ -3,7 +3,6 @@ import {
   chapters,
   tasks,
   activeView,
-  userName,
   expandedSubjects,
   toggleSubjectExpanded,
   getLocalDateStr,
@@ -47,61 +46,8 @@ export const Sidebar = ({
     (t) => !t.completed && (!t.subjectId || !t.chapterId),
   ).length;
 
-  const logoUrl =
-    typeof chrome !== 'undefined' && chrome.runtime?.getURL
-      ? chrome.runtime.getURL('icons/icon48.png')
-      : '/icons/icon48.png';
-
-  // Truncate name in sidebar to max 8 characters as requested
-  const trimmedName = userName.value.trim();
-  const displayName =
-    trimmedName.length > 8 ? trimmedName.slice(0, 8) + '...' : trimmedName;
-
   return (
     <aside class={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed : ''}`}>
-      {/* Brand: "Padhle" with extension logo & collapse toggle */}
-      <div class={styles.brand}>
-        <div
-          class={styles.brandLogo}
-          onClick={() => {
-            if (isCollapsed) setSidebarCollapsed(false);
-          }}
-          style={{ cursor: isCollapsed ? 'pointer' : 'default' }}
-          title={isCollapsed ? 'Expand sidebar' : 'Padhle'}
-        >
-          <img src={logoUrl} alt="PW Logo" class={styles.brandLogoImg} width={28} height={28} />
-        </div>
-
-        {!isCollapsed && (
-          <div class={styles.brandTextWrapper}>
-            <h2 class={styles.brandTitle}>Padhle</h2>
-            {trimmedName && (
-              <span class={styles.brandUserName}>
-                • {displayName}
-              </span>
-            )}
-          </div>
-        )}
-
-        <button
-          type="button"
-          class={styles.collapseToggleBtn}
-          onClick={toggleSidebarCollapsed}
-          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {isCollapsed ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.3} width={16} height={16}>
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.3} width={16} height={16}>
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          )}
-        </button>
-      </div>
-
       {/* Navigation Quick Views */}
       <nav class={styles.navSection}>
         <button
@@ -358,7 +304,7 @@ export const Sidebar = ({
         )}
       </div>
 
-      {/* Settings at the very bottom */}
+      {/* Settings & Collapse Toggle at the very bottom */}
       <div class={styles.footer}>
         <button
           class={`${styles.settingsBtn} ${currentView.type === 'settings' ? styles.settingsBtnActive : ''}`}
@@ -379,6 +325,24 @@ export const Sidebar = ({
             <circle cx="12" cy="12" r="3" />
           </svg>
           {!isCollapsed && <span>Settings</span>}
+        </button>
+
+        <button
+          type="button"
+          class={styles.collapseToggleBtn}
+          onClick={toggleSidebarCollapsed}
+          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {isCollapsed ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.3} width={16} height={16}>
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.3} width={16} height={16}>
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          )}
         </button>
       </div>
     </aside>

@@ -12,7 +12,12 @@ import {
 import { Task } from '../types';
 import { DatePicker } from './DatePicker';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
+import { StudyIcon } from '@shared/components/StudyIcons';
 import styles from './AddTaskDialog.module.css';
+
+const renderStudyIcon = (name: string, size: number, color: string) => (
+  <StudyIcon name={name} size={size} color={color} />
+);
 
 interface AddTaskDialogProps {
   open: boolean;
@@ -81,6 +86,15 @@ export const AddTaskDialog = ({
     })),
   ];
 
+  const getValidInitialTag = (task?: Task | null): string => {
+    const rawTag = task?.tags?.[0];
+    if (!rawTag) return '';
+    const match = customTags.value.find(
+      (t) => t.name.toLowerCase() === rawTag.toLowerCase(),
+    );
+    return match ? match.name : '';
+  };
+
   const defaultDueDate = editingTask
     ? editingTask.dueDate || ''
     : currentView.type === 'today'
@@ -90,7 +104,7 @@ export const AddTaskDialog = ({
   const [title, setTitle] = useState(editingTask?.title || '');
   const [dueDate, setDueDate] = useState(defaultDueDate);
   const [description, setDescription] = useState(editingTask?.description || '');
-  const [selectedTag, setSelectedTag] = useState<string>(editingTask?.tags?.[0] || '');
+  const [selectedTag, setSelectedTag] = useState<string>(getValidInitialTag(editingTask));
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
@@ -101,7 +115,7 @@ export const AddTaskDialog = ({
       setSelectedSubjectId(editingTask.subjectId || '');
       setSelectedChapterId(editingTask.chapterId || '');
       setDescription(editingTask.description || '');
-      setSelectedTag(editingTask.tags?.[0] || '');
+      setSelectedTag(getValidInitialTag(editingTask));
     } else {
       setTitle('');
       setDueDate(currentView.type === 'today' ? getLocalDateStr() : '');
@@ -239,7 +253,7 @@ export const AddTaskDialog = ({
                 {!hideSubjectChapter && (
                   <>
                     <div class={styles.twoCol}>
-                      <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+                      <div class={styles.formGroupFlush}>
                         <label class={styles.label}>Subject</label>
                         <SelectDropdown
                           options={subjectOptions}
@@ -247,10 +261,11 @@ export const AddTaskDialog = ({
                           onChange={(val) => setSelectedSubjectId(val)}
                           placeholder="None (Inbox)"
                           ariaLabel="Subject"
+                          renderIcon={renderStudyIcon}
                         />
                       </div>
 
-                      <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+                      <div class={styles.formGroupFlush}>
                         <label class={styles.label}>Chapter</label>
                         <SelectDropdown
                           options={chapterOptions}
@@ -266,12 +281,13 @@ export const AddTaskDialog = ({
                           disabled={!selectedSubjectId || availableChapters.length === 0}
                           emptyLabel="No chapters available"
                           ariaLabel="Chapter"
+                          renderIcon={renderStudyIcon}
                         />
                       </div>
                     </div>
 
                     {selectedSubjectId && availableChapters.length === 0 && (
-                      <p style={{ margin: '-8px 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
+                      <p class={styles.noChaptersHint}>
                         No chapters in this subject yet — choose "None (Inbox)" or add a chapter first.
                       </p>
                     )}
@@ -280,7 +296,7 @@ export const AddTaskDialog = ({
 
                 {/* Due Date & Study Label: stacked cleanly in Inbox mode, side-by-side otherwise */}
                 <div class={hideSubjectChapter ? undefined : styles.twoCol}>
-                  <div class={styles.formGroup} style={{ marginBottom: hideSubjectChapter ? '16px' : 0 }}>
+                  <div class={hideSubjectChapter ? styles.formGroup : styles.formGroupFlush}>
                     <label class={styles.label}>Due Date</label>
                     <DatePicker
                       value={dueDate}
@@ -289,7 +305,7 @@ export const AddTaskDialog = ({
                     />
                   </div>
 
-                  <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+                  <div class={styles.formGroupFlush}>
                     <label class={styles.label}>Study Label</label>
                     <SelectDropdown
                       options={tagOptions}
@@ -304,8 +320,7 @@ export const AddTaskDialog = ({
 
               {/* Modal Footer anchored at bottom of right column */}
               <div
-                class={styles.modalFooter}
-                style={{ justifyContent: editingTask ? 'space-between' : 'flex-end' }}
+                class={`${styles.modalFooter} ${editingTask ? styles.modalFooterSpaceBetween : ''}`}
               >
                 {editingTask && (
                   <button
@@ -329,7 +344,7 @@ export const AddTaskDialog = ({
                   </button>
                 )}
 
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <div class={styles.footerRightActions}>
                   <button type="button" class={styles.cancelBtn} onClick={onClose}>
                     Cancel
                   </button>

@@ -199,6 +199,41 @@
   padding-top: 16px;
 }
 
+.modalFooterSpaceBetween {
+  justify-content: space-between;
+}
+
+.footerRightActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.formGroupFlush {
+  margin-bottom: 0;
+}
+
+.noChaptersHint {
+  margin: -8px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.confirmModalContent {
+  width: 400px;
+}
+
+.confirmMessage {
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+}
+
+.dangerSubmitBtn {
+  background-color: #ef4444;
+}
+
 .deleteActionBtn {
   padding: 8px 12px;
   border-radius: var(--radius-md, 8px);

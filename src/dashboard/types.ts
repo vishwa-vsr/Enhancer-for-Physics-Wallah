@@ -3,8 +3,6 @@ export interface TagItem {
   color: string;
 }
 
-export type ChainStage = 'lecture' | 'dpp' | 'notes' | 'revision' | 'custom' | string;
-
 export interface Task {
   id: string;
   title: string;
@@ -15,13 +13,6 @@ export interface Task {
   subjectId: string;
   chapterId: string;
   createdAt: number;
-  chainId?: string;
-  chainTitle?: string;
-  chainType?: ChainStage;
-  nextTaskId?: string;
-  prevTaskId?: string;
-  orderIndex?: number;
-  lectureDate?: string;
   completedDate?: string;
 }
 
@@ -42,7 +33,6 @@ export interface Subject {
 }
 
 export type ViewType = 'today' | 'upcoming' | 'inbox' | 'chapter' | 'settings';
-export type DisplayMode = 'list' | 'flow';
 
 export type LayoutMode = 'list' | 'board';
 export type GroupByMode = 'none' | 'date' | 'label';
@@ -63,7 +53,6 @@ export interface ActiveView {
   type: ViewType;
   subjectId?: string;
   chapterId?: string;
-  displayMode?: DisplayMode;
 }
 
 export interface StudyPlannerData {
@@ -71,7 +60,7 @@ export interface StudyPlannerData {
   chapters: Chapter[];
   tasks: Task[];
   tags?: TagItem[];
-  userName?: string;
   displaySettings?: Record<string, ViewDisplaySettings>;
 }
+
 

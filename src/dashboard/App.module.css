@@ -163,6 +163,73 @@
   flex-direction: column;
 }
 
+/* Empty States */
+.emptyChapterCard {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  margin-top: 20px;
+}
+
+.emptyChapterIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--accent-primary, #6366f1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.emptyChapterTitle {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.emptyChapterDesc {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.emptyTasksState {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+}
+
+.emptyTasksText {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.primaryActionBtn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent-primary, #6366f1);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: filter var(--transition-fast);
+}
+
+.primaryActionBtn:hover {
+  filter: brightness(1.08);
+}
 
 /* Floating Action Button (+): Circular 56px matching Figma exactly */
 .fab {
@@ -195,3 +262,4 @@
 .fab:active {
   transform: scale(0.95);
 }
+

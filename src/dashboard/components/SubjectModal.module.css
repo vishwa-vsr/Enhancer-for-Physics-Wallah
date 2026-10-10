@@ -256,14 +256,41 @@
   transform: scale(1.05);
 }
 
+.iconHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.labelFlush {
+  margin: 0;
+}
+
+.selectedIconLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
 /* Modal Footer */
 .modalFooter {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
   padding-top: 4px;
   border-top: none;
+}
+
+.modalFooterSpaceBetween {
+  justify-content: space-between;
+}
+
+.footerRightActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .deleteActionBtn {

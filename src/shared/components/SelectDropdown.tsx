@@ -1,5 +1,5 @@
+import { ComponentChildren } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
-import { StudyIcon } from './StudyIcons';
 import styles from './SelectDropdown.module.css';
 
 export interface SelectOption {
@@ -22,6 +22,7 @@ export interface SelectDropdownProps {
   placement?: 'auto' | 'top' | 'bottom';
   align?: 'auto' | 'left' | 'right';
   className?: string;
+  renderIcon?: (name: string, size: number, color: string) => ComponentChildren;
 }
 
 export const SelectDropdown = ({
@@ -37,6 +38,7 @@ export const SelectDropdown = ({
   placement = 'auto',
   align = 'auto',
   className = '',
+  renderIcon,
 }: SelectDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentPlacement, setCurrentPlacement] = useState<'top' | 'bottom'>('bottom');
@@ -118,12 +120,12 @@ export const SelectDropdown = ({
         <div class={styles.triggerLeft}>
           {selectedOption ? (
             <>
-              {selectedOption.icon ? (
-                <StudyIcon
-                  name={selectedOption.icon}
-                  size={isSm ? 13 : 15}
-                  color={selectedOption.color || 'var(--accent-primary)'}
-                />
+              {selectedOption.icon && renderIcon ? (
+                renderIcon(
+                  selectedOption.icon,
+                  isSm ? 13 : 15,
+                  selectedOption.color || 'var(--accent-primary)',
+                )
               ) : selectedOption.color ? (
                 <span
                   class={styles.colorDot}
@@ -171,15 +173,13 @@ export const SelectDropdown = ({
                   onClick={() => handleSelect(option.value)}
                 >
                   <div class={styles.optionLeft}>
-                    {option.icon ? (
-                      <StudyIcon
-                        name={option.icon}
-                        size={isSm ? 13 : 15}
-                        color={
-                          option.color ||
-                          (isSelected ? 'var(--accent-primary)' : 'var(--text-secondary)')
-                        }
-                      />
+                    {option.icon && renderIcon ? (
+                      renderIcon(
+                        option.icon,
+                        isSm ? 13 : 15,
+                        option.color ||
+                          (isSelected ? 'var(--accent-primary)' : 'var(--text-secondary)'),
+                      )
                     ) : option.color ? (
                       <span
                         class={styles.colorDot}

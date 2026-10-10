@@ -79,6 +79,10 @@
   word-break: break-word;
 }
 
+.taskDescriptionInteractive {
+  cursor: pointer;
+}
+
 .taskDescriptionClamped {
   display: -webkit-box;
   -webkit-line-clamp: 2;

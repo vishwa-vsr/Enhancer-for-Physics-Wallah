@@ -136,13 +136,14 @@ export const TaskItem = ({ task, onEditRequest }: TaskItemProps) => {
               ref={descRef}
               class={`${styles.taskDescription} ${
                 isNoteExpanded ? styles.taskDescriptionExpanded : styles.taskDescriptionClamped
-              } ${task.completed ? styles.titleCompleted : ''}`}
+              } ${isNoteOverflowing || isNoteExpanded ? styles.taskDescriptionInteractive : ''} ${
+                task.completed ? styles.titleCompleted : ''
+              }`}
               onClick={() => {
                 if (isNoteOverflowing || isNoteExpanded) {
                   setIsNoteExpanded((prev) => !prev);
                 }
               }}
-              style={{ cursor: isNoteOverflowing || isNoteExpanded ? 'pointer' : 'default' }}
             >
               {renderTextWithLinks(task.description)}
             </p>

@@ -105,9 +105,9 @@ export const AddChapterModal = ({
 
           {/* Chapter Icon */}
           <div class={styles.formGroup}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <label class={styles.label} style={{ margin: 0 }}>Chapter Icon</label>
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+            <div class={styles.iconHeaderRow}>
+              <label class={`${styles.label} ${styles.labelFlush}`}>Chapter Icon</label>
+              <span class={styles.selectedIconLabel}>
                 {STUDY_ICONS_LIST.find((i) => i.id === icon)?.label || icon}
               </span>
             </div>
@@ -158,8 +158,7 @@ export const AddChapterModal = ({
 
           {/* Modal Footer with Delete option on left if editing */}
           <div
-            class={styles.modalFooter}
-            style={{ justifyContent: editingChapter ? 'space-between' : 'flex-end' }}
+            class={`${styles.modalFooter} ${editingChapter ? styles.modalFooterSpaceBetween : ''}`}
           >
             {editingChapter && (
               <button type="button" class={styles.deleteActionBtn} onClick={handleDelete}>
@@ -178,7 +177,7 @@ export const AddChapterModal = ({
               </button>
             )}
 
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <div class={styles.footerRightActions}>
               <button type="button" class={styles.cancelBtn} onClick={onClose}>
                 Cancel
               </button>

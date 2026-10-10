@@ -24,8 +24,7 @@ export const ConfirmModal = ({
   return (
     <div class={styles.modalOverlay} onClick={onCancel}>
       <div
-        class={styles.modalContent}
-        style={{ width: '400px' }}
+        class={`${styles.modalContent} ${styles.confirmModalContent}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div class={styles.modalHeader}>
@@ -45,16 +44,7 @@ export const ConfirmModal = ({
           </button>
         </div>
 
-        <p
-          style={{
-            color: 'var(--text-secondary)',
-            fontSize: '13.5px',
-            lineHeight: '1.6',
-            margin: '0 0 20px 0',
-          }}
-        >
-          {message}
-        </p>
+        <p class={styles.confirmMessage}>{message}</p>
 
         <div class={styles.modalFooter}>
           <button type="button" class={styles.cancelBtn} onClick={onCancel}>
@@ -62,11 +52,7 @@ export const ConfirmModal = ({
           </button>
           <button
             type="button"
-            class={styles.submitBtn}
-            style={{
-              boxShadow: 'none',
-              ...(isDanger ? { backgroundColor: '#ef4444' } : {}),
-            }}
+            class={`${styles.submitBtn} ${isDanger ? styles.dangerSubmitBtn : ''}`}
             onClick={onConfirm}
           >
             {confirmText}

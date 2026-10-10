@@ -23,18 +23,10 @@ export const DEFAULT_TAGS: TagItem[] = [
   { name: 'Test', color: '#ec4899' },
 ];
 
-const DEFAULT_SUBJECTS_DATA = [
-  { name: 'Maths', color: '#6366f1', icon: 'calculator' },
-  { name: 'Physics', color: '#3b82f6', icon: 'atom' },
-  { name: 'Chemistry', color: '#10b981', icon: 'flask' },
-  { name: 'Bio', color: '#ec4899', icon: 'dna' },
-];
-
 export const subjects = signal<Subject[]>([]);
 export const chapters = signal<Chapter[]>([]);
 export const tasks = signal<Task[]>([]);
 export const customTags = signal<TagItem[]>(DEFAULT_TAGS);
-export const userName = signal<string>('');
 export const activeView = signal<ActiveView>({ type: 'today' });
 export const expandedSubjects = signal<Record<string, boolean>>({});
 export const displaySettings = signal<Record<string, ViewDisplaySettings>>({});
@@ -78,6 +70,8 @@ export function toggleSubjectExpanded(subjectId: string): void {
   };
 }
 
+let storageListenerRegistered = false;
+
 // Storage persistence
 export async function loadPlannerData(): Promise<void> {
   try {
@@ -94,57 +88,52 @@ export async function loadPlannerData(): Promise<void> {
     }
 
     if (loadedData) {
-      // Filter out any default dummy subjects and their chapters/tasks
-      const rawSubjects = (loadedData.subjects || []).filter(
-        (s) => !s.id.startsWith('sub_default_'),
-      );
-      const rawChapters = (loadedData.chapters || []).filter(
-        (c) =>
-          !c.id.startsWith('chap_default_') &&
-          !c.subjectId.startsWith('sub_default_'),
-      );
-      const rawTasks = (loadedData.tasks || []).filter(
-        (t) =>
-          !(t.subjectId || '').startsWith('sub_default_') &&
-          !(t.chapterId || '').startsWith('chap_default_'),
-      );
-
-      const hadDefaults =
-        rawSubjects.length !== (loadedData.subjects || []).length ||
-        rawChapters.length !== (loadedData.chapters || []).length;
-
-      subjects.value = rawSubjects.map((s) => {
-        if (!s.icon) {
-          const match = DEFAULT_SUBJECTS_DATA.find(
-            (d) => d.name.toLowerCase() === s.name.toLowerCase(),
-          );
-          return { ...s, icon: match ? match.icon : 'book' };
-        }
-        return s;
-      });
-      chapters.value = rawChapters.map((c) => ({
-        ...c,
-        icon: c.icon || 'file-text',
-      }));
-      tasks.value = rawTasks;
       if (loadedData.tags && loadedData.tags.length > 0) {
         customTags.value = loadedData.tags;
       }
-      if (loadedData.userName) {
-        userName.value = loadedData.userName;
-      }
+
+      const validTagNames = new Set(
+        customTags.value.map((t) => t.name.toLowerCase()),
+      );
+
+      subjects.value = (loadedData.subjects || []).map((s) => ({
+        ...s,
+        icon: s.icon || 'book',
+      }));
+      chapters.value = (loadedData.chapters || []).map((c) => ({
+        ...c,
+        icon: c.icon || 'file-text',
+      }));
+
+      let hadGhostTags = false;
+      tasks.value = (loadedData.tasks || []).map((t) => {
+        if (!t.tags || t.tags.length === 0) return t;
+        const cleanedTags = t.tags.filter((tag) =>
+          validTagNames.has(tag.toLowerCase()),
+        );
+        if (cleanedTags.length !== t.tags.length) {
+          hadGhostTags = true;
+          return { ...t, tags: cleanedTags };
+        }
+        return t;
+      });
+
       if (loadedData.displaySettings) {
         displaySettings.value = loadedData.displaySettings;
       }
 
-      // If we cleaned out legacy defaults, update storage
-      if (hadDefaults) {
+      if (hadGhostTags) {
         await persistData();
       }
     }
 
     // Auto-update dashboard if synced from popup or another tab
-    if (typeof chrome !== 'undefined' && chrome.storage?.onChanged) {
+    if (
+      !storageListenerRegistered &&
+      typeof chrome !== 'undefined' &&
+      chrome.storage?.onChanged
+    ) {
+      storageListenerRegistered = true;
       chrome.storage.onChanged.addListener((changes, areaName) => {
         if (areaName === 'local' && changes[STORAGE_KEY]?.newValue) {
           const updated = changes[STORAGE_KEY].newValue as StudyPlannerData;
@@ -152,7 +141,6 @@ export async function loadPlannerData(): Promise<void> {
           if (updated.chapters) chapters.value = updated.chapters;
           if (updated.tasks) tasks.value = updated.tasks;
           if (updated.tags) customTags.value = updated.tags;
-          if (updated.userName) userName.value = updated.userName;
           if (updated.displaySettings) displaySettings.value = updated.displaySettings;
         }
       });
@@ -171,7 +159,6 @@ async function persistData(): Promise<void> {
     chapters: chapters.value,
     tasks: tasks.value,
     tags: customTags.value,
-    userName: userName.value,
     displaySettings: displaySettings.value,
   };
 
@@ -224,10 +211,6 @@ export async function updateSubject(
       : s,
   );
   await persistData();
-}
-
-export async function renameSubject(id: string, newName: string): Promise<void> {
-  await updateSubject(id, { name: newName });
 }
 
 export async function deleteSubject(id: string): Promise<void> {
@@ -297,10 +280,6 @@ export async function updateChapter(
   await persistData();
 }
 
-export async function renameChapter(id: string, newName: string): Promise<void> {
-  await updateChapter(id, { name: newName });
-}
-
 export async function deleteChapter(id: string): Promise<void> {
   chapters.value = chapters.value.filter((c) => c.id !== id);
   tasks.value = tasks.value.filter((t) => t.chapterId !== id);
@@ -357,24 +336,7 @@ export function getLocalTomorrowStr(): string {
 }
 
 export async function deleteTask(id: string): Promise<void> {
-  const taskToDelete = tasks.value.find((t) => t.id === id);
-  let updated = tasks.value.filter((t) => t.id !== id);
-
-  if (taskToDelete) {
-    const prevId = taskToDelete.prevTaskId;
-    const nextId = taskToDelete.nextTaskId;
-    updated = updated.map((t) => {
-      if (prevId && t.id === prevId) {
-        return { ...t, nextTaskId: nextId };
-      }
-      if (nextId && t.id === nextId) {
-        return { ...t, prevTaskId: prevId };
-      }
-      return t;
-    });
-  }
-
-  tasks.value = updated;
+  tasks.value = tasks.value.filter((t) => t.id !== id);
   await persistData();
 }
 
@@ -396,12 +358,13 @@ export async function addCustomTag(name: string, color: string): Promise<boolean
 }
 
 export async function deleteCustomTag(name: string): Promise<void> {
-  customTags.value = customTags.value.filter((t) => t.name !== name);
-  await persistData();
-}
-
-export async function setUserName(name: string): Promise<void> {
-  userName.value = name.trim();
+  const targetLower = name.trim().toLowerCase();
+  customTags.value = customTags.value.filter((t) => t.name.toLowerCase() !== targetLower);
+  tasks.value = tasks.value.map((t) =>
+    t.tags?.some((tag) => tag.toLowerCase() === targetLower)
+      ? { ...t, tags: t.tags.filter((tag) => tag.toLowerCase() !== targetLower) }
+      : t,
+  );
   await persistData();
 }
 
@@ -490,15 +453,6 @@ export async function setViewGroupBy(groupBy: GroupByMode): Promise<void> {
   displaySettings.value = {
     ...displaySettings.value,
     [key]: { layout: nextLayout, groupBy },
-  };
-  await persistData();
-}
-
-export async function resetViewDisplaySettings(): Promise<void> {
-  const key = getViewKey(activeView.value);
-  displaySettings.value = {
-    ...displaySettings.value,
-    [key]: { ...DEFAULT_DISPLAY_SETTINGS },
   };
   await persistData();
 }

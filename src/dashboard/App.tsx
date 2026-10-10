@@ -182,57 +182,24 @@ export const App = () => {
 
                 {/* If in chapter view and no chapters exist yet in subject */}
                 {currentView.type === 'chapter' && !currentView.chapterId ? (
-                  <div
-                    style={{
-                      textAlign: 'center',
-                      padding: '60px 20px',
-                      background: 'var(--bg-card)',
-                      borderRadius: '16px',
-                      border: '1px solid var(--border-subtle)',
-                      marginTop: '20px',
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: '48px',
-                        height: '48px',
-                        borderRadius: '50%',
-                        background: 'rgba(99, 102, 241, 0.1)',
-                        color: 'var(--accent-primary, #6366f1)',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginBottom: '16px',
-                      }}
-                    >
+                  <div class={styles.emptyChapterCard}>
+                    <div class={styles.emptyChapterIcon}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="24" height="24">
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                       </svg>
                     </div>
-                    <h3 style={{ margin: '0 0 8px', fontSize: '16px', color: 'var(--text-primary)', fontWeight: '600' }}>
+                    <h3 class={styles.emptyChapterTitle}>
                       No chapters in this subject yet
                     </h3>
-                    <p style={{ margin: '0 0 20px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                    <p class={styles.emptyChapterDesc}>
                       Add your first chapter to begin adding study tasks.
                     </p>
                     {activeSubject && (
                       <button
                         type="button"
+                        class={styles.primaryActionBtn}
                         onClick={() => handleOpenAddChapter(activeSubject.id)}
-                        style={{
-                          padding: '8px 18px',
-                          borderRadius: '8px',
-                          border: 'none',
-                          background: 'var(--accent-primary, #6366f1)',
-                          color: '#ffffff',
-                          fontSize: '13px',
-                          fontWeight: '600',
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                        }}
                       >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="14" height="14">
                           <line x1="12" y1="5" x2="12" y2="19" />
@@ -243,15 +210,8 @@ export const App = () => {
                     )}
                   </div>
                 ) : taskList.length === 0 ? (
-                  <div
-                    style={{
-                      textAlign: 'center',
-                      padding: '48px 20px',
-                      color: 'var(--text-muted)',
-                      fontSize: '13.5px',
-                    }}
-                  >
-                    <p style={{ margin: '0 0 14px', fontSize: '14px', color: 'var(--text-primary)', fontWeight: '500' }}>
+                  <div class={styles.emptyTasksState}>
+                    <p class={styles.emptyTasksText}>
                       {currentView.type === 'chapter'
                         ? 'No tasks in this chapter yet.'
                         : currentView.type === 'inbox'
@@ -260,32 +220,6 @@ export const App = () => {
                         ? 'No upcoming tasks scheduled.'
                         : 'No tasks scheduled for today.'}
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingTask(null);
-                        setTaskModalOpen(true);
-                      }}
-                      style={{
-                        padding: '7px 16px',
-                        borderRadius: '8px',
-                        border: 'none',
-                        background: 'var(--accent-primary, #6366f1)',
-                        color: '#ffffff',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                      }}
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="13" height="13">
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
-                      Add Task
-                    </button>
                   </div>
                 ) : layout === 'board' ? (
                   <div class={styles.boardContainer}>

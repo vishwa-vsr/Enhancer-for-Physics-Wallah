@@ -10,7 +10,8 @@
   gap: 7px;
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid var(--border-subtle);
+  border: none;
+  outline: none;
   background-color: var(--bg-card);
   color: var(--text-secondary);
   font-size: 13px;
@@ -18,7 +19,6 @@
   cursor: pointer;
   transition:
     background-color var(--transition-fast),
-    border-color var(--transition-fast),
     color var(--transition-fast);
   user-select: none;
 }
@@ -30,7 +30,6 @@
 
 .triggerBtnOpen,
 .triggerBtnActive {
-  border-color: rgba(108, 99, 255, 0.35);
   color: var(--text-primary);
 }
 
@@ -53,7 +52,8 @@
   right: 0;
   width: 268px;
   background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: none;
+  outline: none;
   border-radius: 14px;
   box-shadow:
     0 14px 36px rgba(0, 0, 0, 0.4),
@@ -106,7 +106,8 @@
   background-color: var(--bg-main);
   padding: 4px;
   border-radius: 10px;
-  border: 1px solid var(--border-subtle);
+  border: none;
+  outline: none;
 }
 
 .layoutCard {
@@ -117,7 +118,8 @@
   gap: 6px;
   padding: 10px 8px;
   border-radius: 7px;
-  border: 1px solid transparent;
+  border: none;
+  outline: none;
   background: transparent;
   color: var(--text-muted);
   font-size: 12px;
@@ -126,7 +128,6 @@
   transition:
     background-color var(--transition-fast),
     color var(--transition-fast),
-    border-color var(--transition-fast),
     box-shadow var(--transition-fast);
 }
 
@@ -143,7 +144,6 @@
   background-color: var(--bg-control);
   color: var(--text-primary);
   font-weight: 600;
-  border-color: var(--border-subtle);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
