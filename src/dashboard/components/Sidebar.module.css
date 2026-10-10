@@ -82,16 +82,12 @@
 }
 
 .badge {
-  font-size: 11px;
-  padding: 2px 7px;
-  border-radius: 9999px;
-  background-color: var(--bg-control);
+  font-size: 12px;
   color: var(--text-muted);
   font-weight: 500;
 }
 
 :global(body.light-theme) .badge {
-  background-color: #e2e8f0;
   color: var(--text-secondary);
 }
 
@@ -100,12 +96,6 @@
 }
 
 .navItemActive .badge {
-  background-color: var(--bg-control-hover);
-  color: var(--text-primary);
-}
-
-:global(body.light-theme) .navItemActive .badge {
-  background-color: #e2e8f0;
   color: var(--text-primary);
 }
 
@@ -286,11 +276,6 @@
   color: var(--text-primary);
 }
 
-.chapterItemActive .badge {
-  background-color: var(--bg-control);
-  color: var(--text-muted);
-}
-
 .chapterLeft {
   display: flex;
   align-items: center;
@@ -440,15 +425,6 @@
 .sidebarCollapsed .navLeft {
   justify-content: center;
   gap: 0;
-}
-
-.sidebarCollapsed .badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 9px;
-  padding: 1px 4px;
-  line-height: 1.2;
 }
 
 .sidebarCollapsed .divider {

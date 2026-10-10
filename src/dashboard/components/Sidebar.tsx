@@ -73,7 +73,7 @@ export const Sidebar = ({
             </svg>
             {!isCollapsed && <span>Today</span>}
           </div>
-          {todayCount > 0 && <span class={styles.badge}>{todayCount}</span>}
+          {!isCollapsed && todayCount > 0 && <span class={styles.badge}>{todayCount}</span>}
         </button>
 
         <button
@@ -100,7 +100,7 @@ export const Sidebar = ({
             </svg>
             {!isCollapsed && <span>Upcoming</span>}
           </div>
-          {upcomingCount > 0 && <span class={styles.badge}>{upcomingCount}</span>}
+          {!isCollapsed && upcomingCount > 0 && <span class={styles.badge}>{upcomingCount}</span>}
         </button>
 
         <button
@@ -126,7 +126,7 @@ export const Sidebar = ({
             </svg>
             {!isCollapsed && <span>Inbox</span>}
           </div>
-          {inboxCount > 0 && <span class={styles.badge}>{inboxCount}</span>}
+          {!isCollapsed && inboxCount > 0 && <span class={styles.badge}>{inboxCount}</span>}
         </button>
       </nav>
 
