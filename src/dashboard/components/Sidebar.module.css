@@ -9,16 +9,39 @@
   overflow: hidden;
   user-select: none;
   font-family: var(--font-sans);
+  transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .brand {
-  padding: 24px 20px 16px 20px;
+  padding: 20px 14px 16px 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
+}
+
+.collapseToggleBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.collapseToggleBtn:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
 }
 
 .brandLogo {
@@ -453,3 +476,110 @@
 .settingsBtnActive svg {
   color: var(--accent-primary);
 }
+
+/* ==========================================================================
+   Collapsed Sidebar Styles
+   ========================================================================== */
+
+.sidebarCollapsed {
+  width: 68px;
+  min-width: 68px;
+}
+
+.sidebarCollapsed .brand {
+  padding: 18px 8px 14px 8px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebarCollapsed .brandTextWrapper {
+  display: none;
+}
+
+.sidebarCollapsed .navSection {
+  padding: 0 8px;
+  align-items: center;
+}
+
+.sidebarCollapsed .navItem {
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+  position: relative;
+}
+
+.sidebarCollapsed .navLeft {
+  justify-content: center;
+  gap: 0;
+}
+
+.sidebarCollapsed .badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 9px;
+  padding: 1px 4px;
+  line-height: 1.2;
+}
+
+.sidebarCollapsed .divider {
+  margin: 10px 10px;
+}
+
+.sidebarCollapsed .sectionHeader {
+  display: none;
+}
+
+.sidebarCollapsed .subjectsSection {
+  padding: 0 8px;
+  align-items: center;
+}
+
+.sidebarCollapsed .subjectGroup {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebarCollapsed .subjectItem {
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+}
+
+.sidebarCollapsed .subjectLeft {
+  justify-content: center;
+  gap: 0;
+  flex: initial;
+}
+
+.subjectItemActiveCollapsed {
+  background-color: var(--bg-control-hover) !important;
+  border-radius: var(--radius-md);
+}
+
+:global(body.light-theme) .subjectItemActiveCollapsed {
+  background-color: #f0f2f5 !important;
+}
+
+.sidebarCollapsed .chaptersList {
+  display: none;
+}
+
+.sidebarCollapsed .footer {
+  padding: 12px 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebarCollapsed .settingsBtn {
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+}
+

@@ -28,6 +28,37 @@ export const activeView = signal<ActiveView>({ type: 'today' });
 export const expandedSubjects = signal<Record<string, boolean>>({});
 export const isLoaded = signal<boolean>(false);
 
+const SIDEBAR_COLLAPSED_KEY = 'pw_sidebar_collapsed';
+const savedSidebarCollapsed =
+  typeof localStorage !== 'undefined'
+    ? localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true'
+    : false;
+
+export const isSidebarCollapsed = signal<boolean>(savedSidebarCollapsed);
+
+export function toggleSidebarCollapsed(): void {
+  const nextVal = !isSidebarCollapsed.value;
+  isSidebarCollapsed.value = nextVal;
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(nextVal));
+    }
+  } catch {
+    // Ignore localStorage error
+  }
+}
+
+export function setSidebarCollapsed(collapsed: boolean): void {
+  isSidebarCollapsed.value = collapsed;
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(collapsed));
+    }
+  } catch {
+    // Ignore localStorage error
+  }
+}
+
 export function toggleSubjectExpanded(subjectId: string): void {
   expandedSubjects.value = {
     ...expandedSubjects.value,

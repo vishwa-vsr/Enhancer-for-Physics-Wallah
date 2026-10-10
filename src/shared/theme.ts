@@ -1,6 +1,6 @@
 import { signal, computed } from '@preact/signals';
 import { ThemeMode } from './types';
-import { loadSettings, saveSetting } from './storage';
+import { loadSettings, saveSetting, onSettingsChanged } from './storage';
 
 export const themeMode = signal<ThemeMode>('dark');
 export const isLightTheme = computed(() => themeMode.value === 'light');
@@ -17,6 +17,13 @@ export async function initTheme(): Promise<void> {
   const settings = await loadSettings();
   themeMode.value = settings.themeMode;
   applyThemeToBody(settings.themeMode);
+
+  onSettingsChanged((changes) => {
+    if (changes.themeMode) {
+      themeMode.value = changes.themeMode;
+      applyThemeToBody(changes.themeMode);
+    }
+  });
 }
 
 export function toggleTheme(): void {

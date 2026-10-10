@@ -13,7 +13,6 @@ import {
 } from './store';
 import { Subject, Chapter, Task } from './types';
 import { Sidebar } from './components/Sidebar';
-import { Header } from './components/Header';
 import { StatsCards } from './components/StatsCards';
 import { TaskItem } from './components/TaskItem';
 import { AddTaskDialog } from './components/AddTaskDialog';
@@ -154,14 +153,6 @@ export const App = () => {
 
       {/* Main Area */}
       <div class={styles.mainWrapper}>
-        <Header
-          onOpenAddChapter={handleOpenAddChapter}
-          onOpenAddTask={() => {
-            setEditingTask(null);
-            setTaskModalOpen(true);
-          }}
-        />
-
         <main class={styles.scrollArea}>
           <div class={styles.contentMaxWidth}>
             {currentView.type === 'settings' ? (
@@ -171,8 +162,17 @@ export const App = () => {
                 {/* Stats Section: only in Today tab */}
                 {currentView.type === 'today' && <StatsCards />}
 
-                {/* Tasks Section Header: only in Today / Upcoming */}
-                {currentView.type !== 'chapter' && (
+                {/* View Title Header */}
+                {currentView.type === 'chapter' && activeSubject ? (
+                  <div class={styles.viewHeader}>
+                    <div class={styles.chapterTitleBlock}>
+                      <span class={styles.breadcrumbSubject}>{activeSubject.name}</span>
+                      <h2 class={styles.viewTitle}>
+                        {activeChapter ? `${activeChapter.name} Tasks` : `${activeSubject.name} Tasks`}
+                      </h2>
+                    </div>
+                  </div>
+                ) : (
                   <div class={styles.viewHeader}>
                     <h2 class={styles.viewTitle}>{title}</h2>
                   </div>
