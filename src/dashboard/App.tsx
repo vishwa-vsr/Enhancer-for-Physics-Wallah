@@ -13,7 +13,6 @@ import {
 } from './store';
 import { Subject, Chapter, Task } from './types';
 import { Sidebar } from './components/Sidebar';
-import { StatsCards } from './components/StatsCards';
 import { TaskItem } from './components/TaskItem';
 import { AddTaskDialog } from './components/AddTaskDialog';
 import { AddSubjectModal } from './components/AddSubjectModal';
@@ -62,6 +61,8 @@ export const App = () => {
     title = 'Today Tasks';
   } else if (currentView.type === 'upcoming') {
     title = 'Upcoming Tasks';
+  } else if (currentView.type === 'inbox') {
+    title = 'Inbox Tasks';
   } else if (currentView.type === 'chapter') {
     title = activeChapter ? `${activeChapter.name} Tasks` : 'Chapter Tasks';
   }
@@ -119,15 +120,9 @@ export const App = () => {
     await deleteTask(task.id);
   };
 
-  const canAddTask = subjects.value.length > 0 && chapters.value.length > 0;
-
   const handleFabClick = () => {
-    if (!canAddTask) {
-      if (subjects.value.length === 0) {
-        handleOpenAddSubject();
-      } else {
-        handleOpenAddChapter(subjects.value[0].id);
-      }
+    if (currentView.type === 'chapter' && !currentView.chapterId && currentView.subjectId) {
+      handleOpenAddChapter(currentView.subjectId);
     } else {
       setEditingTask(null);
       setTaskModalOpen(true);
@@ -152,9 +147,6 @@ export const App = () => {
               <SettingsView />
             ) : (
               <>
-                {/* Stats Section: only in Today tab */}
-                {currentView.type === 'today' && <StatsCards />}
-
                 {/* View Title Header */}
                 {currentView.type === 'chapter' && activeSubject ? (
                   <div class={styles.viewHeader}>
@@ -234,48 +226,50 @@ export const App = () => {
                     )}
                   </div>
                 ) : taskList.length === 0 ? (
-                  currentView.type === 'chapter' ? (
-                    <div
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '48px 20px',
+                      color: 'var(--text-muted)',
+                      fontSize: '13.5px',
+                    }}
+                  >
+                    <p style={{ margin: '0 0 14px', fontSize: '14px', color: 'var(--text-primary)', fontWeight: '500' }}>
+                      {currentView.type === 'chapter'
+                        ? 'No tasks in this chapter yet.'
+                        : currentView.type === 'inbox'
+                        ? 'Your Inbox is empty. Add a quick task without needing a subject or chapter.'
+                        : currentView.type === 'upcoming'
+                        ? 'No upcoming tasks scheduled.'
+                        : 'No tasks scheduled for today.'}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingTask(null);
+                        setTaskModalOpen(true);
+                      }}
                       style={{
-                        textAlign: 'center',
-                        padding: '48px 20px',
-                        color: 'var(--text-muted)',
-                        fontSize: '13.5px',
+                        padding: '7px 16px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: 'var(--accent-primary, #6366f1)',
+                        color: '#ffffff',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
                       }}
                     >
-                      <p style={{ margin: '0 0 14px', fontSize: '14px', color: 'var(--text-primary)', fontWeight: '500' }}>
-                        No tasks in this chapter yet.
-                      </p>
-                      {canAddTask && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingTask(null);
-                            setTaskModalOpen(true);
-                          }}
-                          style={{
-                            padding: '7px 16px',
-                            borderRadius: '8px',
-                            border: 'none',
-                            background: 'var(--accent-primary, #6366f1)',
-                            color: '#ffffff',
-                            fontSize: '13px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                          }}
-                        >
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="13" height="13">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                          </svg>
-                          Add Task
-                        </button>
-                      )}
-                    </div>
-                  ) : null
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="13" height="13">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                      Add Task
+                    </button>
+                  </div>
                 ) : (
                   taskList.map((task) => (
                     <TaskItem

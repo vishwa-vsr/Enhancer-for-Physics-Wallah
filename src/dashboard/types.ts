@@ -41,7 +41,7 @@ export interface Subject {
   createdAt: number;
 }
 
-export type ViewType = 'today' | 'upcoming' | 'chapter' | 'settings';
+export type ViewType = 'today' | 'upcoming' | 'inbox' | 'chapter' | 'settings';
 export type DisplayMode = 'list' | 'flow';
 
 export interface ActiveView {

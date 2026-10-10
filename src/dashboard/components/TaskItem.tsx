@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'preact/hooks';
 import { Task } from '../types';
 import { subjects, chapters, toggleTask, activeView, getLocalDateStr, customTags } from '../store';
 import { getAlphaColor } from '@shared/theme';
@@ -8,12 +9,69 @@ interface TaskItemProps {
   onEditRequest?: (task: Task) => void;
 }
 
+const URL_SPLIT_REGEX = /(https?:\/\/[^\s]+)/g;
+
+function renderTextWithLinks(text: string) {
+  const parts = text.split(URL_SPLIT_REGEX);
+  return parts.map((part, idx) => {
+    if (part.match(/^https?:\/\/[^\s]+$/)) {
+      const cleanUrl = part.replace(/[.,;!?)]+$/, '');
+      const trailing = part.slice(cleanUrl.length);
+      return (
+        <span key={idx}>
+          <a
+            href={cleanUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={styles.noteLink}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {cleanUrl}
+          </a>
+          {trailing}
+        </span>
+      );
+    }
+    return part;
+  });
+}
+
 export const TaskItem = ({ task, onEditRequest }: TaskItemProps) => {
   const currentView = activeView.value;
+  const [isNoteExpanded, setIsNoteExpanded] = useState(false);
+  const [isNoteOverflowing, setIsNoteOverflowing] = useState(false);
+  const descRef = useRef<HTMLParagraphElement>(null);
 
-  const subject = subjects.value.find((s) => s.id === task.subjectId);
-  const chapter = chapters.value.find((c) => c.id === task.chapterId);
-  const showOrigin = currentView.type !== 'chapter';
+  useEffect(() => {
+    setIsNoteExpanded(false);
+  }, [task.id, task.description]);
+
+  useEffect(() => {
+    const el = descRef.current;
+    if (!el || !task.description) {
+      setIsNoteOverflowing(false);
+      return;
+    }
+
+    const checkOverflow = () => {
+      if (!isNoteExpanded && descRef.current) {
+        setIsNoteOverflowing(descRef.current.scrollHeight > descRef.current.clientHeight + 1);
+      }
+    };
+
+    checkOverflow();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(checkOverflow);
+      observer.observe(el);
+      return () => observer.disconnect();
+    }
+  }, [task.description, isNoteExpanded]);
+
+  const subject = task.subjectId ? subjects.value.find((s) => s.id === task.subjectId) : null;
+  const chapter = task.chapterId ? chapters.value.find((c) => c.id === task.chapterId) : null;
+  const isInboxTask = !task.subjectId || !task.chapterId;
+  const showOrigin = currentView.type !== 'chapter' && currentView.type !== 'inbox';
   const todayStr = getLocalDateStr();
   const isOverdue = !task.completed && !!task.dueDate && task.dueDate < todayStr;
 
@@ -43,7 +101,11 @@ export const TaskItem = ({ task, onEditRequest }: TaskItemProps) => {
     : null;
 
   return (
-    <div class={`${styles.taskCard} ${task.completed ? styles.taskCompleted : ''}`}>
+    <div
+      class={`${styles.taskCard} ${task.completed ? styles.taskCompleted : ''} ${
+        isNoteExpanded ? styles.taskCardExpanded : ''
+      }`}
+    >
       {/* Checkbox */}
       <button
         class={`${styles.checkbox} ${task.completed ? styles.checkboxChecked : ''}`}
@@ -69,19 +131,47 @@ export const TaskItem = ({ task, onEditRequest }: TaskItemProps) => {
           {task.title}
         </p>
         {task.description && (
-          <p class={`${styles.taskDescription} ${task.completed ? styles.titleCompleted : ''}`}>
-            {task.description}
-          </p>
+          <div class={styles.descriptionWrapper}>
+            <p
+              ref={descRef}
+              class={`${styles.taskDescription} ${
+                isNoteExpanded ? styles.taskDescriptionExpanded : styles.taskDescriptionClamped
+              } ${task.completed ? styles.titleCompleted : ''}`}
+              onClick={() => {
+                if (isNoteOverflowing || isNoteExpanded) {
+                  setIsNoteExpanded((prev) => !prev);
+                }
+              }}
+              style={{ cursor: isNoteOverflowing || isNoteExpanded ? 'pointer' : 'default' }}
+            >
+              {renderTextWithLinks(task.description)}
+            </p>
+            {(isNoteOverflowing || isNoteExpanded) && (
+              <button
+                type="button"
+                class={styles.showMoreBtn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsNoteExpanded((prev) => !prev);
+                }}
+              >
+                {isNoteExpanded ? 'Show less' : 'Show more'}
+              </button>
+            )}
+          </div>
         )}
 
         <div class={styles.taskMeta}>
-          {/* Origin Badge if in global view */}
-          {showOrigin && (subject || chapter) && (
-            <span class={styles.originBadge}>
-              {subject ? subject.name : ''}
-              {chapter ? ` • ${chapter.name}` : ''}
-            </span>
-          )}
+          {/* Origin Badge if in Today or Upcoming view */}
+          {showOrigin &&
+            (isInboxTask ? (
+              <span class={styles.originBadge}>Inbox</span>
+            ) : subject || chapter ? (
+              <span class={styles.originBadge}>
+                {subject ? subject.name : ''}
+                {chapter ? ` • ${chapter.name}` : ''}
+              </span>
+            ) : null)}
 
           {/* Overdue Badge */}
           {isOverdue && (
@@ -108,7 +198,6 @@ export const TaskItem = ({ task, onEditRequest }: TaskItemProps) => {
             })
           )}
 
-
           {/* Due date */}
           {formattedDate && (
             <div class={styles.metaItem}>
@@ -128,7 +217,6 @@ export const TaskItem = ({ task, onEditRequest }: TaskItemProps) => {
               <span>{formattedDate}</span>
             </div>
           )}
-
         </div>
       </div>
 

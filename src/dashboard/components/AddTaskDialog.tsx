@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'preact/hooks';
-import { subjects, chapters, addTask, updateTask, deleteTask, activeView, customTags } from '../store';
+import {
+  subjects,
+  chapters,
+  addTask,
+  updateTask,
+  deleteTask,
+  activeView,
+  customTags,
+  getLocalDateStr,
+} from '../store';
 import { Task } from '../types';
 import { DatePicker } from './DatePicker';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
@@ -25,22 +34,38 @@ export const AddTaskDialog = ({
   if (!open) return null;
 
   const currentView = activeView.value;
+  const hideSubjectChapter = currentView.type === 'inbox';
 
-  const initialSubId =
-    editingTask?.subjectId || defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
+  const getDefaultSubjectId = () => {
+    if (editingTask) return editingTask.subjectId || '';
+    if (currentView.type === 'inbox' || currentView.type === 'today' || currentView.type === 'upcoming') {
+      return '';
+    }
+    return defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
+  };
+
+  const initialSubId = getDefaultSubjectId();
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(initialSubId);
 
-  const availableChapters = chapters.value.filter((c) => c.subjectId === selectedSubjectId);
-  const initialChapId =
-    editingTask?.chapterId || defaultChapterId || currentView.chapterId || availableChapters[0]?.id || '';
+  const availableChapters = selectedSubjectId
+    ? chapters.value.filter((c) => c.subjectId === selectedSubjectId)
+    : [];
+  const initialChapId = editingTask
+    ? editingTask.chapterId || ''
+    : selectedSubjectId
+    ? defaultChapterId || currentView.chapterId || availableChapters[0]?.id || ''
+    : '';
   const [selectedChapterId, setSelectedChapterId] = useState<string>(initialChapId);
 
-  const subjectOptions = subjects.value.map((s) => ({
-    value: s.id,
-    label: s.name,
-    icon: s.icon || 'book',
-    color: s.color || 'var(--accent-primary)',
-  }));
+  const subjectOptions = [
+    { value: '', label: 'None (Inbox)' },
+    ...subjects.value.map((s) => ({
+      value: s.id,
+      label: s.name,
+      icon: s.icon || 'book',
+      color: s.color || 'var(--accent-primary)',
+    })),
+  ];
 
   const chapterOptions = availableChapters.map((c) => ({
     value: c.id,
@@ -56,8 +81,14 @@ export const AddTaskDialog = ({
     })),
   ];
 
+  const defaultDueDate = editingTask
+    ? editingTask.dueDate || ''
+    : currentView.type === 'today'
+    ? getLocalDateStr()
+    : '';
+
   const [title, setTitle] = useState(editingTask?.title || '');
-  const [dueDate, setDueDate] = useState(editingTask?.dueDate || '');
+  const [dueDate, setDueDate] = useState(defaultDueDate);
   const [description, setDescription] = useState(editingTask?.description || '');
   const [selectedTag, setSelectedTag] = useState<string>(editingTask?.tags?.[0] || '');
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -67,23 +98,30 @@ export const AddTaskDialog = ({
     if (editingTask) {
       setTitle(editingTask.title);
       setDueDate(editingTask.dueDate || '');
-      setSelectedSubjectId(editingTask.subjectId);
-      setSelectedChapterId(editingTask.chapterId);
+      setSelectedSubjectId(editingTask.subjectId || '');
+      setSelectedChapterId(editingTask.chapterId || '');
       setDescription(editingTask.description || '');
       setSelectedTag(editingTask.tags?.[0] || '');
     } else {
       setTitle('');
-      setDueDate('');
+      setDueDate(currentView.type === 'today' ? getLocalDateStr() : '');
       setDescription('');
       setSelectedTag('');
-      const subId = defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
+      const subId =
+        currentView.type === 'inbox' || currentView.type === 'today' || currentView.type === 'upcoming'
+          ? ''
+          : defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
       setSelectedSubjectId(subId);
-      const chaps = chapters.value.filter((c) => c.subjectId === subId);
-      setSelectedChapterId(defaultChapterId || currentView.chapterId || chaps[0]?.id || '');
+      const chaps = subId ? chapters.value.filter((c) => c.subjectId === subId) : [];
+      setSelectedChapterId(subId ? defaultChapterId || currentView.chapterId || chaps[0]?.id || '' : '');
     }
   }, [open, editingTask]);
 
   useEffect(() => {
+    if (!selectedSubjectId) {
+      setSelectedChapterId('');
+      return;
+    }
     const chaps = chapters.value.filter((c) => c.subjectId === selectedSubjectId);
     if (chaps.length > 0) {
       if (!chaps.some((c) => c.id === selectedChapterId)) {
@@ -94,12 +132,17 @@ export const AddTaskDialog = ({
     }
   }, [selectedSubjectId]);
 
+  const isValidSelection =
+    hideSubjectChapter || !selectedSubjectId || Boolean(selectedSubjectId && selectedChapterId);
+
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
-    if (!title.trim() || !selectedSubjectId || !selectedChapterId) return;
+    if (!title.trim() || !isValidSelection) return;
 
     const trimmedDesc = description.trim();
     const tagsArray = selectedTag ? [selectedTag] : [];
+    const finalSubjectId = hideSubjectChapter || !selectedSubjectId ? '' : selectedSubjectId;
+    const finalChapterId = hideSubjectChapter || !selectedSubjectId ? '' : selectedChapterId;
 
     if (editingTask) {
       await updateTask(editingTask.id, {
@@ -107,8 +150,8 @@ export const AddTaskDialog = ({
         description: trimmedDesc || undefined,
         dueDate: dueDate || undefined,
         tags: tagsArray,
-        subjectId: selectedSubjectId,
-        chapterId: selectedChapterId,
+        subjectId: finalSubjectId,
+        chapterId: finalChapterId,
       });
     } else {
       await addTask({
@@ -117,8 +160,8 @@ export const AddTaskDialog = ({
         completed: false,
         dueDate: dueDate || undefined,
         tags: tagsArray,
-        subjectId: selectedSubjectId,
-        chapterId: selectedChapterId,
+        subjectId: finalSubjectId,
+        chapterId: finalChapterId,
       });
     }
 
@@ -170,6 +213,7 @@ export const AddTaskDialog = ({
                   class={styles.input}
                   placeholder="Enter task title..."
                   value={title}
+                  maxLength={150}
                   onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
                   required
                   autoFocus
@@ -191,36 +235,52 @@ export const AddTaskDialog = ({
             {/* Right Column: Subject, Chapter, Due Date, Study Label, Actions */}
             <div class={styles.rightColumn}>
               <div class={styles.rightFields}>
-                {/* Subject & Chapter side-by-side */}
-                <div class={styles.twoCol}>
-                  <div class={styles.formGroup} style={{ marginBottom: 0 }}>
-                    <label class={styles.label}>Subject</label>
-                    <SelectDropdown
-                      options={subjectOptions}
-                      value={selectedSubjectId}
-                      onChange={(val) => setSelectedSubjectId(val)}
-                      placeholder="Select Subject"
-                      ariaLabel="Subject"
-                    />
-                  </div>
+                {/* Subject & Chapter side-by-side (hidden in Inbox tab) */}
+                {!hideSubjectChapter && (
+                  <>
+                    <div class={styles.twoCol}>
+                      <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+                        <label class={styles.label}>Subject</label>
+                        <SelectDropdown
+                          options={subjectOptions}
+                          value={selectedSubjectId}
+                          onChange={(val) => setSelectedSubjectId(val)}
+                          placeholder="None (Inbox)"
+                          ariaLabel="Subject"
+                        />
+                      </div>
 
-                  <div class={styles.formGroup} style={{ marginBottom: 0 }}>
-                    <label class={styles.label}>Chapter</label>
-                    <SelectDropdown
-                      options={chapterOptions}
-                      value={selectedChapterId}
-                      onChange={(val) => setSelectedChapterId(val)}
-                      placeholder={availableChapters.length === 0 ? 'No chapters' : 'Select Chapter'}
-                      disabled={availableChapters.length === 0}
-                      emptyLabel="No chapters available"
-                      ariaLabel="Chapter"
-                    />
-                  </div>
-                </div>
+                      <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+                        <label class={styles.label}>Chapter</label>
+                        <SelectDropdown
+                          options={chapterOptions}
+                          value={selectedChapterId}
+                          onChange={(val) => setSelectedChapterId(val)}
+                          placeholder={
+                            !selectedSubjectId
+                              ? 'None (Inbox)'
+                              : availableChapters.length === 0
+                              ? 'No chapters'
+                              : 'Select Chapter'
+                          }
+                          disabled={!selectedSubjectId || availableChapters.length === 0}
+                          emptyLabel="No chapters available"
+                          ariaLabel="Chapter"
+                        />
+                      </div>
+                    </div>
 
-                {/* Due Date & Study Label side-by-side */}
-                <div class={styles.twoCol}>
-                  <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+                    {selectedSubjectId && availableChapters.length === 0 && (
+                      <p style={{ margin: '-8px 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
+                        No chapters in this subject yet — choose "None (Inbox)" or add a chapter first.
+                      </p>
+                    )}
+                  </>
+                )}
+
+                {/* Due Date & Study Label: stacked cleanly in Inbox mode, side-by-side otherwise */}
+                <div class={hideSubjectChapter ? undefined : styles.twoCol}>
+                  <div class={styles.formGroup} style={{ marginBottom: hideSubjectChapter ? '16px' : 0 }}>
                     <label class={styles.label}>Due Date</label>
                     <DatePicker
                       value={dueDate}
@@ -276,7 +336,7 @@ export const AddTaskDialog = ({
                   <button
                     type="submit"
                     class={styles.submitBtn}
-                    disabled={!title.trim() || !selectedSubjectId || !selectedChapterId}
+                    disabled={!title.trim() || !isValidSelection}
                   >
                     {editingTask ? 'Save Changes' : 'Add Task'}
                   </button>

@@ -93,8 +93,8 @@ export async function loadPlannerData(): Promise<void> {
       );
       const rawTasks = (loadedData.tasks || []).filter(
         (t) =>
-          !t.subjectId.startsWith('sub_default_') &&
-          !t.chapterId.startsWith('chap_default_'),
+          !(t.subjectId || '').startsWith('sub_default_') &&
+          !(t.chapterId || '').startsWith('chap_default_'),
       );
 
       const hadDefaults =
@@ -389,12 +389,17 @@ export const filteredTasks = computed(() => {
       // If subject has no chapters or chapterId is empty, return empty list to prevent leaking database
       return [];
     }
+  } else if (view.type === 'inbox') {
+    // Inbox: all tasks that do not have both a subject and a chapter assigned
+    list = list.filter((t) => !t.subjectId || !t.chapterId);
   } else if (view.type === 'today') {
     const todayStr = getLocalDateStr();
-    // Today: tasks scheduled for today, tasks without a due date, OR incomplete tasks from earlier dates (overdue),
-    // OR overdue tasks that were completed today so the user can see their accomplishment
+    // Today: tasks scheduled for today, Subject/Chapter tasks without a due date,
+    // incomplete tasks from earlier dates (overdue), OR overdue tasks completed today.
+    // Dateless Inbox tasks stay cleanly inside Inbox.
     list = list.filter((t) => {
-      if (!t.dueDate) return true;
+      const isInbox = !t.subjectId || !t.chapterId;
+      if (!t.dueDate) return !isInbox && (!t.completed || t.completedDate === todayStr);
       if (t.dueDate === todayStr) return true;
       if (!t.completed && t.dueDate && t.dueDate < todayStr) return true;
       if (t.completed && t.dueDate && t.dueDate < todayStr && t.completedDate === todayStr) return true;
@@ -406,5 +411,6 @@ export const filteredTasks = computed(() => {
     list = list.filter((t) => !t.completed && t.dueDate && t.dueDate > todayStr);
   }
 
-  return list;
+  // Always keep unfinished tasks at the top and move completed tasks to the bottom
+  return [...list].sort((a, b) => Number(a.completed) - Number(b.completed));
 });

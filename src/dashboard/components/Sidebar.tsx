@@ -32,13 +32,19 @@ export const Sidebar = ({
   const currentView = activeView.value;
   const isCollapsed = isSidebarCollapsed.value;
 
-  // Accurate counts for Today and Upcoming views
+  // Accurate counts for Today, Upcoming, and Inbox views
   const todayStr = getLocalDateStr();
-  const todayCount = tasks.value.filter(
-    (t) => !t.completed && (!t.dueDate || t.dueDate === todayStr || t.dueDate < todayStr),
-  ).length;
+  const todayCount = tasks.value.filter((t) => {
+    if (t.completed) return false;
+    const isInbox = !t.subjectId || !t.chapterId;
+    if (!t.dueDate) return !isInbox;
+    return t.dueDate === todayStr || t.dueDate < todayStr;
+  }).length;
   const upcomingCount = tasks.value.filter(
     (t) => !t.completed && t.dueDate && t.dueDate > todayStr,
+  ).length;
+  const inboxCount = tasks.value.filter(
+    (t) => !t.completed && (!t.subjectId || !t.chapterId),
   ).length;
 
   const logoUrl =
@@ -149,6 +155,32 @@ export const Sidebar = ({
             {!isCollapsed && <span>Upcoming</span>}
           </div>
           {upcomingCount > 0 && <span class={styles.badge}>{upcomingCount}</span>}
+        </button>
+
+        <button
+          class={`${styles.navItem} ${currentView.type === 'inbox' ? styles.navItemActive : ''}`}
+          onClick={() => {
+            activeView.value = { type: 'inbox' };
+          }}
+          title={isCollapsed ? `Inbox${inboxCount > 0 ? ` (${inboxCount})` : ''}` : undefined}
+        >
+          <div class={styles.navLeft}>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.3}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              width={18}
+              height={18}
+            >
+              <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+              <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+            </svg>
+            {!isCollapsed && <span>Inbox</span>}
+          </div>
+          {inboxCount > 0 && <span class={styles.badge}>{inboxCount}</span>}
         </button>
       </nav>
 

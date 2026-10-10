@@ -1,7 +1,7 @@
 .taskCard {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
   border-radius: var(--radius-xl);
   background-color: var(--bg-card);
@@ -12,10 +12,15 @@
   margin-bottom: 12px;
 }
 
+.taskCardExpanded {
+  align-items: flex-start;
+}
+
 .checkbox {
   width: 20px;
   height: 20px;
   min-width: 20px;
+  margin-top: 2px;
   border-radius: 6px;
   border: 1.5px solid var(--text-muted);
   background-color: transparent;
@@ -49,6 +54,10 @@
   margin: 0;
   line-height: 1.4;
   word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   transition: all var(--transition-fast);
 }
 
@@ -57,13 +66,73 @@
   color: var(--text-muted);
 }
 
+.descriptionWrapper {
+  margin-top: 4px;
+}
+
 .taskDescription {
   font-size: 13px;
   font-weight: 400;
   color: var(--text-secondary);
-  margin: 3px 0 0 0;
-  line-height: 1.4;
+  margin: 0;
+  line-height: 1.45;
   word-break: break-word;
+}
+
+.taskDescriptionClamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-line;
+}
+
+.taskDescriptionExpanded {
+  white-space: pre-wrap;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.taskDescriptionExpanded::-webkit-scrollbar {
+  width: 5px;
+}
+
+.taskDescriptionExpanded::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.taskDescriptionExpanded::-webkit-scrollbar-thumb {
+  background-color: var(--border-subtle, rgba(255, 255, 255, 0.15));
+  border-radius: 999px;
+}
+
+.showMoreBtn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-primary, #6366f1);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  display: inline-flex;
+  align-items: center;
+}
+
+.showMoreBtn:hover {
+  text-decoration: underline;
+}
+
+.noteLink {
+  color: var(--accent-primary, #6366f1);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.noteLink:hover {
+  filter: brightness(1.15);
 }
 
 .taskMeta {
