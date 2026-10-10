@@ -32,6 +32,11 @@
 .contentMaxWidth {
   max-width: 896px; /* max-w-4xl in Tailwind */
   margin: 0 auto;
+  transition: max-width var(--transition-normal);
+}
+
+.contentBoardWidth {
+  max-width: 100%;
 }
 
 .viewHeader {
@@ -63,6 +68,99 @@
   color: var(--text-primary);
   letter-spacing: -0.01em;
   margin: 0;
+}
+
+/* Grouped List View */
+.groupedListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.groupSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.groupDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.groupTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+
+.groupCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 1px 6px;
+  border-radius: 999px;
+  background-color: var(--bg-control);
+  line-height: 1.4;
+}
+
+/* Board View (Todoist-style Kanban columns) */
+.boardContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 24px;
+  min-height: calc(100vh - 170px);
+}
+
+.boardContainer::-webkit-scrollbar {
+  height: 7px;
+}
+
+.boardContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.boardContainer::-webkit-scrollbar-thumb {
+  background-color: var(--border-subtle);
+  border-radius: 999px;
+}
+
+.boardColumn {
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.boardColumnHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px 12px 4px;
+  position: sticky;
+  top: -32px;
+  background-color: var(--bg-main);
+  z-index: 5;
+}
+
+.boardColumnCards {
+  display: flex;
+  flex-direction: column;
 }
 
 

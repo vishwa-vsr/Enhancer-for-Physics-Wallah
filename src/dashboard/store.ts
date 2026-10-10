@@ -1,5 +1,16 @@
 import { signal, computed } from '@preact/signals';
-import { Task, Chapter, Subject, ActiveView, StudyPlannerData, TagItem } from './types';
+import {
+  Task,
+  Chapter,
+  Subject,
+  ActiveView,
+  StudyPlannerData,
+  TagItem,
+  LayoutMode,
+  GroupByMode,
+  ViewDisplaySettings,
+  TaskGroup,
+} from './types';
 
 const STORAGE_KEY = 'pw_study_planner_data';
 
@@ -26,6 +37,7 @@ export const customTags = signal<TagItem[]>(DEFAULT_TAGS);
 export const userName = signal<string>('');
 export const activeView = signal<ActiveView>({ type: 'today' });
 export const expandedSubjects = signal<Record<string, boolean>>({});
+export const displaySettings = signal<Record<string, ViewDisplaySettings>>({});
 export const isLoaded = signal<boolean>(false);
 
 const SIDEBAR_COLLAPSED_KEY = 'pw_sidebar_collapsed';
@@ -121,6 +133,9 @@ export async function loadPlannerData(): Promise<void> {
       if (loadedData.userName) {
         userName.value = loadedData.userName;
       }
+      if (loadedData.displaySettings) {
+        displaySettings.value = loadedData.displaySettings;
+      }
 
       // If we cleaned out legacy defaults, update storage
       if (hadDefaults) {
@@ -138,6 +153,7 @@ export async function loadPlannerData(): Promise<void> {
           if (updated.tasks) tasks.value = updated.tasks;
           if (updated.tags) customTags.value = updated.tags;
           if (updated.userName) userName.value = updated.userName;
+          if (updated.displaySettings) displaySettings.value = updated.displaySettings;
         }
       });
     }
@@ -156,6 +172,7 @@ async function persistData(): Promise<void> {
     tasks: tasks.value,
     tags: customTags.value,
     userName: userName.value,
+    displaySettings: displaySettings.value,
   };
 
   try {
@@ -221,6 +238,13 @@ export async function deleteSubject(id: string): Promise<void> {
     (t) => t.subjectId !== id && !chapterIdsToDelete.includes(t.chapterId),
   );
 
+  const nextDisplay = { ...displaySettings.value };
+  delete nextDisplay[`subject_${id}`];
+  for (const chapId of chapterIdsToDelete) {
+    delete nextDisplay[`chapter_${chapId}`];
+  }
+  displaySettings.value = nextDisplay;
+
   if (
     activeView.value.subjectId === id ||
     (activeView.value.chapterId && chapterIdsToDelete.includes(activeView.value.chapterId))
@@ -280,6 +304,10 @@ export async function renameChapter(id: string, newName: string): Promise<void> 
 export async function deleteChapter(id: string): Promise<void> {
   chapters.value = chapters.value.filter((c) => c.id !== id);
   tasks.value = tasks.value.filter((t) => t.chapterId !== id);
+
+  const nextDisplay = { ...displaySettings.value };
+  delete nextDisplay[`chapter_${id}`];
+  displaySettings.value = nextDisplay;
 
   if (activeView.value.chapterId === id) {
     activeView.value = { type: 'today' };
@@ -414,3 +442,221 @@ export const filteredTasks = computed(() => {
   // Always keep unfinished tasks at the top and move completed tasks to the bottom
   return [...list].sort((a, b) => Number(a.completed) - Number(b.completed));
 });
+
+export const DEFAULT_DISPLAY_SETTINGS: ViewDisplaySettings = {
+  layout: 'list',
+  groupBy: 'none',
+};
+
+export function getViewKey(view: ActiveView = activeView.value): string {
+  if (view.type === 'chapter') {
+    return view.chapterId ? `chapter_${view.chapterId}` : `subject_${view.subjectId || 'default'}`;
+  }
+  return view.type;
+}
+
+export const currentDisplaySettings = computed<ViewDisplaySettings>(() => {
+  const key = getViewKey(activeView.value);
+  return displaySettings.value[key] || DEFAULT_DISPLAY_SETTINGS;
+});
+
+export async function setViewLayout(layout: LayoutMode): Promise<void> {
+  const key = getViewKey(activeView.value);
+  const current = displaySettings.value[key] || DEFAULT_DISPLAY_SETTINGS;
+  let nextGroupBy = current.groupBy;
+
+  // Board layout needs columns: auto-switch from 'none' to 'date' (in Upcoming) or 'label'
+  if (layout === 'board' && nextGroupBy === 'none') {
+    nextGroupBy = activeView.value.type === 'upcoming' ? 'date' : 'label';
+  }
+
+  displaySettings.value = {
+    ...displaySettings.value,
+    [key]: { layout, groupBy: nextGroupBy },
+  };
+  await persistData();
+}
+
+export async function setViewGroupBy(groupBy: GroupByMode): Promise<void> {
+  const key = getViewKey(activeView.value);
+  const current = displaySettings.value[key] || DEFAULT_DISPLAY_SETTINGS;
+  let nextLayout = current.layout;
+
+  // If user switches back to 'none' (Normal) while in Board view, return to List layout
+  if (groupBy === 'none' && nextLayout === 'board') {
+    nextLayout = 'list';
+  }
+
+  displaySettings.value = {
+    ...displaySettings.value,
+    [key]: { layout: nextLayout, groupBy },
+  };
+  await persistData();
+}
+
+export async function resetViewDisplaySettings(): Promise<void> {
+  const key = getViewKey(activeView.value);
+  displaySettings.value = {
+    ...displaySettings.value,
+    [key]: { ...DEFAULT_DISPLAY_SETTINGS },
+  };
+  await persistData();
+}
+
+function formatDateGroupHeader(dateStr: string, todayStr: string, tomorrowStr: string): string {
+  try {
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+    const d = new Date(year, month, day);
+    const nowYear = new Date().getFullYear();
+
+    const shortMonthDay = d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
+
+    if (dateStr === todayStr) {
+      return `Today • ${shortMonthDay}`;
+    }
+    if (dateStr === tomorrowStr) {
+      return `Tomorrow • ${shortMonthDay}`;
+    }
+
+    const weekday = d.toLocaleDateString('en-US', { weekday: 'short' });
+    if (year !== nowYear) {
+      return `${shortMonthDay}, ${year}`;
+    }
+    return `${weekday}, ${shortMonthDay}`;
+  } catch {
+    return dateStr;
+  }
+}
+
+export const groupedTasks = computed<TaskGroup[]>(() => {
+  const list = filteredTasks.value;
+  const { groupBy } = currentDisplaySettings.value;
+
+  if (groupBy === 'none') {
+    return [{ id: 'all', title: '', tasks: list }];
+  }
+
+  if (groupBy === 'label') {
+    const groupsMap = new Map<string, TaskGroup>();
+    const knownTags = customTags.value;
+
+    // Seed groups in the user's configured Study Label order
+    for (const tag of knownTags) {
+      groupsMap.set(tag.name.toLowerCase(), {
+        id: `label_${tag.name}`,
+        title: tag.name,
+        color: tag.color || '#6366f1',
+        tasks: [],
+      });
+    }
+
+    const noLabelTasks: Task[] = [];
+
+    for (const task of list) {
+      const primaryTag = task.tags?.[0]?.trim();
+      if (!primaryTag) {
+        noLabelTasks.push(task);
+        continue;
+      }
+
+      const key = primaryTag.toLowerCase();
+      let group = groupsMap.get(key);
+      if (!group) {
+        group = {
+          id: `label_${primaryTag}`,
+          title: primaryTag,
+          color: '#6366f1',
+          tasks: [],
+        };
+        groupsMap.set(key, group);
+      }
+      group.tasks.push(task);
+    }
+
+    const result: TaskGroup[] = [];
+    for (const group of groupsMap.values()) {
+      if (group.tasks.length > 0) {
+        result.push(group);
+      }
+    }
+
+    if (noLabelTasks.length > 0) {
+      result.push({
+        id: '__no_label__',
+        title: 'No Label',
+        color: '#8e9bb0',
+        tasks: noLabelTasks,
+      });
+    }
+
+    return result;
+  }
+
+  // Group by Date ('date')
+  const todayStr = getLocalDateStr();
+  const tomorrowStr = getLocalTomorrowStr();
+  const overdueTasks: Task[] = [];
+  const noDateTasks: Task[] = [];
+  const dateBuckets = new Map<string, Task[]>();
+
+  for (const task of list) {
+    if (!task.dueDate) {
+      noDateTasks.push(task);
+    } else if (task.dueDate < todayStr) {
+      overdueTasks.push(task);
+    } else {
+      const bucket = dateBuckets.get(task.dueDate) || [];
+      bucket.push(task);
+      dateBuckets.set(task.dueDate, bucket);
+    }
+  }
+
+  const result: TaskGroup[] = [];
+
+  if (overdueTasks.length > 0) {
+    result.push({
+      id: '__overdue__',
+      title: 'Overdue',
+      color: '#ef4444',
+      tasks: overdueTasks,
+    });
+  }
+
+  const sortedDates = Array.from(dateBuckets.keys()).sort((a, b) => a.localeCompare(b));
+  for (const dateStr of sortedDates) {
+    const bucketTasks = dateBuckets.get(dateStr) || [];
+    if (bucketTasks.length > 0) {
+      const color =
+        dateStr === todayStr
+          ? '#10b981'
+          : dateStr === tomorrowStr
+          ? '#f59e0b'
+          : '#6366f1';
+      result.push({
+        id: `date_${dateStr}`,
+        title: formatDateGroupHeader(dateStr, todayStr, tomorrowStr),
+        color,
+        tasks: bucketTasks,
+      });
+    }
+  }
+
+  if (noDateTasks.length > 0) {
+    result.push({
+      id: '__no_date__',
+      title: 'No Date',
+      color: '#8e9bb0',
+      tasks: noDateTasks,
+    });
+  }
+
+  return result;
+});
+

@@ -7,6 +7,8 @@ import {
   tasks,
   activeView,
   filteredTasks,
+  groupedTasks,
+  currentDisplaySettings,
   deleteSubject,
   deleteChapter,
   deleteTask,
@@ -14,6 +16,7 @@ import {
 import { Subject, Chapter, Task } from './types';
 import { Sidebar } from './components/Sidebar';
 import { TaskItem } from './components/TaskItem';
+import { DisplayMenu } from './components/DisplayMenu';
 import { AddTaskDialog } from './components/AddTaskDialog';
 import { AddSubjectModal } from './components/AddSubjectModal';
 import { AddChapterModal } from './components/AddChapterModal';
@@ -45,6 +48,9 @@ export const App = () => {
 
   const currentView = activeView.value;
   const taskList = filteredTasks.value;
+  const groups = groupedTasks.value;
+  const { layout, groupBy } = currentDisplaySettings.value;
+  const isBoardView = currentView.type !== 'settings' && layout === 'board';
 
   const activeSubject =
     currentView.type === 'chapter'
@@ -129,6 +135,15 @@ export const App = () => {
     }
   };
 
+  const handleEditTask = (t: Task) => {
+    setEditingTask(t);
+    setTaskModalOpen(true);
+  };
+
+  const showDisplayMenu =
+    currentView.type !== 'settings' &&
+    !(currentView.type === 'chapter' && !currentView.chapterId);
+
   return (
     <div class={styles.dashboardContainer}>
       {/* Left Sidebar */}
@@ -142,7 +157,7 @@ export const App = () => {
       {/* Main Area */}
       <div class={styles.mainWrapper}>
         <main class={styles.scrollArea}>
-          <div class={styles.contentMaxWidth}>
+          <div class={`${styles.contentMaxWidth} ${isBoardView ? styles.contentBoardWidth : ''}`}>
             {currentView.type === 'settings' ? (
               <SettingsView />
             ) : (
@@ -156,10 +171,12 @@ export const App = () => {
                         {activeChapter ? `${activeChapter.name} Tasks` : `${activeSubject.name} Tasks`}
                       </h2>
                     </div>
+                    {showDisplayMenu && <DisplayMenu />}
                   </div>
                 ) : (
                   <div class={styles.viewHeader}>
                     <h2 class={styles.viewTitle}>{title}</h2>
+                    {showDisplayMenu && <DisplayMenu />}
                   </div>
                 )}
 
@@ -270,15 +287,66 @@ export const App = () => {
                       Add Task
                     </button>
                   </div>
+                ) : layout === 'board' ? (
+                  <div class={styles.boardContainer}>
+                    {groups.map((group) => (
+                      <div key={group.id} class={styles.boardColumn}>
+                        <div class={styles.boardColumnHeader}>
+                          {group.color && (
+                            <span
+                              class={styles.groupDot}
+                              style={{ backgroundColor: group.color }}
+                            />
+                          )}
+                          <span class={styles.groupTitle}>{group.title || 'Tasks'}</span>
+                          <span class={styles.groupCount}>{group.tasks.length}</span>
+                        </div>
+
+                        <div class={styles.boardColumnCards}>
+                          {group.tasks.map((task) => (
+                            <TaskItem
+                              key={task.id}
+                              task={task}
+                              onEditRequest={handleEditTask}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : groupBy !== 'none' ? (
+                  <div class={styles.groupedListContainer}>
+                    {groups.map((group) => (
+                      <section key={group.id} class={styles.groupSection}>
+                        <div class={styles.groupHeader}>
+                          {group.color && (
+                            <span
+                              class={styles.groupDot}
+                              style={{ backgroundColor: group.color }}
+                            />
+                          )}
+                          <span class={styles.groupTitle}>{group.title}</span>
+                          <span class={styles.groupCount}>{group.tasks.length}</span>
+                        </div>
+
+                        <div>
+                          {group.tasks.map((task) => (
+                            <TaskItem
+                              key={task.id}
+                              task={task}
+                              onEditRequest={handleEditTask}
+                            />
+                          ))}
+                        </div>
+                      </section>
+                    ))}
+                  </div>
                 ) : (
                   taskList.map((task) => (
                     <TaskItem
                       key={task.id}
                       task={task}
-                      onEditRequest={(t) => {
-                        setEditingTask(t);
-                        setTaskModalOpen(true);
-                      }}
+                      onEditRequest={handleEditTask}
                     />
                   ))
                 )}

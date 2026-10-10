@@ -44,6 +44,21 @@ export interface Subject {
 export type ViewType = 'today' | 'upcoming' | 'inbox' | 'chapter' | 'settings';
 export type DisplayMode = 'list' | 'flow';
 
+export type LayoutMode = 'list' | 'board';
+export type GroupByMode = 'none' | 'date' | 'label';
+
+export interface ViewDisplaySettings {
+  layout: LayoutMode;
+  groupBy: GroupByMode;
+}
+
+export interface TaskGroup {
+  id: string;
+  title: string;
+  color?: string;
+  tasks: Task[];
+}
+
 export interface ActiveView {
   type: ViewType;
   subjectId?: string;
@@ -57,4 +72,6 @@ export interface StudyPlannerData {
   tasks: Task[];
   tags?: TagItem[];
   userName?: string;
+  displaySettings?: Record<string, ViewDisplaySettings>;
 }
+
