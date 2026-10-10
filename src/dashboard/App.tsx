@@ -115,15 +115,8 @@ export const App = () => {
     setConfirmModalOpen(true);
   };
 
-  const handleDeleteTask = (task: Task) => {
-    setConfirmConfig({
-      title: 'Delete Task?',
-      message: `Are you sure you want to delete "${task.title}"? This cannot be undone.`,
-      action: async () => {
-        await deleteTask(task.id);
-      },
-    });
-    setConfirmModalOpen(true);
+  const handleDeleteTask = async (task: Task) => {
+    await deleteTask(task.id);
   };
 
   const canAddTask = subjects.value.length > 0 && chapters.value.length > 0;
@@ -288,7 +281,6 @@ export const App = () => {
                     <TaskItem
                       key={task.id}
                       task={task}
-                      onDeleteRequest={handleDeleteTask}
                       onEditRequest={(t) => {
                         setEditingTask(t);
                         setTaskModalOpen(true);
@@ -329,6 +321,7 @@ export const App = () => {
         editingTask={editingTask}
         defaultSubjectId={currentView.subjectId}
         defaultChapterId={currentView.chapterId}
+        onDelete={handleDeleteTask}
       />
 
       <AddSubjectModal

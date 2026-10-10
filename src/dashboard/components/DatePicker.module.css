@@ -9,14 +9,16 @@
   position: relative;
   width: 100%;
   border-radius: var(--radius-md, 10px);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border: none;
+  outline: none;
   background-color: var(--bg-control, #232a37);
-  transition: border-color var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease);
+  transition: background-color var(--transition-fast, 150ms ease);
 }
 
 .inputControl:focus-within {
-  border-color: var(--accent-primary, #6c63ff);
-  box-shadow: 0 0 0 2px var(--accent-dim, rgba(108, 99, 255, 0.2));
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .input {
@@ -74,7 +76,8 @@
   width: 290px;
   box-sizing: border-box;
   background-color: var(--bg-card, #191e28);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.14));
+  border: none;
+  outline: none;
   border-radius: var(--radius-xl, 16px);
   padding: 14px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.25);

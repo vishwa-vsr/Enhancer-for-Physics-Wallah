@@ -23,7 +23,7 @@
   padding: 9px 13px;
   border-radius: var(--radius-md, 10px);
   background-color: var(--bg-control, #232a37);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border: none;
   color: var(--text-primary, #f8fafc);
   font-size: 13.5px;
   font-family: var(--font-sans);
@@ -48,24 +48,20 @@
 
 .trigger:hover:not(:disabled) {
   background-color: var(--bg-control-hover, #2c3444);
-  border-color: rgba(255, 255, 255, 0.16);
 }
 
 :global(body.light-theme) .trigger {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-:global(body.light-theme) .trigger:hover:not(:disabled) {
-  border-color: rgba(0, 0, 0, 0.16);
-}
-
 .triggerOpen {
-  border-color: var(--accent-primary, #6c63ff) !important;
-  box-shadow: 0 0 0 2px var(--accent-dim, rgba(108, 99, 255, 0.2)), 0 6px 18px rgba(0, 0, 0, 0.3) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3) !important;
 }
 
 :global(body.light-theme) .triggerOpen {
-  box-shadow: 0 0 0 2px var(--accent-dim, rgba(90, 85, 234, 0.15)), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 .triggerDisabled {
@@ -121,9 +117,9 @@
   background-color: rgba(25, 30, 40, 0.98);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   border-radius: var(--radius-md, 12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 1px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   padding: 5px;
   z-index: 999;
   display: flex;
@@ -138,7 +134,7 @@
 
 :global(body.light-theme) .menuContainer {
   background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: none;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 

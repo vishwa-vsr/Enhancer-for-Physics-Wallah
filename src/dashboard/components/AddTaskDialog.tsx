@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
-import { subjects, chapters, addTask, updateTask, activeView, customTags } from '../store';
+import { subjects, chapters, addTask, updateTask, deleteTask, activeView, customTags } from '../store';
 import { Task } from '../types';
 import { DatePicker } from './DatePicker';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
@@ -11,6 +11,7 @@ interface AddTaskDialogProps {
   defaultSubjectId?: string;
   defaultChapterId?: string;
   editingTask?: Task | null;
+  onDelete?: (task: Task) => void | Promise<void>;
 }
 
 export const AddTaskDialog = ({
@@ -19,6 +20,7 @@ export const AddTaskDialog = ({
   defaultSubjectId,
   defaultChapterId,
   editingTask,
+  onDelete,
 }: AddTaskDialogProps) => {
   if (!open) return null;
 
@@ -58,8 +60,10 @@ export const AddTaskDialog = ({
   const [dueDate, setDueDate] = useState(editingTask?.dueDate || '');
   const [description, setDescription] = useState(editingTask?.description || '');
   const [selectedTag, setSelectedTag] = useState<string>(editingTask?.tags?.[0] || '');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
+    setConfirmDelete(false);
     if (editingTask) {
       setTitle(editingTask.title);
       setDueDate(editingTask.dueDate || '');
@@ -118,6 +122,20 @@ export const AddTaskDialog = ({
       });
     }
 
+    onClose();
+  };
+
+  const handleDelete = async () => {
+    if (!editingTask) return;
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
+    }
+    if (onDelete) {
+      await onDelete(editingTask);
+    } else {
+      await deleteTask(editingTask.id);
+    }
     onClose();
   };
 
@@ -224,18 +242,45 @@ export const AddTaskDialog = ({
                 </div>
               </div>
 
-              {/* Modal Footer anchored at bottom right */}
-              <div class={styles.modalFooter}>
-                <button type="button" class={styles.cancelBtn} onClick={onClose}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  class={styles.submitBtn}
-                  disabled={!title.trim() || !selectedSubjectId || !selectedChapterId}
-                >
-                  {editingTask ? 'Save Changes' : 'Add Task'}
-                </button>
+              {/* Modal Footer anchored at bottom of right column */}
+              <div
+                class={styles.modalFooter}
+                style={{ justifyContent: editingTask ? 'space-between' : 'flex-end' }}
+              >
+                {editingTask && (
+                  <button
+                    type="button"
+                    class={`${styles.deleteActionBtn} ${confirmDelete ? styles.deleteActionBtnConfirm : ''}`}
+                    onClick={handleDelete}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      width="14"
+                      height="14"
+                    >
+                      <path d="M3 6h18" />
+                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    </svg>
+                    {confirmDelete ? 'Confirm?' : 'Delete'}
+                  </button>
+                )}
+
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <button type="button" class={styles.cancelBtn} onClick={onClose}>
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    class={styles.submitBtn}
+                    disabled={!title.trim() || !selectedSubjectId || !selectedChapterId}
+                  >
+                    {editingTask ? 'Save Changes' : 'Add Task'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
