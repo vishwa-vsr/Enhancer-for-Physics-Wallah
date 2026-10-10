@@ -58,7 +58,6 @@ export const AddTaskDialog = ({
   const [dueDate, setDueDate] = useState(editingTask?.dueDate || '');
   const [description, setDescription] = useState(editingTask?.description || '');
   const [selectedTag, setSelectedTag] = useState<string>(editingTask?.tags?.[0] || '');
-  const [isNotesOpen, setIsNotesOpen] = useState<boolean>(!!editingTask?.description);
 
   useEffect(() => {
     if (editingTask) {
@@ -68,13 +67,11 @@ export const AddTaskDialog = ({
       setSelectedChapterId(editingTask.chapterId);
       setDescription(editingTask.description || '');
       setSelectedTag(editingTask.tags?.[0] || '');
-      setIsNotesOpen(!!editingTask.description);
     } else {
       setTitle('');
       setDueDate('');
       setDescription('');
       setSelectedTag('');
-      setIsNotesOpen(false);
       const subId = defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
       setSelectedSubjectId(subId);
       const chaps = chapters.value.filter((c) => c.subjectId === subId);
@@ -144,135 +141,103 @@ export const AddTaskDialog = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {/* Subject & Chapter Selectors */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '12px',
-              marginBottom: '16px',
-            }}
-          >
-            <div class={styles.formGroup} style={{ marginBottom: 0 }}>
-              <label class={styles.label}>Subject</label>
-              <SelectDropdown
-                options={subjectOptions}
-                value={selectedSubjectId}
-                onChange={(val) => setSelectedSubjectId(val)}
-                placeholder="Select Subject"
-                ariaLabel="Subject"
-              />
+        <form onSubmit={handleSubmit} class={styles.dialogForm}>
+          <div class={styles.columnsContainer}>
+            {/* Left Column: Title and Notes */}
+            <div class={styles.leftColumn}>
+              <div class={styles.formGroup}>
+                <label class={styles.label}>Task Title</label>
+                <input
+                  type="text"
+                  class={styles.input}
+                  placeholder="Enter task title..."
+                  value={title}
+                  onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
+                  required
+                  autoFocus
+                />
+              </div>
+
+              <div class={`${styles.formGroup} ${styles.notesGroup}`}>
+                <label class={styles.label}>Notes</label>
+                <textarea
+                  class={styles.textarea}
+                  placeholder="Add notes, formulas, or details (optional)..."
+                  value={description}
+                  onInput={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
+                  rows={5}
+                />
+              </div>
             </div>
 
-            <div class={styles.formGroup} style={{ marginBottom: 0 }}>
-              <label class={styles.label}>Chapter</label>
-              <SelectDropdown
-                options={chapterOptions}
-                value={selectedChapterId}
-                onChange={(val) => setSelectedChapterId(val)}
-                placeholder={availableChapters.length === 0 ? 'No chapters' : 'Select Chapter'}
-                disabled={availableChapters.length === 0}
-                emptyLabel="No chapters available"
-                ariaLabel="Chapter"
-              />
-            </div>
-          </div>
+            {/* Right Column: Subject, Chapter, Due Date, Study Label, Actions */}
+            <div class={styles.rightColumn}>
+              <div class={styles.rightFields}>
+                {/* Subject & Chapter side-by-side */}
+                <div class={styles.twoCol}>
+                  <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+                    <label class={styles.label}>Subject</label>
+                    <SelectDropdown
+                      options={subjectOptions}
+                      value={selectedSubjectId}
+                      onChange={(val) => setSelectedSubjectId(val)}
+                      placeholder="Select Subject"
+                      ariaLabel="Subject"
+                    />
+                  </div>
 
-          {/* Title */}
-          <div class={styles.formGroup}>
-            <label class={styles.label}>Task Title</label>
-            <input
-              type="text"
-              class={styles.input}
-              placeholder="Enter task title..."
-              value={title}
-              onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
-              required
-              autoFocus
-            />
-          </div>
+                  <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+                    <label class={styles.label}>Chapter</label>
+                    <SelectDropdown
+                      options={chapterOptions}
+                      value={selectedChapterId}
+                      onChange={(val) => setSelectedChapterId(val)}
+                      placeholder={availableChapters.length === 0 ? 'No chapters' : 'Select Chapter'}
+                      disabled={availableChapters.length === 0}
+                      emptyLabel="No chapters available"
+                      ariaLabel="Chapter"
+                    />
+                  </div>
+                </div>
 
-          {/* Due Date & Study Label side-by-side */}
-          <div class={styles.twoCol}>
-            <div class={styles.formGroup} style={{ marginBottom: 0 }}>
-              <label class={styles.label}>Due Date</label>
-              <DatePicker
-                value={dueDate}
-                onChange={(val) => setDueDate(val)}
-                placeholder="dd-mm-yyyy"
-              />
-            </div>
+                {/* Due Date & Study Label side-by-side */}
+                <div class={styles.twoCol}>
+                  <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+                    <label class={styles.label}>Due Date</label>
+                    <DatePicker
+                      value={dueDate}
+                      onChange={(val) => setDueDate(val)}
+                      placeholder="dd-mm-yyyy"
+                    />
+                  </div>
 
-            <div class={styles.formGroup} style={{ marginBottom: 0 }}>
-              <label class={styles.label}>Study Label</label>
-              <SelectDropdown
-                options={tagOptions}
-                value={selectedTag}
-                onChange={(val) => setSelectedTag(val)}
-                placeholder="No Label"
-                ariaLabel="Study Label"
-              />
-            </div>
-          </div>
+                  <div class={styles.formGroup} style={{ marginBottom: 0 }}>
+                    <label class={styles.label}>Study Label</label>
+                    <SelectDropdown
+                      options={tagOptions}
+                      value={selectedTag}
+                      onChange={(val) => setSelectedTag(val)}
+                      placeholder="No Label"
+                      ariaLabel="Study Label"
+                    />
+                  </div>
+                </div>
+              </div>
 
-          {/* Collapsible Notes / Description */}
-          {isNotesOpen ? (
-            <div class={styles.formGroup}>
-              <div class={styles.notesHeader}>
-                <label class={styles.label} style={{ margin: 0 }}>Notes</label>
+              {/* Modal Footer anchored at bottom right */}
+              <div class={styles.modalFooter}>
+                <button type="button" class={styles.cancelBtn} onClick={onClose}>
+                  Cancel
+                </button>
                 <button
-                  type="button"
-                  class={styles.notesRemoveBtn}
-                  onClick={() => {
-                    setDescription('');
-                    setIsNotesOpen(false);
-                  }}
+                  type="submit"
+                  class={styles.submitBtn}
+                  disabled={!title.trim() || !selectedSubjectId || !selectedChapterId}
                 >
-                  Remove notes
+                  {editingTask ? 'Save Changes' : 'Add Task'}
                 </button>
               </div>
-              <textarea
-                class={styles.textarea}
-                placeholder="Add notes, formulas, or details (optional)..."
-                value={description}
-                onInput={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
-                rows={3}
-              />
             </div>
-          ) : (
-            <button
-              type="button"
-              class={styles.notesToggleBtn}
-              onClick={() => setIsNotesOpen(true)}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2.2}
-                width="14"
-                height="14"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              <span>Add notes</span>
-            </button>
-          )}
-
-          {/* Modal Footer */}
-          <div class={styles.modalFooter}>
-            <button type="button" class={styles.cancelBtn} onClick={onClose}>
-              Cancel
-            </button>
-            <button
-              type="submit"
-              class={styles.submitBtn}
-              disabled={!title.trim() || !selectedSubjectId || !selectedChapterId}
-            >
-              {editingTask ? 'Save Changes' : 'Add Task'}
-            </button>
           </div>
         </form>
       </div>
