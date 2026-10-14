@@ -3,6 +3,11 @@
   width: 100%;
 }
 
+.inlineContainer {
+  width: auto;
+  display: inline-flex;
+}
+
 .inputControl {
   display: flex;
   align-items: center;
@@ -72,7 +77,6 @@
 /* Calendar Popup */
 .popup {
   position: absolute;
-  left: 0;
   width: 290px;
   box-sizing: border-box;
   background-color: var(--bg-card, #191e28);
@@ -84,6 +88,16 @@
   z-index: 1050;
   font-family: var(--font-sans);
   user-select: none;
+}
+
+.popupAlignLeft {
+  left: 0;
+  right: auto;
+}
+
+.popupAlignRight {
+  right: 0;
+  left: auto;
 }
 
 .popupTop {
@@ -173,38 +187,62 @@
 /* Weekday Headers */
 .weekdaysGrid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, 34px);
+  justify-content: space-between;
   text-align: center;
   margin-bottom: 6px;
 }
 
 .weekdayLabel {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 600;
   color: var(--text-muted, #8e9bb0);
-  padding: 4px 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  line-height: 1;
 }
 
 /* Days Grid */
 .daysGrid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  grid-template-columns: repeat(7, 34px);
+  justify-content: space-between;
+  row-gap: 4px;
 }
 
 .dayCell {
-  aspect-ratio: 1;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   background: transparent;
   border: none;
-  border-radius: var(--radius-sm, 6px);
-  font-size: 12.5px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  font-family: inherit;
   color: var(--text-primary, #f8fafc);
   cursor: pointer;
   position: relative;
   transition: all var(--transition-fast, 150ms ease);
+}
+
+.dayText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
 }
 
 .dayCell:hover:not(.daySelected) {
@@ -219,7 +257,8 @@
 .dayToday:not(.daySelected) {
   font-weight: 700;
   color: var(--accent-focus, #8b85ff);
-  box-shadow: inset 0 0 0 1px var(--accent-primary, #6c63ff);
+  box-shadow: inset 0 0 0 1.5px var(--accent-primary, #6c63ff);
+  border-radius: 8px;
 }
 
 .daySelected {
@@ -227,6 +266,7 @@
   color: #ffffff !important;
   font-weight: 700;
   box-shadow: 0 2px 8px var(--accent-dim, rgba(108, 99, 255, 0.4));
+  border-radius: 8px;
 }
 
 /* Grid for Months and Years Selection */

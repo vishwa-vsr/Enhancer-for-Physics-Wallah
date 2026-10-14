@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import {
   subjects,
   chapters,
@@ -196,8 +196,36 @@ export const AddTaskDialog = ({
     onClose();
   };
 
+  const isOverlayMouseDownRef = useRef(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
+  const handleOverlayMouseDown = (e: MouseEvent) => {
+    isOverlayMouseDownRef.current = e.target === e.currentTarget;
+  };
+
+  const handleOverlayClick = (e: MouseEvent) => {
+    if (isOverlayMouseDownRef.current && e.target === e.currentTarget) {
+      onClose();
+    }
+    isOverlayMouseDownRef.current = false;
+  };
+
   return (
-    <div class={styles.modalOverlay} onClick={onClose}>
+    <div
+      class={styles.modalOverlay}
+      onMouseDown={handleOverlayMouseDown}
+      onClick={handleOverlayClick}
+    >
       <div class={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div class={styles.modalHeader}>
           <h2>{editingTask ? 'Edit Task' : 'Add New Task'}</h2>
@@ -241,7 +269,7 @@ export const AddTaskDialog = ({
                   placeholder="Add notes, formulas, or details (optional)..."
                   value={description}
                   onInput={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
-                  rows={5}
+                  rows={10}
                 />
               </div>
             </div>
@@ -249,41 +277,39 @@ export const AddTaskDialog = ({
             {/* Right Column: Subject, Chapter, Due Date, Study Label, Actions */}
             <div class={styles.rightColumn}>
               <div class={styles.rightFields}>
-                {/* Subject & Chapter side-by-side (hidden in Inbox tab) */}
+                {/* Subject & Chapter (hidden in Inbox tab) */}
                 {!hideSubjectChapter && (
                   <>
-                    <div class={styles.twoCol}>
-                      <div class={styles.formGroupFlush}>
-                        <label class={styles.label}>Subject</label>
-                        <SelectDropdown
-                          options={subjectOptions}
-                          value={selectedSubjectId}
-                          onChange={(val) => setSelectedSubjectId(val)}
-                          placeholder="None (Inbox)"
-                          ariaLabel="Subject"
-                          renderIcon={renderStudyIcon}
-                        />
-                      </div>
+                    <div class={styles.formGroupFlush}>
+                      <label class={styles.label}>Subject</label>
+                      <SelectDropdown
+                        options={subjectOptions}
+                        value={selectedSubjectId}
+                        onChange={(val) => setSelectedSubjectId(val)}
+                        placeholder="None (Inbox)"
+                        ariaLabel="Subject"
+                        renderIcon={renderStudyIcon}
+                      />
+                    </div>
 
-                      <div class={styles.formGroupFlush}>
-                        <label class={styles.label}>Chapter</label>
-                        <SelectDropdown
-                          options={chapterOptions}
-                          value={selectedChapterId}
-                          onChange={(val) => setSelectedChapterId(val)}
-                          placeholder={
-                            !selectedSubjectId
-                              ? 'None (Inbox)'
-                              : availableChapters.length === 0
-                              ? 'No chapters'
-                              : 'Select Chapter'
-                          }
-                          disabled={!selectedSubjectId || availableChapters.length === 0}
-                          emptyLabel="No chapters available"
-                          ariaLabel="Chapter"
-                          renderIcon={renderStudyIcon}
-                        />
-                      </div>
+                    <div class={styles.formGroupFlush}>
+                      <label class={styles.label}>Chapter</label>
+                      <SelectDropdown
+                        options={chapterOptions}
+                        value={selectedChapterId}
+                        onChange={(val) => setSelectedChapterId(val)}
+                        placeholder={
+                          !selectedSubjectId
+                            ? 'None (Inbox)'
+                            : availableChapters.length === 0
+                            ? 'No chapters'
+                            : 'Select Chapter'
+                        }
+                        disabled={!selectedSubjectId || availableChapters.length === 0}
+                        emptyLabel="No chapters available"
+                        ariaLabel="Chapter"
+                        renderIcon={renderStudyIcon}
+                      />
                     </div>
 
                     {selectedSubjectId && availableChapters.length === 0 && (
@@ -294,27 +320,26 @@ export const AddTaskDialog = ({
                   </>
                 )}
 
-                {/* Due Date & Study Label: stacked cleanly in Inbox mode, side-by-side otherwise */}
-                <div class={hideSubjectChapter ? undefined : styles.twoCol}>
-                  <div class={hideSubjectChapter ? styles.formGroup : styles.formGroupFlush}>
-                    <label class={styles.label}>Due Date</label>
-                    <DatePicker
-                      value={dueDate}
-                      onChange={(val) => setDueDate(val)}
-                      placeholder="dd-mm-yyyy"
-                    />
-                  </div>
+                {/* Due Date */}
+                <div class={styles.formGroupFlush}>
+                  <label class={styles.label}>Due Date</label>
+                  <DatePicker
+                    value={dueDate}
+                    onChange={(val) => setDueDate(val)}
+                    placeholder="dd-mm-yyyy"
+                  />
+                </div>
 
-                  <div class={styles.formGroupFlush}>
-                    <label class={styles.label}>Study Label</label>
-                    <SelectDropdown
-                      options={tagOptions}
-                      value={selectedTag}
-                      onChange={(val) => setSelectedTag(val)}
-                      placeholder="No Label"
-                      ariaLabel="Study Label"
-                    />
-                  </div>
+                {/* Study Label */}
+                <div class={styles.formGroupFlush}>
+                  <label class={styles.label}>Study Label</label>
+                  <SelectDropdown
+                    options={tagOptions}
+                    value={selectedTag}
+                    onChange={(val) => setSelectedTag(val)}
+                    placeholder="No Label"
+                    ariaLabel="Study Label"
+                  />
                 </div>
               </div>
 

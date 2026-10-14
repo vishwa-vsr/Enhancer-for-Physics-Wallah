@@ -30,7 +30,7 @@
 }
 
 .contentMaxWidth {
-  max-width: 896px; /* max-w-4xl in Tailwind */
+  max-width: 940px; /* 5% increase from 896px */
   margin: 0 auto;
   transition: max-width var(--transition-normal);
 }
@@ -136,9 +136,9 @@
 }
 
 .boardColumn {
-  width: 300px;
-  min-width: 300px;
-  max-width: 300px;
+  width: 326px;
+  min-width: 326px;
+  max-width: 326px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;

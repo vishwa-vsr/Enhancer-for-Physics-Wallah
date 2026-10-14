@@ -1,3 +1,4 @@
+import { ComponentChildren } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import styles from './DatePicker.module.css';
 
@@ -6,6 +7,13 @@ interface DatePickerProps {
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  inline?: boolean;
+  renderTrigger?: (props: {
+    isOpen: boolean;
+    toggle: () => void;
+    formattedDate: string;
+    clear: (e?: Event) => void;
+  }) => ComponentChildren;
 }
 
 const MONTH_NAMES = [
@@ -63,9 +71,12 @@ export const DatePicker = ({
   onChange,
   placeholder = 'dd-mm-yyyy',
   disabled = false,
+  inline = false,
+  renderTrigger,
 }: DatePickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [placement, setPlacement] = useState<'top' | 'bottom'>('top');
+  const [horizontalAlign, setHorizontalAlign] = useState<'left' | 'right'>('left');
   const [view, setView] = useState<'day' | 'month' | 'year'>('day');
 
   // Parse initial selected date or default to today
@@ -110,7 +121,7 @@ export const DatePicker = ({
     }
   }, [value, isOpen]);
 
-  // Compute smart placement (open upwards if near bottom of screen)
+  // Compute smart placement (open upwards if near bottom of screen) and horizontal alignment
   useEffect(() => {
     if (isOpen && containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
@@ -121,6 +132,13 @@ export const DatePicker = ({
         setPlacement('top');
       } else {
         setPlacement('bottom');
+      }
+
+      // Check if popup would extend past the right edge of viewport
+      if (rect.left + 295 > window.innerWidth) {
+        setHorizontalAlign('right');
+      } else {
+        setHorizontalAlign('left');
       }
     }
   }, [isOpen]);
@@ -278,73 +296,89 @@ export const DatePicker = ({
   const yearsList = Array.from({ length: 12 }, (_, i) => yearStart + i);
 
   return (
-    <div class={styles.datePickerContainer} ref={containerRef}>
-      {/* Input Control Box */}
-      <div class={styles.inputControl} onClick={toggleOpen}>
-        <input
-          type="text"
-          class={styles.input}
-          placeholder={placeholder}
-          value={formatIsoToDisplay(value)}
-          readOnly
-          disabled={disabled}
-        />
+    <div
+      class={`${styles.datePickerContainer} ${inline ? styles.inlineContainer : ''}`}
+      ref={containerRef}
+    >
+      {renderTrigger ? (
+        renderTrigger({
+          isOpen,
+          toggle: toggleOpen,
+          formattedDate: formatIsoToDisplay(value),
+          clear: handleClear,
+        })
+      ) : (
+        /* Input Control Box */
+        <div class={styles.inputControl} onClick={toggleOpen}>
+          <input
+            type="text"
+            class={styles.input}
+            placeholder={placeholder}
+            value={formatIsoToDisplay(value)}
+            readOnly
+            disabled={disabled}
+          />
 
-        <div class={styles.iconControls}>
-          {value && !disabled && (
+          <div class={styles.iconControls}>
+            {value && !disabled && (
+              <button
+                type="button"
+                class={`${styles.iconBtn} ${styles.clearIconBtn}`}
+                onClick={handleClear}
+                title="Clear date"
+                aria-label="Clear date"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  width="15"
+                  height="15"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
+
             <button
               type="button"
-              class={`${styles.iconBtn} ${styles.clearIconBtn}`}
-              onClick={handleClear}
-              title="Clear date"
-              aria-label="Clear date"
+              class={styles.iconBtn}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleOpen();
+              }}
+              disabled={disabled}
+              title="Open calendar"
+              aria-label="Open calendar"
             >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={2}
-                width="15"
-                height="15"
+                width="16"
+                height="16"
               >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
             </button>
-          )}
-
-          <button
-            type="button"
-            class={styles.iconBtn}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleOpen();
-            }}
-            disabled={disabled}
-            title="Open calendar"
-            aria-label="Open calendar"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              width="16"
-              height="16"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
-          </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Floating Calendar Popup */}
       {isOpen && (
         <div
-          class={`${styles.popup} ${placement === 'top' ? styles.popupTop : styles.popupBottom}`}
+          class={`${styles.popup} ${
+            placement === 'top' ? styles.popupTop : styles.popupBottom
+          } ${
+            horizontalAlign === 'right' ? styles.popupAlignRight : styles.popupAlignLeft
+          }`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -439,7 +473,7 @@ export const DatePicker = ({
                         setIsOpen(false);
                       }}
                     >
-                      {cell.dayNumber}
+                      <span class={styles.dayText}>{cell.dayNumber}</span>
                     </button>
                   );
                 })}
@@ -463,7 +497,7 @@ export const DatePicker = ({
                     setView('day');
                   }}
                 >
-                  {name}
+                  <span class={styles.dayText}>{name}</span>
                 </button>
               ))}
             </div>
@@ -485,7 +519,7 @@ export const DatePicker = ({
                     setView('month');
                   }}
                 >
-                  {y}
+                  <span class={styles.dayText}>{y}</span>
                 </button>
               ))}
             </div>
