@@ -20,7 +20,6 @@ import { DisplayMenu } from './components/DisplayMenu';
 import { AddTaskDialog } from './components/AddTaskDialog';
 import { AddSubjectModal } from './components/AddSubjectModal';
 import { AddChapterModal } from './components/AddChapterModal';
-import { ConfirmModal } from './components/ConfirmModal';
 import { SettingsView } from './components/SettingsView';
 import styles from './App.module.css';
 
@@ -33,13 +32,6 @@ export const App = () => {
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [editingChapter, setEditingChapter] = useState<Chapter | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [confirmConfig, setConfirmConfig] = useState<{
-    title: string;
-    message: string;
-    action: () => Promise<void>;
-  }>({ title: '', message: '', action: async () => {} });
 
   useEffect(() => {
     initTheme();
@@ -89,18 +81,8 @@ export const App = () => {
     setSubjectModalOpen(true);
   };
 
-  const handleDeleteSubject = (sub: Subject) => {
-    const subTasks = tasks.value.filter((t) => t.subjectId === sub.id);
-    const subChaps = chapters.value.filter((c) => c.subjectId === sub.id);
-
-    setConfirmConfig({
-      title: `Delete '${sub.name}'?`,
-      message: `This will delete '${sub.name}' along with its ${subChaps.length} chapter(s) and ${subTasks.length} task(s). Continue?`,
-      action: async () => {
-        await deleteSubject(sub.id);
-      },
-    });
-    setConfirmModalOpen(true);
+  const handleDeleteSubject = async (sub: Subject) => {
+    await deleteSubject(sub.id);
   };
 
   const handleRenameChapter = (chap: Chapter) => {
@@ -109,17 +91,8 @@ export const App = () => {
     setChapterModalOpen(true);
   };
 
-  const handleDeleteChapter = (chap: Chapter) => {
-    const chapTasks = tasks.value.filter((t) => t.chapterId === chap.id);
-
-    setConfirmConfig({
-      title: `Delete '${chap.name}'?`,
-      message: `This will delete '${chap.name}' and its ${chapTasks.length} task(s). Continue?`,
-      action: async () => {
-        await deleteChapter(chap.id);
-      },
-    });
-    setConfirmModalOpen(true);
+  const handleDeleteChapter = async (chap: Chapter) => {
+    await deleteChapter(chap.id);
   };
 
   const handleDeleteTask = async (task: Task) => {
@@ -325,17 +298,6 @@ export const App = () => {
         onClose={() => setChapterModalOpen(false)}
         editingChapter={editingChapter}
         onDelete={handleDeleteChapter}
-      />
-
-      <ConfirmModal
-        open={confirmModalOpen}
-        title={confirmConfig.title}
-        message={confirmConfig.message}
-        onConfirm={async () => {
-          await confirmConfig.action();
-          setConfirmModalOpen(false);
-        }}
-        onCancel={() => setConfirmModalOpen(false)}
       />
     </div>
   );

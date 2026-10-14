@@ -166,11 +166,15 @@ export const Sidebar = ({
             const chapterIconLightColor = getLightShade(subColor, 30);
             const isSubActive =
               currentView.type === 'chapter' && currentView.subjectId === sub.id;
+            const isSubjectSelected =
+              isSubActive && (!currentView.chapterId || subChapters.length === 0);
 
             return (
               <div key={sub.id} class={styles.subjectGroup}>
                 <div
-                  class={`${styles.subjectItem} ${isCollapsed && isSubActive ? styles.subjectItemActiveCollapsed : ''}`}
+                  class={`${styles.subjectItem} ${
+                    isCollapsed && isSubActive ? styles.subjectItemActiveCollapsed : ''
+                  } ${!isCollapsed && isSubjectSelected ? styles.subjectItemActive : ''}`}
                   title={isCollapsed ? sub.name : undefined}
                   onClick={() => {
                     if (isCollapsed) {

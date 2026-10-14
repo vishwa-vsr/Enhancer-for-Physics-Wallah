@@ -489,7 +489,9 @@ export const DatePicker = ({
                   key={name}
                   type="button"
                   class={`${styles.gridItemBtn} ${
-                    idx === viewMonth && viewYear === parsedYear ? styles.gridItemSelected : ''
+                    Boolean(value) && idx === parsedMonth && viewYear === parsedYear
+                      ? styles.gridItemSelected
+                      : ''
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -511,7 +513,7 @@ export const DatePicker = ({
                   key={y}
                   type="button"
                   class={`${styles.gridItemBtn} ${
-                    y === viewYear ? styles.gridItemSelected : ''
+                    Boolean(value) && y === parsedYear ? styles.gridItemSelected : ''
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();

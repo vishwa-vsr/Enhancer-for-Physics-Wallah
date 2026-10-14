@@ -263,8 +263,7 @@
   opacity: 1;
 }
 
-.editBtn,
-.deleteBtn {
+.editBtn {
   background: transparent;
   border: none;
   color: var(--text-muted);
@@ -280,9 +279,4 @@
 .editBtn:hover {
   color: var(--accent-primary, #6366f1);
   background-color: var(--accent-dim, rgba(99, 102, 241, 0.12));
-}
-
-.deleteBtn:hover {
-  color: #ef4444;
-  background-color: rgba(239, 68, 68, 0.1);
 }

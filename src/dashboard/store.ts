@@ -88,7 +88,7 @@ export async function loadPlannerData(): Promise<void> {
     }
 
     if (loadedData) {
-      if (loadedData.tags && loadedData.tags.length > 0) {
+      if (Array.isArray(loadedData.tags)) {
         customTags.value = loadedData.tags;
       }
 
@@ -187,10 +187,23 @@ export async function addSubject(
     icon: icon || 'book',
     createdAt: Date.now(),
   };
+  const defaultChapter: Chapter = {
+    id: 'chap_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+    name: 'Chapter 1',
+    subjectId: newSubject.id,
+    icon: 'file-text',
+    createdAt: Date.now(),
+  };
   subjects.value = [...subjects.value, newSubject];
+  chapters.value = [...chapters.value, defaultChapter];
   expandedSubjects.value = {
     ...expandedSubjects.value,
     [newSubject.id]: true,
+  };
+  activeView.value = {
+    type: 'chapter',
+    subjectId: newSubject.id,
+    chapterId: defaultChapter.id,
   };
   await persistData();
   return newSubject;
@@ -552,8 +565,12 @@ export const groupedTasks = computed<TaskGroup[]>(() => {
   for (const task of list) {
     if (!task.dueDate) {
       noDateTasks.push(task);
-    } else if (task.dueDate < todayStr) {
+    } else if (task.dueDate < todayStr && !task.completed) {
       overdueTasks.push(task);
+    } else if (task.completed && task.completedDate === todayStr && activeView.value.type === 'today') {
+      const bucket = dateBuckets.get(todayStr) || [];
+      bucket.push(task);
+      dateBuckets.set(todayStr, bucket);
     } else {
       const bucket = dateBuckets.get(task.dueDate) || [];
       bucket.push(task);

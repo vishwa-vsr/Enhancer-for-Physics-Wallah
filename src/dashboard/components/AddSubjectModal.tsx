@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'preact/hooks';
-import { addSubject, updateSubject } from '../store';
+import { useState, useEffect, useRef } from 'preact/hooks';
+import { addSubject, updateSubject, deleteSubject } from '../store';
 import { Subject } from '../types';
 import { StudyIcon, STUDY_ICONS_LIST } from '@shared/components/StudyIcons';
 import { getAlphaColor } from '@shared/theme';
@@ -30,6 +30,7 @@ export const AddSubjectModal = ({
     editingSubject && editingSubject.icon ? editingSubject.icon : 'calculator',
   );
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const categories = ['All', 'Math', 'Physics', 'Chemistry & Biology', 'Study & General'];
 
@@ -38,12 +39,45 @@ export const AddSubjectModal = ({
       ? STUDY_ICONS_LIST
       : STUDY_ICONS_LIST.filter((i) => i.category === selectedCategory);
 
+  const isOverlayMouseDownRef = useRef(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
+  const handleOverlayMouseDown = (e: MouseEvent) => {
+    isOverlayMouseDownRef.current = e.target === e.currentTarget;
+  };
+
+  const handleOverlayClick = (e: MouseEvent) => {
+    if (isOverlayMouseDownRef.current && e.target === e.currentTarget) {
+      onClose();
+    }
+    isOverlayMouseDownRef.current = false;
+  };
+
   useEffect(() => {
     setName(editingSubject ? editingSubject.name : '');
     setColor(editingSubject && editingSubject.color ? editingSubject.color : PRESET_COLORS[0]);
     setIcon(editingSubject && editingSubject.icon ? editingSubject.icon : 'calculator');
     setSelectedCategory('All');
+    setConfirmDelete(false);
   }, [editingSubject, open]);
+
+  useEffect(() => {
+    if (!confirmDelete) return;
+    const timer = setTimeout(() => {
+      setConfirmDelete(false);
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, [confirmDelete]);
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -61,15 +95,26 @@ export const AddSubjectModal = ({
     onClose();
   };
 
-  const handleDelete = () => {
-    if (editingSubject && onDelete) {
-      onClose();
-      onDelete(editingSubject);
+  const handleDelete = async () => {
+    if (!editingSubject) return;
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
     }
+    if (onDelete) {
+      onDelete(editingSubject);
+    } else {
+      await deleteSubject(editingSubject.id);
+    }
+    onClose();
   };
 
   return (
-    <div class={styles.modalOverlay} onClick={onClose}>
+    <div
+      class={styles.modalOverlay}
+      onMouseDown={handleOverlayMouseDown}
+      onClick={handleOverlayClick}
+    >
       <div class={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div class={styles.modalHeader}>
           <h2>{editingSubject ? 'Edit Subject' : 'Add New Subject'}</h2>
@@ -177,7 +222,11 @@ export const AddSubjectModal = ({
             class={`${styles.modalFooter} ${editingSubject ? styles.modalFooterSpaceBetween : ''}`}
           >
             {editingSubject && (
-              <button type="button" class={styles.deleteActionBtn} onClick={handleDelete}>
+              <button
+                type="button"
+                class={`${styles.deleteActionBtn} ${confirmDelete ? styles.deleteActionBtnConfirm : ''}`}
+                onClick={handleDelete}
+              >
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -190,7 +239,7 @@ export const AddSubjectModal = ({
                   <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                   <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
                 </svg>
-                Delete Subject
+                {confirmDelete ? 'Confirm?' : 'Delete Subject'}
               </button>
             )}
 

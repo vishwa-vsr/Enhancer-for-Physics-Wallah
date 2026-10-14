@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'preact/hooks';
-import { addChapter, updateChapter, subjects } from '../store';
+import { useState, useEffect, useRef } from 'preact/hooks';
+import { addChapter, updateChapter, deleteChapter, subjects } from '../store';
 import { Chapter } from '../types';
 import { StudyIcon, STUDY_ICONS_LIST } from '@shared/components/StudyIcons';
 import { getAlphaColor } from '@shared/theme';
@@ -28,6 +28,7 @@ export const AddChapterModal = ({
     editingChapter && editingChapter.icon ? editingChapter.icon : 'file-text',
   );
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const categories = ['All', 'Math', 'Physics', 'Chemistry & Biology', 'Study & General'];
 
@@ -36,11 +37,44 @@ export const AddChapterModal = ({
       ? STUDY_ICONS_LIST
       : STUDY_ICONS_LIST.filter((i) => i.category === selectedCategory);
 
+  const isOverlayMouseDownRef = useRef(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
+  const handleOverlayMouseDown = (e: MouseEvent) => {
+    isOverlayMouseDownRef.current = e.target === e.currentTarget;
+  };
+
+  const handleOverlayClick = (e: MouseEvent) => {
+    if (isOverlayMouseDownRef.current && e.target === e.currentTarget) {
+      onClose();
+    }
+    isOverlayMouseDownRef.current = false;
+  };
+
   useEffect(() => {
     setName(editingChapter ? editingChapter.name : '');
     setIcon(editingChapter && editingChapter.icon ? editingChapter.icon : 'file-text');
     setSelectedCategory('All');
+    setConfirmDelete(false);
   }, [editingChapter, open]);
+
+  useEffect(() => {
+    if (!confirmDelete) return;
+    const timer = setTimeout(() => {
+      setConfirmDelete(false);
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, [confirmDelete]);
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -57,15 +91,26 @@ export const AddChapterModal = ({
     onClose();
   };
 
-  const handleDelete = () => {
-    if (editingChapter && onDelete) {
-      onClose();
-      onDelete(editingChapter);
+  const handleDelete = async () => {
+    if (!editingChapter) return;
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
     }
+    if (onDelete) {
+      onDelete(editingChapter);
+    } else {
+      await deleteChapter(editingChapter.id);
+    }
+    onClose();
   };
 
   return (
-    <div class={styles.modalOverlay} onClick={onClose}>
+    <div
+      class={styles.modalOverlay}
+      onMouseDown={handleOverlayMouseDown}
+      onClick={handleOverlayClick}
+    >
       <div class={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div class={styles.modalHeader}>
           <h2>
@@ -161,7 +206,11 @@ export const AddChapterModal = ({
             class={`${styles.modalFooter} ${editingChapter ? styles.modalFooterSpaceBetween : ''}`}
           >
             {editingChapter && (
-              <button type="button" class={styles.deleteActionBtn} onClick={handleDelete}>
+              <button
+                type="button"
+                class={`${styles.deleteActionBtn} ${confirmDelete ? styles.deleteActionBtnConfirm : ''}`}
+                onClick={handleDelete}
+              >
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -173,7 +222,7 @@ export const AddChapterModal = ({
                   <path d="M3 6h18" />
                   <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                 </svg>
-                Delete Chapter
+                {confirmDelete ? 'Confirm?' : 'Delete Chapter'}
               </button>
             )}
 

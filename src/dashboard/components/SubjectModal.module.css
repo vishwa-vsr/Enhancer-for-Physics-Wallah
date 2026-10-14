@@ -313,6 +313,18 @@
   background-color: rgba(239, 68, 68, 0.1);
 }
 
+.deleteActionBtnConfirm {
+  background-color: rgba(239, 68, 68, 0.16) !important;
+  color: #f87171 !important;
+  font-weight: 600 !important;
+}
+
+.deleteActionBtnConfirm:hover {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+
+
 .cancelBtn {
   padding: 8px 16px;
   border-radius: var(--radius-md, 8px);

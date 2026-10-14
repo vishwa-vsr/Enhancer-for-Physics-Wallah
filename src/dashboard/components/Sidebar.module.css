@@ -183,6 +183,17 @@
   color: var(--text-primary);
 }
 
+.subjectItemActive {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+:global(body.light-theme) .subjectItemActive {
+  background-color: #f0f2f5;
+  color: var(--text-primary);
+}
+
 .subjectMenuBtn {
   display: flex;
   align-items: center;
@@ -202,6 +213,12 @@
 
 .subjectItem:hover .subjectMenuBtn {
   opacity: 1;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .subjectMenuBtn {
+    opacity: 0.7;
+  }
 }
 
 .subjectMenuBtn:hover {
@@ -320,6 +337,12 @@
 
 .chapterItem:hover .chapterMenuBtn {
   opacity: 1;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .chapterMenuBtn {
+    opacity: 0.7;
+  }
 }
 
 .chapterMenuBtn:hover {

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'preact/hooks';
 import {
   subjects,
   chapters,
+  addChapter,
   addTask,
   updateTask,
   deleteTask,
@@ -132,6 +133,14 @@ export const AddTaskDialog = ({
   }, [open, editingTask]);
 
   useEffect(() => {
+    if (!confirmDelete) return;
+    const timer = setTimeout(() => {
+      setConfirmDelete(false);
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, [confirmDelete]);
+
+  useEffect(() => {
     if (!selectedSubjectId) {
       setSelectedChapterId('');
       return;
@@ -147,7 +156,9 @@ export const AddTaskDialog = ({
   }, [selectedSubjectId]);
 
   const isValidSelection =
-    hideSubjectChapter || !selectedSubjectId || Boolean(selectedSubjectId && selectedChapterId);
+    hideSubjectChapter ||
+    !selectedSubjectId ||
+    Boolean(selectedSubjectId && (selectedChapterId || availableChapters.length === 0));
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -156,7 +167,12 @@ export const AddTaskDialog = ({
     const trimmedDesc = description.trim();
     const tagsArray = selectedTag ? [selectedTag] : [];
     const finalSubjectId = hideSubjectChapter || !selectedSubjectId ? '' : selectedSubjectId;
-    const finalChapterId = hideSubjectChapter || !selectedSubjectId ? '' : selectedChapterId;
+    let finalChapterId = hideSubjectChapter || !selectedSubjectId ? '' : selectedChapterId;
+
+    if (finalSubjectId && !finalChapterId) {
+      const newChap = await addChapter(finalSubjectId, 'Chapter 1');
+      finalChapterId = newChap.id;
+    }
 
     if (editingTask) {
       await updateTask(editingTask.id, {
@@ -314,7 +330,7 @@ export const AddTaskDialog = ({
 
                     {selectedSubjectId && availableChapters.length === 0 && (
                       <p class={styles.noChaptersHint}>
-                        No chapters in this subject yet — choose "None (Inbox)" or add a chapter first.
+                        No chapters in this subject yet — "Chapter 1" will be automatically created.
                       </p>
                     )}
                   </>
