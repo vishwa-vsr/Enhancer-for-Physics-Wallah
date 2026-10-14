@@ -49,7 +49,7 @@ export const App = () => {
   const currentView = activeView.value;
   const taskList = filteredTasks.value;
   const groups = groupedTasks.value;
-  const { layout, groupBy } = currentDisplaySettings.value;
+  const { layout } = currentDisplaySettings.value;
   const isBoardView = currentView.type !== 'settings' && layout === 'board';
 
   const activeSubject =
@@ -248,7 +248,7 @@ export const App = () => {
                       </div>
                     ))}
                   </div>
-                ) : groupBy !== 'none' ? (
+                ) : (
                   <div class={styles.groupedListContainer}>
                     {groups.map((group) => (
                       <section key={group.id} class={styles.groupSection}>
@@ -275,14 +275,6 @@ export const App = () => {
                       </section>
                     ))}
                   </div>
-                ) : (
-                  taskList.map((task) => (
-                    <TaskItem
-                      key={task.id}
-                      task={task}
-                      onEditRequest={handleEditTask}
-                    />
-                  ))
                 )}
               </>
             )}

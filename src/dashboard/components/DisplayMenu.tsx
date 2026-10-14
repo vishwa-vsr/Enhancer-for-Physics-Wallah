@@ -10,7 +10,6 @@ import { SelectDropdown } from '@shared/components/SelectDropdown';
 import styles from './DisplayMenu.module.css';
 
 const GROUPING_OPTIONS = [
-  { value: 'none', label: 'Normal' },
   { value: 'date', label: 'Date' },
   { value: 'label', label: 'Label' },
 ];
@@ -21,7 +20,7 @@ export const DisplayMenu = () => {
 
   const view = activeView.value;
   const { layout, groupBy } = currentDisplaySettings.value;
-  const isModified = layout !== 'list' || groupBy !== 'none';
+  const isModified = layout !== 'list' || groupBy !== 'date';
 
   // Close popover if user navigates to another view
   useEffect(() => {

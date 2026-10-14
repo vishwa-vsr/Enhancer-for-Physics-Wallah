@@ -408,7 +408,7 @@ export const filteredTasks = computed(() => {
 
 export const DEFAULT_DISPLAY_SETTINGS: ViewDisplaySettings = {
   layout: 'list',
-  groupBy: 'none',
+  groupBy: 'date',
 };
 
 export function getViewKey(view: ActiveView = activeView.value): string {
@@ -420,39 +420,33 @@ export function getViewKey(view: ActiveView = activeView.value): string {
 
 export const currentDisplaySettings = computed<ViewDisplaySettings>(() => {
   const key = getViewKey(activeView.value);
-  return displaySettings.value[key] || DEFAULT_DISPLAY_SETTINGS;
+  const raw = displaySettings.value[key];
+  if (!raw) return DEFAULT_DISPLAY_SETTINGS;
+  const groupBy: GroupByMode = raw.groupBy === 'label' ? 'label' : 'date';
+  return {
+    layout: raw.layout || 'list',
+    groupBy,
+  };
 });
 
 export async function setViewLayout(layout: LayoutMode): Promise<void> {
   const key = getViewKey(activeView.value);
-  const current = displaySettings.value[key] || DEFAULT_DISPLAY_SETTINGS;
-  let nextGroupBy = current.groupBy;
-
-  // Board layout needs columns: auto-switch from 'none' to 'date' (in Upcoming) or 'label'
-  if (layout === 'board' && nextGroupBy === 'none') {
-    nextGroupBy = activeView.value.type === 'upcoming' ? 'date' : 'label';
-  }
+  const current = currentDisplaySettings.value;
 
   displaySettings.value = {
     ...displaySettings.value,
-    [key]: { layout, groupBy: nextGroupBy },
+    [key]: { layout, groupBy: current.groupBy },
   };
   await persistData();
 }
 
 export async function setViewGroupBy(groupBy: GroupByMode): Promise<void> {
   const key = getViewKey(activeView.value);
-  const current = displaySettings.value[key] || DEFAULT_DISPLAY_SETTINGS;
-  let nextLayout = current.layout;
-
-  // If user switches back to 'none' (Normal) while in Board view, return to List layout
-  if (groupBy === 'none' && nextLayout === 'board') {
-    nextLayout = 'list';
-  }
+  const current = currentDisplaySettings.value;
 
   displaySettings.value = {
     ...displaySettings.value,
-    [key]: { layout: nextLayout, groupBy },
+    [key]: { layout: current.layout, groupBy },
   };
   await persistData();
 }
@@ -492,11 +486,6 @@ function formatDateGroupHeader(dateStr: string, todayStr: string, tomorrowStr: s
 export const groupedTasks = computed<TaskGroup[]>(() => {
   const list = filteredTasks.value;
   const { groupBy } = currentDisplaySettings.value;
-
-  if (groupBy === 'none') {
-    return [{ id: 'all', title: '', tasks: list }];
-  }
-
   if (groupBy === 'label') {
     const groupsMap = new Map<string, TaskGroup>();
     const knownTags = customTags.value;

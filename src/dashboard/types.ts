@@ -35,7 +35,7 @@ export interface Subject {
 export type ViewType = 'today' | 'upcoming' | 'inbox' | 'chapter' | 'settings';
 
 export type LayoutMode = 'list' | 'board';
-export type GroupByMode = 'none' | 'date' | 'label';
+export type GroupByMode = 'date' | 'label';
 
 export interface ViewDisplaySettings {
   layout: LayoutMode;
