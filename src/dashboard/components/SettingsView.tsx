@@ -3,6 +3,7 @@ import { customTags, addCustomTag, deleteCustomTag } from '../store';
 import styles from './SettingsView.module.css';
 
 import { PRESET_COLORS } from '@shared/colors';
+import { ColorPicker } from '@shared/components/ColorPicker';
 
 import pwLogoImg from '../../icons/icon48.png';
 import chromeImg from '../../icons/chrome.png';
@@ -302,16 +303,10 @@ export const SettingsView = () => {
 
             <div class={styles.colorPickerRow}>
               <span class={styles.colorPickerLabel}>Color:</span>
-              {PRESET_COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  class={`${styles.colorDot} ${selectedColor === c ? styles.colorDotSelected : ''}`}
-                  style={{ backgroundColor: c }}
-                  onClick={() => setSelectedColor(c)}
-                  title={c}
-                />
-              ))}
+              <ColorPicker
+                value={selectedColor}
+                onChange={(c) => setSelectedColor(c)}
+              />
             </div>
 
             {labelError && <p class={styles.errorText}>{labelError}</p>}

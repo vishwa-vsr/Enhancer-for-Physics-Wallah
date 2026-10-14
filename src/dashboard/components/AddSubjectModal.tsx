@@ -13,6 +13,7 @@ interface AddSubjectModalProps {
 }
 
 import { PRESET_COLORS } from '@shared/colors';
+import { ColorPicker } from '@shared/components/ColorPicker';
 
 export const AddSubjectModal = ({
   open,
@@ -151,18 +152,7 @@ export const AddSubjectModal = ({
           {/* Color Picker */}
           <div class={styles.formGroup}>
             <label class={styles.label}>Subject Color</label>
-            <div class={styles.colorGrid}>
-              {PRESET_COLORS.map((c) => (
-                <button
-                  type="button"
-                  key={c}
-                  class={`${styles.colorBtn} ${color === c ? styles.colorBtnSelected : ''}`}
-                  onClick={() => setColor(c)}
-                >
-                  <span class={styles.colorInner} style={{ backgroundColor: c }} />
-                </button>
-              ))}
-            </div>
+            <ColorPicker value={color} onChange={(c) => setColor(c)} />
           </div>
 
           {/* Icon Picker */}
