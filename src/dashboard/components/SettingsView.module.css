@@ -102,7 +102,20 @@
   background-color: var(--bg-control);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
   transition: all 0.15s ease;
+}
+
+.labelChip:hover {
+  background-color: var(--bg-control-hover);
+  transform: translateY(-1px);
+}
+
+.labelChipEditing {
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 2px var(--accent-dim) !important;
+  background-color: var(--bg-control-hover);
 }
 
 .labelDot {
@@ -110,6 +123,18 @@
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.labelEditIcon {
+  opacity: 0;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  transition: opacity 0.15s ease;
+}
+
+.labelChip:hover .labelEditIcon {
+  opacity: 0.8;
 }
 
 .labelDeleteBtn {
@@ -137,6 +162,57 @@
   border: 1px dashed var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 16px;
+}
+
+.editingBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 12.5px;
+  color: var(--accent-primary);
+  font-weight: 500;
+  padding: 7px 12px;
+  background: var(--accent-dim);
+  border-radius: var(--radius-md);
+}
+
+.cancelEditBannerBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.cancelEditBannerBtn:hover {
+  color: var(--text-primary);
+}
+
+.btnGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cancelTagBtn {
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.cancelTagBtn:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
 }
 
 .colorPickerRow {

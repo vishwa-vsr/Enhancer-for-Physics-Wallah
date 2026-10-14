@@ -381,6 +381,48 @@ export async function deleteCustomTag(name: string): Promise<void> {
   await persistData();
 }
 
+export async function updateCustomTag(
+  oldName: string,
+  newName: string,
+  newColor: string,
+): Promise<boolean> {
+  const trimmedOld = oldName.trim().toLowerCase();
+  const trimmedNew = newName.trim();
+  if (!trimmedNew) return false;
+
+  // Check if renamed to another existing tag
+  if (
+    trimmedOld !== trimmedNew.toLowerCase() &&
+    customTags.value.some((t) => t.name.toLowerCase() === trimmedNew.toLowerCase())
+  ) {
+    return false;
+  }
+
+  // Update tag in customTags
+  customTags.value = customTags.value.map((t) =>
+    t.name.toLowerCase() === trimmedOld
+      ? { name: trimmedNew, color: newColor || t.color }
+      : t,
+  );
+
+  // If name changed, update all tasks that have this tag
+  if (trimmedOld !== trimmedNew.toLowerCase()) {
+    tasks.value = tasks.value.map((t) =>
+      t.tags?.some((tag) => tag.toLowerCase() === trimmedOld)
+        ? {
+            ...t,
+            tags: t.tags.map((tag) =>
+              tag.toLowerCase() === trimmedOld ? trimmedNew : tag,
+            ),
+          }
+        : t,
+    );
+  }
+
+  await persistData();
+  return true;
+}
+
 // Computed helpers
 export const filteredTasks = computed(() => {
   let list = tasks.value;

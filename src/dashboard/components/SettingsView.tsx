@@ -1,5 +1,5 @@
-import { useState } from 'preact/hooks';
-import { customTags, addCustomTag, deleteCustomTag } from '../store';
+import { useState, useRef } from 'preact/hooks';
+import { customTags, addCustomTag, updateCustomTag, deleteCustomTag } from '../store';
 import styles from './SettingsView.module.css';
 
 import { PRESET_COLORS } from '@shared/colors';
@@ -212,8 +212,25 @@ export const SettingsView = () => {
   const [newLabelName, setNewLabelName] = useState('');
   const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[0]);
   const [labelError, setLabelError] = useState('');
+  const [editingTag, setEditingTag] = useState<{ name: string; color: string } | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleAddLabel = async (e: Event) => {
+  const handleStartEdit = (tag: { name: string; color: string }) => {
+    setEditingTag(tag);
+    setNewLabelName(tag.name);
+    setSelectedColor(tag.color);
+    setLabelError('');
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTag(null);
+    setNewLabelName('');
+    setSelectedColor(PRESET_COLORS[0]);
+    setLabelError('');
+  };
+
+  const handleFormSubmit = async (e: Event) => {
     e.preventDefault();
     setLabelError('');
     const trimmed = newLabelName.trim();
@@ -221,15 +238,28 @@ export const SettingsView = () => {
       setLabelError('Please enter a label name.');
       return;
     }
-    const success = await addCustomTag(trimmed, selectedColor);
-    if (!success) {
-      setLabelError(`Label '${trimmed}' already exists.`);
-      return;
+
+    if (editingTag) {
+      const success = await updateCustomTag(editingTag.name, trimmed, selectedColor);
+      if (!success) {
+        setLabelError(`Label '${trimmed}' already exists.`);
+        return;
+      }
+      handleCancelEdit();
+    } else {
+      const success = await addCustomTag(trimmed, selectedColor);
+      if (!success) {
+        setLabelError(`Label '${trimmed}' already exists.`);
+        return;
+      }
+      setNewLabelName('');
     }
-    setNewLabelName('');
   };
 
   const handleDeleteLabel = async (name: string) => {
+    if (editingTag && editingTag.name.toLowerCase() === name.toLowerCase()) {
+      handleCancelEdit();
+    }
     await deleteCustomTag(name);
   };
 
@@ -259,46 +289,102 @@ export const SettingsView = () => {
 
         {/* Existing labels */}
         <div class={styles.labelsGrid}>
-          {customTags.value.map((tag) => (
-            <span
-              key={tag.name}
-              class={styles.labelChip}
-              style={{ borderColor: `${tag.color}40` }}
-            >
-              <span class={styles.labelDot} style={{ backgroundColor: tag.color }} />
-              <span>{tag.name}</span>
-              <button
-                type="button"
-                class={styles.labelDeleteBtn}
-                title={`Delete label "${tag.name}"`}
-                onClick={() => handleDeleteLabel(tag.name)}
+          {customTags.value.map((tag) => {
+            const isEditing = editingTag?.name.toLowerCase() === tag.name.toLowerCase();
+            return (
+              <span
+                key={tag.name}
+                class={`${styles.labelChip} ${isEditing ? styles.labelChipEditing : ''}`}
+                style={{ borderColor: `${tag.color}40` }}
+                onClick={() => handleStartEdit(tag)}
+                title={`Click to edit "${tag.name}"`}
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="12" height="12">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </span>
-          ))}
+                <span class={styles.labelDot} style={{ backgroundColor: tag.color }} />
+                <span>{tag.name}</span>
+                <span class={styles.labelEditIcon} title="Edit label">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    width="11"
+                    height="11"
+                  >
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                  </svg>
+                </span>
+                <button
+                  type="button"
+                  class={styles.labelDeleteBtn}
+                  title={`Delete label "${tag.name}"`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteLabel(tag.name);
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="12" height="12">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </span>
+            );
+          })}
         </div>
 
-        {/* Create new label */}
+        {/* Create / Edit label */}
         <div class={styles.addLabelSection}>
-          <form onSubmit={handleAddLabel}>
+          <form onSubmit={handleFormSubmit}>
+            {editingTag && (
+              <div class={styles.editingBanner}>
+                <span>
+                  Editing label: <strong>{editingTag.name}</strong>
+                </span>
+                <button
+                  type="button"
+                  class={styles.cancelEditBannerBtn}
+                  onClick={handleCancelEdit}
+                >
+                  Cancel edit
+                </button>
+              </div>
+            )}
+
             <div class={styles.formRow}>
               <input
+                ref={inputRef}
                 type="text"
                 class={styles.tagInput}
-                placeholder="New label name (e.g. PYQs, Formula Sheet)..."
+                placeholder={
+                  editingTag
+                    ? 'Update label name...'
+                    : 'New label name (e.g. PYQs, Formula Sheet)...'
+                }
                 value={newLabelName}
                 onInput={(e) => {
                   setNewLabelName((e.target as HTMLInputElement).value);
                   if (labelError) setLabelError('');
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape' && editingTag) {
+                    handleCancelEdit();
+                  }
+                }}
               />
-              <button type="submit" class={styles.addTagBtn}>
-                + Add Label
-              </button>
+              <div class={styles.btnGroup}>
+                <button type="submit" class={styles.addTagBtn}>
+                  {editingTag ? 'Save Changes' : '+ Add Label'}
+                </button>
+                {editingTag && (
+                  <button
+                    type="button"
+                    class={styles.cancelTagBtn}
+                    onClick={handleCancelEdit}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
             </div>
 
             <div class={styles.colorPickerRow}>
