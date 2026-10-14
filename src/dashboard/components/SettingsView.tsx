@@ -335,21 +335,6 @@ export const SettingsView = () => {
         {/* Create / Edit label */}
         <div class={styles.addLabelSection}>
           <form onSubmit={handleFormSubmit}>
-            {editingTag && (
-              <div class={styles.editingBanner}>
-                <span>
-                  Editing label: <strong>{editingTag.name}</strong>
-                </span>
-                <button
-                  type="button"
-                  class={styles.cancelEditBannerBtn}
-                  onClick={handleCancelEdit}
-                >
-                  Cancel edit
-                </button>
-              </div>
-            )}
-
             <div class={styles.formRow}>
               <input
                 ref={inputRef}
