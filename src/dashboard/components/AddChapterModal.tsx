@@ -29,7 +29,7 @@ export const AddChapterModal = ({
   );
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
-  const categories = ['All', 'Math', 'Physics', 'Chemistry & Biology', 'Tech & Code', 'Study & General'];
+  const categories = ['All', 'Math', 'Physics', 'Chemistry & Biology', 'Study & General'];
 
   const displayedIcons =
     selectedCategory === 'All'

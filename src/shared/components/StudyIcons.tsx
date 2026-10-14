@@ -9,7 +9,7 @@ export interface StudyIconProps {
 export interface IconDefinition {
   id: string;
   label: string;
-  category: 'Math' | 'Physics' | 'Chemistry & Biology' | 'Tech & Code' | 'Study & General';
+  category: 'Math' | 'Physics' | 'Chemistry & Biology' | 'Study & General';
 }
 
 export const STUDY_ICONS_LIST: IconDefinition[] = [
@@ -275,18 +275,6 @@ export const STUDY_ICONS_LIST: IconDefinition[] = [
   { id: 'plant', label: 'Sprout / Botany', category: 'Chemistry & Biology' },
   { id: 'droplet', label: 'Solution Droplet', category: 'Chemistry & Biology' },
   { id: 'flame', label: 'Bunsen Flame', category: 'Chemistry & Biology' },
-  // ----------------- TECH & CODE -----------------
-  { id: 'bot', label: 'AI Robot Assistant', category: 'Tech & Code' },
-  { id: 'nano-technology', label: 'Nanotechnology Lattice', category: 'Tech & Code' },
-  { id: 'siri', label: 'Digital Voice AI', category: 'Tech & Code' },
-  { id: 'code', label: 'Code Tag', category: 'Tech & Code' },
-  { id: 'terminal', label: 'Command Terminal', category: 'Tech & Code' },
-  { id: 'cpu', label: 'CPU Microchip', category: 'Tech & Code' },
-  { id: 'binary', label: 'Binary Stream', category: 'Tech & Code' },
-  { id: 'database', label: 'Database', category: 'Tech & Code' },
-  { id: 'laptop', label: 'Laptop', category: 'Tech & Code' },
-  { id: 'network', label: 'Network Graph', category: 'Tech & Code' },
-  { id: 'bug', label: 'Bug / Debug', category: 'Tech & Code' },
   // ----------------- STUDY & GENERAL -----------------
   { id: 'book', label: 'Textbook', category: 'Study & General' },
   { id: 'notebook', label: 'Notebook', category: 'Study & General' },
@@ -1941,12 +1929,6 @@ export const StudyIcon = ({
         </svg>
       );
 
-    case 'bot':
-      return (
-        <svg {...commonProps} viewBox="48.0 422.0 24 24">
-          <path d="M52 437.5C50.8954 437.5 50 436.605 50 435.5C50 434.395 50.8954 433.5 52 433.5"/><path d="M68 437.5C69.1046 437.5 70 436.605 70 435.5C70 434.395 69.1046 433.5 68 433.5"/><path d="M55 429L55 426"/><path d="M65 429L65 426"/><circle cx="55" cy="425" r="1"/><circle cx="65" cy="425" r="1"/><path d="M61.5 429H58.5C55.6716 429 54.2574 429 53.3787 429.909C52.5 430.818 52.5 432.281 52.5 435.207C52.5 438.133 52.5 439.596 53.3787 440.505C54.2574 441.414 55.6716 441.414 58.5 441.414H59.5253C60.3169 441.414 60.5962 441.577 61.1417 442.171C61.745 442.828 62.6791 443.705 63.5242 443.909C64.7254 444.199 64.8599 443.798 64.5919 442.653C64.5156 442.327 64.3252 441.806 64.526 441.502C64.6385 441.332 64.8259 441.29 65.2008 441.206C65.7922 441.074 66.2798 440.858 66.6213 440.505C67.5 439.596 67.5 438.133 67.5 435.207C67.5 432.281 67.5 430.818 66.6213 429.909C65.7426 429 64.3284 429 61.5 429Z"/><path d="M57.5 437C58.0701 437.607 58.9777 438 60 438C61.0223 438 61.9299 437.607 62.5 437"/><path d="M57.009 433H57"/><path d="M63.009 433H63"/>
-        </svg>
-      );
 
     case 'black-hole':
       return (
@@ -1983,12 +1965,6 @@ export const StudyIcon = ({
         </svg>
       );
 
-    case 'nano-technology':
-      return (
-        <svg {...commonProps} viewBox="354.0 422.0 24 24">
-          <path d="M359 438L364 435M368 433L373 430M366 427V432M366 436V441M359 430L364 433M368 435L373 438"/><path d="M374.5 431V436.5M367.5 442.5L373 439.5M358.5 439.5L364.5 442.5M357.5 437V431M358.5 428.5L364.5 425.5M373.5 428.5L367.5 425.5"/><circle cx="366" cy="425.5" r="1.5"/><circle cx="366" cy="442.5" r="1.5"/><circle cx="357.5" cy="429.5" r="1.5"/><circle cx="374.5" cy="429.5" r="1.5"/><circle cx="374.5" cy="438.5" r="1.5"/><circle cx="357.5" cy="438.5" r="1.5"/><path d="M366 431.75L368 432.875V435.125L366 436.25L364 435.125V432.875L366 431.75Z"/>
-        </svg>
-      );
 
     case 'pendulum':
       return (
@@ -2018,12 +1994,6 @@ export const StudyIcon = ({
         </svg>
       );
 
-    case 'siri':
-      return (
-        <svg {...commonProps} viewBox="634.0 378.0 24 24">
-          <circle cx="646" cy="390" r="10"/><path d="M637 385.592C643 387.32 644.5 383 653 383"/><path d="M636 390C645 390 647 383.499 652 383"/><path d="M652 397.88C646.719 399.145 640.444 390 636 390"/><path d="M638 396C644.5 396 648.686 388 655 388"/>
-        </svg>
-      );
 
     case 'submerge':
       return (
@@ -2169,90 +2139,6 @@ export const StudyIcon = ({
       return (
         <svg {...commonProps}>
           <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-        </svg>
-      );
-
-    case 'code':
-      return (
-        <svg {...commonProps}>
-          <polyline points="16 18 22 12 16 6" />
-          <polyline points="8 6 2 12 8 18" />
-        </svg>
-      );
-
-    case 'terminal':
-      return (
-        <svg {...commonProps}>
-          <polyline points="4 17 10 11 4 5" />
-          <line x1="12" x2="20" y1="19" y2="19" />
-        </svg>
-      );
-
-    case 'cpu':
-      return (
-        <svg {...commonProps}>
-          <rect width="12" height="12" x="6" y="6" rx="2" />
-          <line x1="9" x2="9" y1="1" y2="6" />
-          <line x1="15" x2="15" y1="1" y2="6" />
-          <line x1="9" x2="9" y1="18" y2="23" />
-          <line x1="15" x2="15" y1="18" y2="23" />
-          <line x1="1" x2="6" y1="9" y2="9" />
-          <line x1="1" x2="6" y1="15" y2="15" />
-          <line x1="18" x2="23" y1="9" y2="9" />
-          <line x1="18" x2="23" y1="15" y2="15" />
-        </svg>
-      );
-
-    case 'binary':
-      return (
-        <svg {...commonProps}>
-          <rect width="4" height="6" x="6" y="4" rx="1" />
-          <line x1="16" x2="16" y1="4" y2="10" />
-          <line x1="8" x2="8" y1="14" y2="20" />
-          <rect width="4" height="6" x="14" y="14" rx="1" />
-        </svg>
-      );
-
-    case 'database':
-      return (
-        <svg {...commonProps}>
-          <ellipse cx="12" cy="5" rx="9" ry="3" />
-          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-          <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
-        </svg>
-      );
-
-    case 'laptop':
-      return (
-        <svg {...commonProps}>
-          <rect width="18" height="12" x="3" y="4" rx="2" />
-          <line x1="2" x2="22" y1="20" y2="20" />
-        </svg>
-      );
-
-    case 'network':
-      return (
-        <svg {...commonProps}>
-          <circle cx="12" cy="5" r="2.5" />
-          <circle cx="5" cy="18" r="2.5" />
-          <circle cx="19" cy="18" r="2.5" />
-          <line x1="10" x2="6.5" y1="7" y2="16" />
-          <line x1="14" x2="17.5" y1="7" y2="16" />
-          <line x1="7.5" x2="16.5" y1="18" y2="18" />
-        </svg>
-      );
-
-    case 'bug':
-      return (
-        <svg {...commonProps}>
-          <rect width="8" height="12" x="8" y="7" rx="4" />
-          <path d="m19 7-3 2" />
-          <path d="m5 7 3 2" />
-          <path d="m19 17-3-2" />
-          <path d="m5 17 3-2" />
-          <path d="M2 12h4" />
-          <path d="M18 12h4" />
-          <path d="M10 4h4" />
         </svg>
       );
 
