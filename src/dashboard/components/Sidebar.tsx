@@ -35,8 +35,7 @@ export const Sidebar = ({
   const todayStr = getLocalDateStr();
   const todayCount = tasks.value.filter((t) => {
     if (t.completed) return false;
-    const isInbox = !t.subjectId || !t.chapterId;
-    if (!t.dueDate) return !isInbox;
+    if (!t.dueDate) return false;
     return t.dueDate === todayStr || t.dueDate < todayStr;
   }).length;
   const upcomingCount = tasks.value.filter(

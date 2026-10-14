@@ -398,15 +398,16 @@ export const filteredTasks = computed(() => {
     list = list.filter((t) => !t.subjectId || !t.chapterId);
   } else if (view.type === 'today') {
     const todayStr = getLocalDateStr();
-    // Today: tasks scheduled for today, Subject/Chapter tasks without a due date,
+    // Today: tasks scheduled for today (both unfinished and finished today),
     // incomplete tasks from earlier dates (overdue), OR overdue tasks completed today.
-    // Dateless Inbox tasks stay cleanly inside Inbox.
+    // Undated tasks stay inside their respective chapters or Inbox and do not flood Today.
     list = list.filter((t) => {
-      const isInbox = !t.subjectId || !t.chapterId;
-      if (!t.dueDate) return !isInbox && (!t.completed || t.completedDate === todayStr);
-      if (t.dueDate === todayStr) return true;
-      if (!t.completed && t.dueDate && t.dueDate < todayStr) return true;
-      if (t.completed && t.dueDate && t.dueDate < todayStr && t.completedDate === todayStr) return true;
+      if (!t.dueDate) return false;
+      if (t.dueDate === todayStr) {
+        return !t.completed || !t.completedDate || t.completedDate === todayStr;
+      }
+      if (!t.completed && t.dueDate < todayStr) return true;
+      if (t.completed && t.dueDate < todayStr && t.completedDate === todayStr) return true;
       return false;
     });
   } else if (view.type === 'upcoming') {

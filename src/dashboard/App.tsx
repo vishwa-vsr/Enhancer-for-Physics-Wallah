@@ -4,7 +4,6 @@ import {
   loadPlannerData,
   subjects,
   chapters,
-  tasks,
   activeView,
   filteredTasks,
   groupedTasks,
