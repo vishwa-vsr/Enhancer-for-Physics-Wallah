@@ -21,8 +21,6 @@ export const AddSubjectModal = ({
   editingSubject,
   onDelete,
 }: AddSubjectModalProps) => {
-  if (!open) return null;
-
   const [name, setName] = useState(editingSubject ? editingSubject.name : '');
   const [color, setColor] = useState(
     editingSubject && editingSubject.color ? editingSubject.color : PRESET_COLORS[0],
@@ -32,6 +30,7 @@ export const AddSubjectModal = ({
   );
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const categories = ['All', 'Math', 'Physics', 'Chemistry & Biology', 'Study & General'];
 
@@ -65,11 +64,23 @@ export const AddSubjectModal = ({
   };
 
   useEffect(() => {
-    setName(editingSubject ? editingSubject.name : '');
-    setColor(editingSubject && editingSubject.color ? editingSubject.color : PRESET_COLORS[0]);
-    setIcon(editingSubject && editingSubject.icon ? editingSubject.icon : 'calculator');
-    setSelectedCategory('All');
-    setConfirmDelete(false);
+    if (open) {
+      setName(editingSubject ? editingSubject.name : '');
+      setColor(editingSubject && editingSubject.color ? editingSubject.color : PRESET_COLORS[0]);
+      setIcon(editingSubject && editingSubject.icon ? editingSubject.icon : 'calculator');
+      setSelectedCategory('All');
+      setConfirmDelete(false);
+
+      const timer = setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+          if (editingSubject) {
+            inputRef.current.select();
+          }
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
   }, [editingSubject, open]);
 
   useEffect(() => {
@@ -79,6 +90,8 @@ export const AddSubjectModal = ({
     }, 3500);
     return () => clearTimeout(timer);
   }, [confirmDelete]);
+
+  if (!open) return null;
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -140,13 +153,13 @@ export const AddSubjectModal = ({
             <label class={styles.label}>Subject Name</label>
             <div class={styles.nameColorRow}>
               <input
+                ref={inputRef}
                 type="text"
                 class={styles.input}
                 placeholder="e.g. Physics, Chemistry, Mathematics"
                 value={name}
                 onInput={(e) => setName((e.target as HTMLInputElement).value)}
                 required
-                autoFocus
               />
               <ColorPicker value={color} onChange={(c) => setColor(c)} align="right" />
             </div>

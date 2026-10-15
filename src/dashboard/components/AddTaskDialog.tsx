@@ -37,8 +37,6 @@ export const AddTaskDialog = ({
   editingTask,
   onDelete,
 }: AddTaskDialogProps) => {
-  if (!open) return null;
-
   const currentView = activeView.value;
   const hideSubjectChapter = currentView.type === 'inbox';
 
@@ -107,28 +105,41 @@ export const AddTaskDialog = ({
   const [description, setDescription] = useState(editingTask?.description || '');
   const [selectedTag, setSelectedTag] = useState<string>(getValidInitialTag(editingTask));
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setConfirmDelete(false);
-    if (editingTask) {
-      setTitle(editingTask.title);
-      setDueDate(editingTask.dueDate || '');
-      setSelectedSubjectId(editingTask.subjectId || '');
-      setSelectedChapterId(editingTask.chapterId || '');
-      setDescription(editingTask.description || '');
-      setSelectedTag(getValidInitialTag(editingTask));
-    } else {
-      setTitle('');
-      setDueDate(currentView.type === 'today' ? getLocalDateStr() : '');
-      setDescription('');
-      setSelectedTag('');
-      const subId =
-        currentView.type === 'inbox' || currentView.type === 'today' || currentView.type === 'upcoming'
-          ? ''
-          : defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
-      setSelectedSubjectId(subId);
-      const chaps = subId ? chapters.value.filter((c) => c.subjectId === subId) : [];
-      setSelectedChapterId(subId ? defaultChapterId || currentView.chapterId || chaps[0]?.id || '' : '');
+    if (open) {
+      setConfirmDelete(false);
+      if (editingTask) {
+        setTitle(editingTask.title);
+        setDueDate(editingTask.dueDate || '');
+        setSelectedSubjectId(editingTask.subjectId || '');
+        setSelectedChapterId(editingTask.chapterId || '');
+        setDescription(editingTask.description || '');
+        setSelectedTag(getValidInitialTag(editingTask));
+      } else {
+        setTitle('');
+        setDueDate(currentView.type === 'today' ? getLocalDateStr() : '');
+        setDescription('');
+        setSelectedTag('');
+        const subId =
+          currentView.type === 'inbox' || currentView.type === 'today' || currentView.type === 'upcoming'
+            ? ''
+            : defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
+        setSelectedSubjectId(subId);
+        const chaps = subId ? chapters.value.filter((c) => c.subjectId === subId) : [];
+        setSelectedChapterId(subId ? defaultChapterId || currentView.chapterId || chaps[0]?.id || '' : '');
+      }
+
+      const timer = setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+          if (editingTask) {
+            inputRef.current.select();
+          }
+        }
+      }, 50);
+      return () => clearTimeout(timer);
     }
   }, [open, editingTask]);
 
@@ -154,6 +165,30 @@ export const AddTaskDialog = ({
       setSelectedChapterId('');
     }
   }, [selectedSubjectId]);
+
+  const isOverlayMouseDownRef = useRef(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
+  const handleOverlayMouseDown = (e: MouseEvent) => {
+    isOverlayMouseDownRef.current = e.target === e.currentTarget;
+  };
+
+  const handleOverlayClick = (e: MouseEvent) => {
+    if (isOverlayMouseDownRef.current && e.target === e.currentTarget) {
+      onClose();
+    }
+    isOverlayMouseDownRef.current = false;
+  };
 
   const isValidSelection =
     hideSubjectChapter ||
@@ -212,29 +247,7 @@ export const AddTaskDialog = ({
     onClose();
   };
 
-  const isOverlayMouseDownRef = useRef(false);
-
-  useEffect(() => {
-    if (!open) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, onClose]);
-
-  const handleOverlayMouseDown = (e: MouseEvent) => {
-    isOverlayMouseDownRef.current = e.target === e.currentTarget;
-  };
-
-  const handleOverlayClick = (e: MouseEvent) => {
-    if (isOverlayMouseDownRef.current && e.target === e.currentTarget) {
-      onClose();
-    }
-    isOverlayMouseDownRef.current = false;
-  };
+  if (!open) return null;
 
   return (
     <div
@@ -267,6 +280,7 @@ export const AddTaskDialog = ({
               <div class={styles.formGroup}>
                 <label class={styles.label}>Task Title</label>
                 <input
+                  ref={inputRef}
                   type="text"
                   class={styles.input}
                   placeholder="Enter task title..."
@@ -274,7 +288,6 @@ export const AddTaskDialog = ({
                   maxLength={150}
                   onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
                   required
-                  autoFocus
                 />
               </div>
 

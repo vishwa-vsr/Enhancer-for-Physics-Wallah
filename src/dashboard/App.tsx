@@ -272,32 +272,44 @@ export const App = () => {
       </div>
 
       {/* Modals */}
-      <AddTaskDialog
-        open={taskModalOpen}
-        onClose={() => {
-          setTaskModalOpen(false);
-          setEditingTask(null);
-        }}
-        editingTask={editingTask}
-        defaultSubjectId={currentView.subjectId}
-        defaultChapterId={currentView.chapterId}
-        onDelete={handleDeleteTask}
-      />
+      {taskModalOpen && (
+        <AddTaskDialog
+          open={taskModalOpen}
+          onClose={() => {
+            setTaskModalOpen(false);
+            setEditingTask(null);
+          }}
+          editingTask={editingTask}
+          defaultSubjectId={currentView.subjectId}
+          defaultChapterId={currentView.chapterId}
+          onDelete={handleDeleteTask}
+        />
+      )}
 
-      <AddSubjectModal
-        open={subjectModalOpen}
-        onClose={() => setSubjectModalOpen(false)}
-        editingSubject={editingSubject}
-        onDelete={handleDeleteSubject}
-      />
+      {subjectModalOpen && (
+        <AddSubjectModal
+          open={subjectModalOpen}
+          onClose={() => {
+            setSubjectModalOpen(false);
+            setEditingSubject(null);
+          }}
+          editingSubject={editingSubject}
+          onDelete={handleDeleteSubject}
+        />
+      )}
 
-      <AddChapterModal
-        open={chapterModalOpen}
-        subjectId={chapterModalSubjectId}
-        onClose={() => setChapterModalOpen(false)}
-        editingChapter={editingChapter}
-        onDelete={handleDeleteChapter}
-      />
+      {chapterModalOpen && (
+        <AddChapterModal
+          open={chapterModalOpen}
+          subjectId={chapterModalSubjectId}
+          onClose={() => {
+            setChapterModalOpen(false);
+            setEditingChapter(null);
+          }}
+          editingChapter={editingChapter}
+          onDelete={handleDeleteChapter}
+        />
+      )}
     </div>
   );
 };

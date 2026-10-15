@@ -20,8 +20,6 @@ export const AddChapterModal = ({
   editingChapter,
   onDelete,
 }: AddChapterModalProps) => {
-  if (!open) return null;
-
   const subject = subjects.value.find((s) => s.id === subjectId);
   const [name, setName] = useState(editingChapter ? editingChapter.name : '');
   const [icon, setIcon] = useState(
@@ -29,6 +27,7 @@ export const AddChapterModal = ({
   );
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const categories = ['All', 'Math', 'Physics', 'Chemistry & Biology', 'Study & General'];
 
@@ -62,10 +61,22 @@ export const AddChapterModal = ({
   };
 
   useEffect(() => {
-    setName(editingChapter ? editingChapter.name : '');
-    setIcon(editingChapter && editingChapter.icon ? editingChapter.icon : 'file-text');
-    setSelectedCategory('All');
-    setConfirmDelete(false);
+    if (open) {
+      setName(editingChapter ? editingChapter.name : '');
+      setIcon(editingChapter && editingChapter.icon ? editingChapter.icon : 'file-text');
+      setSelectedCategory('All');
+      setConfirmDelete(false);
+
+      const timer = setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+          if (editingChapter) {
+            inputRef.current.select();
+          }
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
   }, [editingChapter, open]);
 
   useEffect(() => {
@@ -75,6 +86,8 @@ export const AddChapterModal = ({
     }, 3500);
     return () => clearTimeout(timer);
   }, [confirmDelete]);
+
+  if (!open) return null;
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -138,13 +151,13 @@ export const AddChapterModal = ({
           <div class={styles.formGroup}>
             <label class={styles.label}>Chapter Title</label>
             <input
+              ref={inputRef}
               type="text"
               class={styles.input}
               placeholder="e.g. Kinematics, Chemical Bonding, Calculus"
               value={name}
               onInput={(e) => setName((e.target as HTMLInputElement).value)}
               required
-              autoFocus
             />
           </div>
 

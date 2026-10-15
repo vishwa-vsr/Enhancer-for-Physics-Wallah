@@ -19,7 +19,7 @@ const getLogoSrc = (filename: string, bundledUrl: string) => {
 };
 
 const GithubIcon = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="#FFFFFF">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="#FFFFFF">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -29,7 +29,7 @@ const GithubIcon = () => (
 );
 
 const DiscussionIcon = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
     <path
       d="M17 18.5a6.5 6.5 0 0 0 1.8-4.6c0-3.6-3.4-6.5-7.5-6.5-4.1 0-7.5 2.9-7.5 6.5 0 2.2 1.3 4.1 3.2 5.2L6 21.5l3.5-1.2c.5.1 1.1.2 1.8.2 1.3 0 2.6-.3 3.7-.9l3.5 1.2-1.5-2.3Z"
       stroke="#a855f7"
@@ -42,7 +42,7 @@ const DiscussionIcon = () => (
 );
 
 const FeedbackIcon = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
     <rect
       x="3"
       y="3"
@@ -58,7 +58,7 @@ const FeedbackIcon = () => (
 );
 
 const RocketIcon = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
     <path
       d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"
       stroke="#0284c7"
@@ -95,9 +95,9 @@ const WebsiteAppIcon = () => (
   <img
     src={getLogoSrc('icon48.png', pwLogoImg)}
     alt="Enhancer for PW"
-    width={22}
-    height={22}
-    style={{ borderRadius: '5px' }}
+    width={18}
+    height={18}
+    style={{ borderRadius: '4px' }}
   />
 );
 
@@ -105,8 +105,8 @@ const ChromeIcon = () => (
   <img
     src={getLogoSrc('chrome.png', chromeImg)}
     alt="Google Chrome"
-    width={22}
-    height={22}
+    width={18}
+    height={18}
   />
 );
 
@@ -114,8 +114,8 @@ const FirefoxIcon = () => (
   <img
     src={getLogoSrc('firefox.png', firefoxImg)}
     alt="Mozilla Firefox"
-    width={22}
-    height={22}
+    width={18}
+    height={18}
   />
 );
 
@@ -123,8 +123,8 @@ const EdgeIcon = () => (
   <img
     src={getLogoSrc('edge.png', edgeImg)}
     alt="Microsoft Edge"
-    width={22}
-    height={22}
+    width={18}
+    height={18}
   />
 );
 
@@ -137,8 +137,8 @@ const ExternalArrowIcon = () => (
     strokeWidth={2.2}
     strokeLinecap="round"
     strokeLinejoin="round"
-    width="14"
-    height="14"
+    width="11"
+    height="11"
   >
     <line x1="7" y1="17" x2="17" y2="7" />
     <polyline points="7 7 17 7 17 17" />
@@ -149,60 +149,48 @@ const ExternalArrowIcon = () => (
 
 interface LinkItem {
   title: string;
-  desc: string;
   url: string;
   icon: () => preact.JSX.Element;
 }
 
-const COMMUNITY_LINKS: LinkItem[] = [
+const COMMUNITY_AND_STORE_LINKS: LinkItem[] = [
   {
     title: 'GitHub',
-    desc: 'Explore source code & star repository',
     url: 'https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah',
     icon: GithubIcon,
   },
   {
     title: 'Discussions',
-    desc: 'Share ideas, ask questions & chat',
     url: 'https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/discussions/23',
     icon: DiscussionIcon,
   },
   {
     title: 'Feedback',
-    desc: 'Suggest improvements & report bugs',
     url: 'https://docs.google.com/forms/d/e/1FAIpQLSdquONSDYSILWZd-ubkmk9pi_TVNXa65b8G7fpbOCbO3UCHdg/viewform',
     icon: FeedbackIcon,
   },
   {
     title: 'Latest Release',
-    desc: 'View latest update changelog & releases',
     url: 'https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/releases',
     icon: RocketIcon,
   },
-];
-
-const PLATFORM_LINKS: LinkItem[] = [
   {
     title: 'Official Website',
-    desc: 'Features guide & official portal',
     url: 'https://enhancerforpw.vercel.app/',
     icon: WebsiteAppIcon,
   },
   {
     title: 'Chrome Web Store',
-    desc: 'Rate & review on Google Chrome',
     url: 'https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj',
     icon: ChromeIcon,
   },
   {
     title: 'Firefox Add-ons',
-    desc: 'Rate & review on Mozilla Firefox',
     url: 'https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/',
     icon: FirefoxIcon,
   },
   {
-    title: 'Microsoft Edge Add-ons',
-    desc: 'Rate & review on Microsoft Edge',
+    title: 'Edge Add-ons',
     url: 'https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan',
     icon: EdgeIcon,
   },
@@ -276,32 +264,6 @@ export const SettingsView = () => {
       {/* Header */}
       <div class={styles.headerRow}>
         <h1 class={styles.title}>Settings</h1>
-      </div>
-
-      {/* How Padhle Works Section */}
-      <div class={styles.card}>
-        <div class={styles.cardHeader}>
-          <h2 class={styles.cardTitle}>How Padhle Works</h2>
-          <p class={styles.cardDesc}>
-            A built-in to-do list feature designed for Physics Wallah students to stay organized.
-          </p>
-        </div>
-
-        <div class={styles.infoGrid}>
-          <div class={styles.infoBlock}>
-            <span class={styles.infoBlockTitle}>Inbox Tasks</span>
-            <p class={styles.infoBlockText}>
-              For normal daily tasks and quick personal reminders. These are general tasks not tied to any specific subject.
-            </p>
-          </div>
-
-          <div class={styles.infoBlock}>
-            <span class={styles.infoBlockTitle}>Subject & Chapter Tasks</span>
-            <p class={styles.infoBlockText}>
-              For study purposes. Create your subjects and chapters to track lectures, DPPs, revisions, and tests.
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Study Labels Section */}
@@ -408,19 +370,20 @@ export const SettingsView = () => {
         </div>
       </div>
 
-      {/* Community & Updates */}
+      {/* Community & Stores */}
       <div class={styles.card}>
         <div class={styles.cardHeader}>
-          <h2 class={styles.cardTitle}>Community & Updates</h2>
+          <h2 class={styles.cardTitle}>Community & Stores</h2>
         </div>
         <div class={styles.cardsGrid}>
-          {COMMUNITY_LINKS.map((item) => {
+          {COMMUNITY_AND_STORE_LINKS.map((item) => {
             const Icon = item.icon;
             return (
               <a
                 key={item.title}
                 href={item.url}
                 class={styles.linkCard}
+                title={item.title}
                 onClick={(e) => {
                   e.preventDefault();
                   openLink(item.url);
@@ -430,44 +393,7 @@ export const SettingsView = () => {
                   <div class={styles.iconBadge}>
                     <Icon />
                   </div>
-                  <div class={styles.linkInfo}>
-                    <span class={styles.linkTitle}>{item.title}</span>
-                    <span class={styles.linkDesc}>{item.desc}</span>
-                  </div>
-                </div>
-                <ExternalArrowIcon />
-              </a>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Platforms & Web Stores */}
-      <div class={styles.card}>
-        <div class={styles.cardHeader}>
-          <h2 class={styles.cardTitle}>Platforms & Web Stores</h2>
-        </div>
-        <div class={styles.cardsGrid}>
-          {PLATFORM_LINKS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <a
-                key={item.title}
-                href={item.url}
-                class={styles.linkCard}
-                onClick={(e) => {
-                  e.preventDefault();
-                  openLink(item.url);
-                }}
-              >
-                <div class={styles.linkCardLeft}>
-                  <div class={styles.iconBadge}>
-                    <Icon />
-                  </div>
-                  <div class={styles.linkInfo}>
-                    <span class={styles.linkTitle}>{item.title}</span>
-                    <span class={styles.linkDesc}>{item.desc}</span>
-                  </div>
+                  <span class={styles.linkTitle}>{item.title}</span>
                 </div>
                 <ExternalArrowIcon />
               </a>
