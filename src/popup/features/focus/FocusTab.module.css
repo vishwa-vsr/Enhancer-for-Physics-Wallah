@@ -13,7 +13,17 @@
   box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
+}
+
+.settingsGroupCard > :first-child {
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+
+.settingsGroupCard > :last-child {
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
 }
 
 .finishTimeControls {

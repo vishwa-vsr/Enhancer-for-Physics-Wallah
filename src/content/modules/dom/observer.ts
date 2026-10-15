@@ -139,6 +139,7 @@ export function initWakeupTriggers(): void {
 // Main monitoring function
 export function monitor(): void {
   if (isModifyingDOM) return;
+
   const video = getActiveVideo();
   if (video) {
     if (video !== getActiveVideoElement()) {

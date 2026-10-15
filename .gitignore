@@ -33,3 +33,4 @@ store_listing.md
 pip/
 skip-Silence/
 .agents/feedback_checkpoint.json
+*.tsbuildinfo

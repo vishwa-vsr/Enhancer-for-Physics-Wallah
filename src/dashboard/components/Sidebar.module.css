@@ -1,0 +1,515 @@
+.sidebar {
+  width: 256px;
+  min-width: 256px;
+  height: 100vh;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+  font-family: var(--font-sans);
+  transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapseToggleBtn {
+  width: 38px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.collapseToggleBtn:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+}
+
+.navSection {
+  padding: 14px 12px 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.navItem:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+}
+
+.navItemActive {
+  background-color: var(--bg-control-hover) !important;
+  color: var(--text-primary) !important;
+  font-weight: 500 !important; /* Keep font-weight 500 so text never gets bold or jumps */
+}
+
+:global(body.light-theme) .navItemActive {
+  background-color: #f0f2f5 !important;
+  color: var(--text-primary) !important;
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navLeft svg {
+  flex-shrink: 0;
+}
+
+.badge {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+:global(body.light-theme) .badge {
+  color: var(--text-secondary);
+}
+
+.navItemActive .navLeft svg {
+  color: var(--accent-primary) !important;
+}
+
+.navItemActive .badge {
+  color: var(--text-primary);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--divider-color);
+  margin: 12px 16px;
+}
+
+.subjectsSection {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.subjectsSection::-webkit-scrollbar {
+  width: 4px;
+}
+.subjectsSection::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 4px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 6px 12px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.addBtnSmall {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.addBtnSmall:hover {
+  background-color: var(--bg-control);
+  color: var(--text-primary);
+}
+
+.subjectGroup {
+  margin-bottom: 4px;
+}
+
+.subjectItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.subjectItem:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+}
+
+.subjectItemActive {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+:global(body.light-theme) .subjectItemActive {
+  background-color: #f0f2f5;
+  color: var(--text-primary);
+}
+
+.subjectMenuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+
+.subjectItem:hover .subjectMenuBtn {
+  opacity: 1;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .subjectMenuBtn {
+    opacity: 0.7;
+  }
+}
+
+.subjectMenuBtn:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+}
+
+.subjectLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.subjectBookIcon {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  color: var(--accent-primary);
+  flex-shrink: 0;
+}
+
+.subjectName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.chaptersList {
+  margin-left: 16px;
+  padding-left: 10px;
+  border-left: 1.5px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 3px;
+  margin-bottom: 6px;
+}
+
+.chapterItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.chapterItem:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+}
+
+.chapterItemActive {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+:global(body.light-theme) .chapterItemActive {
+  background-color: #f0f2f5;
+  color: var(--text-primary);
+}
+
+.chapterLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.chapterIcon {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.chapterName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.chapterMenuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.chapterItem:hover .chapterMenuBtn {
+  opacity: 1;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .chapterMenuBtn {
+    opacity: 0.7;
+  }
+}
+
+.chapterMenuBtn:hover {
+  background-color: var(--bg-control);
+  color: var(--text-primary);
+}
+
+.addChapterRowBtn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  margin-top: 2px;
+  text-align: left;
+}
+
+.addChapterRowBtn:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+}
+
+:global(body.light-theme) .addChapterRowBtn:hover {
+  background-color: #f0f2f5;
+  color: var(--text-primary);
+}
+
+.footer {
+  padding: 12px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.settingsBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.settingsBtn:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+}
+
+.settingsBtnActive {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+  font-weight: 500 !important; /* Keep font-weight 500 so text never gets bold or jumps */
+}
+
+:global(body.light-theme) .settingsBtnActive {
+  background-color: #f0f2f5;
+  color: var(--text-primary);
+}
+
+.settingsBtnActive svg {
+  color: var(--accent-primary);
+}
+
+/* ==========================================================================
+   Collapsed Sidebar Styles
+   ========================================================================== */
+
+.sidebarCollapsed {
+  width: 68px;
+  min-width: 68px;
+}
+
+.sidebarCollapsed .navSection {
+  padding: 14px 8px 0 8px;
+  align-items: center;
+}
+
+.sidebarCollapsed .navItem {
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+  position: relative;
+}
+
+.sidebarCollapsed .navLeft {
+  justify-content: center;
+  gap: 0;
+}
+
+.sidebarCollapsed .divider {
+  margin: 10px 10px;
+}
+
+.sidebarCollapsed .sectionHeader {
+  display: none;
+}
+
+.sidebarCollapsed .subjectsSection {
+  padding: 0 8px;
+  align-items: center;
+}
+
+.sidebarCollapsed .subjectGroup {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebarCollapsed .subjectItem {
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+}
+
+.sidebarCollapsed .subjectLeft {
+  justify-content: center;
+  gap: 0;
+  flex: initial;
+}
+
+.subjectItemActiveCollapsed {
+  background-color: var(--bg-control-hover) !important;
+  border-radius: var(--radius-md);
+}
+
+:global(body.light-theme) .subjectItemActiveCollapsed {
+  background-color: #f0f2f5 !important;
+}
+
+.sidebarCollapsed .chaptersList {
+  display: none;
+}
+
+.sidebarCollapsed .footer {
+  padding: 12px 8px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.sidebarCollapsed .settingsBtn,
+.sidebarCollapsed .collapseToggleBtn {
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+  flex: initial;
+  justify-content: center;
+}
+
+

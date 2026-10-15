@@ -32,9 +32,19 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
   border: none;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
+}
+
+.settingsGroupCard > :first-child {
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+}
+
+.settingsGroupCard > :last-child {
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
 }
 
 .featureRow {
@@ -45,10 +55,6 @@
   gap: var(--space-3);
   transition: background-color var(--transition-fast);
   background: var(--bg-card);
-}
-
-.settingsGroupCard > .featureRow:not(:last-child) {
-  border-bottom: 1px solid var(--divider-color);
 }
 
 .featureRow:hover {

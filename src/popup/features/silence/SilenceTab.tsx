@@ -1,6 +1,7 @@
 import { Toggle } from '@shared/components/Toggle';
 import { FeatureRow } from '@shared/components/FeatureRow';
 import { Stepper } from '@shared/components/Stepper';
+import { SelectDropdown } from '@shared/components/SelectDropdown';
 import { saveSetting } from '@shared/storage';
 import type { VideoQuality } from '@shared/types';
 import {
@@ -31,6 +32,14 @@ function formatTimeSaved(ms: number): string {
   return hours + 'h ' + remMinutes + 'm';
 }
 
+const VIDEO_QUALITY_OPTIONS = [
+  { value: '720p', label: '720p (High)' },
+  { value: '480p', label: '480p (Standard)' },
+  { value: '360p', label: '360p (Medium)' },
+  { value: '240p', label: '240p (Data Saver)' },
+  { value: 'auto', label: 'Auto (PW Default)' },
+];
+
 export function SilenceTab() {
   const handleResetTimeSaved = () => {
     skipSilenceTimeSaved.value = 0;
@@ -55,22 +64,17 @@ export function SilenceTab() {
           </FeatureRow>
 
           <FeatureRow label="Default Video Quality">
-            <select
-              class={styles.qualitySelect}
+            <SelectDropdown
+              size="sm"
+              options={VIDEO_QUALITY_OPTIONS}
               value={preferredQuality.value}
-              onChange={(e) => {
-                const val = (e.target as HTMLSelectElement).value as VideoQuality;
-                preferredQuality.value = val;
-                saveSetting('preferredQuality', val);
+              onChange={(val) => {
+                const quality = val as VideoQuality;
+                preferredQuality.value = quality;
+                saveSetting('preferredQuality', quality);
               }}
-              aria-label="Default Video Quality"
-            >
-              <option value="720p">720p (High)</option>
-              <option value="480p">480p (Standard)</option>
-              <option value="360p">360p (Medium)</option>
-              <option value="240p">240p (Data Saver)</option>
-              <option value="auto">Auto (PW Default)</option>
-            </select>
+              ariaLabel="Default Video Quality"
+            />
           </FeatureRow>
 
           <FeatureRow label="Hide Quality Widget">

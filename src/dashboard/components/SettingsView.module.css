@@ -1,0 +1,325 @@
+.container {
+  max-width: 680px;
+  margin: 0 auto 60px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--card-shadow);
+}
+
+.cardHeader {
+  margin-bottom: 18px;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.cardDesc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tagInput {
+  flex: 1;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-control);
+  color: var(--text-primary);
+  font-size: 13.5px;
+  outline: none;
+}
+
+.tagInput:focus {
+  border-color: var(--accent-primary);
+}
+
+.addTagBtn {
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 18px;
+  border-radius: var(--radius-md);
+  background-color: var(--accent-primary);
+  color: #ffffff;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addTagBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.labelsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.labelChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 550;
+  background-color: var(--bg-control);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.labelChip:hover {
+  background-color: var(--bg-control-hover);
+  transform: translateY(-1px);
+}
+
+.labelChipEditing {
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 2px var(--accent-dim) !important;
+  background-color: var(--bg-control-hover);
+}
+
+.labelDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.labelEditIcon {
+  opacity: 0;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  transition: opacity 0.15s ease;
+}
+
+.labelChip:hover .labelEditIcon {
+  opacity: 0.8;
+}
+
+.labelDeleteBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  transition: all 0.15s ease;
+}
+
+.labelDeleteBtn:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+.addLabelSection {
+  background: var(--bg-surface, rgba(0, 0, 0, 0.02));
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.btnGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cancelTagBtn {
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 18px;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cancelTagBtn:hover {
+  background-color: var(--bg-control-hover);
+  color: var(--text-primary);
+}
+
+.colorPickerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  row-gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.colorPickerLabel {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.colorDot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  padding: 0;
+}
+
+.colorDot:hover {
+  transform: scale(1.15);
+}
+
+.colorDotSelected {
+  border-color: var(--text-primary);
+  transform: scale(1.18);
+  box-shadow: 0 0 0 2px var(--bg-card);
+}
+
+.errorText {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.linkCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background-color: var(--bg-control);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.linkCard:hover {
+  background-color: var(--bg-hover, rgba(255, 255, 255, 0.05));
+  border-color: var(--accent-primary, #6366f1);
+}
+
+.linkCardLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.iconBadge {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.linkInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.linkTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.linkDesc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arrowIcon {
+  color: var(--text-muted);
+  opacity: 0.6;
+  transition: opacity 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.linkCard:hover .arrowIcon {
+  opacity: 1;
+  color: var(--accent-primary, #818cf8);
+}
+

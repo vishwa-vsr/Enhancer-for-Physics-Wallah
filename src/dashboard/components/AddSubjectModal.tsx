@@ -1,0 +1,246 @@
+import { useState, useEffect, useRef } from 'preact/hooks';
+import { addSubject, updateSubject, deleteSubject } from '../store';
+import { Subject } from '../types';
+import { StudyIcon, STUDY_ICONS_LIST } from '@shared/components/StudyIcons';
+import { getAlphaColor } from '@shared/theme';
+import styles from './SubjectModal.module.css';
+
+interface AddSubjectModalProps {
+  open: boolean;
+  onClose: () => void;
+  editingSubject?: Subject | null;
+  onDelete?: (subject: Subject) => void;
+}
+
+import { PRESET_COLORS } from '@shared/colors';
+import { ColorPicker } from '@shared/components/ColorPicker';
+
+export const AddSubjectModal = ({
+  open,
+  onClose,
+  editingSubject,
+  onDelete,
+}: AddSubjectModalProps) => {
+  if (!open) return null;
+
+  const [name, setName] = useState(editingSubject ? editingSubject.name : '');
+  const [color, setColor] = useState(
+    editingSubject && editingSubject.color ? editingSubject.color : PRESET_COLORS[0],
+  );
+  const [icon, setIcon] = useState(
+    editingSubject && editingSubject.icon ? editingSubject.icon : 'calculator',
+  );
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const categories = ['All', 'Math', 'Physics', 'Chemistry & Biology', 'Study & General'];
+
+  const displayedIcons =
+    selectedCategory === 'All'
+      ? STUDY_ICONS_LIST
+      : STUDY_ICONS_LIST.filter((i) => i.category === selectedCategory);
+
+  const isOverlayMouseDownRef = useRef(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
+  const handleOverlayMouseDown = (e: MouseEvent) => {
+    isOverlayMouseDownRef.current = e.target === e.currentTarget;
+  };
+
+  const handleOverlayClick = (e: MouseEvent) => {
+    if (isOverlayMouseDownRef.current && e.target === e.currentTarget) {
+      onClose();
+    }
+    isOverlayMouseDownRef.current = false;
+  };
+
+  useEffect(() => {
+    setName(editingSubject ? editingSubject.name : '');
+    setColor(editingSubject && editingSubject.color ? editingSubject.color : PRESET_COLORS[0]);
+    setIcon(editingSubject && editingSubject.icon ? editingSubject.icon : 'calculator');
+    setSelectedCategory('All');
+    setConfirmDelete(false);
+  }, [editingSubject, open]);
+
+  useEffect(() => {
+    if (!confirmDelete) return;
+    const timer = setTimeout(() => {
+      setConfirmDelete(false);
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, [confirmDelete]);
+
+  const handleSubmit = async (e: Event) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    if (editingSubject) {
+      await updateSubject(editingSubject.id, {
+        name: name.trim(),
+        color,
+        icon,
+      });
+    } else {
+      await addSubject(name.trim(), color, icon);
+    }
+    onClose();
+  };
+
+  const handleDelete = async () => {
+    if (!editingSubject) return;
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
+    }
+    if (onDelete) {
+      onDelete(editingSubject);
+    } else {
+      await deleteSubject(editingSubject.id);
+    }
+    onClose();
+  };
+
+  return (
+    <div
+      class={styles.modalOverlay}
+      onMouseDown={handleOverlayMouseDown}
+      onClick={handleOverlayClick}
+    >
+      <div class={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <div class={styles.modalHeader}>
+          <h2>{editingSubject ? 'Edit Subject' : 'Add New Subject'}</h2>
+          <button class={styles.closeBtn} onClick={onClose}>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              width="18"
+              height="18"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          {/* Subject Name & Color */}
+          <div class={styles.formGroup}>
+            <label class={styles.label}>Subject Name</label>
+            <div class={styles.nameColorRow}>
+              <input
+                type="text"
+                class={styles.input}
+                placeholder="e.g. Physics, Chemistry, Mathematics"
+                value={name}
+                onInput={(e) => setName((e.target as HTMLInputElement).value)}
+                required
+                autoFocus
+              />
+              <ColorPicker value={color} onChange={(c) => setColor(c)} align="right" />
+            </div>
+          </div>
+
+          {/* Icon Picker */}
+          <div class={styles.formGroup}>
+            <div class={styles.iconHeaderRow}>
+              <label class={`${styles.label} ${styles.labelFlush}`}>Subject Icon</label>
+              <span class={styles.selectedIconLabel}>
+                {STUDY_ICONS_LIST.find((i) => i.id === icon)?.label || icon}
+              </span>
+            </div>
+
+            <div class={styles.iconCategoryBar}>
+              {categories.map((cat) => (
+                <button
+                  type="button"
+                  key={cat}
+                  class={`${styles.iconCategoryChip} ${selectedCategory === cat ? styles.iconCategoryChipActive : ''}`}
+                  onClick={() => setSelectedCategory(cat)}
+                >
+                  {cat === 'Chemistry & Biology' ? 'Chem & Bio' : cat === 'Study & General' ? 'General' : cat}
+                </button>
+              ))}
+            </div>
+
+            <div class={styles.iconGrid}>
+              {displayedIcons.map((item) => {
+                const isSelected = icon === item.id;
+                return (
+                  <button
+                    type="button"
+                    key={item.id}
+                    class={`${styles.iconBtn} ${isSelected ? styles.iconBtnSelected : ''}`}
+                    style={
+                      isSelected
+                        ? {
+                            borderColor: color,
+                            backgroundColor: getAlphaColor(color, 0.16),
+                            color,
+                          }
+                        : undefined
+                    }
+                    onClick={() => setIcon(item.id)}
+                  >
+                    <StudyIcon
+                      name={item.id}
+                      size={20}
+                      color={isSelected ? color : 'var(--text-secondary)'}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Modal Footer with Delete option on left if editing */}
+          <div
+            class={`${styles.modalFooter} ${editingSubject ? styles.modalFooterSpaceBetween : ''}`}
+          >
+            {editingSubject && (
+              <button
+                type="button"
+                class={`${styles.deleteActionBtn} ${confirmDelete ? styles.deleteActionBtnConfirm : ''}`}
+                onClick={handleDelete}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  width="14"
+                  height="14"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
+                {confirmDelete ? 'Confirm?' : 'Delete Subject'}
+              </button>
+            )}
+
+            <div class={styles.footerRightActions}>
+              <button type="button" class={styles.cancelBtn} onClick={onClose}>
+                Cancel
+              </button>
+              <button type="submit" class={styles.submitBtn} disabled={!name.trim()}>
+                {editingSubject ? 'Save Changes' : 'Create Subject'}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};

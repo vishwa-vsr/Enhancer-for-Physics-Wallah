@@ -1,0 +1,262 @@
+.dashboardContainer {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-main);
+  overflow: hidden;
+  font-family: var(--font-sans);
+}
+
+.mainWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.scrollArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 36px 100px 36px;
+}
+
+.scrollArea::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollArea::-webkit-scrollbar-thumb {
+  background-color: var(--border-subtle);
+  border-radius: 6px;
+}
+
+.contentMaxWidth {
+  max-width: 940px; /* 5% increase from 896px */
+  margin: 0 auto;
+  transition: max-width var(--transition-normal);
+}
+
+.contentBoardWidth {
+  max-width: 100%;
+}
+
+.viewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.chapterTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.breadcrumbSubject {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.viewTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+/* Grouped List View */
+.groupedListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.groupSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.groupDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.groupTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+
+.groupCount {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Board View (Todoist-style Kanban columns) */
+.boardContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 24px;
+  min-height: calc(100vh - 170px);
+}
+
+.boardContainer::-webkit-scrollbar {
+  height: 7px;
+}
+
+.boardContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.boardContainer::-webkit-scrollbar-thumb {
+  background-color: var(--border-subtle);
+  border-radius: 999px;
+}
+
+.boardColumn {
+  width: 326px;
+  min-width: 326px;
+  max-width: 326px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.boardColumnHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px 12px 4px;
+  position: sticky;
+  top: -32px;
+  background-color: var(--bg-main);
+  z-index: 5;
+}
+
+.boardColumnCards {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Empty States */
+.emptyChapterCard {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  margin-top: 20px;
+}
+
+.emptyChapterIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--accent-primary, #6366f1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.emptyChapterTitle {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.emptyChapterDesc {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.emptyTasksState {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+}
+
+.emptyTasksText {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.primaryActionBtn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent-primary, #6366f1);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: filter var(--transition-fast);
+}
+
+.primaryActionBtn:hover {
+  filter: brightness(1.08);
+}
+
+/* Floating Action Button (+): Circular 56px matching Figma exactly */
+.fab {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6b7fd7, #8b95e8);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.2s ease;
+  z-index: 50;
+}
+
+.fab:hover {
+  transform: scale(1.06);
+  filter: brightness(1.1);
+  box-shadow: none;
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
