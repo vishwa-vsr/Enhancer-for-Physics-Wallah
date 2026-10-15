@@ -278,6 +278,32 @@ export const SettingsView = () => {
         <h1 class={styles.title}>Settings</h1>
       </div>
 
+      {/* How Padhle Works Section */}
+      <div class={styles.card}>
+        <div class={styles.cardHeader}>
+          <h2 class={styles.cardTitle}>How Padhle Works</h2>
+          <p class={styles.cardDesc}>
+            A built-in to-do list feature designed for Physics Wallah students to stay organized.
+          </p>
+        </div>
+
+        <div class={styles.infoGrid}>
+          <div class={styles.infoBlock}>
+            <span class={styles.infoBlockTitle}>Inbox Tasks</span>
+            <p class={styles.infoBlockText}>
+              For normal daily tasks and quick personal reminders. These are general tasks not tied to any specific subject.
+            </p>
+          </div>
+
+          <div class={styles.infoBlock}>
+            <span class={styles.infoBlockTitle}>Subject & Chapter Tasks</span>
+            <p class={styles.infoBlockText}>
+              For study purposes. Create your subjects and chapters to track lectures, DPPs, revisions, and tests.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Study Labels Section */}
       <div class={styles.card}>
         <div class={styles.cardHeader}>

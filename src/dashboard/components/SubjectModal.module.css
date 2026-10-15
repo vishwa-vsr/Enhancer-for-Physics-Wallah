@@ -30,6 +30,7 @@
   max-width: 92vw;
   max-height: 88vh;
   overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   animation: scaleUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;

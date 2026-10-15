@@ -283,8 +283,7 @@ export function ColorPicker({
       {/* Popover Panel */}
       {isOpen && (
         <div
-          class={styles.popover}
-          style={{ [align === 'right' ? 'right' : 'left']: 0 }}
+          class={`${styles.popover} ${align === 'right' ? styles.popoverRight : styles.popoverLeft}`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* 2D Saturation / Value Box */}

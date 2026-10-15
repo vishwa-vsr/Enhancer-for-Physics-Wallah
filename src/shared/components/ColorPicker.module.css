@@ -64,7 +64,6 @@
 .popover {
   position: absolute;
   top: calc(100% + 8px);
-  left: 0;
   z-index: 1200;
   width: 240px;
   background-color: var(--bg-card);
@@ -74,6 +73,16 @@
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
   animation: popIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
+}
+
+.popoverLeft {
+  left: 0;
+  right: auto;
+}
+
+.popoverRight {
+  right: 0;
+  left: auto;
 }
 
 @keyframes popIn {
