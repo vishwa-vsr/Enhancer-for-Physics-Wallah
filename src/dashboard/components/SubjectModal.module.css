@@ -91,6 +91,17 @@
   letter-spacing: 0.01em;
 }
 
+.nameColorRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nameColorRow .input {
+  flex: 1;
+  min-width: 0;
+}
+
 .input {
   width: 100%;
   height: 40px;

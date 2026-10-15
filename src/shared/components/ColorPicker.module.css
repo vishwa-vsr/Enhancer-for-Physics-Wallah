@@ -1,13 +1,16 @@
 .container {
   position: relative;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .trigger {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px 6px 8px;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 12px 0 8px;
   background-color: var(--bg-control);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md, 10px);

@@ -356,6 +356,11 @@ export const SettingsView = () => {
                   }
                 }}
               />
+              <ColorPicker
+                value={selectedColor}
+                onChange={(c) => setSelectedColor(c)}
+                align="right"
+              />
               <div class={styles.btnGroup}>
                 <button type="submit" class={styles.addTagBtn}>
                   {editingTag ? 'Save Changes' : '+ Add Label'}
@@ -370,14 +375,6 @@ export const SettingsView = () => {
                   </button>
                 )}
               </div>
-            </div>
-
-            <div class={styles.colorPickerRow}>
-              <span class={styles.colorPickerLabel}>Color:</span>
-              <ColorPicker
-                value={selectedColor}
-                onChange={(c) => setSelectedColor(c)}
-              />
             </div>
 
             {labelError && <p class={styles.errorText}>{labelError}</p>}

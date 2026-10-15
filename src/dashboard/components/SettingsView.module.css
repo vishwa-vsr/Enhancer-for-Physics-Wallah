@@ -54,7 +54,9 @@
 
 .tagInput {
   flex: 1;
-  padding: 10px 14px;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 14px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background-color: var(--bg-control);
@@ -68,7 +70,9 @@
 }
 
 .addTagBtn {
-  padding: 10px 18px;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 18px;
   border-radius: var(--radius-md);
   background-color: var(--accent-primary);
   color: #ffffff;
@@ -77,6 +81,9 @@
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .addTagBtn:disabled {
@@ -171,7 +178,9 @@
 }
 
 .cancelTagBtn {
-  padding: 10px 18px;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 18px;
   border-radius: var(--radius-md);
   background-color: transparent;
   color: var(--text-secondary);
@@ -181,6 +190,9 @@
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cancelTagBtn:hover {

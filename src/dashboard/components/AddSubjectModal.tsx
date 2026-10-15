@@ -135,24 +135,21 @@ export const AddSubjectModal = ({
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Subject Name */}
+          {/* Subject Name & Color */}
           <div class={styles.formGroup}>
             <label class={styles.label}>Subject Name</label>
-            <input
-              type="text"
-              class={styles.input}
-              placeholder="e.g. Physics, Chemistry, Mathematics"
-              value={name}
-              onInput={(e) => setName((e.target as HTMLInputElement).value)}
-              required
-              autoFocus
-            />
-          </div>
-
-          {/* Color Picker */}
-          <div class={styles.formGroup}>
-            <label class={styles.label}>Subject Color</label>
-            <ColorPicker value={color} onChange={(c) => setColor(c)} />
+            <div class={styles.nameColorRow}>
+              <input
+                type="text"
+                class={styles.input}
+                placeholder="e.g. Physics, Chemistry, Mathematics"
+                value={name}
+                onInput={(e) => setName((e.target as HTMLInputElement).value)}
+                required
+                autoFocus
+              />
+              <ColorPicker value={color} onChange={(c) => setColor(c)} align="right" />
+            </div>
           </div>
 
           {/* Icon Picker */}
