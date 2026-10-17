@@ -1,5 +1,6 @@
 import { ComponentChildren } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
+import { createPortal } from 'preact/compat';
 import styles from './DatePicker.module.css';
 
 interface DatePickerProps {
@@ -75,8 +76,7 @@ export const DatePicker = ({
   renderTrigger,
 }: DatePickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [placement, setPlacement] = useState<'top' | 'bottom'>('top');
-  const [horizontalAlign, setHorizontalAlign] = useState<'left' | 'right'>('left');
+  const [coords, setCoords] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const [view, setView] = useState<'day' | 'month' | 'year'>('day');
 
   // Parse initial selected date or default to today
@@ -105,6 +105,36 @@ export const DatePicker = ({
   const [viewMonth, setViewMonth] = useState<number>(parsedMonth);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  const updateCoords = () => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const popupWidth = 290;
+    const popupHeight = 330;
+
+    let top = rect.bottom + 8;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    if (spaceBelow < popupHeight + 16 && spaceAbove > spaceBelow) {
+      top = rect.top - popupHeight - 8;
+    }
+
+    if (top < 12) top = 12;
+    if (top + popupHeight > window.innerHeight - 12) {
+      top = Math.max(12, window.innerHeight - popupHeight - 12);
+    }
+
+    let left = rect.left;
+    if (left + popupWidth > window.innerWidth - 16) {
+      left = window.innerWidth - popupWidth - 16;
+    }
+    if (left < 16) {
+      left = 16;
+    }
+
+    setCoords({ top, left });
+  };
 
   // Sync view when opened or when value changes
   useEffect(() => {
@@ -121,37 +151,18 @@ export const DatePicker = ({
     }
   }, [value, isOpen]);
 
-  // Compute smart placement (open upwards if near bottom of screen) and horizontal alignment
-  useEffect(() => {
-    if (isOpen && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const spaceAbove = rect.top;
-      // If space below is less than 320px and there is room above, flip up
-      if (spaceBelow < 320 && spaceAbove > spaceBelow) {
-        setPlacement('top');
-      } else {
-        setPlacement('bottom');
-      }
-
-      // Check if popup would extend past the right edge of viewport
-      if (rect.left + 295 > window.innerWidth) {
-        setHorizontalAlign('right');
-      } else {
-        setHorizontalAlign('left');
-      }
-    }
-  }, [isOpen]);
-
-  // Handle clicking outside to close
+  // Handle clicking outside, scrolling, and resizing
   useEffect(() => {
     if (!isOpen) return;
 
+    updateCoords();
+
     const handlePointerDown = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-        setView('day');
-      }
+      const target = e.target as Node;
+      if (containerRef.current && containerRef.current.contains(target)) return;
+      if (popupRef.current && popupRef.current.contains(target)) return;
+      setIsOpen(false);
+      setView('day');
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -161,17 +172,30 @@ export const DatePicker = ({
       }
     };
 
+    const handleScroll = (e: Event) => {
+      if (popupRef.current && popupRef.current.contains(e.target as Node)) return;
+      setIsOpen(false);
+      setView('day');
+    };
+
     document.addEventListener('mousedown', handlePointerDown);
     document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('scroll', handleScroll, true);
+    window.addEventListener('resize', updateCoords);
 
     return () => {
       document.removeEventListener('mousedown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('scroll', handleScroll, true);
+      window.removeEventListener('resize', updateCoords);
     };
   }, [isOpen]);
 
   const toggleOpen = () => {
     if (disabled) return;
+    if (!isOpen) {
+      updateCoords();
+    }
     setIsOpen(!isOpen);
     setView('day');
   };
@@ -371,16 +395,19 @@ export const DatePicker = ({
         </div>
       )}
 
-      {/* Floating Calendar Popup */}
-      {isOpen && (
-        <div
-          class={`${styles.popup} ${
-            placement === 'top' ? styles.popupTop : styles.popupBottom
-          } ${
-            horizontalAlign === 'right' ? styles.popupAlignRight : styles.popupAlignLeft
-          }`}
-          onClick={(e) => e.stopPropagation()}
-        >
+      {/* Floating Calendar Popup (Portaled to document.body to break out of all container clipping) */}
+      {isOpen &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            ref={popupRef}
+            class={styles.popup}
+            style={{
+              top: `${coords.top}px`,
+              left: `${coords.left}px`,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
           {/* Header */}
           <div class={styles.header}>
             <button type="button" class={styles.viewTitleBtn} onClick={handleTitleClick}>
@@ -544,7 +571,8 @@ export const DatePicker = ({
               Today
             </button>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

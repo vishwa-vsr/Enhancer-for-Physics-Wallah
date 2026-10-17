@@ -76,59 +76,29 @@
 
 /* Calendar Popup */
 .popup {
-  position: absolute;
+  position: fixed;
   width: 290px;
   box-sizing: border-box;
   background-color: var(--bg-card, #191e28);
-  border: none;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
   outline: none;
   border-radius: var(--radius-xl, 16px);
   padding: 14px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.25);
-  z-index: 1050;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.35);
+  z-index: 99999;
   font-family: var(--font-sans);
   user-select: none;
+  animation: popupScale 0.14s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.popupAlignLeft {
-  left: 0;
-  right: auto;
-}
-
-.popupAlignRight {
-  right: 0;
-  left: auto;
-}
-
-.popupTop {
-  bottom: calc(100% + 8px);
-  animation: popupScaleUp 0.16s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.popupBottom {
-  top: calc(100% + 8px);
-  animation: popupScaleDown 0.16s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes popupScaleUp {
+@keyframes popupScale {
   from {
     opacity: 0;
-    transform: translateY(6px) scale(0.97);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes popupScaleDown {
-  from {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1);
   }
 }
 
