@@ -42,7 +42,7 @@ export const AddTaskDialog = ({
 
   const getDefaultSubjectId = () => {
     if (editingTask) return editingTask.subjectId || '';
-    if (currentView.type === 'inbox' || currentView.type === 'today' || currentView.type === 'upcoming') {
+    if (currentView.type === 'inbox' || currentView.type === 'today') {
       return '';
     }
     return defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
@@ -123,7 +123,7 @@ export const AddTaskDialog = ({
         setDescription('');
         setSelectedTag('');
         const subId =
-          currentView.type === 'inbox' || currentView.type === 'today' || currentView.type === 'upcoming'
+          currentView.type === 'inbox' || currentView.type === 'today'
             ? ''
             : defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
         setSelectedSubjectId(subId);
@@ -134,9 +134,8 @@ export const AddTaskDialog = ({
       const timer = setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
-          if (editingTask) {
-            inputRef.current.select();
-          }
+          const len = inputRef.current.value.length;
+          inputRef.current.setSelectionRange(len, len);
         }
       }, 50);
       return () => clearTimeout(timer);

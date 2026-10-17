@@ -125,6 +125,10 @@ export async function loadPlannerData(): Promise<void> {
       if (hadGhostTags) {
         await persistData();
       }
+
+      if ((activeView.value as any)?.type === 'upcoming') {
+        activeView.value = { type: 'today' };
+      }
     }
 
     // Auto-update dashboard if synced from popup or another tab
@@ -438,24 +442,17 @@ export const filteredTasks = computed(() => {
   } else if (view.type === 'inbox') {
     // Inbox: all tasks that do not have both a subject and a chapter assigned
     list = list.filter((t) => !t.subjectId || !t.chapterId);
-  } else if (view.type === 'today') {
+  } else if (view.type === 'today' || (view.type as string) === 'upcoming') {
     const todayStr = getLocalDateStr();
-    // Today: tasks scheduled for today (both unfinished and finished today),
-    // incomplete tasks from earlier dates (overdue), OR overdue tasks completed today.
-    // Undated tasks stay inside their respective chapters or Inbox and do not flood Today.
+    // Tasks: all tasks with a due date (overdue, today, tomorrow, and future dates).
+    // Incomplete tasks are always included so you see all scheduled work.
+    // Completed tasks are only shown if completed today (to acknowledge today's progress without old history clutter).
+    // Undated tasks stay inside their respective chapters or Inbox.
     list = list.filter((t) => {
       if (!t.dueDate) return false;
-      if (t.dueDate === todayStr) {
-        return !t.completed || !t.completedDate || t.completedDate === todayStr;
-      }
-      if (!t.completed && t.dueDate < todayStr) return true;
-      if (t.completed && t.dueDate < todayStr && t.completedDate === todayStr) return true;
-      return false;
+      if (!t.completed) return true;
+      return t.completedDate === todayStr || (!t.completedDate && t.dueDate === todayStr);
     });
-  } else if (view.type === 'upcoming') {
-    const todayStr = getLocalDateStr();
-    // Upcoming: incomplete tasks scheduled for future dates
-    list = list.filter((t) => !t.completed && t.dueDate && t.dueDate > todayStr);
   }
 
   // Always keep unfinished tasks at the top and move completed tasks to the bottom

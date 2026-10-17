@@ -208,7 +208,13 @@ export const SettingsView = () => {
     setNewLabelName(tag.name);
     setSelectedColor(tag.color);
     setLabelError('');
-    setTimeout(() => inputRef.current?.focus(), 50);
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        const len = inputRef.current.value.length;
+        inputRef.current.setSelectionRange(len, len);
+      }
+    }, 50);
   };
 
   const handleCancelEdit = () => {

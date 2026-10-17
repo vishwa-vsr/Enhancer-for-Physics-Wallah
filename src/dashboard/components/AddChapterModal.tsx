@@ -70,9 +70,8 @@ export const AddChapterModal = ({
       const timer = setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
-          if (editingChapter) {
-            inputRef.current.select();
-          }
+          const len = inputRef.current.value.length;
+          inputRef.current.setSelectionRange(len, len);
         }
       }, 50);
       return () => clearTimeout(timer);

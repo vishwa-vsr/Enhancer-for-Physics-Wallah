@@ -21,6 +21,15 @@
   padding: 32px 36px 100px 36px;
 }
 
+.scrollAreaBoard {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 36px 0 36px;
+  height: 100%;
+  min-height: 0;
+}
+
 .scrollArea::-webkit-scrollbar {
   width: 6px;
 }
@@ -37,6 +46,11 @@
 
 .contentBoardWidth {
   max-width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
 }
 
 .viewHeader {
@@ -46,6 +60,7 @@
   margin-bottom: 22px;
   gap: 16px;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .chapterTitleBlock {
@@ -115,24 +130,39 @@
 /* Board View (Todoist-style Kanban columns) */
 .boardContainer {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 18px;
   overflow-x: auto;
-  padding-bottom: 24px;
-  min-height: calc(100vh - 170px);
+  overflow-y: hidden;
+  padding-bottom: 14px;
+  flex: 1;
+  min-height: 0;
+  cursor: grab;
+}
+
+.boardContainer:active {
+  cursor: grabbing;
 }
 
 .boardContainer::-webkit-scrollbar {
-  height: 7px;
+  height: 12px;
 }
 
 .boardContainer::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+  margin: 0 16px;
 }
 
 .boardContainer::-webkit-scrollbar-thumb {
   background-color: var(--border-subtle);
   border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.boardContainer::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-muted);
 }
 
 .boardColumn {
@@ -142,6 +172,9 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
 }
 
 .boardColumnHeader {
@@ -149,15 +182,28 @@
   align-items: center;
   gap: 8px;
   padding: 6px 4px 12px 4px;
-  position: sticky;
-  top: -32px;
+  flex-shrink: 0;
   background-color: var(--bg-main);
   z-index: 5;
 }
 
 .boardColumnCards {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  padding-right: 0;
+  padding-bottom: 96px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.boardColumnCards::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 /* Empty States */

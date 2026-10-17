@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState, useRef } from 'preact/hooks';
 import { initTheme } from '@shared/theme';
 import {
   loadPlannerData,
@@ -32,6 +32,8 @@ export const App = () => {
   const [editingChapter, setEditingChapter] = useState<Chapter | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
+  const boardRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     initTheme();
     loadPlannerData();
@@ -43,6 +45,72 @@ export const App = () => {
   const { layout } = currentDisplaySettings.value;
   const isBoardView = currentView.type !== 'settings' && layout === 'board';
 
+  // Smooth left-click drag-to-scroll for board view
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el || layout !== 'board') return;
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let hasDragged = false;
+
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return;
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('button, a, input, textarea, select, [contenteditable="true"]')) {
+        return;
+      }
+
+      isDown = true;
+      hasDragged = false;
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDown) return;
+      const x = e.pageX - el.offsetLeft;
+      const walk = (x - startX) * 1.2;
+
+      if (!hasDragged && Math.abs(x - startX) > 4) {
+        hasDragged = true;
+        el.style.cursor = 'grabbing';
+        el.style.userSelect = 'none';
+      }
+
+      if (hasDragged) {
+        e.preventDefault();
+        el.scrollLeft = scrollLeft - walk;
+      }
+    };
+
+    const onMouseUp = () => {
+      if (!isDown) return;
+      isDown = false;
+      el.style.cursor = '';
+      el.style.userSelect = '';
+
+      if (hasDragged) {
+        const captureClick = (e: MouseEvent) => {
+          e.stopPropagation();
+          e.preventDefault();
+        };
+        window.addEventListener('click', captureClick, { capture: true, once: true });
+      }
+    };
+
+    el.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+
+    return () => {
+      el.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [layout]);
+
   const activeSubject =
     currentView.type === 'chapter'
       ? subjects.value.find((s) => s.id === currentView.subjectId)
@@ -53,11 +121,9 @@ export const App = () => {
       : null;
 
   // View title calculation
-  let title = 'Today';
+  let title = 'Tasks';
   if (currentView.type === 'today') {
-    title = 'Today Tasks';
-  } else if (currentView.type === 'upcoming') {
-    title = 'Upcoming Tasks';
+    title = 'Tasks';
   } else if (currentView.type === 'inbox') {
     title = 'Inbox Tasks';
   } else if (currentView.type === 'chapter') {
@@ -128,7 +194,7 @@ export const App = () => {
 
       {/* Main Area */}
       <div class={styles.mainWrapper}>
-        <main class={styles.scrollArea}>
+        <main class={`${styles.scrollArea} ${isBoardView ? styles.scrollAreaBoard : ''}`}>
           <div class={`${styles.contentMaxWidth} ${isBoardView ? styles.contentBoardWidth : ''}`}>
             {currentView.type === 'settings' ? (
               <SettingsView />
@@ -188,13 +254,11 @@ export const App = () => {
                         ? 'No tasks in this chapter yet.'
                         : currentView.type === 'inbox'
                         ? 'Your Inbox is empty. Add a quick task without needing a subject or chapter.'
-                        : currentView.type === 'upcoming'
-                        ? 'No upcoming tasks scheduled.'
-                        : 'No tasks scheduled for today.'}
+                        : 'No scheduled tasks yet.'}
                     </p>
                   </div>
                 ) : layout === 'board' ? (
-                  <div class={styles.boardContainer}>
+                  <div class={styles.boardContainer} ref={boardRef}>
                     {groups.map((group) => (
                       <div key={group.id} class={styles.boardColumn}>
                         <div class={styles.boardColumnHeader}>

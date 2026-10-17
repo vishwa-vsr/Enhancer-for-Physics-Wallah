@@ -31,15 +31,9 @@ export const Sidebar = ({
   const currentView = activeView.value;
   const isCollapsed = isSidebarCollapsed.value;
 
-  // Accurate counts for Today, Upcoming, and Inbox views
-  const todayStr = getLocalDateStr();
-  const todayCount = tasks.value.filter((t) => {
-    if (t.completed) return false;
-    if (!t.dueDate) return false;
-    return t.dueDate === todayStr || t.dueDate < todayStr;
-  }).length;
-  const upcomingCount = tasks.value.filter(
-    (t) => !t.completed && t.dueDate && t.dueDate > todayStr,
+  // Accurate counts for Tasks (all pending dated tasks) and Inbox views
+  const tasksCount = tasks.value.filter(
+    (t) => !t.completed && !!t.dueDate,
   ).length;
   const inboxCount = tasks.value.filter(
     (t) => !t.completed && (!t.subjectId || !t.chapterId),
@@ -54,7 +48,7 @@ export const Sidebar = ({
           onClick={() => {
             activeView.value = { type: 'today' };
           }}
-          title={isCollapsed ? `Today${todayCount > 0 ? ` (${todayCount})` : ''}` : undefined}
+          title={isCollapsed ? `Tasks${tasksCount > 0 ? ` (${tasksCount})` : ''}` : undefined}
         >
           <div class={styles.navLeft}>
             <svg
@@ -70,36 +64,9 @@ export const Sidebar = ({
               <line x1="8" x2="8" y1="2" y2="6" />
               <line x1="3" x2="21" y1="10" y2="10" />
             </svg>
-            {!isCollapsed && <span>Today</span>}
+            {!isCollapsed && <span>Tasks</span>}
           </div>
-          {!isCollapsed && todayCount > 0 && <span class={styles.badge}>{todayCount}</span>}
-        </button>
-
-        <button
-          class={`${styles.navItem} ${currentView.type === 'upcoming' ? styles.navItemActive : ''}`}
-          onClick={() => {
-            activeView.value = { type: 'upcoming' };
-          }}
-          title={isCollapsed ? `Upcoming${upcomingCount > 0 ? ` (${upcomingCount})` : ''}` : undefined}
-        >
-          <div class={styles.navLeft}>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.3}
-              width={18}
-              height={18}
-            >
-              <path d="M8 2v4" />
-              <path d="M16 2v4" />
-              <rect width="18" height="18" x="3" y="4" rx="2" />
-              <path d="M3 10h18" />
-              <path d="m14 14 2 2 4-4" />
-            </svg>
-            {!isCollapsed && <span>Upcoming</span>}
-          </div>
-          {!isCollapsed && upcomingCount > 0 && <span class={styles.badge}>{upcomingCount}</span>}
+          {!isCollapsed && tasksCount > 0 && <span class={styles.badge}>{tasksCount}</span>}
         </button>
 
         <button

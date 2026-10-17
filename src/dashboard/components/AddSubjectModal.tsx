@@ -74,9 +74,8 @@ export const AddSubjectModal = ({
       const timer = setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
-          if (editingSubject) {
-            inputRef.current.select();
-          }
+          const len = inputRef.current.value.length;
+          inputRef.current.setSelectionRange(len, len);
         }
       }, 50);
       return () => clearTimeout(timer);
