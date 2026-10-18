@@ -164,7 +164,17 @@ export const App = () => {
     await deleteTask(task.id);
   };
 
-  const handleFabClick = () => {
+  const handleFeedbackClick = () => {
+    const url =
+      'https://docs.google.com/forms/d/e/1FAIpQLSdquONSDYSILWZd-ubkmk9pi_TVNXa65b8G7fpbOCbO3UCHdg/viewform';
+    if (typeof chrome !== 'undefined' && chrome.tabs) {
+      chrome.tabs.create({ url });
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
+  const handleAddTaskClick = () => {
     if (currentView.type === 'chapter' && !currentView.chapterId && currentView.subjectId) {
       handleOpenAddChapter(currentView.subjectId);
     } else {
@@ -181,6 +191,59 @@ export const App = () => {
   const showDisplayMenu =
     currentView.type !== 'settings' &&
     !(currentView.type === 'chapter' && !currentView.chapterId);
+
+  const renderHeaderActions = () => (
+    <div class={styles.headerActions}>
+      <button
+        type="button"
+        class={styles.feedbackBtn}
+        onClick={handleFeedbackClick}
+        title="Feedback"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          width="15"
+          height="15"
+          class={styles.actionIcon}
+        >
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        <span>Feedback</span>
+      </button>
+
+      {showDisplayMenu && <DisplayMenu />}
+
+      <button
+        type="button"
+        class={styles.addTaskBtn}
+        onClick={handleAddTaskClick}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          width="14"
+          height="14"
+        >
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        <span>
+          {currentView.type === 'chapter' && !currentView.chapterId
+            ? 'Add Chapter'
+            : 'Add Task'}
+        </span>
+      </button>
+    </div>
+  );
 
   return (
     <div class={styles.dashboardContainer}>
@@ -209,12 +272,12 @@ export const App = () => {
                         {activeChapter ? `${activeChapter.name} Tasks` : `${activeSubject.name} Tasks`}
                       </h2>
                     </div>
-                    {showDisplayMenu && <DisplayMenu />}
+                    {renderHeaderActions()}
                   </div>
                 ) : (
                   <div class={styles.viewHeader}>
                     <h2 class={styles.viewTitle}>{title}</h2>
-                    {showDisplayMenu && <DisplayMenu />}
+                    {renderHeaderActions()}
                   </div>
                 )}
 
@@ -316,23 +379,6 @@ export const App = () => {
             )}
           </div>
         </main>
-
-        {/* Floating Add Task Circular Button */}
-        {currentView.type !== 'settings' && (
-          <button class={styles.fab} onClick={handleFabClick}>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.5}
-              width="24"
-              height="24"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          </button>
-        )}
       </div>
 
       {/* Modals */}
