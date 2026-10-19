@@ -90,8 +90,6 @@ export const Hero: React.FC = () => {
   return (
     <section className="relative min-h-[100dvh] sm:min-h-[700px] h-screen flex flex-col justify-between overflow-hidden">
 
-      {/* Subtle depth overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#021422]/50 via-transparent to-[#021422] z-[1] pointer-events-none" />
 
       {/* Hero Centerpiece: Headline + SEO Subtitle */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-6xl mx-auto my-auto pt-24 sm:pt-28 pb-4">
