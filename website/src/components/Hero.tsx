@@ -60,7 +60,7 @@ export const Hero: React.FC = () => {
       name: 'Chrome Web Store',
       shortName: 'Chrome',
       icon: ChromeIcon,
-      href: 'https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj',
+      href: 'https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj?utm_source=website',
       users: chromeUsers,
       rating: chromeRating,
       stars: 5,
@@ -70,7 +70,7 @@ export const Hero: React.FC = () => {
       name: 'Firefox Add-ons',
       shortName: 'Firefox',
       icon: FirefoxIcon,
-      href: 'https://addons.mozilla.org/firefox/addon/enhancer-for-physics-wallah/',
+      href: 'https://addons.mozilla.org/firefox/addon/enhancer-for-physics-wallah/?utm_source=website',
       users: '10+ users',
       rating: '5.0',
       stars: 5,
@@ -80,7 +80,7 @@ export const Hero: React.FC = () => {
       name: 'Edge Add-ons Store',
       shortName: 'Edge',
       icon: EdgeIcon,
-      href: 'https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan',
+      href: 'https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan?utm_source=website',
       users: 'Official',
       rating: 'Verified',
       stars: 5,
@@ -89,20 +89,6 @@ export const Hero: React.FC = () => {
   ];
   return (
     <section className="relative min-h-[100dvh] sm:min-h-[700px] h-screen flex flex-col justify-between overflow-hidden">
-      {/* Background Video — lazy loaded to avoid blocking page load */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="none"
-        className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
-      >
-        <source
-          src="/hero-bg.mp4"
-          type="video/mp4"
-        />
-      </video>
 
       {/* Subtle depth overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#021422]/50 via-transparent to-[#021422] z-[1] pointer-events-none" />

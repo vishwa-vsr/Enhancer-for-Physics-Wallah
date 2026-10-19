@@ -26,7 +26,7 @@ export const Footer: React.FC<FooterProps> = () => {
 
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <a
-            href="https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj"
+            href="https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj?utm_source=website"
             target="_blank"
             rel="noreferrer"
             className="p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl liquid-glass hover:scale-110 hover:border-white/20 transition-all cursor-pointer shadow-lg"
@@ -35,7 +35,7 @@ export const Footer: React.FC<FooterProps> = () => {
             <ChromeIcon className="w-5 h-5" />
           </a>
           <a
-            href="https://addons.mozilla.org/firefox/addon/enhancer-for-physics-wallah/"
+            href="https://addons.mozilla.org/firefox/addon/enhancer-for-physics-wallah/?utm_source=website"
             target="_blank"
             rel="noreferrer"
             className="p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl liquid-glass hover:scale-110 hover:border-white/20 transition-all cursor-pointer shadow-lg"
@@ -44,7 +44,7 @@ export const Footer: React.FC<FooterProps> = () => {
             <FirefoxIcon className="w-5 h-5" />
           </a>
           <a
-            href="https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan"
+            href="https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan?utm_source=website"
             target="_blank"
             rel="noreferrer"
             className="p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl liquid-glass hover:scale-110 hover:border-white/20 transition-all cursor-pointer shadow-lg"

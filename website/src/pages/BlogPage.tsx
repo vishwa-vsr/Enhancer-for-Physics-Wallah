@@ -6,6 +6,8 @@ import SmoothScroll from '@/components/ui/smooth-scroll';
 import { BlogListPage } from './BlogListPage';
 import { PadhleDashboardGuide } from './posts/PadhleDashboardGuide';
 import { LectureSmoothUpdates } from './posts/LectureSmoothUpdates';
+import { FeatureGuideDetail } from './posts/FeatureGuideDetail';
+import { FEATURE_GUIDES } from '@/data/featureGuidesData';
 import { BLOGS_LIST } from '@/data/blogsData';
 
 export const BlogPage: React.FC = () => {
@@ -62,6 +64,9 @@ export const BlogPage: React.FC = () => {
   };
 
   const renderContent = () => {
+    if (currentPostSlug && currentPostSlug in FEATURE_GUIDES) {
+      return <FeatureGuideDetail slug={currentPostSlug} onBack={handleBackToList} />;
+    }
     if (currentPostSlug === 'padhle-dashboard') {
       return <PadhleDashboardGuide onBack={handleBackToList} />;
     }

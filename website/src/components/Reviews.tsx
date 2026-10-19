@@ -202,7 +202,7 @@ export const Reviews: React.FC = () => {
       {/* Callout Footer */}
       <div className="mt-14 text-center">
         <a
-          href="https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj/reviews"
+          href="https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj/reviews?utm_source=website"
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full liquid-glass border border-white/10 text-xs font-medium text-muted-foreground hover:text-white hover:border-white/20 transition-all shadow-lg group cursor-pointer"

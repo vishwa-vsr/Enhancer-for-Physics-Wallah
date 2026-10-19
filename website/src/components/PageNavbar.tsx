@@ -159,7 +159,7 @@ export const PageNavbar: React.FC<PageNavbarProps> = ({ currentPage }) => {
                     <span className="text-xs text-muted-foreground">↗</span>
                   </a>
                   <a
-                    href="https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj"
+                    href="https://chromewebstore.google.com/detail/ibepglcdcaanmkledmpgfapaffkhbadj?utm_source=website"
                     target="_blank"
                     rel="noreferrer"
                     onClick={() => setAboutOpen(false)}
