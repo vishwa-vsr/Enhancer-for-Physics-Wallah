@@ -2,15 +2,15 @@ import React from 'react';
 import { PageNavbar } from '../components/PageNavbar';
 import { Footer } from '../components/Footer';
 import { Shield, Lock, Cpu, Database } from 'lucide-react';
-import KineticGrid from '@/components/ui/kinetic-grid';
+import { ScrollCanvasBackground } from '@/components/ScrollCanvasBackground';
 import SmoothScroll from '@/components/ui/smooth-scroll';
 
 export const PrivacyPage: React.FC = () => {
   return (
     <SmoothScroll>
       <div className="relative min-h-screen text-foreground flex flex-col selection:bg-white/20 selection:text-white">
-        {/* Full-Page Interactive Kinetic Grid Background */}
-        <KineticGrid globalColor="navy" isFixedBackground className="fixed inset-0 w-full h-full pointer-events-none z-0" />
+        {/* Full-Page Clean Scroll Video Background */}
+        <ScrollCanvasBackground />
 
         <PageNavbar currentPage="privacy" />
 
