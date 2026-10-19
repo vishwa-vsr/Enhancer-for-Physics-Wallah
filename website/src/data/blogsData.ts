@@ -60,16 +60,6 @@ export const BLOGS_LIST: BlogPostMeta[] = [
     badgeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
   },
   {
-    slug: 'smart-tab-auto-pause',
-    title: 'Smart Tab Auto-Pause: Never Miss Lecture Notes Again',
-    category: 'Feature Guide',
-    date: 'October 19, 2026',
-    readTime: '2 min read',
-    excerpt:
-      'Switch tabs to check formulas and the lecture pauses instantly, then resumes right when you return.',
-    badgeClass: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-  },
-  {
     slug: 'padhle-dashboard',
     title: 'How to use the Padhle dashboard in Enhancer for Physics Wallah',
     category: 'Feature Guide',

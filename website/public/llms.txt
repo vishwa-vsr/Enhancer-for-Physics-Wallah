@@ -5,10 +5,10 @@
 ## What It Does
 - Watch lectures at up to 4.0x speed (with 0.1x precision)
 - Auto-skip teacher silence and board-writing pauses
+- Daily study to-do list & planner to track lectures, DPPs, and revision
 - 1-click Focus Mode to remove chat, doubt boxes, and Ask AI buttons
 - Lock HD video quality (720p/1080p) automatically
 - Real-time finish clock showing when your lecture will end
-- Smart tab auto-pause (pauses when you switch tabs)
 - Keyboard shortcuts: H (speed up), J (slow down), L (reset), Space (turbo boost)
 
 ## Availability

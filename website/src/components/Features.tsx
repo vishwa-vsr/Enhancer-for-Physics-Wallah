@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard, VolumeX, EyeOff, Monitor, Clock, PauseCircle } from 'lucide-react';
+import { Keyboard, VolumeX, EyeOff, Monitor, Clock, CalendarCheck } from 'lucide-react';
 
 const FEATURE_LIST = [
   {
@@ -8,6 +8,13 @@ const FEATURE_LIST = [
     subtitle: 'Automatically speeds up when the teacher stops talking or writes on the board, and returns to normal the second they speak.',
     badge: '100% On-Device',
     slug: 'skip-silence',
+  },
+  {
+    icon: CalendarCheck,
+    title: 'Daily To-Do List',
+    subtitle: 'Keep track of pending lectures, homework, and chapter revisions with a simple checklist built into your player.',
+    badge: 'Daily Goals',
+    slug: 'padhle-dashboard',
   },
   {
     icon: Monitor,
@@ -36,13 +43,6 @@ const FEATURE_LIST = [
     subtitle: 'Calculates the exact wall-clock time your lecture will end at your active speed, so you know if you will finish before dinner.',
     badge: 'Time Saved',
     slug: 'finish-clock',
-  },
-  {
-    icon: PauseCircle,
-    title: 'Smart Tab Auto-Pause',
-    subtitle: 'Switched tabs to check formula notes or solve a problem? The lecture pauses and resumes the second you switch back.',
-    badge: 'Never Miss Notes',
-    slug: 'smart-tab-auto-pause',
   },
 ];
 

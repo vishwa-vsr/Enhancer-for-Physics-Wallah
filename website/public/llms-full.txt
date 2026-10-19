@@ -23,8 +23,8 @@ Bypasses PW's auto-resolution which often starts at 360p or 144p. Lets you lock 
 ### Real Finish Clock
 Calculates and displays the exact wall-clock time your lecture will end based on your current playback speed. Helps you plan your study schedule.
 
-### Smart Tab Auto-Pause
-Automatically pauses the lecture when you switch to another browser tab (to check notes, solve a problem, etc.) and resumes playback when you return.
+### Daily Study To-Do List
+Built-in study planner and task manager to organize pending lectures, homework problems, and chapter revisions without leaving your study flow.
 
 ### Turbo Boost (Space Hold)
 Hold the spacebar to temporarily fast-forward at maximum speed. Release to return to your normal speed. Useful for skipping through doubt-checking segments or repetitive sections.
