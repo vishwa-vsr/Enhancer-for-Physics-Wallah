@@ -25,7 +25,7 @@ This guide provides everything you need to know to get started quickly and write
 The extension is built with modern, ultra-lightweight web technologies:
 
 * **Language & Core:** [TypeScript 5.7](https://www.typescriptlang.org/) (Strict Mode)
-* **Popup UI Framework:** [Preact 10](https://preactjs.com/) + [@preact/signals](https://preactjs.com/guide/v10/signals/) (Reactive state management)
+* **Popup & Dashboard UI Framework:** [Preact 10](https://preactjs.com/) + [@preact/signals](https://preactjs.com/guide/v10/signals/) (Reactive state management for popup controls and the full-page study planner)
 * **Bundler & Build Tool:** [Vite 6](https://vitejs.dev/) + [esbuild](https://esbuild.github.io/) (High-speed multi-browser compilation)
 * **Styling System:** Scoped [CSS Modules](https://github.com/css-modules/css-modules) + CSS Custom Property Design Tokens (`tokens.css`)
 * **Audio DSP Engine:** [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) + [AudioWorklet](https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet) (Real-time background noise calibration & silence detection)
@@ -35,7 +35,7 @@ The extension is built with modern, ultra-lightweight web technologies:
 
 ## 🗺️ Architecture & Code Map
 
-The codebase is organized into three clean layers:
+The codebase is organized into four main layers:
 
 ```
 src/
@@ -44,7 +44,9 @@ src/
 │   ├── types.ts                  # Shared TypeScript interfaces for storage settings
 │   ├── storage.ts                # Type-safe wrapper around chrome.storage.local
 │   ├── theme.ts                  # Signal-based dark/light theme switcher
-│   └── components/               # Shared Preact components (Toggle, Stepper, TabBar, FeatureRow)
+│   ├── colors.ts                 # Preset subject and tag color constants
+│   ├── shortcuts.ts              # Keybinding configuration constants
+│   └── components/               # Shared Preact components (Toggle, Stepper, TabBar, FeatureRow, SelectDropdown, ColorPicker)
 │
 ├── popup/                        # Extension popup UI (Preact + CSS Modules)
 │   ├── main.tsx                  # Preact entry point
@@ -53,32 +55,45 @@ src/
 │   ├── components/               # Header, Footer, and modal views
 │   └── features/                 # SpeedTab, FocusTab, SilenceTab, ReviewModal
 │
-├── content/                      # Modular in-page content script (TypeScript)
+├── dashboard/                    # Full-page Study Planner & To-Do Dashboard (Preact + Signals)
+│   ├── main.tsx                  # Dashboard entry point
+│   ├── App.tsx                   # Main Kanban / task board layout
+│   ├── store.ts                  # Task, subject, and chapter persistence store
+│   ├── types.ts                  # Task, subject, and filter data models
+│   └── components/               # TaskItem, AddTaskDialog, Sidebar, DatePicker, SettingsView, etc.
+│
+├── content/                      # Modular in-page content script & bridge (TypeScript)
 │   ├── index.ts                  # Initialization entry point & global listener coordinator
+│   ├── engine-bridge.ts          # MAIN world bridge script for video player & audio hooking
 │   ├── types.ts                  # Content state & audio engine types
 │   ├── state.ts                  # Reactive content state & chrome.storage.onChanged handler
 │   └── modules/
 │       ├── video/
-│       │   ├── detector.ts       # Shadow-DOM piercing video locator & PIP detector
-│       │   └── controller.ts     # PlaybackRate controller with anti-oscillation guards
+│       │   ├── detector.ts            # Shadow-DOM piercing video locator & PIP detector
+│       │   ├── controller.ts          # PlaybackRate controller with anti-oscillation guards
+│       │   └── quality-controller.ts  # Constant 720p HD resolution switcher & watcher
 │       ├── distractions/
-│       │   ├── elements.ts       # PW toolbar locator (#footer-right-section) & button matchers
-│       │   └── focus-css.ts      # Settings-offset button index hider & zero-flicker classes
+│       │   ├── elements.ts            # PW toolbar locator (#footer-right-section) & button matchers
+│       │   └── focus-css.ts           # Settings-offset button index hider & zero-flicker classes
 │       ├── ui/
-│       │   ├── speed-hud.ts      # Speed badge button, direct speed entry & segmented slider
-│       │   ├── finish-time.ts    # Dynamic lecture finish clock & remaining time badge
-│       │   ├── focus-mode.ts     # Instant Focus arrow button & full-player collapse
-│       │   ├── silence-hud.ts    # Skip silence toolbar button, 5-bar equalizer & status text
-│       │   └── toast.ts          # On-screen warning & notification overlay
+│       │   ├── speed-hud.ts           # Speed badge button, direct speed entry & segmented slider
+│       │   ├── finish-time.ts         # Dynamic lecture finish clock & remaining time badge
+│       │   ├── focus-mode.ts          # Instant Focus arrow button & full-player collapse
+│       │   ├── focus-lock.ts          # Strict study lock (fullscreen reminder overlay)
+│       │   ├── silence-hud.ts         # Skip silence toolbar button, 5-bar equalizer & status text
+│       │   ├── quality-hud.ts         # Constant 720p HD toolbar toggle button
+│       │   ├── autohide.ts            # Idle cursor & controls auto-hider
+│       │   └── toast.ts               # On-screen warning & notification overlay
 │       ├── audio/
-│       │   └── skip-silence.ts   # Inline AudioWorklet processor & noise floor calibration
+│       │   ├── skip-silence.ts        # Inline AudioWorklet processor & noise floor calibration
+│       │   └── volume-balancer.ts     # Speech level balancer for quiet microphones
 │       ├── shortcuts/
-│       │   ├── keyboard.ts       # Hotkeys listener (h, j, l) with input protection
-│       │   └── space-hold.ts     # Capture-phase spacebar speed boost, tap play/pause & native 2x hold-click sync
+│       │   ├── keyboard.ts            # Hotkeys listener (h, j, l) with input protection
+│       │   └── space-hold.ts          # Capture-phase spacebar speed boost, tap play/pause
 │       ├── visibility/
-│       │   └── auto-pause.ts     # Auto pause/resume when switching tabs
+│       │   └── auto-pause.ts          # Auto pause/resume when switching tabs
 │       └── dom/
-│           └── observer.ts       # Throttled MutationObserver & safety interval
+│           └── observer.ts            # Throttled MutationObserver & safety interval
 │
 ├── content.css                   # Styles for injected in-player widgets & focus hiding
 ├── background.js                 # Background service worker (Manifest V3 lifecycle)
@@ -149,10 +164,11 @@ git checkout -b feat/your-feature-name
 
 ### 3. NPM Scripts & Commands
 ```bash
-npm run dev        # Starts Vite dev server for popup UI development
-npm run build      # Compiles production extension into dist/chrome, dist/firefox, dist/edge
+npm run dev        # Starts Vite dev server (serves popup and study dashboard)
+npm run build      # Full production build: runs TypeScript check (tsc --noEmit) and builds dist/
+npm run build:fast # Fast incremental build (skips tsc check during rapid UI testing)
 npm run package    # Compiles and creates store-ready .zip packages inside dist/
-npm run lint       # Runs ESLint and strict TypeScript typechecking
+npm run lint       # Runs ESLint across TypeScript and TSX source files
 npm run format     # Formats all TS, TSX, CSS, and HTML files with Prettier
 ```
 
@@ -173,6 +189,7 @@ npm run format     # Formats all TS, TSX, CSS, and HTML files with Prettier
 
 ### How to Debug Different Components
 * **Popup Window:** Right-click the extension icon in your browser toolbar and click **Inspect popup**.
+* **Study Planner Dashboard:** Click the dashboard icon in the popup header (or navigate to `chrome-extension://<id>/src/dashboard/index.html`), then press <kbd>F12</kbd> to inspect the task board.
 * **Content Script (Video Player HUD & Audio Engine):** Open any Physics Wallah lecture page (`pw.live`), press <kbd>F12</kbd>, and check the **Console** tab.
 * **Background Service Worker:** In `chrome://extensions`, click **Inspect views: service worker** on the extension card.
 * **Reloading Changes:** After running `npm run build`, click the 🔄 **Reload** icon on the extension card in `chrome://extensions`, then refresh the `pw.live` tab.

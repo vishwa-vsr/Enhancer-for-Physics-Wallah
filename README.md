@@ -2,16 +2,16 @@
   <img src="assets/logo_300.png" width="120" height="120" alt="Enhancer for Physics Wallah Logo" />
   
   # Enhancer for Physics Wallah
-  ### Enhance your lecture experience on `pw.live` Speed up lectures up to 4.0x with speed widget, automatically skip teacher pauses with real-time audio detection, constant 720p HD video quality, calculate real finish times, auto-pause when switching tabs, customizable Keyboard Shortcuts, and instantly hide all icon with one click.
+  ### Enhance your lecture experience on `pw.live`: Speed up lectures up to 4.0x with speed widget, automatically skip teacher pauses with real-time audio detection, organize preparation with a built-in study planner, constant 720p HD video quality, calculate real finish times, auto-pause when switching tabs, customizable Keyboard Shortcuts, and instantly hide all icons with one click.
 
-  [![Version: 1.0.9.0](https://img.shields.io/badge/version-1.0.9.0-blue.svg)](#)
+  [![Version: 1.1.0.0](https://img.shields.io/badge/version-1.1.0.0-blue.svg)](#)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![Manifest V3](https://img.shields.io/badge/Manifest-V3-success)](#)
   [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-brightgreen)](#-privacy--security)
   [![Official Website](https://img.shields.io/badge/Website-enhancerforpw.vercel.app-blueviolet)](https://enhancerforpw.vercel.app/)
 
   <p align="center">
-    <a href="https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj"><img src="https://developer.chrome.com/static/docs/webstore/branding/image/206x58-chrome-web-bcb82d15b2486.png" alt="Available in the Chrome Web Store" height="46"></a>
+    <a href="https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj?utm_source=github"><img src="https://developer.chrome.com/static/docs/webstore/branding/image/206x58-chrome-web-bcb82d15b2486.png" alt="Available in the Chrome Web Store" height="46"></a>
     &nbsp;&nbsp;
     <a href="https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/"><img src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg" alt="Get the Add-on for Firefox" height="46"></a>
     &nbsp;&nbsp;
@@ -33,7 +33,7 @@ Install the extension directly with one click from your browser's official store
 
 | Store Link | Active Users | Rating & Reviews |
 | :--- | :--- | :--- |
-| [**Chrome Web Store**](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj) | [![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/ibepglcdcaanmkledmpgfapaffkhbadj?style=flat&logo=google-chrome&logoColor=white&color=blue&label=Users)](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj) | [![Chrome Web Store Rating](https://img.shields.io/chrome-web-store/rating/ibepglcdcaanmkledmpgfapaffkhbadj?style=flat&logo=google-chrome&logoColor=white&color=brightgreen&label=Rating)](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj) |
+| [**Chrome Web Store**](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj?utm_source=github) | [![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/ibepglcdcaanmkledmpgfapaffkhbadj?style=flat&logo=google-chrome&logoColor=white&color=blue&label=Users)](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj?utm_source=github) | [![Chrome Web Store Rating](https://img.shields.io/chrome-web-store/rating/ibepglcdcaanmkledmpgfapaffkhbadj?style=flat&logo=google-chrome&logoColor=white&color=brightgreen&label=Rating)](https://chromewebstore.google.com/detail/pw-control/ibepglcdcaanmkledmpgfapaffkhbadj?utm_source=github) |
 | [**Firefox Add-ons**](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/) | [![Firefox Add-ons Users](https://img.shields.io/amo/users/enhancer-for-physics-wallah?style=flat&logo=firefox-browser&logoColor=white&color=orange&label=Users)](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/) | [![Firefox Add-ons Rating](https://img.shields.io/amo/rating/enhancer-for-physics-wallah?style=flat&logo=firefox-browser&logoColor=white&color=brightgreen&label=Rating)](https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-physics-wallah/) |
 | [**Microsoft Edge Add-ons**](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan) | [![Edge Users](https://img.shields.io/badge/Users-Active-0078D7?style=flat&logo=microsoft-edge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan) | [![Edge Rating](https://img.shields.io/badge/Rating-★★★★★-brightgreen?style=flat&logo=microsoft-edge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/pw-control/cnoboofnelihfmnjfbpbelpfdmogfaan) |
 
@@ -45,43 +45,46 @@ Install the extension directly with one click from your browser's official store
   <img src="assets/promo-posters/Comp%203.png" alt="Enhancer for Physics Wallah Popup Controls" width="100%" />
 </p>
 
-### ⚡ 1. Video Playback & Speed HUD
-* **Extended Speed Range:** Fine-tune video playback speed from `0.5x` up to `4.0x` in precise `0.1x` steps.
-* **4-Point Segmented Slider:** Equal-distance quick-snap slider with magnetic point attraction (customizable defaults: `1.0x`, `2.0x`, `3.0x`, `4.0x`).
-* **Mouse Wheel Adjustment:** Hover over the on-player speed badge and scroll your mouse wheel to quickly step speeds up or down by `0.1x`.
-* **Hold Space to Accelerate:** Hold down <kbd>Spacebar</kbd> to temporarily boost speed (default `2.0x`), releasing it to instantly return to your normal speed. Quick-tap toggles Play/Pause.
+### 1. Video playback and speed controls
+* **Extended speed range:** Adjust lecture speed from `0.5x` up to `4.0x` in smooth `0.1x` steps.
+* **Quick-snap presets:** Click preset buttons to jump straight to your favorite speeds like `1.0x`, `2.0x`, `3.0x`, or `4.0x`.
+* **Mouse wheel speed control:** Hover your mouse over the speed badge on the video player and scroll up or down to change speed.
+* **Hold Spacebar to boost:** Press and hold the <kbd>Spacebar</kbd> to temporarily speed up playback, and let go to return to your normal speed. A quick tap plays or pauses the video.
 
 ---
 
-### 🔇 2. Smart Skip Silence (Beta)
-* **Automatic Fast-Forwarding:** Accelerates through teacher pauses, whiteboard writing, and quiet thinking moments (from `1.5x` up to `6.0x`).
-* **Rolling Noise-Floor Auto Calibration:** Analyzes background room noise over a 10-second rolling window to adaptively detect silence without manual tuning.
-* **Manual Threshold Sensitivity:** Optional manual threshold slider ranging from `-60 dB` (quietest) to `-20 dB` (loudest).
-* **Mute During Silence:** Optional toggle to mute audio while silent fast-forwarding is active.
-* **Live Visualizer & Time Saved Tracker:** 5-bar live audio equalizer inside the player toolbar and an accumulated study time saved tracker.
+### 2. Skip silence
+* **Skip quiet gaps:** Fast-forwards through teacher pauses, whiteboard writing, and silent thinking time.
+* **Smart sound detection:** Automatically detects room noise so it speeds up only when the teacher stops speaking.
+* **Custom sensitivity:** Adjust the sound sensitivity slider if your teacher has a noisy room or a soft microphone.
+* **Mute during silence:** Optional toggle to silence audio while the video speeds through quiet parts.
+* **Time saved counter:** Shows you exactly how many minutes of study time you saved during your lecture.
 
 ---
 
-### ⏰ 3. Dynamic Lecture Finish Time Badge
-* **Real-Time Finish Clock:** Displays the exact wall-clock time your lecture will end, dynamically recalculated whenever you change video speeds or seek.
-* **Customizable Formats:**
-  * **Minimal:** `10:45 AM`
-  * **Clock:** `Ends at 10:45 AM`
-  * **Full:** `Ends at 10:45 AM • 28m left`
+### 3. Lecture finish time
+* **Real finish clock:** Displays the exact time your lecture will end, updating right away whenever you change playback speed or skip ahead.
+* **Flexible display:** Choose between a simple clock time like `10:45 AM` or a detailed format like `Ends at 10:45 AM (28m left)`.
 
 ---
 
-### 🎯 4. Focus Mode & Distraction Decluttering
-* **Focus Lock Mode (Strict Study Session):** One click locks you into a fullscreen study session that pauses playback and shows a *"Stay Focused!"* reminder if you leave fullscreen or switch tabs. Distractions (chat, doubts, notes, time display) can be hidden individually using the Focus Toggles.
-* **1-Click Instant Focus Mode:** Click the chevron arrow button on the toolbar to collapse all controls, sidebars, and mouse cursor for a clean, cinematic study experience. Move your mouse or touch the screen to bring them back.
-* **Auto-Pause on Tab Switch:** Pauses the lecture automatically when switching tabs or minimizing the browser, and resumes seamlessly when you return.
-* **Granular Element Toggles:** Individually hide:
-  * 🤖 **Ask AI** helper button
-  * ❓ **Doubt / Q&A** panel
-  * 💬 **Live Chat** and comments
-  * 📝 **Study Notes** buttons & Note Timeline
-  * ⚙️ **Settings gear** icon
-  * ⏱️ **Video Timeline / Seekbar** & Time texts
+### 4. Focus mode and distraction remover
+* **One-click focus mode:** Click the arrow icon on the toolbar to hide the sidebars, chat, and controls for clean full-screen viewing. Move your mouse anytime to bring them back.
+* **Strict study lock:** Locks into fullscreen mode and reminds you to stay on track if you try to switch tabs or exit fullscreen.
+* **Auto-pause on tab switch:** Pauses your lecture automatically when you switch to another tab or minimize your browser, and resumes when you return.
+* **Hide distracting elements:** Hide individual items you do not need, such as the Ask AI button, doubts panel, live chat, notes, and the video progress bar.
+
+---
+
+### 5. Study planner and to-do list
+
+<p align="center">
+  <img src="assets/promo-posters/Comp%204.png" alt="Enhancer for Physics Wallah Study Planner Dashboard" width="100%" />
+</p>
+
+* **All-in-one preparation board:** Keep track of your lectures, revision chapters, and daily DPP practice in one clean dashboard.
+* **Organized task columns:** Sort your study routine into Overdue, Today, Tomorrow, and upcoming days so you never fall behind.
+* **Subject tags:** Tag tasks by subject (Physics, Chemistry, Maths, Biology) to keep your daily preparation balanced.
 
 ---
 
@@ -102,27 +105,45 @@ Hotkeys can be customized or toggled on/off in the extension popup:
 ## ❓ Frequently Asked Questions
 
 <details>
-<summary><b>1. Why aren't keyboard shortcuts working when I press keys?</b></summary>
+<summary><b>1. Why is the extension not showing up or working on PW?</b></summary>
 <br/>
-Keyboard shortcuts are <b>disabled by default</b> so they don't accidentally interfere when you are typing search queries, comments, or study notes. You can enable them with one click inside the extension popup under the <b>Speed</b> tab.
+If you already had Physics Wallah open before installing or updating the extension, the page does not have the extension scripts running yet. Simply refresh or reload your PW tab (press <b>F5</b> or <b>Ctrl + R</b>), and the controls will appear on the video player.
 </details>
 
 <details>
-<summary><b>2. How does Skip Silence detect teacher pauses?</b></summary>
+<summary><b>2. Will my PW account get banned or flagged for using this?</b></summary>
 <br/>
-Skip Silence uses real-time audio analysis directly inside your browser. It continuously measures the teacher's background room noise over a rolling 10-second buffer. When the sound drops below the speech threshold, the video automatically speeds up and smoothly returns to normal speed as soon as the teacher begins talking.
+No. The extension runs 100% locally in your browser on your computer. It acts just like a video player remote control. It does not tamper with test papers, modify batch contents, or send your login details anywhere.
 </details>
 
 <details>
-<summary><b>3. How do I exit Instant Focus Mode?</b></summary>
+<summary><b>3. Does it work on other browsers like Brave, Edge, or Opera?</b></summary>
 <br/>
-Simply move your mouse cursor or tap anywhere on your screen. The player controls, toolbar, and badges will smoothly fade back into view.
+Yes. You can install it on any Chromium browser that supports Chrome Web Store extensions, including Brave, Microsoft Edge, Opera, and Vivaldi.
 </details>
 
 <details>
-<summary><b>4. Does this work on live lectures or only recorded videos?</b></summary>
+<summary><b>4. Why aren't keyboard shortcuts working when I press keys?</b></summary>
 <br/>
-All speed controls, focus mode decluttering, and finish time estimates work seamlessly on recorded batch lectures. On live streams, speed adjustments are handled dynamically within the available live stream buffer.
+Keyboard shortcuts are turned off by default so they do not get in your way while typing search queries, comments, or study notes. You can turn them on anytime inside the extension popup under the <b>Speed</b> tab.
+</details>
+
+<details>
+<summary><b>5. How does Skip Silence detect teacher pauses?</b></summary>
+<br/>
+Skip Silence monitors the lecture audio directly inside your browser. When the sound drops below speaking volume, it speeds up the video until the teacher starts talking again.
+</details>
+
+<details>
+<summary><b>6. How do I exit Instant Focus Mode?</b></summary>
+<br/>
+Move your mouse cursor or tap anywhere on your screen. The player controls, toolbar, and badges will appear right away.
+</details>
+
+<details>
+<summary><b>7. Does this work on live lectures or only recorded videos?</b></summary>
+<br/>
+All speed controls, focus mode tools, and finish time estimates work on recorded batch lectures. On live streams, speed changes work within the available live broadcast buffer.
 </details>
 
 ---
