@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "build:fast": "vite build",
-    "zip": "tar -a -c -f dist/pw-chrome-v1.1.0.0.zip -C dist/chrome * && tar -a -c -f dist/pw-firefox-v1.1.0.0.zip -C dist/firefox * && tar -a -c -f dist/pw-edge-v1.1.0.0.zip -C dist/edge *",
+    "zip": "node scripts/zip.js",
     "package": "npm run build && npm run zip",
     "lint": "eslint src --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\""
