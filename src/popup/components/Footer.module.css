@@ -21,6 +21,19 @@
   color: var(--accent-primary);
 }
 
+.shareBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.copied {
+  color: #10b981 !important;
+  font-weight: 600;
+}
+
 .version {
   color: var(--text-muted);
   display: flex;
