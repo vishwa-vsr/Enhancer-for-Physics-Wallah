@@ -9,70 +9,10 @@ export const Hero: React.FC = () => {
   const [chromeRating, setChromeRating] = useState('4.8');
   const [isLive, setIsLive] = useState(false);
   const greetingRef = useRef<VerticalCutRevealRef>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleGreetingInteraction = () => {
     greetingRef.current?.restart();
   };
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    let targetTime = 0;
-    let rafId: number | null = null;
-
-    const updateVideoFrame = () => {
-      if (videoRef.current && videoRef.current.duration && !isNaN(videoRef.current.duration)) {
-        videoRef.current.currentTime = targetTime;
-      }
-      rafId = null;
-    };
-
-    const handleScroll = () => {
-      if (!containerRef.current || !videoRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const totalScroll = containerRef.current.offsetHeight - window.innerHeight;
-      if (totalScroll <= 0) return;
-
-      const currentScroll = -rect.top;
-      const progress = Math.min(1, Math.max(0, currentScroll / totalScroll));
-
-      if (videoRef.current.duration && !isNaN(videoRef.current.duration)) {
-        targetTime = progress * videoRef.current.duration;
-        if (rafId === null) {
-          rafId = requestAnimationFrame(updateVideoFrame);
-        }
-      }
-    };
-
-    const handleLoadedMetadata = () => {
-      handleScroll();
-    };
-
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-
-    const lenis = window.__lenis;
-    if (lenis) {
-      lenis.on('scroll', handleScroll);
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    // Initial check
-    handleScroll();
-
-    return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      if (lenis) {
-        lenis.off('scroll', handleScroll);
-      }
-      window.removeEventListener('scroll', handleScroll);
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -148,19 +88,8 @@ export const Hero: React.FC = () => {
     },
   ];
   return (
-    <section ref={containerRef} className="relative h-[250vh]">
-      <div className="sticky top-0 h-screen min-h-[100dvh] sm:min-h-[700px] w-full flex flex-col justify-between overflow-hidden">
-        {/* Fullscreen Video Background */}
-        <video
-          ref={videoRef}
-          src="/demo-scroll.mp4"
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
-        />
-
-        {/* Hero Centerpiece: Headline + SEO Subtitle */}
+    <section className="relative min-h-[100dvh] sm:min-h-[700px] h-screen flex flex-col justify-between overflow-hidden">
+      {/* Hero Centerpiece: Headline + SEO Subtitle */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 max-w-6xl mx-auto my-auto pt-24 sm:pt-28 pb-4">
         <h1
           className="animate-fade-rise text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] tracking-tight sm:tracking-[-2px] font-normal text-foreground whitespace-normal sm:whitespace-nowrap"
@@ -260,7 +189,6 @@ export const Hero: React.FC = () => {
           </a>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
   );
 };
