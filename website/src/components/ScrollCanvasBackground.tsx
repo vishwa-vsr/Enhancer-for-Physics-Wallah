@@ -125,10 +125,10 @@ export const ScrollCanvasBackground: React.FC<ScrollCanvasBackgroundProps> = ({ 
       // 2. Clear output canvas
       ctx.clearRect(0, 0, w, h);
 
-      // Shimmer animation time (animStyle: "shimmer", animSpeed: 100, animIntensity: 60)
-      const time = performance.now() * 0.003;
+      // Calmer shimmer animation time
+      const time = performance.now() * 0.0018;
 
-      // 3. Render 21st.dev Dither cells
+      // 3. Render 21st.dev Dither cells in clean monochrome silver with 75% reduced intensity
       for (let r = 0; r < rows; r++) {
         const bayerRow = BAYER_4X4[r % 4];
         const cy = r * CELL_SIZE + CELL_SIZE / 2;
@@ -144,22 +144,24 @@ export const ScrollCanvasBackground: React.FC<ScrollCanvasBackgroundProps> = ({ 
           green = Math.min(255, Math.max(0, CONTRAST_FACTOR * (green - 128) + 128));
           blue = Math.min(255, Math.max(0, CONTRAST_FACTOR * (blue - 128) + 128));
 
-          // Step B: Cell luminance
+          // Step B: Cell luminance (0 to 1)
           const lum = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
 
-          // Step C: Shimmer wave
-          const shimmer = Math.sin(time + c * 0.35 + r * 0.4) * Math.cos(time * 0.8 - c * 0.2) * 0.12 * 0.6;
+          // Step C: Subtle, gentle shimmer wave
+          const shimmer = Math.sin(time + c * 0.25 + r * 0.3) * Math.cos(time * 0.6 - c * 0.15) * 0.06;
           const animLum = Math.min(1, Math.max(0, lum + shimmer));
 
           // Step D: Bayer 4x4 dither threshold
           const threshold = bayerRow[c % 4] / 16;
-          if (animLum < threshold * 0.35) continue;
+          if (animLum < threshold * 0.45) continue;
 
-          // Step E: Draw dither shape
-          const radius = Math.max(0.9, (CELL_SIZE / 2) * Math.min(1.15, animLum * 1.25));
+          // Step E: Delicate constellation dot size (scaled down)
+          const radius = Math.max(0.65, (CELL_SIZE / 3.8) * Math.min(1.0, animLum * 1.1));
           const cx = c * CELL_SIZE + CELL_SIZE / 2;
 
-          ctx.fillStyle = `rgb(${red | 0},${green | 0},${blue | 0})`;
+          // Step F: Clean Silver Monochrome with 70-80% reduced opacity (0.06 to 0.24)
+          const alpha = 0.06 + animLum * 0.18;
+          ctx.fillStyle = `rgba(224, 235, 248, ${alpha.toFixed(3)})`;
           ctx.beginPath();
           ctx.arc(cx, cy, radius, 0, Math.PI * 2);
           ctx.fill();
