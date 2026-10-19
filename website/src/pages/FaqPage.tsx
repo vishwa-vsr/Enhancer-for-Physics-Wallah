@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PageNavbar } from '../components/PageNavbar';
 import { Footer } from '../components/Footer';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { ScrollCanvasBackground } from '@/components/ScrollCanvasBackground';
+import KineticGrid from '@/components/ui/kinetic-grid';
 import SmoothScroll from '@/components/ui/smooth-scroll';
 
 interface FaqItem {
@@ -74,8 +74,8 @@ export const FaqPage: React.FC = () => {
   return (
     <SmoothScroll>
       <div className="relative min-h-screen text-foreground flex flex-col selection:bg-white/20 selection:text-white">
-        {/* Full-Page Dither Video Canvas Background */}
-        <ScrollCanvasBackground mode="loop" />
+        {/* Full-Page Interactive Kinetic Grid Background */}
+        <KineticGrid globalColor="navy" isFixedBackground className="fixed inset-0 w-full h-full pointer-events-none z-0" />
 
         <PageNavbar currentPage="faq" />
 

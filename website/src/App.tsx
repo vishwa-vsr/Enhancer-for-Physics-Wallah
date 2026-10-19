@@ -4,15 +4,15 @@ import { Features } from './components/Features';
 import { Reviews } from './components/Reviews';
 import { Privacy } from './components/Privacy';
 import { Footer } from './components/Footer';
-import { ScrollCanvasBackground } from './components/ScrollCanvasBackground';
+import KineticGrid from './components/ui/kinetic-grid';
 import SmoothScroll from './components/ui/smooth-scroll';
 
 export function App() {
   return (
     <SmoothScroll>
       <div className="relative min-h-screen text-foreground flex flex-col selection:bg-white/20 selection:text-white">
-        {/* Full-Page Smooth Scroll Canvas Animation */}
-        <ScrollCanvasBackground />
+        {/* Full-Page Interactive Kinetic Grid Background */}
+        <KineticGrid globalColor="navy" isFixedBackground className="fixed inset-0 w-full h-full pointer-events-none z-0" />
 
         {/* Top Navigation */}
         <Navbar />
