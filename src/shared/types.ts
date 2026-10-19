@@ -76,6 +76,9 @@ export interface PopupSettings {
   installDate: number; // Unix timestamp
   reviewPromptStatus: ReviewPromptStatus;
   reviewPromptNextShowTime: number; // Unix timestamp
+
+  // First-time onboarding / refresh notice
+  hasSeenRefreshPrompt?: boolean;
 }
 
 // ===== Defaults matching existing popup.js behavior =====
@@ -140,4 +143,5 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   installDate: 0,
   reviewPromptStatus: 'pending',
   reviewPromptNextShowTime: 0,
+  hasSeenRefreshPrompt: false,
 };

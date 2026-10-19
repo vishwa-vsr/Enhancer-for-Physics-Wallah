@@ -113,10 +113,11 @@ export const skipSilenceLowCpu = signal(false);
 export const volumeBalancerEnabled = signal(false);
 export const volumeBalancerMode = signal<VolumeBalancerMode>('balanced');
 
-// ===== Review prompt signals =====
+// ===== Review & Refresh prompt signals =====
 export const installDate = signal(0);
 export const reviewPromptStatus = signal<ReviewPromptStatus>('pending');
 export const reviewPromptNextShowTime = signal(0);
+export const hasSeenRefreshPrompt = signal(false);
 
 // ===== UI state (not persisted to storage) =====
 export const activeTab = signal('speed-tab');
@@ -207,6 +208,7 @@ export async function initStore() {
   installDate.value = s.installDate || 0;
   reviewPromptStatus.value = s.reviewPromptStatus || 'pending';
   reviewPromptNextShowTime.value = s.reviewPromptNextShowTime || 0;
+  hasSeenRefreshPrompt.value = !!s.hasSeenRefreshPrompt;
 
   // Listen for real-time updates from content script (e.g., time saved or quality)
   onSettingsChanged((changes) => {
@@ -264,6 +266,9 @@ export async function initStore() {
     }
     if (changes.reviewPromptNextShowTime !== undefined) {
       reviewPromptNextShowTime.value = (changes.reviewPromptNextShowTime as number) || 0;
+    }
+    if (changes.hasSeenRefreshPrompt !== undefined) {
+      hasSeenRefreshPrompt.value = !!changes.hasSeenRefreshPrompt;
     }
   });
 

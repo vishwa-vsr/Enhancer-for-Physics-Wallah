@@ -16,6 +16,7 @@ import { SpeedTab } from './features/speed/SpeedTab';
 import { FocusTab } from './features/focus/FocusTab';
 import { SilenceTab } from './features/silence/SilenceTab';
 import { ReviewModal } from './features/review/ReviewModal';
+import { RefreshModal } from './features/refresh/RefreshModal';
 
 const tabs = [
   {
@@ -119,6 +120,7 @@ export const App = () => {
       </main>
       <Footer />
       <ReviewModal />
+      <RefreshModal />
     </div>
   );
 };

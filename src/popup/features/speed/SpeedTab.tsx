@@ -463,14 +463,14 @@ export function SpeedTab() {
         <h2 class={styles.sectionTitle}>Extra Controls</h2>
         <div class={styles.settingsGroupCard}>
           <div class={styles.settingRowGroup}>
-            <FeatureRow label="Enable Keyboard Hotkeys">
+            <FeatureRow label="Speed Keyboard Shortcuts">
               <Toggle
                 checked={enableHotkeys.value}
                 onChange={(v) => {
                   enableHotkeys.value = v;
                   saveSetting('enableHotkeys', v);
                 }}
-                ariaLabel="Toggle Keyboard Hotkeys"
+                ariaLabel="Toggle Speed Keyboard Shortcuts"
               />
             </FeatureRow>
             {enableHotkeys.value && (

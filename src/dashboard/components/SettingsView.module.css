@@ -317,5 +317,90 @@
   color: var(--accent-primary, #818cf8);
 }
 
+/* Storage & Data Section */
+.storageCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.storageCardHeader .cardTitle {
+  margin: 0;
+}
+
+.storageUsageTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.storageUsedText {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.storageTotalText {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.storageTrack {
+  height: 10px;
+  width: 100%;
+  background-color: var(--bg-control);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.storageFill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+.storageStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .storageStatsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.storageStatCard {
+  background-color: var(--bg-control);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md, 10px);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.storageStatNumber {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.storageStatLabel {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
 
 

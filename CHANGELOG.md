@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.1.0.1] - 2026-10-19
+
+### Added
+
+- **Storage Tracker**: View storage usage in Settings.
+- **Refresh Tip**: Reminder to reload PW tabs on first open.
+
+### Changed
+
+- **Cleaner Pop-up**: Simplified footer and renamed speed shortcuts.
+
 ## [1.1.0.0] - 2026-10-15
 
 ### Added

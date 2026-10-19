@@ -1,5 +1,13 @@
-import { useState, useRef } from 'preact/hooks';
-import { customTags, addCustomTag, updateCustomTag, deleteCustomTag } from '../store';
+import { useState, useRef, useEffect } from 'preact/hooks';
+import {
+  customTags,
+  addCustomTag,
+  updateCustomTag,
+  deleteCustomTag,
+  tasks,
+  subjects,
+  chapters,
+} from '../store';
 import styles from './SettingsView.module.css';
 
 import { PRESET_COLORS } from '@shared/colors';
@@ -196,12 +204,44 @@ const COMMUNITY_AND_STORE_LINKS: LinkItem[] = [
   },
 ];
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
 export const SettingsView = () => {
   const [newLabelName, setNewLabelName] = useState('');
   const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[0]);
   const [labelError, setLabelError] = useState('');
   const [editingTag, setEditingTag] = useState<{ name: string; color: string } | null>(null);
+  const [storageBytes, setStorageBytes] = useState<number | null>(null);
+  const [storageQuota, setStorageQuota] = useState<number>(10 * 1024 * 1024);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const measureStorage = () => {
+      if (typeof chrome !== 'undefined' && chrome.storage?.local?.getBytesInUse) {
+        chrome.storage.local.getBytesInUse(null, (bytes) => {
+          setStorageBytes(bytes || 0);
+        });
+        if (chrome.storage.local.QUOTA_BYTES) {
+          setStorageQuota(chrome.storage.local.QUOTA_BYTES);
+        }
+      } else {
+        try {
+          const raw = localStorage.getItem('pw_study_planner_data') || '';
+          const bytes = new Blob([raw]).size;
+          setStorageBytes(bytes);
+          setStorageQuota(5 * 1024 * 1024);
+        } catch {
+          setStorageBytes(0);
+        }
+      }
+    };
+
+    measureStorage();
+  }, [tasks.value, subjects.value, chapters.value, customTags.value]);
 
   const handleStartEdit = (tag: { name: string; color: string }) => {
     setEditingTag(tag);
@@ -264,6 +304,15 @@ export const SettingsView = () => {
       window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
+
+  const usedBytes = storageBytes ?? 0;
+  const usedPercent = storageQuota > 0 ? (usedBytes / storageQuota) * 100 : 0;
+  const visualFillPercent = Math.min(100, Math.max(usedPercent, 2));
+
+  const totalTasks = tasks.value.length;
+  const totalSubjects = subjects.value.length;
+  const totalChapters = chapters.value.length;
+  const totalLabels = customTags.value.length;
 
   return (
     <div class={styles.container}>
@@ -373,6 +422,48 @@ export const SettingsView = () => {
 
             {labelError && <p class={styles.errorText}>{labelError}</p>}
           </form>
+        </div>
+      </div>
+
+      {/* Storage & Data Section */}
+      <div class={styles.card}>
+        <div class={styles.storageCardHeader}>
+          <h2 class={styles.cardTitle}>Storage & Data</h2>
+          <div class={styles.storageUsageTitle}>
+            <span class={styles.storageUsedText}>{formatBytes(usedBytes)} used</span>
+            <span class={styles.storageTotalText}>of {formatBytes(storageQuota)}</span>
+          </div>
+        </div>
+
+        <div
+          class={styles.storageTrack}
+          role="progressbar"
+          aria-valuenow={usedPercent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Storage Usage Meter"
+        >
+          <div
+            class={styles.storageFill}
+            style={{ width: `${visualFillPercent}%` }}
+          />
+        </div>
+
+        <div class={styles.storageStatsGrid}>
+          <div class={styles.storageStatCard}>
+            <span class={styles.storageStatNumber}>{totalTasks}</span>
+            <span class={styles.storageStatLabel}>Total Tasks</span>
+          </div>
+          <div class={styles.storageStatCard}>
+            <span class={styles.storageStatNumber}>
+              {totalSubjects} Subjects • {totalChapters} Chapters
+            </span>
+            <span class={styles.storageStatLabel}>Course Structure</span>
+          </div>
+          <div class={styles.storageStatCard}>
+            <span class={styles.storageStatNumber}>{totalLabels}</span>
+            <span class={styles.storageStatLabel}>Study Labels</span>
+          </div>
         </div>
       </div>
 
