@@ -53,9 +53,10 @@ Install the extension directly with one click from your browser's official store
 
 ---
 
-### 2. Skip silence
+### 2. Skip silence & audio controls
 * **Skip quiet gaps:** Fast-forwards through teacher pauses, whiteboard writing, and silent thinking time.
 * **Smart sound detection:** Automatically detects room noise so it speeds up only when the teacher stops speaking.
+* **Ear protection:** Automatically clamps sudden loud shouting or screaming during lectures to protect headphone users.
 * **Custom sensitivity:** Adjust the sound sensitivity slider if your teacher has a noisy room or a soft microphone.
 * **Mute during silence:** Optional toggle to silence audio while the video speeds through quiet parts.
 * **Time saved counter:** Shows you exactly how many minutes of study time you saved during your lecture.
@@ -92,6 +93,7 @@ Install the extension directly with one click from your browser's official store
 
 Hotkeys can be customized or toggled on/off in the extension popup:
 
+### Speed Hotkeys (Playback Tab)
 | Action | Default Shortcut | Description |
 | :--- | :---: | :--- |
 | **Speed Up** | <kbd>h</kbd> | Increases playback speed by `0.1x` |
@@ -99,6 +101,16 @@ Hotkeys can be customized or toggled on/off in the extension popup:
 | **Reset Speed** | <kbd>l</kbd> | Resets playback speed back to `1.0x` |
 | **Hold Boost** | <kbd>Space</kbd> *(Hold)* | Plays at boost speed while held down |
 | **Play / Pause** | <kbd>Space</kbd> *(Tap)* | Standard play / pause toggle |
+
+### Focus Hotkeys (Focus Tab)
+| Action | Default Shortcut | Description |
+| :--- | :---: | :--- |
+| **Toggle Chat** | <kbd>c</kbd> | Shows or hides the live chat panel |
+| **Toggle Timeline** | <kbd>t</kbd> | Shows or hides the lecture seekbar |
+| **Toggle Notes** | <kbd>n</kbd> | Shows or hides lecture notes |
+| **Toggle Doubts** | <kbd>d</kbd> | Shows or hides the student doubts panel |
+| **Fullscreen** | <kbd>f</kbd> | Enters or exits full-screen mode |
+| **Quick Exit** | <kbd>e</kbd> | Safely exits Focus Lock mode |
 
 ---
 
@@ -125,7 +137,7 @@ Yes. You can install it on any Chromium browser that supports Chrome Web Store e
 <details>
 <summary><b>4. Why aren't keyboard shortcuts working when I press keys?</b></summary>
 <br/>
-Keyboard shortcuts are turned off by default so they do not get in your way while typing search queries, comments, or study notes. You can turn them on anytime inside the extension popup under the <b>Speed</b> tab.
+Keyboard shortcuts are turned off by default so they do not get in your way while typing search queries, comments, or study notes. You can turn them on anytime inside the extension popup under the <b>Playback</b> tab.
 </details>
 
 <details>

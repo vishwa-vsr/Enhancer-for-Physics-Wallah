@@ -1,7 +1,7 @@
 # Privacy Policy for Enhancer for Physics Wallah
 
-**Effective Date:** September 9, 2026  
-**Latest Version:** 1.0.9.0  
+**Effective Date:** October 15, 2026  
+**Latest Version:** 1.1.0.0  
 **Official Web Version:** [https://enhancerforpw.vercel.app/privacy](https://enhancerforpw.vercel.app/privacy)
 
 At **Enhancer for Physics Wallah** (also known as **PW Control**), we believe your privacy should always come first. This Privacy Policy explains clearly and transparently how our browser extension operates and how user data is handled.
@@ -30,13 +30,14 @@ The **Skip Silence** feature dynamically fast-forwards through pauses and silenc
 
 ## 3. Local Storage on Your Device
 
-The extension only uses the standard browser local storage API (`chrome.storage.local`) to save your interface preferences directly on your own device:
+The extension only uses the standard browser local storage API (`chrome.storage.local`) to save your interface preferences and planner data directly on your own device:
 
 - Preferred playback speed and custom speed presets.
 - Focus mode visibility choices (e.g., hiding live chat, notes, doubts, or batch details).
 - UI theme selection (Dark Mode / Light Mode).
 - Skip Silence settings (silence speed, silence threshold, minimum pause duration, and auto-calibration preference).
 - Accumulated "Time Saved" study counter.
+- Study planner and to-do list data (tasks, subject tags, chapter names, due dates, and completion status).
 
 **All stored settings remain strictly on your local device.** They are never uploaded to any remote server or shared with any third party.
 

@@ -27,7 +27,7 @@ export const PrivacyPage: React.FC = () => {
             At <strong>Enhancer for PW</strong>, your study habits, personal accounts, and browser privacy always come first. This policy explains clearly and honestly how data is handled.
           </p>
           <p className="text-xs sm:text-sm text-white/40 mt-2 font-mono">
-            Last updated: September 2026 • Version 1.0.8.9
+            Last updated: October 2026 • Version 1.1.0.0
           </p>
         </div>
 
@@ -51,7 +51,7 @@ export const PrivacyPage: React.FC = () => {
             <Database className="w-5 h-5 text-purple-400 mb-2" />
             <h3 className="text-sm font-semibold text-white">100% Local Storage</h3>
             <p className="text-xs text-muted-foreground mt-1">
-              Custom speeds and time-saved counters stay strictly inside your browser.
+              Custom speeds, study to-do tasks, and time-saved counters stay strictly inside your browser.
             </p>
           </div>
         </div>
@@ -100,6 +100,7 @@ export const PrivacyPage: React.FC = () => {
               <li>Custom video speed choices (e.g. 2.5x, 3.2x).</li>
               <li>Focus mode settings (hiding live chat or doubt boxes).</li>
               <li>Accumulated "Time Saved" counter.</li>
+              <li>Study planner & to-do list tasks, subjects, and chapters.</li>
             </ul>
             <p className="mt-3">
               Uninstalling the extension or clearing your browser extension storage removes 100% of these records instantly.
