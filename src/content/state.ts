@@ -13,6 +13,8 @@ export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideSetting: false,
   hideTimeLine: false,
   hideTimeText: false,
+  hideNextLecture: false,
+  hideAttemptDPP: false,
 };
 
 export const DEFAULT_CONTENT_STATE: ContentState = {
@@ -141,6 +143,8 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'hideSetting',
         'hideTimeLine',
         'hideTimeText',
+        'hideNextLecture',
+        'hideAttemptDPP',
         'enableInstantHide',
         'enableHotkeys',
         'disableScroll',

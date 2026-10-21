@@ -14,6 +14,8 @@ import {
   hideSetting,
   hideTimeLine,
   hideTimeText,
+  hideNextLecture,
+  hideAttemptDPP,
   enableInstantHide,
   showFinishTime,
   finishTimeFormat,
@@ -423,6 +425,24 @@ function FocusTogglesSection() {
             onChange={(v) => {
               hideTimeText.value = v;
               saveSetting('hideTimeText', v);
+            }}
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Next Lecture">
+          <Toggle
+            checked={hideNextLecture.value}
+            onChange={(v) => {
+              hideNextLecture.value = v;
+              saveSetting('hideNextLecture', v);
+            }}
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Attempt DPP">
+          <Toggle
+            checked={hideAttemptDPP.value}
+            onChange={(v) => {
+              hideAttemptDPP.value = v;
+              saveSetting('hideAttemptDPP', v);
             }}
           />
         </FeatureRow>

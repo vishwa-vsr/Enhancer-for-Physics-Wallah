@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Hide Next Lecture & Attempt DPP**: New Focus toggles to hide PW's floating "Next Lecture" and "Attempt DPP" cards.
 - **Storage Tracker**: View storage usage in Settings.
 - **Refresh Tip**: Reminder to reload PW tabs on first open.
 

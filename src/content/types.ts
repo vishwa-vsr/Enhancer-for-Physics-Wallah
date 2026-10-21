@@ -18,6 +18,8 @@ export interface HideSettings {
   hideSetting: boolean;
   hideTimeLine: boolean;
   hideTimeText: boolean;
+  hideNextLecture: boolean;
+  hideAttemptDPP: boolean;
 }
 
 // ===== Full Content Script State =====

@@ -25,6 +25,8 @@ export interface PopupSettings {
   hideSetting: boolean;
   hideTimeLine: boolean;
   hideTimeText: boolean;
+  hideNextLecture: boolean;
+  hideAttemptDPP: boolean;
   enableInstantHide: boolean;
 
   // Shortcut & control settings
@@ -99,6 +101,8 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   hideSetting: false,
   hideTimeLine: false,
   hideTimeText: false,
+  hideNextLecture: false,
+  hideAttemptDPP: false,
   enableInstantHide: false,
 
   enableHotkeys: false,

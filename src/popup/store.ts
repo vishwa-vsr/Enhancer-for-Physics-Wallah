@@ -27,6 +27,8 @@ export const hideSkipSilence = signal(false);
 export const hideSetting = signal(false);
 export const hideTimeLine = signal(false);
 export const hideTimeText = signal(false);
+export const hideNextLecture = signal(false);
+export const hideAttemptDPP = signal(false);
 export const enableInstantHide = signal(false);
 export const autoPauseOnHide = signal(false);
 
@@ -143,6 +145,8 @@ export async function initStore() {
   hideSetting.value = !!s.hideSetting;
   hideTimeLine.value = !!s.hideTimeLine;
   hideTimeText.value = !!s.hideTimeText;
+  hideNextLecture.value = !!s.hideNextLecture;
+  hideAttemptDPP.value = !!s.hideAttemptDPP;
   enableInstantHide.value = !!s.enableInstantHide;
   autoPauseOnHide.value = !!s.autoPauseOnHide;
 
@@ -230,6 +234,8 @@ export async function initStore() {
     if (changes.keyDoubt !== undefined) keyDoubt.value = changes.keyDoubt;
     if (changes.keyFullscreen !== undefined) keyFullscreen.value = changes.keyFullscreen;
     if (changes.keyExit !== undefined) keyExit.value = changes.keyExit;
+    if (changes.hideNextLecture !== undefined) hideNextLecture.value = !!changes.hideNextLecture;
+    if (changes.hideAttemptDPP !== undefined) hideAttemptDPP.value = !!changes.hideAttemptDPP;
     if (changes.allowShortcutsWhenHidden !== undefined) {
       allowShortcutsWhenHidden.value = !!changes.allowShortcutsWhenHidden;
     }

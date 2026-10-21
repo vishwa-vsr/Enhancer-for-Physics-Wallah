@@ -5,6 +5,9 @@ let cachedTimeline: Element | null = null;
 let cachedTimeTexts: Element[] | null = null;
 let cachedNativeSpeedBadges: Element[] | null = null;
 let cachedToolbar: Element | null = null;
+let cachedNextLectureBtn: Element | null = null;
+let cachedAttemptDPPBtn: Element | null = null;
+let cachedNextDppWrapper: Element | null = null;
 
 export function resetDistractionCaches(): void {
   cachedSettingsBtn = null;
@@ -12,6 +15,9 @@ export function resetDistractionCaches(): void {
   cachedTimeTexts = null;
   cachedNativeSpeedBadges = null;
   cachedToolbar = null;
+  cachedNextLectureBtn = null;
+  cachedAttemptDPPBtn = null;
+  cachedNextDppWrapper = null;
 }
 
 // Helper to check if an element is a major player layout container that must never be mistaken for a single toolbar button
@@ -1040,6 +1046,96 @@ export function triggerPlayerSlot(
             ? findDoubtButton()
             : findChatButton();
   return triggerToolbarElement(target);
+}
+
+// Locate the floating "Next Lecture" card button
+export function findNextLectureButton(): HTMLElement | null {
+  if (cachedNextLectureBtn && cachedNextLectureBtn.isConnected) {
+    return cachedNextLectureBtn as HTMLElement;
+  }
+  const player = getOuterPlayerContainer() || document.body;
+  if (!player) return null;
+
+  const candidates = player.querySelectorAll('button, [role="button"], a');
+  for (let i = 0; i < candidates.length; i++) {
+    const el = candidates[i];
+    const text = (el.textContent || '').trim().toLowerCase();
+    if (text.includes('next lecture') || (text.includes('next') && text.includes('lecture'))) {
+      const btn = (el.closest('button, [role="button"], a') || el) as HTMLElement;
+      if (!isProtectedPlayerStructure(btn)) {
+        cachedNextLectureBtn = btn;
+        return btn;
+      }
+    }
+  }
+  return null;
+}
+
+// Locate the floating "Attempt DPP" card button
+export function findAttemptDPPButton(): HTMLElement | null {
+  if (cachedAttemptDPPBtn && cachedAttemptDPPBtn.isConnected) {
+    return cachedAttemptDPPBtn as HTMLElement;
+  }
+  const player = getOuterPlayerContainer() || document.body;
+  if (!player) return null;
+
+  const candidates = player.querySelectorAll('button, [role="button"], a');
+  for (let i = 0; i < candidates.length; i++) {
+    const el = candidates[i];
+    const text = (el.textContent || '').trim().toLowerCase();
+    if (
+      text.includes('attempt dpp') ||
+      (text.includes('dpp') && (text.includes('attempt') || text.includes('solve')))
+    ) {
+      const btn = (el.closest('button, [role="button"], a') || el) as HTMLElement;
+      if (!isProtectedPlayerStructure(btn)) {
+        cachedAttemptDPPBtn = btn;
+        return btn;
+      }
+    }
+  }
+  return null;
+}
+
+// Locate the floating container wrapping both Next Lecture and Attempt DPP
+export function findNextDppWrapper(
+  nextBtn?: Element | null,
+  dppBtn?: Element | null,
+): HTMLElement | null {
+  if (cachedNextDppWrapper && cachedNextDppWrapper.isConnected) {
+    return cachedNextDppWrapper as HTMLElement;
+  }
+  const next = nextBtn || findNextLectureButton();
+  const dpp = dppBtn || findAttemptDPPButton();
+
+  let found: HTMLElement | null = null;
+  if (next && dpp) {
+    let parent = next.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+      if (parent.contains(dpp)) {
+        if (!isProtectedPlayerStructure(parent)) {
+          found = parent as HTMLElement;
+        }
+        break;
+      }
+      parent = parent.parentElement;
+    }
+  } else if (next && next.parentElement && !isProtectedPlayerStructure(next.parentElement)) {
+    const cls = (next.parentElement.getAttribute('class') || '').toLowerCase();
+    if (cls.includes('absolute') && (cls.includes('bottom') || cls.includes('right'))) {
+      found = next.parentElement as HTMLElement;
+    }
+  } else if (dpp && dpp.parentElement && !isProtectedPlayerStructure(dpp.parentElement)) {
+    const cls = (dpp.parentElement.getAttribute('class') || '').toLowerCase();
+    if (cls.includes('absolute') && (cls.includes('bottom') || cls.includes('right'))) {
+      found = dpp.parentElement as HTMLElement;
+    }
+  }
+
+  if (found) {
+    cachedNextDppWrapper = found;
+  }
+  return found;
 }
 
 // Prevent an injected toolbar button from stealing keyboard focus away from the video player

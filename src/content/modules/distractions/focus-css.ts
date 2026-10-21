@@ -10,6 +10,9 @@ import {
   isProtectedPlayerStructure,
   resolvePlayerToolbarSlots,
   syncTimelineVisibility,
+  findNextLectureButton,
+  findAttemptDPPButton,
+  findNextDppWrapper,
 } from './elements';
 
 function shouldHideDistraction(key: keyof HideSettings, currentSettings: HideSettings): boolean {
@@ -29,6 +32,8 @@ export const classMap: Record<keyof HideSettings, string> = {
   hideSetting: 'pwc-hide-setting',
   hideTimeLine: 'pwc-hide-timeline',
   hideTimeText: 'pwc-hide-timetext',
+  hideNextLecture: 'pwc-hide-nextlecture',
+  hideAttemptDPP: 'pwc-hide-attemptdpp',
 };
 
 // Apply layout class tags to documentElement for zero-flicker hiding
@@ -74,6 +79,26 @@ export function applyDistractorsState(): void {
     slots.doubt.forEach((btn) => setHidden(btn, activeSettings.hideDoubt));
     slots.chat.forEach((btn) => setHidden(btn, activeSettings.hideChat));
     slots.askai.forEach((btn) => setHidden(btn, activeSettings.hideAskAI));
+  }
+
+  // Handle floating Next Lecture & Attempt DPP cards
+  const nextLectureBtn = findNextLectureButton();
+  if (nextLectureBtn) {
+    nextLectureBtn.setAttribute('data-pwc-next-lecture', '');
+    setHidden(nextLectureBtn, activeSettings.hideNextLecture);
+  }
+
+  const attemptDPPBtn = findAttemptDPPButton();
+  if (attemptDPPBtn) {
+    attemptDPPBtn.setAttribute('data-pwc-attempt-dpp', '');
+    setHidden(attemptDPPBtn, activeSettings.hideAttemptDPP);
+  }
+
+  const nextDppWrapper = findNextDppWrapper(nextLectureBtn, attemptDPPBtn);
+  if (nextDppWrapper) {
+    nextDppWrapper.setAttribute('data-pwc-next-dpp-wrapper', '');
+    const shouldHideBoth = activeSettings.hideNextLecture && activeSettings.hideAttemptDPP;
+    setHidden(nextDppWrapper, shouldHideBoth);
   }
 
   // Handle native Speed Badges next to the timer (dynamic — CSS can't target)
