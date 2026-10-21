@@ -32,6 +32,9 @@ export interface PopupSettings {
   // Shortcut & control settings
   enableHotkeys: boolean;
   disableScroll: boolean;
+  volumeScrollEnabled: boolean;
+  showVolumeBubble: boolean;
+  volumeBubbleDelay: number;
   holdSpaceSpeedUp: boolean;
   holdSpaceSpeed: number;
   alwaysExpandWidget: boolean;
@@ -107,6 +110,9 @@ export const DEFAULT_SETTINGS: PopupSettings = {
 
   enableHotkeys: false,
   disableScroll: false,
+  volumeScrollEnabled: false,
+  showVolumeBubble: true,
+  volumeBubbleDelay: 0.4,
   holdSpaceSpeedUp: false,
   holdSpaceSpeed: 2.0,
   alwaysExpandWidget: false,

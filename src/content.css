@@ -1027,4 +1027,78 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   cursor: auto !important;
 }
 
+/* ==========================================================================
+   Volume Scroll Overlay (Issue #25)
+   ========================================================================== */
+
+.pwc-volume-overlay {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(0.95) !important;
+  z-index: 2147483640 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 12px 20px !important;
+  background: rgba(15, 18, 25, 0.88) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5) !important;
+  color: #ffffff !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, Helvetica, Arial, sans-serif !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease !important;
+}
+
+.pwc-volume-overlay.pwc-volume-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+}
+
+.pwc-volume-icon-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  color: #ffffff !important;
+  flex-shrink: 0 !important;
+}
+
+.pwc-volume-bar-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  width: 78px !important;
+  height: 5px !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+}
+
+.pwc-volume-bar-fill {
+  height: 100% !important;
+  background: #a496ff !important;
+  border-radius: 999px !important;
+  transition: width 0.08s ease-out !important;
+}
+
+.pwc-volume-text {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  font-variant-numeric: tabular-nums !important;
+  min-width: 42px !important;
+  text-align: right !important;
+  color: #f8fafc !important;
+  letter-spacing: 0.2px !important;
+}
+
+
 

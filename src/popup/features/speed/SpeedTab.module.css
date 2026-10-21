@@ -440,6 +440,8 @@
 }
 
 .settingRowGroup {
+  overflow: hidden;
+  border-radius: inherit;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -521,6 +523,10 @@
   border: none;
   transition: opacity var(--transition-fast);
   animation: subBoxFadeIn 180ms ease-out forwards;
+}
+
+.featureConfigRow + .featureConfigRow {
+  border-top: 1px solid var(--divider-color);
 }
 
 .configLabel {

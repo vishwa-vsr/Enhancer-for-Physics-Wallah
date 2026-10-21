@@ -37,6 +37,9 @@ export interface ContentState {
   // Shortcuts & UI settings
   enableHotkeys: boolean;
   disableScroll: boolean;
+  volumeScrollEnabled: boolean;
+  showVolumeBubble: boolean;
+  volumeBubbleDelay: number;
   holdSpaceSpeedUp: boolean;
   holdSpaceSpeed: number;
   alwaysExpandWidget: boolean;

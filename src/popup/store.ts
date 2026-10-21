@@ -35,6 +35,9 @@ export const autoPauseOnHide = signal(false);
 // ===== Shortcut signals =====
 export const enableHotkeys = signal(false);
 export const disableScroll = signal(false);
+export const volumeScrollEnabled = signal(false);
+export const showVolumeBubble = signal(true);
+export const volumeBubbleDelay = signal(0.4);
 export const holdSpaceSpeedUp = signal(false);
 export const holdSpaceSpeed = signal(2.0);
 export const keySpeedUp = signal('h');
@@ -152,6 +155,9 @@ export async function initStore() {
 
   enableHotkeys.value = !!s.enableHotkeys;
   disableScroll.value = !!s.disableScroll;
+  volumeScrollEnabled.value = !!s.volumeScrollEnabled;
+  showVolumeBubble.value = s.showVolumeBubble !== false;
+  volumeBubbleDelay.value = s.volumeBubbleDelay ?? 0.4;
   holdSpaceSpeedUp.value = !!s.holdSpaceSpeedUp;
   holdSpaceSpeed.value = s.holdSpaceSpeed ?? 2.0;
 
@@ -240,6 +246,15 @@ export async function initStore() {
       allowShortcutsWhenHidden.value = !!changes.allowShortcutsWhenHidden;
     }
     if (changes.autoHideControls !== undefined) autoHideControls.value = !!changes.autoHideControls;
+    if (changes.volumeScrollEnabled !== undefined) {
+      volumeScrollEnabled.value = !!changes.volumeScrollEnabled;
+    }
+    if (changes.showVolumeBubble !== undefined) {
+      showVolumeBubble.value = changes.showVolumeBubble !== false;
+    }
+    if (changes.volumeBubbleDelay !== undefined) {
+      volumeBubbleDelay.value = changes.volumeBubbleDelay;
+    }
     if (changes.autoHideDelay !== undefined) autoHideDelay.value = changes.autoHideDelay;
     if (changes.autoHideWhenPaused !== undefined)
       autoHideWhenPaused.value = !!changes.autoHideWhenPaused;

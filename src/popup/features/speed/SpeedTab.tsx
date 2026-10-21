@@ -10,6 +10,9 @@ import {
   alwaysExpandWidget,
   enableHotkeys,
   disableScroll,
+  volumeScrollEnabled,
+  showVolumeBubble,
+  volumeBubbleDelay,
   holdSpaceSpeedUp,
   holdSpaceSpeed,
   keySpeedUp,
@@ -572,6 +575,61 @@ export function SpeedTab() {
               ariaLabel="Toggle Auto-pause on Tab Switch"
             />
           </FeatureRow>
+
+          <div class={styles.settingRowGroup}>
+            <FeatureRow label="Scroll to Adjust Volume">
+              <Toggle
+                checked={volumeScrollEnabled.value}
+                onChange={(v) => {
+                  volumeScrollEnabled.value = v;
+                  saveSetting('volumeScrollEnabled', v);
+                }}
+                ariaLabel="Toggle Scroll to Adjust Volume"
+              />
+            </FeatureRow>
+            {volumeScrollEnabled.value && (
+              <>
+                <div class={styles.featureConfigRow}>
+                  <label
+                    class={styles.configLabel}
+                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                    onClick={() => {
+                      showVolumeBubble.value = !showVolumeBubble.value;
+                      saveSetting('showVolumeBubble', showVolumeBubble.value);
+                    }}
+                  >
+                    Show Volume Bubble
+                  </label>
+                  <Toggle
+                    checked={showVolumeBubble.value}
+                    onChange={(v) => {
+                      showVolumeBubble.value = v;
+                      saveSetting('showVolumeBubble', v);
+                    }}
+                    ariaLabel="Toggle Show Volume Bubble"
+                  />
+                </div>
+                {showVolumeBubble.value && (
+                  <div class={styles.featureConfigRow}>
+                    <span class={styles.configLabel}>Disappear Delay</span>
+                    <Stepper
+                      className={styles.stepperCard}
+                      value={volumeBubbleDelay.value}
+                      min={0.2}
+                      max={2.0}
+                      step={0.1}
+                      unit="s"
+                      onChange={(v) => {
+                        const clamped = Math.round(v * 10) / 10;
+                        volumeBubbleDelay.value = clamped;
+                        saveSetting('volumeBubbleDelay', clamped);
+                      }}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </section>
     </div>

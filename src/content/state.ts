@@ -28,6 +28,9 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
 
   enableHotkeys: false,
   disableScroll: false,
+  volumeScrollEnabled: false,
+  showVolumeBubble: true,
+  volumeBubbleDelay: 0.4,
   holdSpaceSpeedUp: false,
   holdSpaceSpeed: 2.0,
   alwaysExpandWidget: false,
@@ -148,6 +151,9 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'enableInstantHide',
         'enableHotkeys',
         'disableScroll',
+        'volumeScrollEnabled',
+        'showVolumeBubble',
+        'volumeBubbleDelay',
         'holdSpaceSpeedUp',
         'holdSpaceSpeed',
         'alwaysExpandWidget',
@@ -248,6 +254,10 @@ export function initState(onLoaded?: () => void): void {
     state.enableInstantHide = !!result.enableInstantHide;
     state.enableHotkeys = !!result.enableHotkeys;
     state.disableScroll = !!result.disableScroll;
+    state.volumeScrollEnabled = !!result.volumeScrollEnabled;
+    state.showVolumeBubble = result.showVolumeBubble !== false;
+    state.volumeBubbleDelay =
+      result.volumeBubbleDelay !== undefined ? parseFloat(result.volumeBubbleDelay) : 0.4;
     state.holdSpaceSpeedUp = !!result.holdSpaceSpeedUp;
     state.holdSpaceSpeed =
       result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed) : 2.0;
@@ -386,6 +396,21 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'disableScroll')) {
               state.disableScroll = !!changes.disableScroll.newValue;
               changedKeys.push('disableScroll');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollEnabled')) {
+              state.volumeScrollEnabled = !!changes.volumeScrollEnabled.newValue;
+              changedKeys.push('volumeScrollEnabled');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'showVolumeBubble')) {
+              state.showVolumeBubble = changes.showVolumeBubble.newValue !== false;
+              changedKeys.push('showVolumeBubble');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'volumeBubbleDelay')) {
+              state.volumeBubbleDelay =
+                changes.volumeBubbleDelay.newValue !== undefined
+                  ? parseFloat(String(changes.volumeBubbleDelay.newValue))
+                  : 0.4;
+              changedKeys.push('volumeBubbleDelay');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'holdSpaceSpeedUp')) {
               state.holdSpaceSpeedUp = !!changes.holdSpaceSpeedUp.newValue;

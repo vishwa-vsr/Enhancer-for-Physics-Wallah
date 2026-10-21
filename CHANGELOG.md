@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.1.0.2] - 2026-10-21
+
+### Added
+
+- **Mouse Wheel & Touchpad Volume Control**: Adjust video volume by scrolling the mouse wheel or swiping vertically on the touchpad while hovering over the video player [#25](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/25).
+
 ## [1.1.0.1] - 2026-10-19
 
 ### Added

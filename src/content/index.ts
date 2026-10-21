@@ -36,6 +36,8 @@ import { initAutoPause } from './modules/visibility/auto-pause';
 import { initFocusLock, deactivateFocusLock } from './modules/ui/focus-lock';
 import { startDomObserver, throttledMonitor, initWakeupTriggers } from './modules/dom/observer';
 import { initAutoHide, syncAutoHide } from './modules/ui/autohide';
+import { initVolumeScroll } from './modules/video/volume-scroll';
+import { hideVolumeHudImmediately } from './modules/ui/volume-hud';
 import { HideSettings } from './types';
 
 // Entry point initialization
@@ -191,6 +193,12 @@ function init(): void {
       syncAutoHide();
     }
 
+    if (changedKeys.includes('showVolumeBubble') || changedKeys.includes('volumeScrollEnabled')) {
+      if (!currentState.showVolumeBubble || !currentState.volumeScrollEnabled) {
+        hideVolumeHudImmediately();
+      }
+    }
+
     if (focusChanged) {
       applySettingsHTML(currentState.hideSettings);
       applyDistractorsState();
@@ -213,6 +221,7 @@ function init(): void {
   initSpaceHold();
   initAutoPause();
   initFocusLock();
+  initVolumeScroll();
   initWakeupTriggers();
 
   // 5. Start DOM observer for dynamic injections
