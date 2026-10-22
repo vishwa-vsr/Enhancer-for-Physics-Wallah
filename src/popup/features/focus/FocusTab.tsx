@@ -17,6 +17,7 @@ import {
   hideNextLecture,
   hideAttemptDPP,
   enableInstantHide,
+  autoSkipPromoAds,
   showFinishTime,
   finishTimeFormat,
   keyChat,
@@ -444,6 +445,16 @@ function FocusTogglesSection() {
               hideAttemptDPP.value = v;
               saveSetting('hideAttemptDPP', v);
             }}
+          />
+        </FeatureRow>
+        <FeatureRow label="Auto-Skip Promo Ads">
+          <Toggle
+            checked={autoSkipPromoAds.value}
+            onChange={(v) => {
+              autoSkipPromoAds.value = v;
+              saveSetting('autoSkipPromoAds', v);
+            }}
+            ariaLabel="Toggle Auto-Skip Promo Ads"
           />
         </FeatureRow>
         <FeatureRow label="Show Finish Time">

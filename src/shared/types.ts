@@ -28,6 +28,7 @@ export interface PopupSettings {
   hideNextLecture: boolean;
   hideAttemptDPP: boolean;
   enableInstantHide: boolean;
+  autoSkipPromoAds: boolean;
 
   // Shortcut & control settings
   enableHotkeys: boolean;
@@ -107,6 +108,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   hideNextLecture: false,
   hideAttemptDPP: false,
   enableInstantHide: false,
+  autoSkipPromoAds: false,
 
   enableHotkeys: false,
   disableScroll: false,

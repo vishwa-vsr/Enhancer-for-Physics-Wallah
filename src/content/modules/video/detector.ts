@@ -1,3 +1,5 @@
+import { isPromoVideo } from '../distractions/promo-skipper';
+
 let cachedVideo: HTMLVideoElement | null = null;
 
 export function getCachedVideo(): HTMLVideoElement | null {
@@ -18,7 +20,7 @@ export function findVideos(root: Document | ShadowRoot | Element = document): HT
   if (!root) return videos;
   try {
     if (root.querySelectorAll) {
-      videos = Array.from(root.querySelectorAll('video'));
+      videos = Array.from(root.querySelectorAll('video')).filter((v) => !isPromoVideo(v));
       // Search shadow roots only in candidate player containers if no video is found directly
       if (videos.length === 0) {
         const containers = root.querySelectorAll(
@@ -44,6 +46,7 @@ export function getActiveVideo(): HTMLVideoElement | null {
   if (
     cachedVideo &&
     cachedVideo.isConnected &&
+    !isPromoVideo(cachedVideo) &&
     (cachedVideo.videoWidth > 0 ||
       cachedVideo.offsetWidth > 0 ||
       document.pictureInPictureElement === cachedVideo)

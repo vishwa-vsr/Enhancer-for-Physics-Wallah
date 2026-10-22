@@ -33,6 +33,7 @@ export interface ContentState {
   // Focus & Distraction toggles
   hideSettings: HideSettings;
   enableInstantHide: boolean;
+  autoSkipPromoAds: boolean;
 
   // Shortcuts & UI settings
   enableHotkeys: boolean;

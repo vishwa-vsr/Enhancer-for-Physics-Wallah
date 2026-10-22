@@ -25,6 +25,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
 
   hideSettings: { ...DEFAULT_HIDE_SETTINGS },
   enableInstantHide: false,
+  autoSkipPromoAds: false,
 
   enableHotkeys: false,
   disableScroll: false,
@@ -149,6 +150,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'hideNextLecture',
         'hideAttemptDPP',
         'enableInstantHide',
+        'autoSkipPromoAds',
         'enableHotkeys',
         'disableScroll',
         'volumeScrollEnabled',
@@ -252,6 +254,7 @@ export function initState(onLoaded?: () => void): void {
     }
 
     state.enableInstantHide = !!result.enableInstantHide;
+    state.autoSkipPromoAds = !!result.autoSkipPromoAds;
     state.enableHotkeys = !!result.enableHotkeys;
     state.disableScroll = !!result.disableScroll;
     state.volumeScrollEnabled = !!result.volumeScrollEnabled;
@@ -385,6 +388,10 @@ export function initState(onLoaded?: () => void): void {
               }
             }
 
+            if (Object.prototype.hasOwnProperty.call(changes, 'autoSkipPromoAds')) {
+              state.autoSkipPromoAds = !!changes.autoSkipPromoAds.newValue;
+              changedKeys.push('autoSkipPromoAds');
+            }
             if (Object.prototype.hasOwnProperty.call(changes, 'enableInstantHide')) {
               state.enableInstantHide = !!changes.enableInstantHide.newValue;
               changedKeys.push('enableInstantHide');

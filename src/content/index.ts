@@ -37,6 +37,7 @@ import { initFocusLock, deactivateFocusLock } from './modules/ui/focus-lock';
 import { startDomObserver, throttledMonitor, initWakeupTriggers } from './modules/dom/observer';
 import { initAutoHide, syncAutoHide } from './modules/ui/autohide';
 import { initVolumeScroll } from './modules/video/volume-scroll';
+import { handlePromoAds } from './modules/distractions/promo-skipper';
 import { hideVolumeHudImmediately } from './modules/ui/volume-hud';
 import { HideSettings } from './types';
 
@@ -55,6 +56,7 @@ function init(): void {
 
     if (changedKeys.includes('*')) {
       // Initial state loaded
+      handlePromoAds();
       applyAlwaysExpandState();
       applySettingsHTML(currentState.hideSettings);
       applyDistractorsState();
@@ -99,6 +101,10 @@ function init(): void {
     if (changedKeys.includes('enableInstantHide') || changedKeys.includes('allowShortcutsWhenHidden')) {
       injectInstantHideButton();
       focusChanged = true;
+    }
+
+    if (changedKeys.includes('autoSkipPromoAds')) {
+      handlePromoAds();
     }
 
     if (changedKeys.includes('alwaysExpandWidget')) {

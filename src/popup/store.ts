@@ -30,6 +30,7 @@ export const hideTimeText = signal(false);
 export const hideNextLecture = signal(false);
 export const hideAttemptDPP = signal(false);
 export const enableInstantHide = signal(false);
+export const autoSkipPromoAds = signal(false);
 export const autoPauseOnHide = signal(false);
 
 // ===== Shortcut signals =====
@@ -151,6 +152,7 @@ export async function initStore() {
   hideNextLecture.value = !!s.hideNextLecture;
   hideAttemptDPP.value = !!s.hideAttemptDPP;
   enableInstantHide.value = !!s.enableInstantHide;
+  autoSkipPromoAds.value = !!s.autoSkipPromoAds;
   autoPauseOnHide.value = !!s.autoPauseOnHide;
 
   enableHotkeys.value = !!s.enableHotkeys;
@@ -242,6 +244,7 @@ export async function initStore() {
     if (changes.keyExit !== undefined) keyExit.value = changes.keyExit;
     if (changes.hideNextLecture !== undefined) hideNextLecture.value = !!changes.hideNextLecture;
     if (changes.hideAttemptDPP !== undefined) hideAttemptDPP.value = !!changes.hideAttemptDPP;
+    if (changes.autoSkipPromoAds !== undefined) autoSkipPromoAds.value = !!changes.autoSkipPromoAds;
     if (changes.allowShortcutsWhenHidden !== undefined) {
       allowShortcutsWhenHidden.value = !!changes.allowShortcutsWhenHidden;
     }
