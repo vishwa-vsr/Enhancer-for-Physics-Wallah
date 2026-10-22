@@ -14,6 +14,7 @@ export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideTimeLine: false,
   hideTimeText: false,
   hideNextLecture: false,
+  hideNextChapter: false,
   hideAttemptDPP: false,
 };
 
@@ -148,6 +149,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'hideTimeLine',
         'hideTimeText',
         'hideNextLecture',
+        'hideNextChapter',
         'hideAttemptDPP',
         'enableInstantHide',
         'autoSkipPromoAds',

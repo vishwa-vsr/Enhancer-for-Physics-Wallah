@@ -374,13 +374,28 @@ html.pwc-hide-nextlecture [data-pwc-next-lecture] {
   display: none !important;
 }
 
+/* --- Hide Next Chapter Card / Button --- */
+html.pwc-hide-nextchapter [data-pwc-next-chapter] {
+  display: none !important;
+}
+
 /* --- Hide Attempt DPP Card / Button --- */
 html.pwc-hide-attemptdpp [data-pwc-attempt-dpp] {
   display: none !important;
 }
 
-/* --- Hide Next Lecture & DPP floating container if both are hidden --- */
-html.pwc-hide-nextlecture.pwc-hide-attemptdpp [data-pwc-next-dpp-wrapper] {
+/* --- Hide Next Lecture & DPP floating container if both are hidden and no unhidden chapter button --- */
+html.pwc-hide-nextlecture.pwc-hide-attemptdpp [data-pwc-next-dpp-wrapper]:not(:has([data-pwc-next-chapter])) {
+  display: none !important;
+}
+
+/* --- Hide Next Chapter & DPP floating container if both are hidden and no unhidden lecture button --- */
+html.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-next-dpp-wrapper]:not(:has([data-pwc-next-lecture])) {
+  display: none !important;
+}
+
+/* --- Hide floating container if all navigation cards are hidden --- */
+html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-next-dpp-wrapper] {
   display: none !important;
 }
 

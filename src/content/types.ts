@@ -19,6 +19,7 @@ export interface HideSettings {
   hideTimeLine: boolean;
   hideTimeText: boolean;
   hideNextLecture: boolean;
+  hideNextChapter: boolean;
   hideAttemptDPP: boolean;
 }
 

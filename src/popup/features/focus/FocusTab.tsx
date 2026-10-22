@@ -15,6 +15,7 @@ import {
   hideTimeLine,
   hideTimeText,
   hideNextLecture,
+  hideNextChapter,
   hideAttemptDPP,
   enableInstantHide,
   autoSkipPromoAds,
@@ -435,6 +436,15 @@ function FocusTogglesSection() {
             onChange={(v) => {
               hideNextLecture.value = v;
               saveSetting('hideNextLecture', v);
+            }}
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Next Chapter">
+          <Toggle
+            checked={hideNextChapter.value}
+            onChange={(v) => {
+              hideNextChapter.value = v;
+              saveSetting('hideNextChapter', v);
             }}
           />
         </FeatureRow>

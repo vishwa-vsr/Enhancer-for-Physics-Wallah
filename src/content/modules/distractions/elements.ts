@@ -6,6 +6,7 @@ let cachedTimeTexts: Element[] | null = null;
 let cachedNativeSpeedBadges: Element[] | null = null;
 let cachedToolbar: Element | null = null;
 let cachedNextLectureBtn: Element | null = null;
+let cachedNextChapterBtn: Element | null = null;
 let cachedAttemptDPPBtn: Element | null = null;
 let cachedNextDppWrapper: Element | null = null;
 
@@ -16,6 +17,7 @@ export function resetDistractionCaches(): void {
   cachedNativeSpeedBadges = null;
   cachedToolbar = null;
   cachedNextLectureBtn = null;
+  cachedNextChapterBtn = null;
   cachedAttemptDPPBtn = null;
   cachedNextDppWrapper = null;
 }
@@ -1071,6 +1073,29 @@ export function findNextLectureButton(): HTMLElement | null {
   return null;
 }
 
+// Locate the floating "Next Chapter" card button
+export function findNextChapterButton(): HTMLElement | null {
+  if (cachedNextChapterBtn && cachedNextChapterBtn.isConnected) {
+    return cachedNextChapterBtn as HTMLElement;
+  }
+  const player = getOuterPlayerContainer() || document.body;
+  if (!player) return null;
+
+  const candidates = player.querySelectorAll('button, [role="button"], a');
+  for (let i = 0; i < candidates.length; i++) {
+    const el = candidates[i];
+    const text = (el.textContent || '').trim().toLowerCase();
+    if (text.includes('next chapter') || (text.includes('next') && text.includes('chapter'))) {
+      const btn = (el.closest('button, [role="button"], a') || el) as HTMLElement;
+      if (!isProtectedPlayerStructure(btn)) {
+        cachedNextChapterBtn = btn;
+        return btn;
+      }
+    }
+  }
+  return null;
+}
+
 // Locate the floating "Attempt DPP" card button
 export function findAttemptDPPButton(): HTMLElement | null {
   if (cachedAttemptDPPBtn && cachedAttemptDPPBtn.isConnected) {
@@ -1097,20 +1122,23 @@ export function findAttemptDPPButton(): HTMLElement | null {
   return null;
 }
 
-// Locate the floating container wrapping both Next Lecture and Attempt DPP
+// Locate the floating container wrapping Next Lecture / Next Chapter and Attempt DPP
 export function findNextDppWrapper(
   nextBtn?: Element | null,
   dppBtn?: Element | null,
+  chapterBtn?: Element | null,
 ): HTMLElement | null {
   if (cachedNextDppWrapper && cachedNextDppWrapper.isConnected) {
     return cachedNextDppWrapper as HTMLElement;
   }
   const next = nextBtn || findNextLectureButton();
+  const chapter = chapterBtn || findNextChapterButton();
   const dpp = dppBtn || findAttemptDPPButton();
 
+  const primary = next || chapter;
   let found: HTMLElement | null = null;
-  if (next && dpp) {
-    let parent = next.parentElement;
+  if (primary && dpp) {
+    let parent = primary.parentElement;
     while (parent && parent !== document.body && parent !== document.documentElement) {
       if (parent.contains(dpp)) {
         if (!isProtectedPlayerStructure(parent)) {
@@ -1120,10 +1148,10 @@ export function findNextDppWrapper(
       }
       parent = parent.parentElement;
     }
-  } else if (next && next.parentElement && !isProtectedPlayerStructure(next.parentElement)) {
-    const cls = (next.parentElement.getAttribute('class') || '').toLowerCase();
+  } else if (primary && primary.parentElement && !isProtectedPlayerStructure(primary.parentElement)) {
+    const cls = (primary.parentElement.getAttribute('class') || '').toLowerCase();
     if (cls.includes('absolute') && (cls.includes('bottom') || cls.includes('right'))) {
-      found = next.parentElement as HTMLElement;
+      found = primary.parentElement as HTMLElement;
     }
   } else if (dpp && dpp.parentElement && !isProtectedPlayerStructure(dpp.parentElement)) {
     const cls = (dpp.parentElement.getAttribute('class') || '').toLowerCase();

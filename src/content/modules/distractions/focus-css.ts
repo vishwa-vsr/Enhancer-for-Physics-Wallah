@@ -11,6 +11,7 @@ import {
   resolvePlayerToolbarSlots,
   syncTimelineVisibility,
   findNextLectureButton,
+  findNextChapterButton,
   findAttemptDPPButton,
   findNextDppWrapper,
 } from './elements';
@@ -33,6 +34,7 @@ export const classMap: Record<keyof HideSettings, string> = {
   hideTimeLine: 'pwc-hide-timeline',
   hideTimeText: 'pwc-hide-timetext',
   hideNextLecture: 'pwc-hide-nextlecture',
+  hideNextChapter: 'pwc-hide-nextchapter',
   hideAttemptDPP: 'pwc-hide-attemptdpp',
 };
 
@@ -81,11 +83,17 @@ export function applyDistractorsState(): void {
     slots.askai.forEach((btn) => setHidden(btn, activeSettings.hideAskAI));
   }
 
-  // Handle floating Next Lecture & Attempt DPP cards
+  // Handle floating Next Lecture, Next Chapter & Attempt DPP cards
   const nextLectureBtn = findNextLectureButton();
   if (nextLectureBtn) {
     nextLectureBtn.setAttribute('data-pwc-next-lecture', '');
     setHidden(nextLectureBtn, activeSettings.hideNextLecture);
+  }
+
+  const nextChapterBtn = findNextChapterButton();
+  if (nextChapterBtn) {
+    nextChapterBtn.setAttribute('data-pwc-next-chapter', '');
+    setHidden(nextChapterBtn, activeSettings.hideNextChapter);
   }
 
   const attemptDPPBtn = findAttemptDPPButton();
@@ -94,11 +102,21 @@ export function applyDistractorsState(): void {
     setHidden(attemptDPPBtn, activeSettings.hideAttemptDPP);
   }
 
-  const nextDppWrapper = findNextDppWrapper(nextLectureBtn, attemptDPPBtn);
+  const nextDppWrapper = findNextDppWrapper(nextLectureBtn, attemptDPPBtn, nextChapterBtn);
   if (nextDppWrapper) {
     nextDppWrapper.setAttribute('data-pwc-next-dpp-wrapper', '');
-    const shouldHideBoth = activeSettings.hideNextLecture && activeSettings.hideAttemptDPP;
-    setHidden(nextDppWrapper, shouldHideBoth);
+
+    const hasNextLecture = !!nextLectureBtn && nextDppWrapper.contains(nextLectureBtn);
+    const hasNextChapter = !!nextChapterBtn && nextDppWrapper.contains(nextChapterBtn);
+    const hasAttemptDPP = !!attemptDPPBtn && nextDppWrapper.contains(attemptDPPBtn);
+
+    const anyPresent = hasNextLecture || hasNextChapter || hasAttemptDPP;
+    const allPresentHidden =
+      (!hasNextLecture || activeSettings.hideNextLecture) &&
+      (!hasNextChapter || activeSettings.hideNextChapter) &&
+      (!hasAttemptDPP || activeSettings.hideAttemptDPP);
+
+    setHidden(nextDppWrapper, anyPresent && allPresentHidden);
   }
 
   // Handle native Speed Badges next to the timer (dynamic — CSS can't target)

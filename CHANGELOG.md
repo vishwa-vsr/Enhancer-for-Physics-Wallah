@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **Mouse Wheel & Touchpad Volume Control**: Adjust video volume by scrolling the mouse wheel or swiping vertically on the touchpad while hovering over the video player [#25](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/25).
 - **Auto-Skip Promo Ads**: Automatically skip PW's in-house course ads [#30](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/30).
+- **Hide Next Chapter**: Added a Focus toggle to hide the "Next Chapter" button on the final lecture of a chapter.
 
 ### Changed
 
@@ -20,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - **Ad Glitch**: Controls no longer show on promo videos.
+- **Next Chapter Hiding**: Fixed an issue where the Next Chapter button was mistakenly hidden or couldn't be hidden separately from Next Lecture.
 
 ## [1.1.0.1] - 2026-10-19
 
