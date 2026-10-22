@@ -1038,9 +1038,9 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 
 .pwc-volume-overlay {
   position: absolute !important;
-  top: 50% !important;
+  top: 28px !important;
   left: 50% !important;
-  transform: translate(-50%, -50%) scale(0.95) !important;
+  transform: translate(-50%, -8px) scale(0.98) !important;
   z-index: 2147483640 !important;
   display: flex !important;
   align-items: center !important;
@@ -1058,13 +1058,13 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   user-select: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
-  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease !important;
+  transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.18s ease !important;
 }
 
 .pwc-volume-overlay.pwc-volume-visible {
   opacity: 1 !important;
   visibility: visible !important;
-  transform: translate(-50%, -50%) scale(1) !important;
+  transform: translate(-50%, 0) scale(1) !important;
 }
 
 .pwc-volume-icon-wrapper {

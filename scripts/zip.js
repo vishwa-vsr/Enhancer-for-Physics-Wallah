@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { execSync } from 'child_process';
 import path from 'path';
+import os from 'os';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -16,8 +17,17 @@ for (const target of targets) {
   const zipPath = path.join(distDir, zipName);
 
   if (fs.existsSync(targetDir)) {
+    if (fs.existsSync(zipPath)) {
+      fs.unlinkSync(zipPath);
+    }
+    const tempZip = path.join(os.tmpdir(), `${Date.now()}-${zipName}`);
+    if (fs.existsSync(tempZip)) {
+      fs.unlinkSync(tempZip);
+    }
     console.log(`Creating ${zipName}...`);
-    execSync(`tar -a -c -f "${zipPath}" -C "${targetDir}" *`, { stdio: 'inherit', shell: true });
+    execSync(`tar -a -c -f "${tempZip}" -C "${targetDir}" *`, { stdio: 'inherit', shell: true });
+    fs.copyFileSync(tempZip, zipPath);
+    fs.unlinkSync(tempZip);
   }
 }
 console.log(`All packages zipped for version v${version}.`);

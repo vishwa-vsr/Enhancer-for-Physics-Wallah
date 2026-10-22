@@ -15,6 +15,7 @@
   text-decoration: none;
   cursor: pointer;
   transition: color 0.2s ease;
+  white-space: nowrap;
 }
 
 .link:hover {
