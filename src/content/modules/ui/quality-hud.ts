@@ -23,23 +23,16 @@ function populateQualityMenuItems(menu: HTMLElement): void {
   }
 
   const available = getAvailableQualities();
-  const descriptors: Record<number, string> = {
-    1080: '1080p (Full HD)',
-    720: '720p (High)',
-    480: '480p (Standard)',
-    360: '360p (Medium)',
-    240: '240p (Data Saver)',
-  };
 
-  const options: { label: string; value: VideoQuality }[] = [
-    { label: 'Auto (Recommended)', value: 'auto' },
-  ];
+  const options: { label: string; value: VideoQuality }[] = [];
 
   available.forEach((h) => {
     const val = `${h}p` as VideoQuality;
-    const label = descriptors[h] || `${h}p`;
-    options.push({ label, value: val });
+    options.push({ label: `${h}`, value: val });
   });
+
+  // "Auto" placed at the bottom, matching PW native
+  options.push({ label: 'Auto', value: 'auto' });
 
   options.forEach((opt) => {
     const item = document.createElement('button');
@@ -52,11 +45,6 @@ function populateQualityMenuItems(menu: HTMLElement): void {
     labelSpan.className = 'pwc-quality-item-label';
     labelSpan.textContent = opt.label;
     item.appendChild(labelSpan);
-
-    const checkSpan = document.createElement('span');
-    checkSpan.className = 'pwc-quality-item-check';
-    checkSpan.textContent = '✓';
-    item.appendChild(checkSpan);
 
     item.addEventListener('click', (e) => {
       e.stopPropagation();

@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Mouse Wheel & Touchpad Volume Control**: Adjust video volume by scrolling the mouse wheel or swiping vertically on the touchpad while hovering over the video player [#25](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/25).
 - **Auto-Skip Promo Ads**: Automatically skip PW's in-house course ads [#30](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/30).
 
+### Changed
+
+- **Compact Quality Menu**: Redesigned to match PW's native layout with clean numbers and compact size.
+
 ### Fixed
 
 - **Ad Glitch**: Controls no longer show on promo videos.

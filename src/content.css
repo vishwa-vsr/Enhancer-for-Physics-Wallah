@@ -883,14 +883,14 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%) translateY(6px);
-  min-width: 165px;
-  background: rgba(22, 26, 29, 0.96);
+  min-width: 125px;
+  background: rgba(20, 21, 26, 0.98);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 10px;
-  padding: 6px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
   opacity: 0;
   pointer-events: none;
   transition:
@@ -906,27 +906,27 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 }
 
 .pwc-quality-menu-title {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  color: rgba(255, 255, 255, 0.9);
   padding: 4px 8px 6px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .pwc-quality-item {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   background: transparent;
   border: none;
-  border-radius: 6px;
-  padding: 6px 10px;
+  border-radius: 5px;
+  padding: 5px 8px;
   color: rgba(255, 255, 255, 0.85);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   text-align: left;
@@ -934,28 +934,18 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
     background 0.15s ease,
     color 0.15s ease;
   font-family: inherit;
+  box-sizing: border-box;
 }
 
 .pwc-quality-item:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
 }
 
 .pwc-quality-item.pwc-active-quality {
-  background: rgba(90, 75, 218, 0.25);
-  color: #a496ff;
-  font-weight: 700;
-}
-
-.pwc-quality-item-check {
-  opacity: 0;
-  font-size: 12px;
-  font-weight: bold;
-  color: #a496ff;
-}
-
-.pwc-quality-item.pwc-active-quality .pwc-quality-item-check {
-  opacity: 1;
+  background: rgba(90, 75, 218, 0.26);
+  color: #ffffff;
+  font-weight: 600;
 }
 
 /* ===== Auto-Hide Controls & Mouse Cursor (Issue #14) ===== */
