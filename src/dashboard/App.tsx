@@ -257,30 +257,36 @@ export const App = () => {
 
       {/* Main Area */}
       <div class={styles.mainWrapper}>
-        <main class={`${styles.scrollArea} ${isBoardView ? styles.scrollAreaBoard : ''}`}>
+        {currentView.type !== 'settings' && (
+          <header class={styles.pinnedHeader}>
+            {currentView.type === 'chapter' && activeSubject ? (
+              <div class={styles.chapterTitleBlock}>
+                <span class={styles.breadcrumbSubject}>{activeSubject.name}</span>
+                <h2 class={styles.viewTitle}>
+                  {activeChapter ? `${activeChapter.name} Tasks` : `${activeSubject.name} Tasks`}
+                </h2>
+              </div>
+            ) : (
+              <h2 class={styles.viewTitle}>{title}</h2>
+            )}
+            {renderHeaderActions()}
+          </header>
+        )}
+
+        <main
+          class={`${styles.scrollArea} ${
+            isBoardView
+              ? styles.scrollAreaBoard
+              : currentView.type === 'settings'
+              ? styles.scrollAreaSettings
+              : ''
+          }`}
+        >
           <div class={`${styles.contentMaxWidth} ${isBoardView ? styles.contentBoardWidth : ''}`}>
             {currentView.type === 'settings' ? (
               <SettingsView />
             ) : (
               <>
-                {/* View Title Header */}
-                {currentView.type === 'chapter' && activeSubject ? (
-                  <div class={styles.viewHeader}>
-                    <div class={styles.chapterTitleBlock}>
-                      <span class={styles.breadcrumbSubject}>{activeSubject.name}</span>
-                      <h2 class={styles.viewTitle}>
-                        {activeChapter ? `${activeChapter.name} Tasks` : `${activeSubject.name} Tasks`}
-                      </h2>
-                    </div>
-                    {renderHeaderActions()}
-                  </div>
-                ) : (
-                  <div class={styles.viewHeader}>
-                    <h2 class={styles.viewTitle}>{title}</h2>
-                    {renderHeaderActions()}
-                  </div>
-                )}
-
                 {/* If in chapter view and no chapters exist yet in subject */}
                 {currentView.type === 'chapter' && !currentView.chapterId ? (
                   <div class={styles.emptyChapterCard}>

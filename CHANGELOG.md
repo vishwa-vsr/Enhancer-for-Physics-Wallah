@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **Refresh Pop-up**: Added YouTube lecture limitation note and compact button.
 
+### Fixed
+
+- **Tasks Header Layout**: Fixed the top title and buttons jumping around when switching between List and Board views.
+
 ## [1.1.0.2] - 2026-10-22
 
 ### Added
