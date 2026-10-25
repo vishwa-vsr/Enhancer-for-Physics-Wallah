@@ -5,46 +5,22 @@ const TOTAL_FRAMES = 120;
 export const ScrollCanvasBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
-  const currentFrameRef = useRef<number>(0);
+  const targetFrameRef = useRef<number>(0);
+  const smoothFrameRef = useRef<number>(0);
+  const currentRenderedIdxRef = useRef<number>(0);
+  const isAnimatingRef = useRef<boolean>(false);
   const rafIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Set canvas dimensions
-    const updateCanvasSize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      renderFrame();
-    };
-
-    updateCanvasSize();
-    window.addEventListener('resize', updateCanvasSize);
-
-    // Preload clean video frames
-    const images: HTMLImageElement[] = [];
-    for (let i = 0; i < TOTAL_FRAMES; i++) {
-      const img = new Image();
-      const frameNum = String(i).padStart(3, '0');
-      img.src = `/scroll-frames/frame_${frameNum}.webp`;
-
-      if (i === 0) {
-        img.onload = () => {
-          renderFrame();
-        };
-      }
-      images.push(img);
-    }
-    imagesRef.current = images;
-
-    // Draw the pure, clean video frame onto the canvas (covering the viewport)
-    function renderFrame() {
+    // Draw a specific clean video frame onto the canvas (covering the viewport)
+    function renderFrame(idx: number) {
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      const idx = currentFrameRef.current;
       let img = imagesRef.current[idx];
 
       // If requested frame isn't loaded yet, display nearest loaded frame to eliminate flickering
@@ -93,22 +69,80 @@ export const ScrollCanvasBackground: React.FC = () => {
 
       ctx.clearRect(0, 0, w, h);
       ctx.drawImage(img, renderX, renderY, renderW, renderH);
-      rafIdRef.current = null;
     }
 
-    // Scroll mapping: 0% top of page -> frame 0, 100% bottom of page -> frame 119
+    // Set canvas dimensions and redraw current frame
+    const updateCanvasSize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      renderFrame(currentRenderedIdxRef.current);
+    };
+
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+
+    // Preload clean video frames
+    const images: HTMLImageElement[] = [];
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const img = new Image();
+      const frameNum = String(i).padStart(3, '0');
+      img.src = `/scroll-frames/frame_${frameNum}.webp`;
+
+      if (i === 0) {
+        img.onload = () => {
+          renderFrame(0);
+        };
+      }
+      images.push(img);
+    }
+    imagesRef.current = images;
+
+    // Smooth gliding loop: animates gently between scroll ticks
+    function startAnimationLoop() {
+      if (isAnimatingRef.current) return;
+      isAnimatingRef.current = true;
+
+      function tick() {
+        const target = targetFrameRef.current;
+        const current = smoothFrameRef.current;
+        const diff = target - current;
+
+        // When difference is tiny, snap to exact target and pause the loop to conserve battery
+        if (Math.abs(diff) < 0.04) {
+          smoothFrameRef.current = target;
+          const targetInt = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.round(target)));
+          if (targetInt !== currentRenderedIdxRef.current) {
+            currentRenderedIdxRef.current = targetInt;
+            renderFrame(targetInt);
+          }
+          isAnimatingRef.current = false;
+          rafIdRef.current = null;
+          return;
+        }
+
+        // Adaptive smoothing: crisp and responsive for slow scrolls (0.13), faster catch-up for rapid flicks
+        const damping = Math.abs(diff) > 15 ? 0.24 : 0.13;
+        smoothFrameRef.current += diff * damping;
+
+        const nextInt = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.round(smoothFrameRef.current)));
+        if (nextInt !== currentRenderedIdxRef.current) {
+          currentRenderedIdxRef.current = nextInt;
+          renderFrame(nextInt);
+        }
+
+        rafIdRef.current = requestAnimationFrame(tick);
+      }
+
+      rafIdRef.current = requestAnimationFrame(tick);
+    }
+
+    // Scroll calculation: calculates exact target frame position
     const handleScroll = () => {
       const scrollY = window.scrollY || document.documentElement.scrollTop;
       const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       const progress = Math.min(1, Math.max(0, scrollY / maxScroll));
-      const targetIndex = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.floor(progress * (TOTAL_FRAMES - 1))));
-
-      if (targetIndex !== currentFrameRef.current) {
-        currentFrameRef.current = targetIndex;
-        if (rafIdRef.current === null) {
-          rafIdRef.current = requestAnimationFrame(renderFrame);
-        }
-      }
+      targetFrameRef.current = progress * (TOTAL_FRAMES - 1);
+      startAnimationLoop();
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -131,12 +165,13 @@ export const ScrollCanvasBackground: React.FC = () => {
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);
       }
+      isAnimatingRef.current = false;
     };
   }, []);
 
   return (
     <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-      {/* Pure, clean 60fps video canvas */}
+      {/* Pure, clean 60fps video canvas with smooth gliding momentum */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full object-cover"
@@ -146,3 +181,5 @@ export const ScrollCanvasBackground: React.FC = () => {
     </div>
   );
 };
+
+export default ScrollCanvasBackground;
