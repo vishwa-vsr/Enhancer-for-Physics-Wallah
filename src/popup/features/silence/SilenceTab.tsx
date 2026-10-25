@@ -144,8 +144,8 @@ export function SilenceTab() {
             <Stepper
               value={skipSilenceSilenceSpeed.value}
               min={1.5}
-              max={6.0}
-              step={0.1}
+              max={16.0}
+              step={0.5}
               unit="x"
               onChange={(val) => {
                 skipSilenceSilenceSpeed.value = val;

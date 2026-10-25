@@ -140,7 +140,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   autoHideWhenPaused: false,
 
   skipSilenceEnabled: false,
-  skipSilenceSilenceSpeed: 3.0,
+  skipSilenceSilenceSpeed: 6.0,
   skipSilenceThreshold: -40,
   skipSilenceDynamicThreshold: true,
   skipSilenceMute: false,

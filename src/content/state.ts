@@ -56,7 +56,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   autoHideWhenPaused: false,
 
   skipSilenceEnabled: false,
-  skipSilenceSilenceSpeed: 3.0,
+  skipSilenceSilenceSpeed: 6.0,
   skipSilenceThreshold: -40,
   skipSilenceDynamicThreshold: true,
   skipSilenceMute: false,
@@ -315,7 +315,7 @@ export function initState(onLoaded?: () => void): void {
     state.skipSilenceSilenceSpeed =
       result.skipSilenceSilenceSpeed !== undefined
         ? parseFloat(result.skipSilenceSilenceSpeed)
-        : 3.0;
+        : 6.0;
     state.skipSilenceThreshold =
       result.skipSilenceThreshold !== undefined ? parseInt(result.skipSilenceThreshold, 10) : -40;
     state.skipSilenceDynamicThreshold = result.skipSilenceDynamicThreshold !== false;
@@ -462,7 +462,7 @@ export function initState(onLoaded?: () => void): void {
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceSilenceSpeed')) {
               state.skipSilenceSilenceSpeed =
-                parseFloat(String(changes.skipSilenceSilenceSpeed.newValue)) || 3.0;
+                parseFloat(String(changes.skipSilenceSilenceSpeed.newValue)) || 6.0;
               changedKeys.push('skipSilenceSilenceSpeed');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceThreshold')) {

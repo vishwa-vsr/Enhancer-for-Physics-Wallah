@@ -6,10 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [1.1.0.3] - 2026-10-22
+## [1.1.0.3] - 2026-10-25
 
 ### Changed
 
+- **Skip Silence Boost**: Max speed up to 16x (default 6x) with 0.5x step jumps.
 - **Refresh Pop-up**: Added YouTube lecture limitation note and compact button.
 
 ### Fixed

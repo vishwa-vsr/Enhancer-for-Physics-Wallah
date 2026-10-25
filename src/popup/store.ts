@@ -108,7 +108,7 @@ export const autoHideWhenPaused = signal(false);
 
 // ===== Skip Silence signals =====
 export const skipSilenceEnabled = signal(false);
-export const skipSilenceSilenceSpeed = signal(3.0);
+export const skipSilenceSilenceSpeed = signal(6.0);
 export const skipSilenceThreshold = signal(-40);
 export const skipSilenceDynamicThreshold = signal(true);
 export const skipSilenceMute = signal(false);
@@ -208,7 +208,7 @@ export async function initStore() {
   autoHideWhenPaused.value = !!s.autoHideWhenPaused;
 
   skipSilenceEnabled.value = !!s.skipSilenceEnabled;
-  skipSilenceSilenceSpeed.value = s.skipSilenceSilenceSpeed ?? 3.0;
+  skipSilenceSilenceSpeed.value = s.skipSilenceSilenceSpeed ?? 6.0;
   skipSilenceThreshold.value = s.skipSilenceThreshold ?? -40;
   skipSilenceDynamicThreshold.value = s.skipSilenceDynamicThreshold !== false; // defaults to true
   skipSilenceMute.value = !!s.skipSilenceMute;
