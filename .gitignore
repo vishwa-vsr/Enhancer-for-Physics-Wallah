@@ -35,3 +35,4 @@ pip/
 skip-Silence/
 .agents/feedback_checkpoint.json
 *.tsbuildinfo
+*.mp4
