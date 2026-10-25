@@ -1,56 +1,39 @@
 import React, { useEffect, useRef } from 'react';
 
 const TOTAL_FRAMES = 120;
-const BASE_SPEED = 24; // ~10 seconds for a full forward-and-back cycle (0 -> 119 -> 0)
-const MAX_BOOST = 40;  // Gentle maximum speed cap when scrolling rapidly
 
 export const ScrollCanvasBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
-  const currentRenderedIdxRef = useRef<number>(0);
-  const exactPosRef = useRef<number>(0);
-  const directionRef = useRef<number>(1); // 1 = forward, -1 = reverse
-  const scrollBoostRef = useRef<number>(0);
-  const lastTimeRef = useRef<number | null>(null);
+  const targetFrameFloatRef = useRef<number>(0);
+  const smoothFrameFloatRef = useRef<number>(0);
+  const isAnimatingRef = useRef<boolean>(false);
   const rafIdRef = useRef<number | null>(null);
-  const lastScrollYRef = useRef<number>(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Draw a specific clean video frame onto the canvas (covering the viewport)
-    function renderFrame(idx: number) {
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      let img = imagesRef.current[idx];
-
-      // If requested frame isn't loaded yet, display nearest loaded frame to eliminate flickering
-      if (!img || !img.complete || img.naturalWidth === 0) {
-        let fallback: HTMLImageElement | null = null;
-        for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
-          const prev = imagesRef.current[idx - offset];
-          if (prev && prev.complete && prev.naturalWidth > 0) {
-            fallback = prev;
-            break;
-          }
-          const next = imagesRef.current[idx + offset];
-          if (next && next.complete && next.naturalWidth > 0) {
-            fallback = next;
-            break;
-          }
-        }
-        if (fallback) {
-          img = fallback;
-        } else {
-          return;
-        }
+    // Helper: get safe loaded image or nearest fallback
+    function getSafeImage(idx: number): HTMLImageElement | null {
+      const safeIdx = Math.min(TOTAL_FRAMES - 1, Math.max(0, idx));
+      let img = imagesRef.current[safeIdx];
+      if (img && img.complete && img.naturalWidth > 0) {
+        return img;
       }
+      for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
+        const prev = imagesRef.current[safeIdx - offset];
+        if (prev && prev.complete && prev.naturalWidth > 0) return prev;
+        const next = imagesRef.current[safeIdx + offset];
+        if (next && next.complete && next.naturalWidth > 0) return next;
+      }
+      return null;
+    }
 
-      const w = canvas.width;
-      const h = canvas.height;
+    // Helper: draw single image to cover full canvas
+    function drawImageCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement, alpha: number) {
+      const w = canvas!.width;
+      const h = canvas!.height;
       const imgRatio = img.width / img.height;
       const canvasRatio = w / h;
 
@@ -71,15 +54,47 @@ export const ScrollCanvasBackground: React.FC = () => {
         renderY = 0;
       }
 
-      ctx.clearRect(0, 0, w, h);
+      ctx.globalAlpha = alpha;
       ctx.drawImage(img, renderX, renderY, renderW, renderH);
     }
 
-    // Set canvas dimensions and redraw current frame
+    // Cross-fade dissolve between the two nearest picture frames
+    function drawBlendedFrame(floatPos: number) {
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const clampedPos = Math.min(TOTAL_FRAMES - 1, Math.max(0, floatPos));
+      const baseIdx = Math.floor(clampedPos);
+      const frac = clampedPos - baseIdx;
+      const nextIdx = Math.min(TOTAL_FRAMES - 1, baseIdx + 1);
+
+      const baseImg = getSafeImage(baseIdx);
+      if (!baseImg) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (frac < 0.015 || baseIdx === nextIdx) {
+        // Pure single frame
+        drawImageCover(ctx, baseImg, 1.0);
+      } else {
+        const nextImg = getSafeImage(nextIdx);
+        // Base image drawn solid
+        drawImageCover(ctx, baseImg, 1.0);
+        // Next image cross-faded smoothly on top based on exact scroll fraction
+        if (nextImg) {
+          drawImageCover(ctx, nextImg, frac);
+        }
+      }
+
+      ctx.globalAlpha = 1.0;
+    }
+
+    // Set canvas dimensions and redraw current position
     const updateCanvasSize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      renderFrame(currentRenderedIdxRef.current);
+      drawBlendedFrame(smoothFrameFloatRef.current);
     };
 
     updateCanvasSize();
@@ -94,68 +109,63 @@ export const ScrollCanvasBackground: React.FC = () => {
 
       if (i === 0) {
         img.onload = () => {
-          renderFrame(0);
+          drawBlendedFrame(0);
         };
       }
       images.push(img);
     }
     imagesRef.current = images;
 
-    // Continuous 60fps Ambient Loop with Gentle Scroll Acceleration
-    function tick(now: number) {
-      if (lastTimeRef.current === null) {
-        lastTimeRef.current = now;
-      }
-      const dt = Math.min(0.08, (now - lastTimeRef.current) / 1000); // delta time in seconds (clamped to prevent huge jumps)
-      lastTimeRef.current = now;
+    // Smooth gliding loop: ONLY runs while scrubbing, stops completely when idle
+    function startGlideLoop() {
+      if (isAnimatingRef.current) return;
+      isAnimatingRef.current = true;
 
-      // Soft easing near boundaries so the reverse point feels gentle like a pendulum
-      const pos = exactPosRef.current;
-      const distToBoundary = Math.min(pos, TOTAL_FRAMES - 1 - pos);
-      const boundaryEase = distToBoundary < 14
-        ? Math.max(0.4, Math.sin((distToBoundary / 14) * (Math.PI / 2)))
-        : 1.0;
+      function tick() {
+        const target = targetFrameFloatRef.current;
+        const current = smoothFrameFloatRef.current;
+        const diff = target - current;
 
-      // Current playback speed (baseline + decaying scroll boost)
-      const currentSpeed = (BASE_SPEED + scrollBoostRef.current) * boundaryEase;
-      scrollBoostRef.current *= 0.94; // Decay boost smoothly back to 0
+        // When difference is tiny, snap to target and go completely to sleep (STILL when idle)
+        if (Math.abs(diff) < 0.005) {
+          smoothFrameFloatRef.current = target;
+          drawBlendedFrame(target);
+          isAnimatingRef.current = false;
+          rafIdRef.current = null;
+          return;
+        }
 
-      // Advance frame position
-      let nextPos = pos + directionRef.current * currentSpeed * dt;
+        // Smooth damping: glides with responsive cushion
+        smoothFrameFloatRef.current += diff * 0.16;
+        drawBlendedFrame(smoothFrameFloatRef.current);
 
-      // Turn around smoothly at the ends
-      if (nextPos >= TOTAL_FRAMES - 1) {
-        nextPos = TOTAL_FRAMES - 1;
-        directionRef.current = -1;
-      } else if (nextPos <= 0) {
-        nextPos = 0;
-        directionRef.current = 1;
-      }
-      exactPosRef.current = nextPos;
-
-      // Render updated frame
-      const frameIdx = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.round(nextPos)));
-      if (frameIdx !== currentRenderedIdxRef.current) {
-        currentRenderedIdxRef.current = frameIdx;
-        renderFrame(frameIdx);
+        rafIdRef.current = requestAnimationFrame(tick);
       }
 
       rafIdRef.current = requestAnimationFrame(tick);
     }
 
-    rafIdRef.current = requestAnimationFrame(tick);
-
-    // Scroll listener: gently boosts playback speed when user scrolls
-    lastScrollYRef.current = window.scrollY || document.documentElement.scrollTop;
+    // 2-Way Ping-Pong scroll mapping:
+    // 0% -> 50% scroll: plays forward (frame 0 -> 119)
+    // 50% -> 100% scroll: plays in reverse (frame 119 -> 0)
     const handleScroll = () => {
-      const currentY = window.scrollY || document.documentElement.scrollTop;
-      const delta = Math.abs(currentY - lastScrollYRef.current);
-      lastScrollYRef.current = currentY;
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, scrollY / maxScroll));
 
-      // Add gentle acceleration proportional to scroll movement
-      if (delta > 0) {
-        scrollBoostRef.current = Math.min(MAX_BOOST, scrollBoostRef.current + delta * 0.16);
+      let targetPos: number;
+      if (progress <= 0.5) {
+        // Forward journey on top half of page (0 to 119)
+        const subProgress = progress / 0.5;
+        targetPos = subProgress * (TOTAL_FRAMES - 1);
+      } else {
+        // Reverse journey on bottom half of page (119 down to 0)
+        const subProgress = (progress - 0.5) / 0.5;
+        targetPos = (1 - subProgress) * (TOTAL_FRAMES - 1);
       }
+
+      targetFrameFloatRef.current = targetPos;
+      startGlideLoop();
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -166,39 +176,25 @@ export const ScrollCanvasBackground: React.FC = () => {
       lenis.on('scroll', handleScroll);
     }
 
-    // Auto-pause when user leaves tab (conserves 100% battery/CPU in background)
-    const handleVisibility = () => {
-      if (document.hidden) {
-        if (rafIdRef.current !== null) {
-          cancelAnimationFrame(rafIdRef.current);
-          rafIdRef.current = null;
-        }
-        lastTimeRef.current = null;
-      } else {
-        lastTimeRef.current = null;
-        if (rafIdRef.current === null) {
-          rafIdRef.current = requestAnimationFrame(tick);
-        }
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
+    // Initial render
+    handleScroll();
 
     return () => {
       window.removeEventListener('resize', updateCanvasSize);
       window.removeEventListener('scroll', handleScroll);
-      document.removeEventListener('visibilitychange', handleVisibility);
       if (lenis) {
         lenis.off('scroll', handleScroll);
       }
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);
       }
+      isAnimatingRef.current = false;
     };
   }, []);
 
   return (
     <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-      {/* 100% fluid 60fps continuous ambient loop with gentle scroll acceleration */}
+      {/* 2-Way Ping-Pong Canvas with Sub-Pixel Cross-Fade Dissolve */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full object-cover"
