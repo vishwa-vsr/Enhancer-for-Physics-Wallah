@@ -1,6 +1,7 @@
 // ===== Theme & Format Types =====
 export type ThemeMode = 'light' | 'dark';
 export type FinishTimeFormat = 'minimal' | 'clock' | 'full';
+export type LiveCatchUpFormat = 'lag' | 'catch' | 'eta';
 export type ReviewPromptStatus = 'pending' | 'reviewed' | 'dismissed_permanently';
 export type VideoQuality = 'auto' | '720p' | '480p' | '360p' | '240p';
 export type VolumeBalancerMode = 'gentle' | 'balanced' | 'max';
@@ -40,8 +41,11 @@ export interface PopupSettings {
   holdSpaceSpeedUp: boolean;
   holdSpaceSpeed: number;
   alwaysExpandWidget: boolean;
+  lectureTimeEnabled: boolean;
   showFinishTime: boolean;
   finishTimeFormat: FinishTimeFormat;
+  showLiveCatchUp: boolean;
+  liveCatchUpFormat: LiveCatchUpFormat;
   keySpeedUp: string;
   keySlowDown: string;
   keyReset: string;
@@ -120,8 +124,11 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   holdSpaceSpeedUp: false,
   holdSpaceSpeed: 2.0,
   alwaysExpandWidget: false,
+  lectureTimeEnabled: true,
   showFinishTime: true,
   finishTimeFormat: 'minimal',
+  showLiveCatchUp: true,
+  liveCatchUpFormat: 'catch',
   keySpeedUp: 'h',
   keySlowDown: 'j',
   keyReset: 'l',

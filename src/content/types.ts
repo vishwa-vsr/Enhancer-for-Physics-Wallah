@@ -1,6 +1,7 @@
 // ===== Theme & Format Types =====
 export type ThemeMode = 'light' | 'dark';
 export type FinishTimeFormat = 'minimal' | 'clock' | 'full';
+export type LiveCatchUpFormat = 'lag' | 'catch' | 'eta';
 export type SilenceState = 'idle' | 'speech' | 'silence';
 export type VideoQuality = 'auto' | '720p' | '480p' | '360p' | '240p';
 export type VolumeBalancerMode = 'gentle' | 'balanced' | 'max';
@@ -45,8 +46,11 @@ export interface ContentState {
   holdSpaceSpeedUp: boolean;
   holdSpaceSpeed: number;
   alwaysExpandWidget: boolean;
+  lectureTimeEnabled: boolean;
   showFinishTime: boolean;
   finishTimeFormat: FinishTimeFormat;
+  showLiveCatchUp: boolean;
+  liveCatchUpFormat: LiveCatchUpFormat;
   keySpeedUp: string;
   keySlowDown: string;
   keyReset: string;

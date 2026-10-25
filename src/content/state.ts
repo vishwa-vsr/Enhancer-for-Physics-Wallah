@@ -1,4 +1,4 @@
-import { ContentState, HideSettings, StateChangeListener, ThemeMode, VideoQuality } from './types';
+import { ContentState, HideSettings, LiveCatchUpFormat, StateChangeListener, ThemeMode, VideoQuality } from './types';
 import { resolveSafeSpeedShortcuts, sanitizeSpeedShortcut } from '../shared/shortcuts';
 
 export const DEFAULT_HIDE_SETTINGS: HideSettings = {
@@ -36,8 +36,11 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   holdSpaceSpeedUp: false,
   holdSpaceSpeed: 2.0,
   alwaysExpandWidget: false,
+  lectureTimeEnabled: true,
   showFinishTime: true,
   finishTimeFormat: 'minimal',
+  showLiveCatchUp: true,
+  liveCatchUpFormat: 'catch',
   keySpeedUp: 'h',
   keySlowDown: 'j',
   keyReset: 'l',
@@ -161,8 +164,11 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'holdSpaceSpeedUp',
         'holdSpaceSpeed',
         'alwaysExpandWidget',
+        'lectureTimeEnabled',
         'showFinishTime',
         'finishTimeFormat',
+        'showLiveCatchUp',
+        'liveCatchUpFormat',
         'keySpeedUp',
         'keySlowDown',
         'keyReset',
@@ -328,8 +334,11 @@ export function initState(onLoaded?: () => void): void {
     state.volumeBalancerEnabled = !!result.volumeBalancerEnabled;
     state.volumeBalancerMode = (result.volumeBalancerMode as any) || 'balanced';
 
+    state.lectureTimeEnabled = result.lectureTimeEnabled !== false;
     state.showFinishTime = result.showFinishTime !== false;
     state.finishTimeFormat = result.finishTimeFormat || 'minimal';
+    state.showLiveCatchUp = result.showLiveCatchUp !== false;
+    state.liveCatchUpFormat = result.liveCatchUpFormat || 'catch';
     state.autoPauseOnHide = !!result.autoPauseOnHide;
     state.themeMode = result.themeMode || 'dark';
     if (typeof document !== 'undefined' && document.documentElement) {
@@ -448,6 +457,10 @@ export function initState(onLoaded?: () => void): void {
               state.alwaysExpandWidget = !!changes.alwaysExpandWidget.newValue;
               changedKeys.push('alwaysExpandWidget');
             }
+            if (Object.prototype.hasOwnProperty.call(changes, 'lectureTimeEnabled')) {
+              state.lectureTimeEnabled = changes.lectureTimeEnabled.newValue !== false;
+              changedKeys.push('lectureTimeEnabled');
+            }
             if (Object.prototype.hasOwnProperty.call(changes, 'showFinishTime')) {
               state.showFinishTime = changes.showFinishTime.newValue !== false;
               changedKeys.push('showFinishTime');
@@ -455,6 +468,14 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'finishTimeFormat')) {
               state.finishTimeFormat = (changes.finishTimeFormat.newValue as any) || 'minimal';
               changedKeys.push('finishTimeFormat');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'showLiveCatchUp')) {
+              state.showLiveCatchUp = changes.showLiveCatchUp.newValue !== false;
+              changedKeys.push('showLiveCatchUp');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'liveCatchUpFormat')) {
+              state.liveCatchUpFormat = (changes.liveCatchUpFormat.newValue as LiveCatchUpFormat) || 'catch';
+              changedKeys.push('liveCatchUpFormat');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceEnabled')) {
               state.skipSilenceEnabled = !!changes.skipSilenceEnabled.newValue;

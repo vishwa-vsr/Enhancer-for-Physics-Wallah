@@ -4,7 +4,7 @@ import { FeatureRow } from '@shared/components/FeatureRow';
 import { Stepper } from '@shared/components/Stepper';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
 import { saveSetting } from '@shared/storage';
-import type { FinishTimeFormat } from '@shared/types';
+import type { FinishTimeFormat, LiveCatchUpFormat } from '@shared/types';
 import {
   hideAskAI,
   hideDoubt,
@@ -19,8 +19,11 @@ import {
   hideAttemptDPP,
   enableInstantHide,
   autoSkipPromoAds,
+  lectureTimeEnabled,
   showFinishTime,
   finishTimeFormat,
+  showLiveCatchUp,
+  liveCatchUpFormat,
   keyChat,
   keyTimeline,
   keyNotes,
@@ -71,6 +74,12 @@ function sendFocusLockMessage(action: 'get' | 'toggle'): Promise<LockStatus> {
     }
   });
 }
+
+const LIVE_CATCHUP_FORMAT_OPTIONS = [
+  { value: 'lag', label: 'Time Behind' },
+  { value: 'catch', label: 'Catch Live with Time' },
+  { value: 'eta', label: 'Estimated Catch-Up' },
+];
 
 const FINISH_TIME_FORMAT_OPTIONS = [
   { value: 'minimal', label: 'Minimal (Time Only)' },
@@ -282,6 +291,16 @@ function FocusTogglesSection() {
             ariaLabel="Toggle Instant Hide Button"
           />
         </FeatureRow>
+        <FeatureRow label="Allow Shortcuts When Hidden">
+          <Toggle
+            checked={allowShortcutsWhenHidden.value}
+            onChange={(v) => {
+              allowShortcutsWhenHidden.value = v;
+              saveSetting('allowShortcutsWhenHidden', v);
+            }}
+            ariaLabel="Toggle Allow Shortcuts When Hidden"
+          />
+        </FeatureRow>
         <FeatureRow label="Hide 'Ask AI'">
           <Toggle
             checked={hideAskAI.value}
@@ -467,40 +486,70 @@ function FocusTogglesSection() {
             ariaLabel="Toggle Auto-Skip Promo Ads"
           />
         </FeatureRow>
-        <FeatureRow label="Show Finish Time">
-          <div class={styles.finishTimeControls}>
-            <SelectDropdown
-              size="sm"
-              options={FINISH_TIME_FORMAT_OPTIONS}
-              value={finishTimeFormat.value}
-              onChange={(val) => {
-                const format = val as FinishTimeFormat;
-                finishTimeFormat.value = format;
-                saveSetting('finishTimeFormat', format);
-              }}
-              ariaLabel="Finish Time Format"
-            />
+        <div class={styles.settingRowGroup}>
+          <FeatureRow label="Lecture Time">
             <Toggle
-              checked={showFinishTime.value}
+              checked={lectureTimeEnabled.value}
               onChange={(v) => {
-                showFinishTime.value = v;
-                saveSetting('showFinishTime', v);
+                lectureTimeEnabled.value = v;
+                saveSetting('lectureTimeEnabled', v);
               }}
-              ariaLabel="Toggle Show Finish Time"
+              ariaLabel="Toggle Lecture Time"
             />
-          </div>
-        </FeatureRow>
-        <div class={styles.subSectionDivider} />
-        <FeatureRow label="Allow Shortcuts When Hidden">
-          <Toggle
-            checked={allowShortcutsWhenHidden.value}
-            onChange={(v) => {
-              allowShortcutsWhenHidden.value = v;
-              saveSetting('allowShortcutsWhenHidden', v);
-            }}
-            ariaLabel="Toggle Allow Shortcuts When Hidden"
-          />
-        </FeatureRow>
+          </FeatureRow>
+          {lectureTimeEnabled.value && (
+            <>
+              <div class={styles.featureConfigRow}>
+                <span class={styles.configLabel}>Recorded Class</span>
+                <div class={styles.finishTimeControls}>
+                  <SelectDropdown
+                    size="sm"
+                    options={FINISH_TIME_FORMAT_OPTIONS}
+                    value={finishTimeFormat.value}
+                    onChange={(val) => {
+                      const format = val as FinishTimeFormat;
+                      finishTimeFormat.value = format;
+                      saveSetting('finishTimeFormat', format);
+                    }}
+                    ariaLabel="Recorded Finish Time Format"
+                  />
+                  <Toggle
+                    checked={showFinishTime.value}
+                    onChange={(v) => {
+                      showFinishTime.value = v;
+                      saveSetting('showFinishTime', v);
+                    }}
+                    ariaLabel="Toggle Recorded Finish Time"
+                  />
+                </div>
+              </div>
+              <div class={styles.featureConfigRow}>
+                <span class={styles.configLabel}>Live Class</span>
+                <div class={styles.finishTimeControls}>
+                  <SelectDropdown
+                    size="sm"
+                    options={LIVE_CATCHUP_FORMAT_OPTIONS}
+                    value={liveCatchUpFormat.value}
+                    onChange={(val) => {
+                      const format = val as LiveCatchUpFormat;
+                      liveCatchUpFormat.value = format;
+                      saveSetting('liveCatchUpFormat', format);
+                    }}
+                    ariaLabel="Live Catch-Up Format"
+                  />
+                  <Toggle
+                    checked={showLiveCatchUp.value}
+                    onChange={(v) => {
+                      showLiveCatchUp.value = v;
+                      saveSetting('showLiveCatchUp', v);
+                    }}
+                    ariaLabel="Toggle Live Class Catch-Up"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
         <FeatureRow label="Toggle Fullscreen">
           <input
             type="text"

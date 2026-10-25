@@ -111,12 +111,12 @@ function init(): void {
       applyAlwaysExpandState();
     }
 
-    if (changedKeys.includes('showFinishTime')) {
+    if (changedKeys.includes('lectureTimeEnabled') || changedKeys.includes('showFinishTime') || changedKeys.includes('showLiveCatchUp')) {
       injectFinishTimeBadge();
       updateFinishTime();
     }
 
-    if (changedKeys.includes('finishTimeFormat')) {
+    if (changedKeys.includes('finishTimeFormat') || changedKeys.includes('liveCatchUpFormat')) {
       updateFinishTime();
     }
 

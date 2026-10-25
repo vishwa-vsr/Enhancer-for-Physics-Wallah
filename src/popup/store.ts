@@ -1,5 +1,5 @@
 import { signal } from '@preact/signals';
-import { FinishTimeFormat, PopupSettings, ReviewPromptStatus, VideoQuality, VolumeBalancerMode } from '@shared/types';
+import { FinishTimeFormat, LiveCatchUpFormat, PopupSettings, ReviewPromptStatus, VideoQuality, VolumeBalancerMode } from '@shared/types';
 import { loadSettings, onSettingsChanged, saveSettings } from '@shared/storage';
 import {
   getReservedShortcutWarning,
@@ -46,8 +46,11 @@ export const keySpeedUp = signal('h');
 export const keySlowDown = signal('j');
 export const keyReset = signal('l');
 export const alwaysExpandWidget = signal(false);
+export const lectureTimeEnabled = signal(true);
 export const showFinishTime = signal(true);
 export const finishTimeFormat = signal<FinishTimeFormat>('minimal');
+export const showLiveCatchUp = signal(true);
+export const liveCatchUpFormat = signal<LiveCatchUpFormat>('catch');
 
 // ===== Focus shortcuts signals (Issue #14) =====
 export const keyChat = signal('c');
@@ -166,8 +169,11 @@ export async function initStore() {
   holdSpaceSpeed.value = s.holdSpaceSpeed ?? 2.0;
 
   alwaysExpandWidget.value = !!s.alwaysExpandWidget;
+  lectureTimeEnabled.value = s.lectureTimeEnabled !== false;
   showFinishTime.value = s.showFinishTime !== false; // defaults to true
   finishTimeFormat.value = s.finishTimeFormat || 'minimal';
+  showLiveCatchUp.value = s.showLiveCatchUp !== false;
+  liveCatchUpFormat.value = s.liveCatchUpFormat || 'catch';
 
   keyChat.value = s.keyChat ?? 'c';
   keyTimeline.value = s.keyTimeline ?? 't';
@@ -228,6 +234,18 @@ export async function initStore() {
   onSettingsChanged((changes) => {
     if (changes.finishTimeFormat !== undefined) {
       finishTimeFormat.value = (changes.finishTimeFormat as FinishTimeFormat) || 'minimal';
+    }
+    if (changes.lectureTimeEnabled !== undefined) {
+      lectureTimeEnabled.value = changes.lectureTimeEnabled !== false;
+    }
+    if (changes.showFinishTime !== undefined) {
+      showFinishTime.value = changes.showFinishTime !== false;
+    }
+    if (changes.showLiveCatchUp !== undefined) {
+      showLiveCatchUp.value = changes.showLiveCatchUp !== false;
+    }
+    if (changes.liveCatchUpFormat !== undefined) {
+      liveCatchUpFormat.value = (changes.liveCatchUpFormat as LiveCatchUpFormat) || 'catch';
     }
     if (changes.keySpeedUp !== undefined) {
       keySpeedUp.value = sanitizeSpeedShortcut(changes.keySpeedUp, 'h');

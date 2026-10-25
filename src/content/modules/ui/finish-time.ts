@@ -11,6 +11,7 @@ export function isLiveVideo(video: HTMLVideoElement): boolean {
     if (
       player.classList.contains('vjs-live') ||
       player.classList.contains('vjs-liveui') ||
+      player.classList.contains('vjs-live-streaming') ||
       player.querySelector('.vjs-live-display, .vjs-live-control') !== null
     ) {
       return true;
@@ -48,10 +49,10 @@ export function getLiveStreamLag(video: HTMLVideoElement): number | null {
   return null;
 }
 
-// Check if PW has a visible "Go Live" button on screen
+// Check if PW has a visible "Go Live" or "Live" button on screen
 export function hasGoLiveButton(): boolean {
   const candidates = document.querySelectorAll(
-    'button, [role="button"], div.vjs-live-control, [class*="live" i]',
+    'button, [role="button"], div.vjs-live-control, [class*="live-control" i], [class*="live" i]',
   );
   for (let i = 0; i < candidates.length; i++) {
     const text = (candidates[i].textContent || '').trim().toLowerCase();
@@ -62,21 +63,61 @@ export function hasGoLiveButton(): boolean {
   return false;
 }
 
+// Seek video directly to the live broadcast point
+export function jumpToLive(video?: HTMLVideoElement | null): void {
+  // First, look for a native "Go Live" or "Live" button
+  const candidates = document.querySelectorAll<HTMLElement>(
+    'button, [role="button"], div.vjs-live-control, [class*="live-control" i], [class*="live" i]',
+  );
+  for (let i = 0; i < candidates.length; i++) {
+    const text = (candidates[i].textContent || '').trim().toLowerCase();
+    if (text === 'go live' || text === 'live') {
+      try {
+        candidates[i].click();
+        return;
+      } catch (_e) {
+        // Fallback below
+      }
+    }
+  }
+
+  const v = video || getCachedVideo() || getActiveVideo();
+  if (v) {
+    try {
+      if (v.seekable && v.seekable.length > 0) {
+        const liveEnd = v.seekable.end(v.seekable.length - 1);
+        if (isFinite(liveEnd) && liveEnd > 0) {
+          v.currentTime = Math.max(0, liveEnd - 0.5);
+          return;
+        }
+      }
+      if (isFinite(v.duration) && v.duration > 0) {
+        v.currentTime = Math.max(0, v.duration - 0.5);
+      }
+    } catch (_e) {
+      // Ignore seek error
+    }
+  }
+}
+
 function formatLagTime(seconds: number): string {
-  const mins = Math.round(seconds / 60);
-  if (mins <= 0) return '<1m';
+  const roundedSec = Math.round(seconds);
+  if (roundedSec < 60) {
+    return `${Math.max(1, roundedSec)}s`;
+  }
+  const mins = Math.round(roundedSec / 60);
   if (mins < 60) return `${mins}m`;
   const h = Math.floor(mins / 60);
   const m = mins % 60;
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-// Update dynamic lecture finish time badge
+// Update dynamic lecture finish time or live catch-up badge
 export function updateFinishTime(): void {
   const badges = document.querySelectorAll<HTMLElement>('#pwc-finish-time-badge');
   if (!badges || badges.length === 0) return;
 
-  if (!state.extensionEnabled || !state.showFinishTime) {
+  if (!state.extensionEnabled || !state.lectureTimeEnabled) {
     badges.forEach((b) => {
       b.style.display = 'none';
     });
@@ -93,17 +134,40 @@ export function updateFinishTime(): void {
 
   const isLive = isLiveVideo(video);
 
+  // ===== LIVE CLASS CATCH-UP =====
   if (isLive) {
+    if (!state.showLiveCatchUp) {
+      badges.forEach((b) => {
+        b.style.display = 'none';
+      });
+      return;
+    }
+
     const hasGoLive = hasGoLiveButton();
     const lagSec = getLiveStreamLag(video);
-    const isBehind = hasGoLive || (lagSec !== null && lagSec > 25);
+    // Ultra-sensitive threshold: 8 seconds
+    const isBehind = hasGoLive || (lagSec !== null && lagSec >= 8);
+
+    const speed =
+      state.extensionEnabled && state.currentSpeed > 0
+        ? state.currentSpeed
+        : video.playbackRate || 1.0;
 
     let liveText = 'Live Class';
     if (isBehind) {
-      if (lagSec !== null && lagSec > 25) {
-        liveText = `Behind Live (-${formatLagTime(lagSec)})`;
+      const formattedLag = lagSec !== null ? formatLagTime(lagSec) : '';
+      if (state.liveCatchUpFormat === 'lag') {
+        liveText = formattedLag ? `Behind Live (-${formattedLag})` : 'Behind Live';
+      } else if (state.liveCatchUpFormat === 'eta') {
+        if (speed > 1.05 && lagSec !== null && lagSec >= 8) {
+          const catchUpSec = Math.round(lagSec / (speed - 1.0));
+          liveText = `Catch up in ${formatLagTime(catchUpSec)}`;
+        } else {
+          liveText = formattedLag ? `Catch Live (-${formattedLag})` : 'Catch Live';
+        }
       } else {
-        liveText = 'Behind Live';
+        // default 'catch'
+        liveText = formattedLag ? `Catch Live (-${formattedLag})` : 'Catch Live';
       }
     }
 
@@ -111,6 +175,12 @@ export function updateFinishTime(): void {
       badge.style.display = 'inline-flex';
       badge.classList.add('pwc-finish-live');
       badge.classList.toggle('pwc-finish-behind-live', isBehind);
+      if (isBehind) {
+        badge.title = 'Click to jump to live broadcast';
+      } else {
+        badge.title = '';
+      }
+
       const iconEl = badge.querySelector<HTMLElement>('.pwc-finish-icon');
       const dotEl = badge.querySelector<HTMLElement>('.pwc-finish-live-dot');
       const prefixEl = badge.querySelector<HTMLElement>('.pwc-finish-prefix');
@@ -122,6 +192,14 @@ export function updateFinishTime(): void {
       if (prefixEl && prefixEl.textContent !== liveText) prefixEl.textContent = liveText;
       if (clockEl && clockEl.textContent !== '') clockEl.textContent = '';
       if (leftEl && leftEl.textContent !== '') leftEl.textContent = '';
+    });
+    return;
+  }
+
+  // ===== RECORDED CLASS FINISH TIME =====
+  if (!state.showFinishTime) {
+    badges.forEach((b) => {
+      b.style.display = 'none';
     });
     return;
   }
@@ -189,6 +267,7 @@ export function updateFinishTime(): void {
 
   badges.forEach((badge) => {
     badge.style.display = 'inline-flex';
+    badge.title = '';
     badge.classList.remove('pwc-finish-live');
     badge.classList.remove('pwc-finish-behind-live');
     const iconEl = badge.querySelector<HTMLElement>('.pwc-finish-icon');
@@ -207,7 +286,7 @@ export function updateFinishTime(): void {
 
 // Inject finish time badge into player toolbar
 export function injectFinishTimeBadge(): void {
-  if (!state.extensionEnabled || !state.showFinishTime) {
+  if (!state.extensionEnabled || !state.lectureTimeEnabled || (!state.showFinishTime && !state.showLiveCatchUp)) {
     const existing = document.getElementById('pwc-finish-time-badge');
     if (existing) existing.remove();
     return;
@@ -230,6 +309,19 @@ export function injectFinishTimeBadge(): void {
     badge = document.createElement('div');
     badge.id = 'pwc-finish-time-badge';
     badge.className = 'pwc-finish-time-badge';
+
+    badge.addEventListener('click', (e) => {
+      const video = getCachedVideo() || getActiveVideo();
+      if (video && isLiveVideo(video)) {
+        const hasGoLive = hasGoLiveButton();
+        const lagSec = getLiveStreamLag(video);
+        if (hasGoLive || (lagSec !== null && lagSec >= 8)) {
+          e.stopPropagation();
+          jumpToLive(video);
+          updateFinishTime();
+        }
+      }
+    });
 
     const dotSpan = document.createElement('span');
     dotSpan.className = 'pwc-finish-live-dot';

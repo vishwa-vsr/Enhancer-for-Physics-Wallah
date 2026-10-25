@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.1.0.3] - 2026-10-25
 
+### Added
+
+- **Lecture Time Controls**: Grouped finish time into "Recorded Class" and "Live Class", each with its own format picker and on/off switch.
+- **Live Class Catch-Up**: Shows how far behind you are, calculates catch-up time at your current speed, and jumps to live when clicked.
+
 ### Changed
 
 - **Skip Silence Boost**: Max speed up to 16x (default 6x) with 0.5x step jumps.
@@ -15,6 +20,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- **Focus Menu Layout**: Removed the duplicate line below finish time and moved "Allow Shortcuts When Hidden" to the top.
+- **Dropdown Menu Cutoff**: Fixed format dropdowns getting sliced off at the bottom of the card.
 - **Tasks Header Layout**: Fixed the top title and buttons jumping around when switching between List and Board views.
 
 ## [1.1.0.2] - 2026-10-22
