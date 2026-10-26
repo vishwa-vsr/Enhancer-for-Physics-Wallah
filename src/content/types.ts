@@ -1,7 +1,7 @@
 // ===== Theme & Format Types =====
 export type ThemeMode = 'light' | 'dark';
-export type FinishTimeFormat = 'minimal' | 'clock' | 'full';
-export type LiveCatchUpFormat = 'lag' | 'catch' | 'eta';
+export type FinishTimeFormat = 'clock' | 'full';
+export type LiveCatchUpFormat = 'lag' | 'catch';
 export type SilenceState = 'idle' | 'speech' | 'silence';
 export type VideoQuality = 'auto' | '720p' | '480p' | '360p' | '240p';
 export type VolumeBalancerMode = 'gentle' | 'balanced' | 'max';

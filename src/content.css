@@ -822,18 +822,8 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   letter-spacing: 0.01em;
 }
 
-.pwc-finish-time-badge.pwc-finish-behind-live {
-  pointer-events: auto !important;
-  cursor: pointer !important;
-  transition: opacity 0.15s ease;
-}
-
-.pwc-finish-time-badge.pwc-finish-behind-live:hover {
-  opacity: 0.85;
-}
-
 .pwc-finish-time-badge.pwc-finish-behind-live .pwc-finish-prefix {
-  color: #ff5252 !important;
+  color: #ffffff !important;
   font-weight: 600;
   letter-spacing: 0.01em;
 }

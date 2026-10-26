@@ -48,7 +48,7 @@ export const keyReset = signal('l');
 export const alwaysExpandWidget = signal(false);
 export const lectureTimeEnabled = signal(true);
 export const showFinishTime = signal(true);
-export const finishTimeFormat = signal<FinishTimeFormat>('minimal');
+export const finishTimeFormat = signal<FinishTimeFormat>('clock');
 export const showLiveCatchUp = signal(true);
 export const liveCatchUpFormat = signal<LiveCatchUpFormat>('catch');
 
@@ -171,9 +171,9 @@ export async function initStore() {
   alwaysExpandWidget.value = !!s.alwaysExpandWidget;
   lectureTimeEnabled.value = s.lectureTimeEnabled !== false;
   showFinishTime.value = s.showFinishTime !== false; // defaults to true
-  finishTimeFormat.value = s.finishTimeFormat || 'minimal';
+  finishTimeFormat.value = s.finishTimeFormat === 'full' ? 'full' : 'clock';
   showLiveCatchUp.value = s.showLiveCatchUp !== false;
-  liveCatchUpFormat.value = s.liveCatchUpFormat || 'catch';
+  liveCatchUpFormat.value = s.liveCatchUpFormat === 'lag' ? 'lag' : 'catch';
 
   keyChat.value = s.keyChat ?? 'c';
   keyTimeline.value = s.keyTimeline ?? 't';

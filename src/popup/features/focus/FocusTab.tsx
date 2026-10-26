@@ -4,7 +4,7 @@ import { FeatureRow } from '@shared/components/FeatureRow';
 import { Stepper } from '@shared/components/Stepper';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
 import { saveSetting } from '@shared/storage';
-import type { FinishTimeFormat, LiveCatchUpFormat } from '@shared/types';
+import type { FinishTimeFormat } from '@shared/types';
 import {
   hideAskAI,
   hideDoubt,
@@ -75,16 +75,9 @@ function sendFocusLockMessage(action: 'get' | 'toggle'): Promise<LockStatus> {
   });
 }
 
-const LIVE_CATCHUP_FORMAT_OPTIONS = [
-  { value: 'lag', label: 'Time Behind' },
-  { value: 'catch', label: 'Catch Live with Time' },
-  { value: 'eta', label: 'Estimated Catch-Up' },
-];
-
 const FINISH_TIME_FORMAT_OPTIONS = [
-  { value: 'minimal', label: 'Minimal (Time Only)' },
-  { value: 'clock', label: 'Clock with Label' },
-  { value: 'full', label: 'Full (Clock + Left)' },
+  { value: 'clock', label: 'Simple' },
+  { value: 'full', label: 'Detailed' },
 ];
 
 export function FocusTab() {
@@ -486,70 +479,33 @@ function FocusTogglesSection() {
             ariaLabel="Toggle Auto-Skip Promo Ads"
           />
         </FeatureRow>
-        <div class={styles.settingRowGroup}>
-          <FeatureRow label="Lecture Time">
+        <FeatureRow label="Lecture Finish Time">
+          <div class={styles.finishTimeControls}>
+            <SelectDropdown
+              size="sm"
+              options={FINISH_TIME_FORMAT_OPTIONS}
+              value={finishTimeFormat.value === 'full' ? 'full' : 'clock'}
+              onChange={(val) => {
+                const format = val as FinishTimeFormat;
+                finishTimeFormat.value = format;
+                saveSetting('finishTimeFormat', format);
+              }}
+              ariaLabel="Lecture Finish Time Format"
+            />
             <Toggle
               checked={lectureTimeEnabled.value}
               onChange={(v) => {
                 lectureTimeEnabled.value = v;
                 saveSetting('lectureTimeEnabled', v);
+                showFinishTime.value = v;
+                saveSetting('showFinishTime', v);
+                showLiveCatchUp.value = v;
+                saveSetting('showLiveCatchUp', v);
               }}
-              ariaLabel="Toggle Lecture Time"
+              ariaLabel="Toggle Lecture Finish Time"
             />
-          </FeatureRow>
-          {lectureTimeEnabled.value && (
-            <>
-              <div class={styles.featureConfigRow}>
-                <span class={styles.configLabel}>Recorded Class</span>
-                <div class={styles.finishTimeControls}>
-                  <SelectDropdown
-                    size="sm"
-                    options={FINISH_TIME_FORMAT_OPTIONS}
-                    value={finishTimeFormat.value}
-                    onChange={(val) => {
-                      const format = val as FinishTimeFormat;
-                      finishTimeFormat.value = format;
-                      saveSetting('finishTimeFormat', format);
-                    }}
-                    ariaLabel="Recorded Finish Time Format"
-                  />
-                  <Toggle
-                    checked={showFinishTime.value}
-                    onChange={(v) => {
-                      showFinishTime.value = v;
-                      saveSetting('showFinishTime', v);
-                    }}
-                    ariaLabel="Toggle Recorded Finish Time"
-                  />
-                </div>
-              </div>
-              <div class={styles.featureConfigRow}>
-                <span class={styles.configLabel}>Live Class</span>
-                <div class={styles.finishTimeControls}>
-                  <SelectDropdown
-                    size="sm"
-                    options={LIVE_CATCHUP_FORMAT_OPTIONS}
-                    value={liveCatchUpFormat.value}
-                    onChange={(val) => {
-                      const format = val as LiveCatchUpFormat;
-                      liveCatchUpFormat.value = format;
-                      saveSetting('liveCatchUpFormat', format);
-                    }}
-                    ariaLabel="Live Catch-Up Format"
-                  />
-                  <Toggle
-                    checked={showLiveCatchUp.value}
-                    onChange={(v) => {
-                      showLiveCatchUp.value = v;
-                      saveSetting('showLiveCatchUp', v);
-                    }}
-                    ariaLabel="Toggle Live Class Catch-Up"
-                  />
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+          </div>
+        </FeatureRow>
         <FeatureRow label="Toggle Fullscreen">
           <input
             type="text"

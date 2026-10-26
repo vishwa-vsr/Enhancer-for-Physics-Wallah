@@ -38,7 +38,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   alwaysExpandWidget: false,
   lectureTimeEnabled: true,
   showFinishTime: true,
-  finishTimeFormat: 'minimal',
+  finishTimeFormat: 'clock',
   showLiveCatchUp: true,
   liveCatchUpFormat: 'catch',
   keySpeedUp: 'h',
@@ -336,9 +336,9 @@ export function initState(onLoaded?: () => void): void {
 
     state.lectureTimeEnabled = result.lectureTimeEnabled !== false;
     state.showFinishTime = result.showFinishTime !== false;
-    state.finishTimeFormat = result.finishTimeFormat || 'minimal';
+    state.finishTimeFormat = result.finishTimeFormat === 'full' ? 'full' : 'clock';
     state.showLiveCatchUp = result.showLiveCatchUp !== false;
-    state.liveCatchUpFormat = result.liveCatchUpFormat || 'catch';
+    state.liveCatchUpFormat = result.liveCatchUpFormat === 'lag' ? 'lag' : 'catch';
     state.autoPauseOnHide = !!result.autoPauseOnHide;
     state.themeMode = result.themeMode || 'dark';
     if (typeof document !== 'undefined' && document.documentElement) {
@@ -466,7 +466,7 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('showFinishTime');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'finishTimeFormat')) {
-              state.finishTimeFormat = (changes.finishTimeFormat.newValue as any) || 'minimal';
+              state.finishTimeFormat = changes.finishTimeFormat.newValue === 'full' ? 'full' : 'clock';
               changedKeys.push('finishTimeFormat');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'showLiveCatchUp')) {
@@ -474,7 +474,7 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('showLiveCatchUp');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'liveCatchUpFormat')) {
-              state.liveCatchUpFormat = (changes.liveCatchUpFormat.newValue as LiveCatchUpFormat) || 'catch';
+              state.liveCatchUpFormat = changes.liveCatchUpFormat.newValue === 'lag' ? 'lag' : 'catch';
               changedKeys.push('liveCatchUpFormat');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceEnabled')) {
