@@ -172,13 +172,14 @@ export const Footer = () => {
       <a
         href="#"
         class={styles.link}
+        title="Join the discussion on GitHub"
         onClick={(e) => {
           e.preventDefault();
-          openLink('https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah');
+          openLink('https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/discussions/33');
         }}
       >
         <GithubIcon />
-        GitHub
+        Discussion
       </a>
       <button
         type="button"
