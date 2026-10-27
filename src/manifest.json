@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Enhancer for Physics Wallah",
-  "version": "1.1.0.3",
+  "version": "1.1.0.4",
   "description": "Enhance Physics Wallah with Skip Silence, constant 720p quality, study to-do list, up to 4x speed, custom keyboard shortcuts",
   "icons": {
     "16": "icons/icon16.png",

@@ -5,6 +5,12 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.1.0.4] - 2026-10-27
+
+### Changed
+
+- **Volume Bubble**: Redesigned to match PW's native 2x badge.
+
 ## [1.1.0.3] - 2026-10-25
 
 ### Changed
