@@ -18,7 +18,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - **Focus Menu Layout**: Removed the duplicate line below finish time and moved "Allow Shortcuts When Hidden" to the top.
-- **Dropdown Menu Cutoff**: Fixed format dropdowns getting sliced off at the bottom of the card.
 - **Tasks Header Layout**: Fixed the top title and buttons jumping around when switching between List and Board views.
 
 ## [1.1.0.2] - 2026-10-22
