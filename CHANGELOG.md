@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - **Volume Bubble**: Redesigned to match PW's native 2x badge.
-- **Quality Menu**: Redesigned to match PW's native settings card.
+- **Quality Menu**: Compact, borderless card with centered options matching PW's native style.
 
 ## [1.1.0.3] - 2026-10-25
 

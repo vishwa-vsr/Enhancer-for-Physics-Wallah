@@ -903,7 +903,8 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%) translateY(6px);
-  min-width: 125px;
+  min-width: 80px;
+  width: max-content;
   background: rgba(23, 23, 28, 0.96);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -931,7 +932,8 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   text-transform: none;
   letter-spacing: normal;
   color: rgba(255, 255, 255, 0.9);
-  padding: 4px 8px 6px;
+  padding: 4px 6px 6px;
+  text-align: center;
   border-bottom: none;
   margin-bottom: 3px;
 }
@@ -940,16 +942,16 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   background: transparent;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   padding: 5px 8px;
   color: rgba(255, 255, 255, 0.85);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   transition:
     background 0.15s ease,
     color 0.15s ease;
