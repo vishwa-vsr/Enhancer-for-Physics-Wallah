@@ -31,7 +31,7 @@
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
-  border: none;
+  border: var(--card-border, none);
   overflow: visible;
   display: flex;
   flex-direction: column;
@@ -183,6 +183,7 @@
 
 .ssTimeSavedCard {
   background: var(--bg-card);
+  border: var(--card-border, none);
 }
 
 .ssTimeSavedGroup {

@@ -1,7 +1,7 @@
 /* === 7. SPEED CONTROLS HUD CARD === */
 .hudSection {
   background: var(--bg-card);
-  border: none;
+  border: var(--card-border, none);
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
   padding: 14px 14px 8px 14px;
@@ -433,7 +433,7 @@
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
-  border: none;
+  border: var(--card-border, none);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -537,5 +537,5 @@
 
 .stepperCard {
   background: var(--bg-card);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: none;
 }

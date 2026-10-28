@@ -7,7 +7,7 @@
   background-color: var(--bg-card);
   padding: 16px 17px;
   box-shadow: var(--card-shadow);
-  border: 1px solid var(--border-subtle);
+  border: var(--card-border, none);
   outline: none;
   margin-bottom: 13px;
   transition: border-color var(--transition-fast), background-color var(--transition-fast);

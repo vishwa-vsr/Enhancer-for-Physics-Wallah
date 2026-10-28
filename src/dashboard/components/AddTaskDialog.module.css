@@ -23,7 +23,7 @@
   display: flex;
   flex-direction: column;
   background-color: var(--bg-card);
-  border: none;
+  border: var(--card-border, none);
   outline: none;
   border-radius: var(--radius-xl, 16px);
   padding: 26px 28px;

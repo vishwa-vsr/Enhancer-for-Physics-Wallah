@@ -52,7 +52,7 @@
   right: 0;
   width: 268px;
   background-color: var(--bg-card);
-  border: none;
+  border: 1px solid var(--border-subtle);
   outline: none;
   border-radius: 14px;
   box-shadow:

@@ -1,13 +1,14 @@
 /* tokens.css */
 :root {
   /* Dark theme variables (Default) */
-  --bg-main: #101319;
-  --bg-card: #191e28;
-  --bg-card-hover: #1f2532;
-  --bg-control: #232a37;
-  --bg-control-hover: #2c3444;
-  --divider-color: rgba(255, 255, 255, 0.05);
-  --border-subtle: rgba(255, 255, 255, 0.08);
+  --bg-main: #000000;
+  --bg-card: #18191c;
+  --bg-card-hover: #222327;
+  --bg-control: #121316;
+  --bg-control-hover: #1e1f23;
+  --divider-color: rgba(255, 255, 255, 0.06);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --card-border: none;
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
   --text-muted: #8e9bb0;
@@ -17,21 +18,21 @@
   --accent-active: #5b52f0;
   --accent-dim: rgba(108, 99, 255, 0.15);
   --accent-focus: #8b85ff;
-  --tab-nav-bg: #191e28;
+  --tab-nav-bg: #121316;
   --tab-btn-fg: #8e9bb0;
   --tab-btn-fg-active: #ffffff;
-  --tab-indicator-bg: #232a37;
-  --tab-indicator-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  --slider-track-bg: #242b38;
+  --tab-indicator-bg: #222328;
+  --tab-indicator-shadow: none;
+  --slider-track-bg: #222328;
   --slider-thumb-bg: #ffffff;
   --slider-thumb-border: var(--accent-primary);
-  --switch-bg-off: #2c3444;
+  --switch-bg-off: #28292e;
   --switch-bg-on: var(--accent-primary);
   --switch-thumb-bg: #ffffff;
-  --input-bg: #232a37;
+  --input-bg: #121316;
   --input-fg: #9b95ff;
   --warning-text: #fbbf24;
-  --card-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  --card-shadow: none;
 
   /* Shared variables */
   --space-1: 4px;
@@ -60,37 +61,38 @@
 }
 
 body.light-theme {
-  --bg-main: #e6ebf2;
+  --bg-main: #e8e9ee;
   --bg-card: #ffffff;
-  --bg-card-hover: #fafbfc;
-  --bg-control: #edf1f6;
-  --bg-control-hover: #dfe5ee;
-  --divider-color: #f0f3f7;
-  --border-subtle: rgba(203, 213, 225, 0.4);
-  --text-primary: #181d27;
-  --text-secondary: #4b5565;
-  --text-muted: #717d96;
-  --text-subtle: #9aa4b2;
+  --bg-card-hover: #fafafa;
+  --bg-control: #dcdee4;
+  --bg-control-hover: #d2d4dc;
+  --divider-color: #dedfe4;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --card-border: none;
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
   --accent-primary: #5a55ea;
   --accent-hover: #4e48d6;
   --accent-active: #433dbe;
   --accent-dim: rgba(90, 85, 234, 0.1);
   --accent-focus: #5a55ea;
-  --tab-nav-bg: #dbe1ec;
-  --tab-btn-fg: #697586;
-  --tab-btn-fg-active: #181d27;
+  --tab-nav-bg: #dcdee4;
+  --tab-btn-fg: #64748b;
+  --tab-btn-fg-active: #18181b;
   --tab-indicator-bg: #ffffff;
-  --tab-indicator-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --slider-track-bg: #dbe1ec;
+  --tab-indicator-shadow: none;
+  --slider-track-bg: #dcdee4;
   --slider-thumb-bg: #ffffff;
   --slider-thumb-border: var(--accent-primary);
-  --switch-bg-off: #d5d9e0;
+  --switch-bg-off: #cbced6;
   --switch-bg-on: var(--accent-primary);
   --switch-thumb-bg: #ffffff;
-  --input-bg: #edf1f6;
+  --input-bg: #ffffff;
   --input-fg: var(--accent-primary);
   --warning-text: #b45309;
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --card-shadow: none;
 }
 
 * {
@@ -151,4 +153,3 @@ body.light-theme input[type="date"]::-webkit-calendar-picker-indicator {
 body.light-theme input[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
 }
-
