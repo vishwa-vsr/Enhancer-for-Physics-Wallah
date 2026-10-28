@@ -12,15 +12,15 @@ const SunIcon = () => (
     width="16"
     height="16"
   >
-    <circle cx="12" cy="12" r="5" />
-    <line x1="12" y1="1" x2="12" y2="3" />
-    <line x1="12" y1="21" x2="12" y2="23" />
-    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-    <line x1="1" y1="12" x2="3" y2="12" />
-    <line x1="21" y1="12" x2="23" y2="12" />
-    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    <circle cx="12" cy="12" r="4" />
+    <line x1="12" y1="2" x2="12" y2="4" />
+    <line x1="12" y1="20" x2="12" y2="22" />
+    <line x1="4.93" y1="4.93" x2="6.34" y2="6.34" />
+    <line x1="17.66" y1="17.66" x2="19.07" y2="19.07" />
+    <line x1="2" y1="12" x2="4" y2="12" />
+    <line x1="20" y1="12" x2="22" y2="12" />
+    <line x1="6.34" y1="17.66" x2="4.93" y2="19.07" />
+    <line x1="19.07" y1="4.93" x2="17.66" y2="6.34" />
   </svg>
 );
 
@@ -35,23 +35,25 @@ const MoonIcon = () => (
     width="16"
     height="16"
   >
-    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
   </svg>
 );
 
-const DoubleArrowIcon = () => (
+const DashboardIcon = () => (
   <svg
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth={3.8}
+    strokeWidth={2.2}
     strokeLinecap="round"
     strokeLinejoin="round"
     width="16"
     height="16"
   >
-    <polyline points="13 17 18 12 13 7" />
-    <polyline points="6 17 11 12 6 7" />
+    <polyline points="3.5 6.5 7 10 11.5 5.5" />
+    <line x1="15" y1="7.5" x2="20.5" y2="7.5" />
+    <polyline points="3.5 16.5 7 20 11.5 15.5" />
+    <line x1="15" y1="17.5" x2="20.5" y2="17.5" />
   </svg>
 );
 
@@ -85,7 +87,7 @@ export const Header = () => {
       </div>
       <div class={styles.actions}>
         <button onClick={openDashboard} class={styles.actionBtn} title="Padhle Dashboard">
-          <DoubleArrowIcon />
+          <DashboardIcon />
         </button>
         <button onClick={toggleTheme} class={styles.themeBtn} title="Toggle Theme">
           {isLightTheme.value ? <MoonIcon /> : <SunIcon />}
