@@ -325,9 +325,6 @@ export const SettingsView = () => {
       <div class={styles.card}>
         <div class={styles.cardHeader}>
           <h2 class={styles.cardTitle}>Study Labels</h2>
-          <p class={styles.cardDesc}>
-            Manage labels used to organize and categorize your tasks.
-          </p>
         </div>
 
         {/* Existing labels */}
@@ -403,6 +400,7 @@ export const SettingsView = () => {
                 value={selectedColor}
                 onChange={(c) => setSelectedColor(c)}
                 align="right"
+                size="sm"
               />
               <div class={styles.btnGroup}>
                 <button type="submit" class={styles.addTagBtn}>

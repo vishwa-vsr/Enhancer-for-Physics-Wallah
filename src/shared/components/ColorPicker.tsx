@@ -7,6 +7,7 @@ interface ColorPickerProps {
   presets?: string[];
   align?: 'left' | 'right';
   className?: string;
+  size?: 'sm' | 'md';
 }
 
 const DEFAULT_PRESETS = [
@@ -119,6 +120,7 @@ export function ColorPicker({
   presets = DEFAULT_PRESETS,
   align = 'left',
   className = '',
+  size = 'md',
 }: ColorPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -259,7 +261,7 @@ export function ColorPicker({
       {/* Trigger Button */}
       <button
         type="button"
-        class={`${styles.trigger} ${isOpen ? styles.triggerOpen : ''}`}
+        class={`${styles.trigger} ${size === 'sm' ? styles.triggerSm : styles.triggerMd} ${isOpen ? styles.triggerOpen : ''}`}
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Pick color"
         title="Choose a custom color"

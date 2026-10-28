@@ -10,50 +10,97 @@
   gap: 8px;
   height: 40px;
   box-sizing: border-box;
-  padding: 0 12px 0 8px;
+  padding: 0 12px 0 10px;
   background-color: var(--bg-control);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md, 10px);
   cursor: pointer;
   color: var(--text-primary);
+  font-family: var(--font-mono, monospace);
   font-size: 13px;
   font-weight: 500;
-  font-family: var(--font-mono, monospace);
+  line-height: 1;
   transition: all 0.15s ease;
   outline: none;
   user-select: none;
 }
 
+.triggerMd {
+  height: 40px;
+  padding: 0 12px 0 10px;
+  border-radius: var(--radius-md, 10px);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.triggerSm {
+  height: 36px;
+  padding: 0 10px 0 8px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
 .trigger:hover {
   background-color: var(--bg-control-hover);
-  border-color: var(--accent-primary, #6366f1);
+  border-color: var(--border-subtle);
 }
 
 .triggerOpen {
-  border-color: var(--accent-primary, #6366f1);
-  box-shadow: 0 0 0 2px var(--accent-dim, rgba(99, 102, 241, 0.15));
+  background-color: var(--bg-control-hover);
+  border-color: var(--border-subtle);
+  box-shadow: none;
 }
 
 .swatchPreview {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
+  display: block;
+}
+
+.triggerMd .swatchPreview {
+  width: 18px;
+  height: 18px;
+}
+
+.triggerSm .swatchPreview {
+  width: 16px;
+  height: 16px;
 }
 
 .hexLabel {
   letter-spacing: 0.04em;
-  font-size: 12.5px;
+  font-size: 13px;
+  font-weight: 550;
   color: var(--text-primary);
+  line-height: 1;
+}
+
+.triggerMd .hexLabel {
+  font-size: 13px;
+}
+
+.triggerSm .hexLabel {
+  font-size: 12px;
 }
 
 .chevron {
   color: var(--text-muted);
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
   transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.chevron svg {
+  display: block;
 }
 
 .chevronOpen {
@@ -63,7 +110,7 @@
 /* Popover Panel */
 .popover {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 6px);
   z-index: 1200;
   width: 240px;
   background-color: var(--bg-card);
@@ -88,7 +135,7 @@
 @keyframes popIn {
   from {
     opacity: 0;
-    transform: translateY(-4px) scale(0.97);
+    transform: translateY(-4px) scale(0.96);
   }
   to {
     opacity: 1;
@@ -100,22 +147,22 @@
 .satValBox {
   position: relative;
   width: 100%;
-  height: 124px;
+  height: 130px;
   border-radius: var(--radius-sm, 8px);
   cursor: crosshair;
-  overflow: hidden;
   user-select: none;
   touch-action: none;
+  overflow: hidden;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
 
 .satValGradient {
   position: absolute;
   inset: 0;
-  pointer-events: none;
 }
 
-.satValThumb {
+.satValThumb,
+.satValHandle {
   position: absolute;
   width: 14px;
   height: 14px;
@@ -150,7 +197,8 @@
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
 
-.hueThumb {
+.hueThumb,
+.hueHandle {
   position: absolute;
   top: 50%;
   width: 14px;
@@ -163,8 +211,9 @@
   box-sizing: border-box;
 }
 
-/* Bottom Controls */
-.bottomControls {
+/* Hex Input & Eyedropper Row */
+.bottomControls,
+.controlsRow {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -178,25 +227,28 @@
   align-items: center;
 }
 
-.hexPrefix {
+.hexPrefix,
+.hexHash {
   position: absolute;
-  left: 9px;
+  left: 10px;
   color: var(--text-muted);
-  font-size: 11px;
   font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  font-weight: 500;
   pointer-events: none;
+  user-select: none;
 }
 
 .hexInput {
   width: 100%;
   height: 32px;
-  padding: 0 8px 0 22px;
-  border-radius: var(--radius-sm, 6px);
   background-color: var(--bg-control);
   border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm, 6px);
+  padding: 0 8px 0 24px;
   color: var(--text-primary);
   font-family: var(--font-mono, monospace);
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
   text-transform: uppercase;
   outline: none;
@@ -205,8 +257,8 @@
 }
 
 .hexInput:focus {
-  border-color: var(--accent-primary, #6366f1);
-  box-shadow: 0 0 0 2px var(--accent-dim, rgba(99, 102, 241, 0.15));
+  border-color: var(--text-muted);
+  box-shadow: none;
 }
 
 .eyedropperBtn {
@@ -228,7 +280,7 @@
 .eyedropperBtn:hover {
   background-color: var(--bg-control-hover);
   color: var(--text-primary);
-  border-color: var(--accent-primary, #6366f1);
+  border-color: var(--text-muted);
 }
 
 /* Presets Strip */
@@ -238,28 +290,26 @@
   justify-content: space-between;
   gap: 6px;
   margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--divider-color);
 }
 
 .presetDot {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
   cursor: pointer;
   padding: 0;
-  flex-shrink: 0;
   transition: transform 0.15s ease, border-color 0.15s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
 .presetDot:hover {
-  transform: scale(1.18);
+  transform: scale(1.15);
 }
 
-.presetDotActive {
+.presetDotActive,
+.presetDotSelected {
   border-color: var(--text-primary);
-  transform: scale(1.15);
+  transform: scale(1.18);
   box-shadow: 0 0 0 2px var(--bg-card);
 }

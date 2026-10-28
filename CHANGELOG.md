@@ -5,12 +5,15 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.1.0.4] - 2026-10-27
+## [1.1.0.4] - 2026-10-28
 
 ### Changed
 
 - **Volume Bubble**: Redesigned to match PW's native 2x badge.
 - **Quality Menu**: Compact, borderless card with centered options matching PW's native style.
+- **Theme & Cards**: Switched to a clean black-and-white theme; removed card borders and drop shadows.
+- **Settings & Labels**: Slimmed label row to 36px, removed purple outlines, and added crisp monochrome action buttons.
+- **Controls & Modals**: Centered +/− stepper icons, slimmed action buttons, and aligned color picker heights with input fields.
 
 ## [1.1.0.3] - 2026-10-25
 

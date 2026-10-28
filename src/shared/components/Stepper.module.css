@@ -18,15 +18,18 @@
   background: transparent;
   border: none;
   color: var(--text-secondary);
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 700;
   border-radius: 4px;
   cursor: pointer;
   padding: 0;
+  margin: 0;
   line-height: 1;
   transition: all var(--transition-fast);
   user-select: none;
+  flex-shrink: 0;
+}
+
+.stepperBtn svg {
+  display: block;
 }
 
 .stepperBtn:hover {
@@ -67,9 +70,10 @@
 }
 
 .stepperUnit {
-  font-size: 11.5px;
-  font-weight: 600;
   color: var(--text-muted);
-  margin-left: 1px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 2px;
   user-select: none;
 }

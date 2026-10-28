@@ -306,13 +306,17 @@
 }
 
 .deleteActionBtn {
-  padding: 7px 12px;
-  border-radius: var(--radius-md, 8px);
+  height: 30px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-radius: var(--radius-sm, 6px);
   border: none;
   outline: none;
   background: transparent;
   color: #ef4444;
   font-size: 12.5px;
+  justify-content: center;
+  line-height: 1;
   font-weight: 550;
   cursor: pointer;
   display: inline-flex;
@@ -338,13 +342,19 @@
 
 
 .cancelBtn {
-  padding: 8px 16px;
-  border-radius: var(--radius-md, 8px);
+  height: 30px;
+  box-sizing: border-box;
+  padding: 0 13px;
+  border-radius: var(--radius-sm, 6px);
   border: none;
   outline: none;
   background-color: var(--bg-control);
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast, 0.15s ease);
@@ -356,12 +366,18 @@
 }
 
 .submitBtn {
-  padding: 8px 20px;
-  border-radius: var(--radius-md, 8px);
+  height: 30px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border-radius: var(--radius-sm, 6px);
   border: none;
   background: var(--accent-primary, #6366f1);
   color: #ffffff;
-  font-size: 13px;
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
   font-weight: 600;
   cursor: pointer;
   box-shadow: none;
