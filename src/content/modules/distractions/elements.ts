@@ -1,4 +1,5 @@
 import { getActiveVideo } from '../video/detector';
+import { clearPollSuppressionNow } from './poll-blocker';
 
 let cachedSettingsBtn: Element | null = null;
 let cachedTimeline: Element | null = null;
@@ -1036,6 +1037,7 @@ export function triggerToolbarElement(el: Element | null): boolean {
 export function triggerPlayerSlot(
   slot: 'notes' | 'notetimeline' | 'doubt' | 'chat' | 'fullscreen',
 ): boolean {
+  clearPollSuppressionNow();
   wakePlayerControlsDom();
   const target =
     slot === 'fullscreen'
@@ -1148,7 +1150,11 @@ export function findNextDppWrapper(
       }
       parent = parent.parentElement;
     }
-  } else if (primary && primary.parentElement && !isProtectedPlayerStructure(primary.parentElement)) {
+  } else if (
+    primary &&
+    primary.parentElement &&
+    !isProtectedPlayerStructure(primary.parentElement)
+  ) {
     const cls = (primary.parentElement.getAttribute('class') || '').toLowerCase();
     if (cls.includes('absolute') && (cls.includes('bottom') || cls.includes('right'))) {
       found = primary.parentElement as HTMLElement;

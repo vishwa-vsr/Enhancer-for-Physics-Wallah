@@ -45,6 +45,20 @@ export function syncPollSuppressionClass(): void {
 }
 
 /**
+ * Explicitly clears all drawer suppression attributes and unhides footer controls.
+ * Used when a student triggers Chat, Doubts, or Timeline.
+ */
+export function clearPollSuppressionNow(): void {
+  document.querySelectorAll('[data-pwc-poll-suppressed]').forEach((el) => {
+    el.removeAttribute('data-pwc-poll-suppressed');
+  });
+  const footerControls = document.getElementById('player-footer-controls');
+  if (footerControls) {
+    footerControls.classList.remove('!hidden', 'sf-hidden');
+  }
+}
+
+/**
  * Initializes click listeners, dedicated DOM observer, and global playback tracking.
  */
 export function initPollBlocker(): void {
@@ -242,21 +256,25 @@ export function handleRecordedPolls(): void {
     return;
   }
 
-  // Immediately apply suppression attribute and styles to prevent exit animation visual flash
+  // Immediately apply suppression attribute (CSS handles zero-flicker suppression without breaking transitions)
   if (drawer) {
     drawer.setAttribute('data-pwc-poll-suppressed', 'true');
-    drawer.style.setProperty('display', 'none', 'important');
-    drawer.style.setProperty('width', '0', 'important');
-    drawer.style.setProperty('min-width', '0', 'important');
-    drawer.style.setProperty('max-width', '0', 'important');
-    drawer.style.setProperty('opacity', '0', 'important');
-    drawer.style.setProperty('pointer-events', 'none', 'important');
-    drawer.style.setProperty('transition', 'none', 'important');
-    drawer.style.setProperty('animation', 'none', 'important');
+
+    // Dispatch synthetic transition and animation events so PW unfreezes its internal state immediately
+    try {
+      drawer.dispatchEvent(
+        new TransitionEvent('transitionend', { bubbles: true, propertyName: 'transform' }),
+      );
+      drawer.dispatchEvent(
+        new AnimationEvent('animationend', { bubbles: true, animationName: 'slideOutToRight' }),
+      );
+    } catch {
+      // Ignore
+    }
 
     setTimeout(() => {
       drawer.removeAttribute('data-pwc-poll-suppressed');
-    }, 500);
+    }, 300);
   }
 
   // Release typing focus only if the student isn't actively typing and focus is on the close button
@@ -277,6 +295,21 @@ export function handleRecordedPolls(): void {
         // Ignored
       }
     }
+  }
+
+  // Ensure PW's bottom player controls remain unhidden and interactive
+  const footerControls = document.getElementById('player-footer-controls');
+  if (footerControls) {
+    footerControls.classList.remove('!hidden', 'sf-hidden');
+    footerControls.style.removeProperty('display');
+  }
+
+  // Neutralize PW's "All controls are disabled during Poll!" blocking overlay
+  const disabledOverlay =
+    document.querySelector<HTMLElement>('#player-body > div:has(.bg-customDarkGray)') ||
+    document.querySelector<HTMLElement>('.bg-customDarkGray');
+  if (disabledOverlay) {
+    disabledOverlay.remove();
   }
 
   // Smart Resume: If the video was playing right before PW paused for the poll, resume playback

@@ -418,14 +418,25 @@ html.pwc-block-recorded-polls
 html.pwc-block-recorded-polls
   div:not(:has(video)):has(#close-poll-wrapperIcon, button[aria-label*='close poll' i]),
 html.pwc-block-recorded-polls div[data-pwc-poll-suppressed] {
-  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
   width: 0 !important;
   min-width: 0 !important;
   max-width: 0 !important;
-  opacity: 0 !important;
+}
+
+/* Ensure player footer controls remain mounted and active even if PW attempted to hide them during a poll */
+html.pwc-block-recorded-polls #player-footer-controls.\!hidden,
+html.pwc-block-recorded-polls #player-footer-controls[class*='!hidden'] {
+  display: flex !important;
+}
+
+/* Neutralize PW's 'All controls are disabled during Poll!' blocking overlay */
+html.pwc-block-recorded-polls #player-body > div:has(.bg-customDarkGray),
+html.pwc-block-recorded-polls .bg-customDarkGray {
+  display: none !important;
   pointer-events: none !important;
-  transition: none !important;
-  animation: none !important;
 }
 
 html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-next-dpp-wrapper] {
