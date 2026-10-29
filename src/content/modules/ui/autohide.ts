@@ -1,9 +1,11 @@
 import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { getOuterPlayerContainer } from '../distractions/elements';
+import { isLiveVideo } from './finish-time';
 
 let idleTimer: number | null = null;
 let isInitialized = false;
+let lastUserPauseInteractionTime = 0;
 
 const OPEN_PANEL_SELECTOR =
   '[role="dialog"], [aria-modal="true"], [class*="timeline-sidebar" i], [id*="timeline-sidebar" i], [class*="Timeline_sidebar"], [class*="Timeline_container"], [class*="drawer" i], [class*="Drawer"]';
@@ -135,6 +137,34 @@ export function initAutoHide(): void {
   window.addEventListener('touchstart', onUserActivity, options);
   window.addEventListener('wheel', onUserActivity, options);
 
+  // Track explicit user pause actions to distinguish student pauses from automated poll pauses
+  window.addEventListener(
+    'keydown',
+    (e: KeyboardEvent) => {
+      if (e.isTrusted && (e.key === ' ' || e.key === 'k' || e.key === 'K')) {
+        lastUserPauseInteractionTime = Date.now();
+      }
+    },
+    { capture: true, passive: true },
+  );
+
+  window.addEventListener(
+    'pointerdown',
+    (e: PointerEvent) => {
+      if (e.isTrusted) {
+        const target = e.target as HTMLElement | null;
+        if (
+          target?.closest(
+            '.vjs-play-control, .vjs-tech, video, .player, [aria-label*="play" i], [aria-label*="pause" i]',
+          )
+        ) {
+          lastUserPauseInteractionTime = Date.now();
+        }
+      }
+    },
+    { capture: true, passive: true },
+  );
+
   // Monitor play/pause on active video to update hide behavior
   document.addEventListener(
     'play',
@@ -147,7 +177,12 @@ export function initAutoHide(): void {
   document.addEventListener(
     'pause',
     () => {
-      if (!state.autoHideWhenPaused) {
+      const video = getActiveVideo();
+      const isLive = video ? isLiveVideo(video) : false;
+      const isProgrammaticPollPause =
+        state.blockRecordedPolls && !isLive && Date.now() - lastUserPauseInteractionTime > 300;
+
+      if (!state.autoHideWhenPaused && !isProgrammaticPollPause) {
         wakeUp();
       } else {
         scheduleNextCheck();

@@ -38,6 +38,11 @@ import { startDomObserver, throttledMonitor, initWakeupTriggers } from './module
 import { initAutoHide, syncAutoHide } from './modules/ui/autohide';
 import { initVolumeScroll } from './modules/video/volume-scroll';
 import { handlePromoAds } from './modules/distractions/promo-skipper';
+import {
+  initPollBlocker,
+  handleRecordedPolls,
+  syncPollSuppressionClass,
+} from './modules/distractions/poll-blocker';
 import { hideVolumeHudImmediately } from './modules/ui/volume-hud';
 import { HideSettings } from './types';
 
@@ -57,6 +62,9 @@ function init(): void {
     if (changedKeys.includes('*')) {
       // Initial state loaded
       handlePromoAds();
+
+      handleRecordedPolls();
+      syncPollSuppressionClass();
       applyAlwaysExpandState();
       applySettingsHTML(currentState.hideSettings);
       applyDistractorsState();
@@ -98,7 +106,10 @@ function init(): void {
       }
     }
 
-    if (changedKeys.includes('enableInstantHide') || changedKeys.includes('allowShortcutsWhenHidden')) {
+    if (
+      changedKeys.includes('enableInstantHide') ||
+      changedKeys.includes('allowShortcutsWhenHidden')
+    ) {
       injectInstantHideButton();
       focusChanged = true;
     }
@@ -107,11 +118,20 @@ function init(): void {
       handlePromoAds();
     }
 
+    if (changedKeys.includes('blockRecordedPolls')) {
+      handleRecordedPolls();
+      syncPollSuppressionClass();
+    }
+
     if (changedKeys.includes('alwaysExpandWidget')) {
       applyAlwaysExpandState();
     }
 
-    if (changedKeys.includes('lectureTimeEnabled') || changedKeys.includes('showFinishTime') || changedKeys.includes('showLiveCatchUp')) {
+    if (
+      changedKeys.includes('lectureTimeEnabled') ||
+      changedKeys.includes('showFinishTime') ||
+      changedKeys.includes('showLiveCatchUp')
+    ) {
       injectFinishTimeBadge();
       updateFinishTime();
     }
@@ -229,6 +249,7 @@ function init(): void {
   initFocusLock();
   initVolumeScroll();
   initWakeupTriggers();
+  initPollBlocker();
 
   // 5. Start DOM observer for dynamic injections
   startDomObserver();

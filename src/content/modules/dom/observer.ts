@@ -1,8 +1,13 @@
 import { state } from '../../state';
 import { getActiveVideo, clearVideoCache } from '../video/detector';
-import { getActiveVideoElement, setupVideoListeners, setActiveVideoElement } from '../video/controller';
+import {
+  getActiveVideoElement,
+  setupVideoListeners,
+  setActiveVideoElement,
+} from '../video/controller';
 import { isInsidePreferredToolbar, resetDistractionCaches } from '../distractions/elements';
 import { handlePromoAds } from '../distractions/promo-skipper';
+import { handleRecordedPolls } from '../distractions/poll-blocker';
 import { applyDistractorsState } from '../distractions/focus-css';
 import { injectSpeedControl } from '../ui/speed-hud';
 import { injectQualityControl } from '../ui/quality-hud';
@@ -44,10 +49,12 @@ export function areControlsHealthy(): boolean {
 // Throttled execution of DOM monitoring to optimize performance
 export function throttledMonitor(): void {
   handlePromoAds();
+  handleRecordedPolls();
   if (monitorTimeout) return;
   monitorTimeout = setTimeout(() => {
     monitorTimeout = null;
     handlePromoAds();
+    handleRecordedPolls();
     monitor();
     manageMonitorInterval();
   }, 150);

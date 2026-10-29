@@ -385,16 +385,47 @@ html.pwc-hide-attemptdpp [data-pwc-attempt-dpp] {
 }
 
 /* --- Hide Next Lecture & DPP floating container if both are hidden and no unhidden chapter button --- */
-html.pwc-hide-nextlecture.pwc-hide-attemptdpp [data-pwc-next-dpp-wrapper]:not(:has([data-pwc-next-chapter])) {
+html.pwc-hide-nextlecture.pwc-hide-attemptdpp
+  [data-pwc-next-dpp-wrapper]:not(:has([data-pwc-next-chapter])) {
   display: none !important;
 }
 
 /* --- Hide Next Chapter & DPP floating container if both are hidden and no unhidden lecture button --- */
-html.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-next-dpp-wrapper]:not(:has([data-pwc-next-lecture])) {
+html.pwc-hide-nextchapter.pwc-hide-attemptdpp
+  [data-pwc-next-dpp-wrapper]:not(:has([data-pwc-next-lecture])) {
   display: none !important;
 }
 
 /* --- Hide floating container if all navigation cards are hidden --- */
+/* --- Block Recorded Poll Popups: zero-flicker suppression of poll drawer --- */
+html.pwc-block-recorded-polls
+  .player
+  > div:has(#close-poll-wrapperIcon, button[aria-label*='close poll' i]),
+html.pwc-block-recorded-polls
+  div[class*='slide-in' i]:has(#close-poll-wrapperIcon, button[aria-label*='close poll' i]),
+html.pwc-block-recorded-polls
+  :is([role='dialog'], [aria-modal='true'], aside, [class*='drawer' i]):has(
+    #close-poll-wrapperIcon,
+    button[aria-label*='close poll' i]
+  ),
+html.pwc-block-recorded-polls
+  :is([class*='backdrop' i], [class*='overlay' i]):has(
+    ~ :is([class*='drawer' i], [role='dialog'], div):has(
+        #close-poll-wrapperIcon,
+        button[aria-label*='close poll' i]
+      )
+  ),
+html.pwc-block-recorded-polls div[data-pwc-poll-suppressed] {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
 html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-next-dpp-wrapper] {
   display: none !important;
 }
@@ -1060,14 +1091,24 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   border-radius: 999px !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
   color: #ffffff !important;
-  font-family: 'RedditSans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-family:
+    'RedditSans',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif !important;
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale !important;
   pointer-events: none !important;
   user-select: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
-  transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.18s ease !important;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.18s ease !important;
 }
 
 .pwc-volume-overlay.pwc-volume-visible {
@@ -1115,6 +1156,3 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   letter-spacing: 0.2px !important;
   -webkit-font-smoothing: antialiased !important;
 }
-
-
-
