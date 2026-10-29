@@ -1,6 +1,7 @@
 import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { getOuterPlayerContainer } from '../distractions/elements';
+import { isHandlingRecordedPoll } from '../distractions/poll-blocker';
 
 let idleTimer: number | null = null;
 let isInitialized = false;
@@ -147,6 +148,9 @@ export function initAutoHide(): void {
   document.addEventListener(
     'pause',
     () => {
+      if (isHandlingRecordedPoll()) {
+        return;
+      }
       if (!state.autoHideWhenPaused) {
         wakeUp();
       } else {

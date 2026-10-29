@@ -38,6 +38,7 @@ import { startDomObserver, throttledMonitor, initWakeupTriggers } from './module
 import { initAutoHide, syncAutoHide } from './modules/ui/autohide';
 import { initVolumeScroll } from './modules/video/volume-scroll';
 import { handlePromoAds } from './modules/distractions/promo-skipper';
+import { initPollBlocker, handleRecordedPolls } from './modules/distractions/poll-blocker';
 import { hideVolumeHudImmediately } from './modules/ui/volume-hud';
 import { HideSettings } from './types';
 
@@ -57,6 +58,7 @@ function init(): void {
     if (changedKeys.includes('*')) {
       // Initial state loaded
       handlePromoAds();
+      handleRecordedPolls();
       applyAlwaysExpandState();
       applySettingsHTML(currentState.hideSettings);
       applyDistractorsState();
@@ -105,6 +107,10 @@ function init(): void {
 
     if (changedKeys.includes('autoSkipPromoAds')) {
       handlePromoAds();
+    }
+
+    if (changedKeys.includes('blockRecordedPolls')) {
+      handleRecordedPolls();
     }
 
     if (changedKeys.includes('alwaysExpandWidget')) {
@@ -229,6 +235,7 @@ function init(): void {
   initFocusLock();
   initVolumeScroll();
   initWakeupTriggers();
+  initPollBlocker();
 
   // 5. Start DOM observer for dynamic injections
   startDomObserver();

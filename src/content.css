@@ -399,6 +399,33 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
   display: none !important;
 }
 
+/* --- Block Recorded Poll Popups: zero-flicker suppression of poll drawer --- */
+html.pwc-block-recorded-polls [data-pwc-poll-drawer],
+html.pwc-block-recorded-polls div:has(#close-poll-wrapperIcon) {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* --- Silence player controls (top header & bottom footer) while an automated poll is being dismissed --- */
+html.pwc-poll-silence-controls .player-header,
+html.pwc-poll-silence-controls [class*="player-header" i],
+html.pwc-poll-silence-controls #player-footer-controls,
+html.pwc-poll-silence-controls .player-footer,
+html.pwc-poll-silence-controls #footer-left-section,
+html.pwc-poll-silence-controls #footer-right-section,
+html.pwc-poll-silence-controls #progress-placeholder,
+html.pwc-poll-silence-controls #progress-control,
+html.pwc-poll-silence-controls .vjs-control-bar,
+html.pwc-poll-silence-controls [class*="control-bar" i] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: none !important;
+}
+
 /* ==========================================================================
    Instant Hide Controls & Cursor Features (Focus Mode)
    ========================================================================== */
