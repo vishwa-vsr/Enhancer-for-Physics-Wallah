@@ -8,6 +8,7 @@ let userOpenedTime = 0;
 let wasPlayingBeforePoll = false;
 let lastUserPauseTime = 0;
 let blockerInitialized = false;
+let isHandlingPoll = false;
 let pollObserver: MutationObserver | null = null;
 const dismissedButtons = new WeakSet<HTMLButtonElement>();
 
@@ -200,6 +201,9 @@ export function initPollBlocker(): void {
  * clicks the close button once, and resumes video playback if interrupted.
  */
 export function handleRecordedPolls(): void {
+  if (isHandlingPoll) return;
+  isHandlingPoll = true;
+  try {
   // If extension or blocker feature is disabled, ensure clean state and exit
   if (!state.extensionEnabled || !state.blockRecordedPolls) {
     if (userOpenedPoll) userOpenedPoll = false;
@@ -256,26 +260,7 @@ export function handleRecordedPolls(): void {
     return;
   }
 
-  // Immediately apply suppression attribute (CSS handles zero-flicker suppression without breaking transitions)
-  if (drawer) {
-    drawer.setAttribute('data-pwc-poll-suppressed', 'true');
-
-    // Dispatch synthetic transition and animation events so PW unfreezes its internal state immediately
-    try {
-      drawer.dispatchEvent(
-        new TransitionEvent('transitionend', { bubbles: true, propertyName: 'transform' }),
-      );
-      drawer.dispatchEvent(
-        new AnimationEvent('animationend', { bubbles: true, animationName: 'slideOutToRight' }),
-      );
-    } catch {
-      // Ignore
-    }
-
-    setTimeout(() => {
-      drawer.removeAttribute('data-pwc-poll-suppressed');
-    }, 300);
-  }
+  // CSS rules handle instant zero-flicker suppression as long as #close-poll-wrapperIcon is present
 
   // Release typing focus only if the student isn't actively typing and focus is on the close button
   if (!isUserTyping()) {
@@ -304,13 +289,8 @@ export function handleRecordedPolls(): void {
     footerControls.style.removeProperty('display');
   }
 
-  // Neutralize PW's "All controls are disabled during Poll!" blocking overlay
-  const disabledOverlay =
-    document.querySelector<HTMLElement>('#player-body > div:has(.bg-customDarkGray)') ||
-    document.querySelector<HTMLElement>('.bg-customDarkGray');
-  if (disabledOverlay) {
-    disabledOverlay.remove();
-  }
+  // Neutralize PW's "All controls are disabled during Poll!" blocking overlay visually via CSS
+  // (We NEVER call .remove() on React-managed DOM elements to avoid React reconciliation crashes)
 
   // Smart Resume: If the video was playing right before PW paused for the poll, resume playback
   if (wasPlayingBeforePoll && video && video.paused) {
@@ -327,5 +307,8 @@ export function handleRecordedPolls(): void {
     } catch {
       // Ignored
     }
+  }
+  } finally {
+    isHandlingPoll = false;
   }
 }
