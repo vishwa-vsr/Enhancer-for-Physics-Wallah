@@ -415,6 +415,8 @@ html.pwc-block-recorded-polls
         button[aria-label*='close poll' i]
       )
   ),
+html.pwc-block-recorded-polls
+  div:not(:has(video)):has(#close-poll-wrapperIcon, button[aria-label*='close poll' i]),
 html.pwc-block-recorded-polls div[data-pwc-poll-suppressed] {
   display: none !important;
   width: 0 !important;

@@ -206,7 +206,7 @@ export function startDomObserver(): void {
           target.closest('[id*="chat" i]') ||
           target.closest('[class*="doubt" i]') ||
           target.closest('[class*="comment" i]') ||
-          target.closest('[class*="poll" i]') ||
+          (!state.blockRecordedPolls && target.closest('[class*="poll" i]')) ||
           target.closest('[class*="emote" i]') ||
           target.closest('[id*="emote" i]') ||
           target.closest('#player-animation'))

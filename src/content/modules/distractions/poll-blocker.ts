@@ -8,6 +8,7 @@ let userOpenedTime = 0;
 let wasPlayingBeforePoll = false;
 let lastUserPauseTime = 0;
 let blockerInitialized = false;
+let pollObserver: MutationObserver | null = null;
 const dismissedButtons = new WeakSet<HTMLButtonElement>();
 
 /**
@@ -44,7 +45,7 @@ export function syncPollSuppressionClass(): void {
 }
 
 /**
- * Initializes click listeners and global playback tracking for smart poll handling.
+ * Initializes click listeners, dedicated DOM observer, and global playback tracking.
  */
 export function initPollBlocker(): void {
   if (blockerInitialized || typeof window === 'undefined') return;
@@ -77,6 +78,36 @@ export function initPollBlocker(): void {
     },
     { capture: true, passive: true },
   );
+
+  // Dedicated zero-latency MutationObserver for poll drawer appearances
+  if (!pollObserver && typeof MutationObserver !== 'undefined') {
+    pollObserver = new MutationObserver(() => {
+      if (state.blockRecordedPolls && !userOpenedPoll) {
+        const hasPoll = document.querySelector(
+          '#close-poll-wrapperIcon, button[aria-label="Close Poll" i]',
+        );
+        if (hasPoll) {
+          handleRecordedPolls();
+        }
+      }
+    });
+
+    const startObserving = () => {
+      const targetNode = document.body || document.documentElement;
+      if (targetNode && pollObserver) {
+        pollObserver.observe(targetNode, {
+          childList: true,
+          subtree: true,
+        });
+      }
+    };
+
+    if (document.body) {
+      startObserving();
+    } else {
+      document.addEventListener('DOMContentLoaded', startObserving, { once: true });
+    }
+  }
 
   // Track student manual pause interactions to distinguish from automated PW pauses
   window.addEventListener(
@@ -122,6 +153,9 @@ export function initPollBlocker(): void {
       if (vid && !vid.paused && !vid.ended) {
         wasPlayingBeforePoll = true;
       }
+      if (state.blockRecordedPolls && !userOpenedPoll) {
+        handleRecordedPolls();
+      }
     },
     { capture: true, passive: true },
   );
@@ -135,10 +169,11 @@ export function initPollBlocker(): void {
         return;
       }
 
-      // Check if a poll opened right at this pause moment
-      setTimeout(() => {
-        handleRecordedPolls();
-      }, 0);
+      // Check immediately and retry at intervals to catch React rendering frames
+      handleRecordedPolls();
+      setTimeout(handleRecordedPolls, 50);
+      setTimeout(handleRecordedPolls, 150);
+      setTimeout(handleRecordedPolls, 300);
     },
     { capture: true, passive: true },
   );
@@ -187,18 +222,25 @@ export function handleRecordedPolls(): void {
   );
   if (!closeBtn) return;
 
-  // Confirm that the drawer heading explicitly contains "Poll" (protects other drawers)
-  const heading = document.querySelector('span[data-drawer-heading="true"]');
-  if (heading && !(heading.textContent || '').trim().toLowerCase().includes('poll')) {
-    return;
-  }
-
   // Find the outermost drawer container
   const drawer =
     closeBtn.closest<HTMLElement>('.player > div') ||
     closeBtn.closest<HTMLElement>('[class*="slide-in" i]') ||
     closeBtn.closest<HTMLElement>('aside, [role="dialog"], [class*="drawer" i]') ||
+    closeBtn.closest<HTMLElement>('div:not(:has(video))') ||
     closeBtn.parentElement;
+
+  // Confirm that the drawer heading explicitly contains "Poll" (unless identified by exact ID)
+  const heading =
+    drawer?.querySelector('span[data-drawer-heading="true"]') ||
+    document.querySelector('span[data-drawer-heading="true"]');
+  if (
+    heading &&
+    !(heading.textContent || '').trim().toLowerCase().includes('poll') &&
+    closeBtn.id !== 'close-poll-wrapperIcon'
+  ) {
+    return;
+  }
 
   // Immediately apply suppression attribute and styles to prevent exit animation visual flash
   if (drawer) {
