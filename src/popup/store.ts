@@ -32,7 +32,6 @@ export const hideNextChapter = signal(false);
 export const hideAttemptDPP = signal(false);
 export const enableInstantHide = signal(false);
 export const autoSkipPromoAds = signal(false);
-export const blockRecordedPolls = signal(false);
 export const autoPauseOnHide = signal(false);
 
 // ===== Shortcut signals =====
@@ -159,7 +158,6 @@ export async function initStore() {
   hideAttemptDPP.value = !!s.hideAttemptDPP;
   enableInstantHide.value = !!s.enableInstantHide;
   autoSkipPromoAds.value = !!s.autoSkipPromoAds;
-  blockRecordedPolls.value = !!s.blockRecordedPolls;
   autoPauseOnHide.value = !!s.autoPauseOnHide;
 
   enableHotkeys.value = !!s.enableHotkeys;
@@ -268,7 +266,6 @@ export async function initStore() {
     if (changes.hideNextChapter !== undefined) hideNextChapter.value = !!changes.hideNextChapter;
     if (changes.hideAttemptDPP !== undefined) hideAttemptDPP.value = !!changes.hideAttemptDPP;
     if (changes.autoSkipPromoAds !== undefined) autoSkipPromoAds.value = !!changes.autoSkipPromoAds;
-    if (changes.blockRecordedPolls !== undefined) blockRecordedPolls.value = !!changes.blockRecordedPolls;
     if (changes.allowShortcutsWhenHidden !== undefined) {
       allowShortcutsWhenHidden.value = !!changes.allowShortcutsWhenHidden;
     }

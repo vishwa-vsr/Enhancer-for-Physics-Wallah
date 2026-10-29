@@ -19,7 +19,6 @@ import {
   hideAttemptDPP,
   enableInstantHide,
   autoSkipPromoAds,
-  blockRecordedPolls,
   lectureTimeEnabled,
   showFinishTime,
   finishTimeFormat,
@@ -478,16 +477,6 @@ function FocusTogglesSection() {
               saveSetting('autoSkipPromoAds', v);
             }}
             ariaLabel="Toggle Auto-Skip Promo Ads"
-          />
-        </FeatureRow>
-        <FeatureRow label="Block Recorded Poll Popups">
-          <Toggle
-            checked={blockRecordedPolls.value}
-            onChange={(v) => {
-              blockRecordedPolls.value = v;
-              saveSetting('blockRecordedPolls', v);
-            }}
-            ariaLabel="Toggle Block Recorded Poll Popups"
           />
         </FeatureRow>
         <FeatureRow label="Lecture Finish Time">

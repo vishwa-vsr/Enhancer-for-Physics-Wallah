@@ -3,7 +3,6 @@ import { getActiveVideo, clearVideoCache } from '../video/detector';
 import { getActiveVideoElement, setupVideoListeners, setActiveVideoElement } from '../video/controller';
 import { isInsidePreferredToolbar, resetDistractionCaches } from '../distractions/elements';
 import { handlePromoAds } from '../distractions/promo-skipper';
-import { handleRecordedPolls, clearSilenceControlsLock } from '../distractions/poll-blocker';
 import { applyDistractorsState } from '../distractions/focus-css';
 import { injectSpeedControl } from '../ui/speed-hud';
 import { injectQualityControl } from '../ui/quality-hud';
@@ -45,12 +44,10 @@ export function areControlsHealthy(): boolean {
 // Throttled execution of DOM monitoring to optimize performance
 export function throttledMonitor(): void {
   handlePromoAds();
-  handleRecordedPolls();
   if (monitorTimeout) return;
   monitorTimeout = setTimeout(() => {
     monitorTimeout = null;
     handlePromoAds();
-    handleRecordedPolls();
     monitor();
     manageMonitorInterval();
   }, 150);
@@ -76,7 +73,6 @@ export function checkUrlChange(): void {
 }
 
 export function onLectureChanged(): void {
-  clearSilenceControlsLock();
   clearVideoCache();
   setActiveVideoElement(null);
   resetDistractionCaches();
@@ -227,10 +223,6 @@ export function startDomObserver(): void {
 
       hasRelevantMutation = true;
       break;
-    }
-
-    if (state.blockRecordedPolls) {
-      handleRecordedPolls();
     }
 
     if (hasRelevantMutation) {
