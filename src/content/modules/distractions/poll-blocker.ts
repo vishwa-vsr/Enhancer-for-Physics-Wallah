@@ -11,6 +11,50 @@ let blockerInitialized = false;
 let isHandlingPoll = false;
 let pollObserver: MutationObserver | null = null;
 const dismissedButtons = new WeakSet<HTMLButtonElement>();
+let lastAutoDismissTime = 0;
+
+/**
+ * Unfocuses the poll trigger icon if it gets focused after a poll closes,
+ * allowing PW's natural global hotkeys (Space, Arrow keys) to function cleanly
+ * without double-firing on the video player container.
+ */
+export function clearPollButtonFocus(): void {
+  if (typeof document === 'undefined') return;
+
+  // Guard: Never steal focus if student is actively typing in a doubt box, search bar, or chat
+  if (isUserTyping()) return;
+
+  const pollBtn = document.querySelector<HTMLElement>(
+    '#record-poll-icon, button[aria-label="Poll" i]',
+  );
+
+  // Unfocus poll button if it is currently focused or contains focus
+  if (
+    document.activeElement &&
+    (document.activeElement === pollBtn || pollBtn?.contains(document.activeElement))
+  ) {
+    pollBtn.blur();
+  }
+}
+
+export const restorePlayerFocus = clearPollButtonFocus;
+
+/**
+ * Schedules multiple frames of focus clearing to beat React / HeadlessUI deferred focus restoration.
+ */
+export function schedulePollButtonBlur(): void {
+  clearPollButtonFocus();
+  if (typeof window === 'undefined') return;
+
+  if (typeof requestAnimationFrame !== 'undefined') {
+    requestAnimationFrame(clearPollButtonFocus);
+  }
+  setTimeout(clearPollButtonFocus, 50);
+  setTimeout(clearPollButtonFocus, 150);
+  setTimeout(clearPollButtonFocus, 300);
+}
+
+export const schedulePlayerFocusRestoration = schedulePollButtonBlur;
 
 /**
  * Synchronizes the zero-flicker CSS suppression class on the root HTML element
@@ -193,6 +237,28 @@ export function initPollBlocker(): void {
     { capture: true, passive: true },
   );
 
+  // Intercept focus returning to the poll icon right after automatic poll dismissal
+  window.addEventListener(
+    'focusin',
+    (e: FocusEvent) => {
+      // Only intervene if a poll was automatically dismissed within the last 800ms
+      if (Date.now() - lastAutoDismissTime > 800) return;
+      if (userOpenedPoll) return;
+      if (isUserTyping()) return;
+
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      const pollBtn = target.closest<HTMLElement>(
+        '#record-poll-icon, button[aria-label="Poll" i]',
+      );
+      if (pollBtn) {
+        pollBtn.blur();
+      }
+    },
+    { capture: true, passive: true },
+  );
+
   syncPollSuppressionClass();
 }
 
@@ -274,11 +340,24 @@ export function handleRecordedPolls(): void {
   if (!dismissedButtons.has(closeBtn)) {
     dismissedButtons.add(closeBtn);
     if (!closeBtn.disabled) {
+      lastAutoDismissTime = Date.now();
       try {
         closeBtn.click();
       } catch {
         // Ignored
       }
+      schedulePlayerFocusRestoration();
+    }
+  }
+
+  // If focus is still on the poll icon after an automatic dismissal, ensure poll button is blurred
+  if (!userOpenedPoll && !isUserTyping()) {
+    const active = document.activeElement;
+    const pollBtn = document.querySelector<HTMLElement>(
+      '#record-poll-icon, button[aria-label="Poll" i]',
+    );
+    if (active && pollBtn && (active === pollBtn || pollBtn.contains(active))) {
+      pollBtn.blur();
     }
   }
 

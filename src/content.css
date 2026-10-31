@@ -1169,3 +1169,12 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   letter-spacing: 0.2px !important;
   -webkit-font-smoothing: antialiased !important;
 }
+
+/* Prevent unwanted focus rings when player container receives programmatic focus */
+.video-js:focus,
+.video-js:focus-visible,
+video.vjs-tech:focus,
+video.vjs-tech:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
