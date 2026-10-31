@@ -1,4 +1,11 @@
-import { ContentState, HideSettings, LiveCatchUpFormat, StateChangeListener, ThemeMode, VideoQuality } from './types';
+import {
+  ContentState,
+  HideSettings,
+  LiveCatchUpFormat,
+  StateChangeListener,
+  ThemeMode,
+  VideoQuality,
+} from './types';
 import { resolveSafeSpeedShortcuts, sanitizeSpeedShortcut } from '../shared/shortcuts';
 
 export const DEFAULT_HIDE_SETTINGS: HideSettings = {
@@ -29,7 +36,6 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   autoSkipPromoAds: false,
 
   enableHotkeys: false,
-  disableScroll: false,
   volumeScrollEnabled: false,
   showVolumeBubble: true,
   volumeBubbleDelay: 0.4,
@@ -157,7 +163,6 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'enableInstantHide',
         'autoSkipPromoAds',
         'enableHotkeys',
-        'disableScroll',
         'volumeScrollEnabled',
         'showVolumeBubble',
         'volumeBubbleDelay',
@@ -264,7 +269,6 @@ export function initState(onLoaded?: () => void): void {
     state.enableInstantHide = !!result.enableInstantHide;
     state.autoSkipPromoAds = !!result.autoSkipPromoAds;
     state.enableHotkeys = !!result.enableHotkeys;
-    state.disableScroll = !!result.disableScroll;
     state.volumeScrollEnabled = !!result.volumeScrollEnabled;
     state.showVolumeBubble = result.showVolumeBubble !== false;
     state.volumeBubbleDelay =
@@ -411,10 +415,6 @@ export function initState(onLoaded?: () => void): void {
               state.enableHotkeys = !!changes.enableHotkeys.newValue;
               changedKeys.push('enableHotkeys');
             }
-            if (Object.prototype.hasOwnProperty.call(changes, 'disableScroll')) {
-              state.disableScroll = !!changes.disableScroll.newValue;
-              changedKeys.push('disableScroll');
-            }
             if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollEnabled')) {
               state.volumeScrollEnabled = !!changes.volumeScrollEnabled.newValue;
               changedKeys.push('volumeScrollEnabled');
@@ -466,7 +466,8 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('showFinishTime');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'finishTimeFormat')) {
-              state.finishTimeFormat = changes.finishTimeFormat.newValue === 'full' ? 'full' : 'clock';
+              state.finishTimeFormat =
+                changes.finishTimeFormat.newValue === 'full' ? 'full' : 'clock';
               changedKeys.push('finishTimeFormat');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'showLiveCatchUp')) {
@@ -474,7 +475,8 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('showLiveCatchUp');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'liveCatchUpFormat')) {
-              state.liveCatchUpFormat = changes.liveCatchUpFormat.newValue === 'lag' ? 'lag' : 'catch';
+              state.liveCatchUpFormat =
+                changes.liveCatchUpFormat.newValue === 'lag' ? 'lag' : 'catch';
               changedKeys.push('liveCatchUpFormat');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceEnabled')) {

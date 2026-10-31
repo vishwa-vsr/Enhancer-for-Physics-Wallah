@@ -1,5 +1,12 @@
 import { signal } from '@preact/signals';
-import { FinishTimeFormat, LiveCatchUpFormat, PopupSettings, ReviewPromptStatus, VideoQuality, VolumeBalancerMode } from '@shared/types';
+import {
+  FinishTimeFormat,
+  LiveCatchUpFormat,
+  PopupSettings,
+  ReviewPromptStatus,
+  VideoQuality,
+  VolumeBalancerMode,
+} from '@shared/types';
 import { loadSettings, onSettingsChanged, saveSettings } from '@shared/storage';
 import {
   getReservedShortcutWarning,
@@ -36,7 +43,6 @@ export const autoPauseOnHide = signal(false);
 
 // ===== Shortcut signals =====
 export const enableHotkeys = signal(false);
-export const disableScroll = signal(false);
 export const volumeScrollEnabled = signal(false);
 export const showVolumeBubble = signal(true);
 export const volumeBubbleDelay = signal(0.4);
@@ -161,7 +167,6 @@ export async function initStore() {
   autoPauseOnHide.value = !!s.autoPauseOnHide;
 
   enableHotkeys.value = !!s.enableHotkeys;
-  disableScroll.value = !!s.disableScroll;
   volumeScrollEnabled.value = !!s.volumeScrollEnabled;
   showVolumeBubble.value = s.showVolumeBubble !== false;
   volumeBubbleDelay.value = s.volumeBubbleDelay ?? 0.4;

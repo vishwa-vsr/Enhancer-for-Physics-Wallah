@@ -9,7 +9,6 @@ import {
   hideSpeed,
   alwaysExpandWidget,
   enableHotkeys,
-  disableScroll,
   volumeScrollEnabled,
   showVolumeBubble,
   volumeBubbleDelay,
@@ -100,16 +99,23 @@ export function SpeedTab() {
   const collapseTimerRef = useRef<number | null>(null);
   const noticeTimerRef = useRef<number | null>(null);
   const sliderRef = useRef<HTMLInputElement>(null);
+  const speedValueRef = useRef<HTMLSpanElement>(null);
+  const isDraggingRef = useRef(false);
+  const draggedSpeedRef = useRef(preferredSpeed.value);
 
   const pts = snapPoints.value;
   const speed = preferredSpeed.value;
   const percent = speedToSliderPercent(speed, pts);
 
   useEffect(() => {
-    if (sliderRef.current) {
+    if (sliderRef.current && !isDraggingRef.current) {
       sliderRef.current.style.setProperty('--percent', `${percent}%`);
     }
-  }, [percent]);
+    if (speedValueRef.current && !isDraggingRef.current) {
+      speedValueRef.current.textContent = `${speed.toFixed(1)}x`;
+    }
+    draggedSpeedRef.current = speed;
+  }, [percent, speed]);
 
   const clearNoticeTimer = () => {
     if (noticeTimerRef.current) {
@@ -153,14 +159,15 @@ export function SpeedTab() {
   };
 
   const handleSliderInput = (e: Event) => {
+    isDraggingRef.current = true;
     const target = e.target as HTMLInputElement;
     const pct = parseFloat(target.value) / 10;
     let val = sliderPercentToSpeed(pct, pts);
 
-    // Magnetic snapping within ~2.2% of any snap point
+    // Magnetic snapping within ~1.8% of any snap point
     const snapPercents = [0, 100 / 3, 200 / 3, 100];
     for (let i = 0; i < snapPercents.length; i++) {
-      if (Math.abs(pct - snapPercents[i]) <= 2.2) {
+      if (Math.abs(pct - snapPercents[i]) <= 1.8) {
         val = pts[i];
         break;
       }
@@ -168,11 +175,30 @@ export function SpeedTab() {
 
     const actualPct = speedToSliderPercent(val, pts);
     target.style.setProperty('--percent', `${actualPct}%`);
-    preferredSpeed.value = Math.round(val * 10) / 10;
+    const rounded = Math.round(val * 10) / 10;
+    draggedSpeedRef.current = rounded;
+    if (speedValueRef.current) {
+      speedValueRef.current.textContent = `${rounded.toFixed(1)}x`;
+    }
   };
 
-  const handleSliderChange = () => {
-    saveSetting('preferredSpeed', preferredSpeed.value);
+  const handleSliderChange = (e: Event) => {
+    isDraggingRef.current = false;
+    const target = e.target as HTMLInputElement;
+    const pct = parseFloat(target.value) / 10;
+    let val = sliderPercentToSpeed(pct, pts);
+
+    const snapPercents = [0, 100 / 3, 200 / 3, 100];
+    for (let i = 0; i < snapPercents.length; i++) {
+      if (Math.abs(pct - snapPercents[i]) <= 1.8) {
+        val = pts[i];
+        break;
+      }
+    }
+
+    const finalVal = Math.round(val * 10) / 10;
+    preferredSpeed.value = finalVal;
+    saveSetting('preferredSpeed', finalVal);
   };
 
   const resetSpeed = () => {
@@ -306,7 +332,9 @@ export function SpeedTab() {
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
               </svg>
             </button>
-            <span class={styles.hudValue}>{speed.toFixed(1)}x</span>
+            <span ref={speedValueRef} class={styles.hudValue}>
+              {speed.toFixed(1)}x
+            </span>
           </div>
         </div>
 
@@ -320,6 +348,9 @@ export function SpeedTab() {
             value={Math.round(percent * 10)}
             onInput={handleSliderInput}
             onChange={handleSliderChange}
+            onPointerUp={() => {
+              isDraggingRef.current = false;
+            }}
             class={styles.speedSlider}
             aria-label="Playback Speed Slider"
           />
@@ -437,26 +468,6 @@ export function SpeedTab() {
               saveSetting('alwaysExpandWidget', v);
             }}
             ariaLabel="Toggle Always Expand Speed Bar"
-          />
-        </div>
-
-        <div class={styles.hudFooterRow}>
-          <label
-            class={styles.hudFooterTitle}
-            onClick={() => {
-              disableScroll.value = !disableScroll.value;
-              saveSetting('disableScroll', disableScroll.value);
-            }}
-          >
-            Disable Scroll Wheel Adjust
-          </label>
-          <Toggle
-            checked={disableScroll.value}
-            onChange={(v) => {
-              disableScroll.value = v;
-              saveSetting('disableScroll', v);
-            }}
-            ariaLabel="Toggle Disable Scroll Wheel Adjust"
           />
         </div>
       </section>

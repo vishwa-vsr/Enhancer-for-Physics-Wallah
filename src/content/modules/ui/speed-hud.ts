@@ -1,7 +1,7 @@
 import { state, sanitizeSnapPoints } from '../../state';
 import { findPWToolbar, isInsidePreferredToolbar } from '../distractions/elements';
 import { applyDistractorsState } from '../distractions/focus-css';
-import { stepSpeed, saveSpeed, togglePlayPause } from '../video/controller';
+import { saveSpeed, togglePlayPause } from '../video/controller';
 import { updateFinishTime } from './finish-time';
 import { getSSCurrentState } from '../audio/skip-silence';
 
@@ -131,7 +131,7 @@ export function updateSliderBackground(slider: HTMLInputElement | null, _val?: n
   slider.style.setProperty('background', '#ffffff', 'important');
 }
 
-// Bind mouse drag and scroll wheel events to a speed control container
+// Bind mouse drag and input events to a speed control container
 export function setupUIEventListeners(container: HTMLElement): void {
   const slider = container.querySelector<HTMLInputElement>('.pwc-speed-slider');
   const badge = container.querySelector<HTMLButtonElement>('.pwc-speed-badge');
@@ -385,25 +385,6 @@ export function setupUIEventListeners(container: HTMLElement): void {
       }
     }
   });
-
-  container.addEventListener(
-    'wheel',
-    (e: WheelEvent) => {
-      if (
-        !state.extensionEnabled ||
-        state.disableScroll ||
-        (state.skipSilenceEnabled && getSSCurrentState() === 'silence')
-      )
-        return;
-      if (e.target === speedInput) return;
-      e.preventDefault();
-      const val = stepSpeed(e.deltaY < 0 ? 1 : -1);
-      slider.value = String(Math.round(speedToSliderPercent(val, state.snapPoints) * 10));
-      updateSliderBackground(slider, val);
-      saveSpeed(val);
-    },
-    { passive: false },
-  );
 }
 
 // Programmatically construct the speedometer control without innerHTML
