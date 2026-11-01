@@ -94,10 +94,7 @@ export function SilenceTab() {
       <section class={styles.qualitySection} aria-label="Ear Protection Settings">
         <h2 class={styles.sectionTitle}>Ear Protection</h2>
         <div class={styles.settingsGroupCard}>
-          <FeatureRow
-            label="Enable Ear Protection"
-            sublabel="Stops sudden loud shouting"
-          >
+          <FeatureRow label="Enable Ear Protection" sublabel="Stops sudden loud shouting">
             <Toggle
               checked={volumeBalancerEnabled.value}
               onChange={(val) => {

@@ -1,10 +1,5 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
-import {
-  activeView,
-  currentDisplaySettings,
-  setViewLayout,
-  setViewGroupBy,
-} from '../store';
+import { activeView, currentDisplaySettings, setViewLayout, setViewGroupBy } from '../store';
 import { GroupByMode, LayoutMode } from '../types';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
 import styles from './DisplayMenu.module.css';

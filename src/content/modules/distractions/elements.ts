@@ -1148,7 +1148,11 @@ export function findNextDppWrapper(
       }
       parent = parent.parentElement;
     }
-  } else if (primary && primary.parentElement && !isProtectedPlayerStructure(primary.parentElement)) {
+  } else if (
+    primary &&
+    primary.parentElement &&
+    !isProtectedPlayerStructure(primary.parentElement)
+  ) {
     const cls = (primary.parentElement.getAttribute('class') || '').toLowerCase();
     if (cls.includes('absolute') && (cls.includes('bottom') || cls.includes('right'))) {
       found = primary.parentElement as HTMLElement;

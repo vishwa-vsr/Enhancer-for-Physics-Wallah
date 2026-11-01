@@ -10,10 +10,12 @@
   border: var(--card-border, none);
   outline: none;
   margin-bottom: 13px;
-  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
-.taskCard:has([class*="popup"]) {
+.taskCard:has([class*='popup']) {
   z-index: 50;
 }
 
@@ -249,7 +251,6 @@
   color: var(--accent-primary, #6c63ff);
   background-color: var(--bg-control-hover, #2c3444);
 }
-
 
 .taskActions {
   display: flex;

@@ -5,11 +5,11 @@ import { getCachedAudioGraph } from './skip-silence';
 
 export interface VolumeBalancerPreset {
   threshold: number; // Decibels (dB)
-  knee: number;      // Decibels (dB)
-  ratio: number;     // Compression ratio
-  attack: number;    // Seconds
-  release: number;   // Seconds
-  makeupGain: number;// Linear gain multiplier
+  knee: number; // Decibels (dB)
+  ratio: number; // Compression ratio
+  attack: number; // Seconds
+  release: number; // Seconds
+  makeupGain: number; // Linear gain multiplier
 }
 
 // Tuned for pure ear protection without sacrificing voice quality.
@@ -37,7 +37,7 @@ export const VOLUME_BALANCER_PRESETS: Record<VolumeBalancerMode, VolumeBalancerP
     knee: 6,
     ratio: 20,
     attack: 0.001,
-    release: 0.10,
+    release: 0.1,
     makeupGain: 1.0,
   },
 };

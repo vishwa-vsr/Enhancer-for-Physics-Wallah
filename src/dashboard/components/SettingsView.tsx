@@ -110,30 +110,15 @@ const WebsiteAppIcon = () => (
 );
 
 const ChromeIcon = () => (
-  <img
-    src={getLogoSrc('chrome.png', chromeImg)}
-    alt="Google Chrome"
-    width={18}
-    height={18}
-  />
+  <img src={getLogoSrc('chrome.png', chromeImg)} alt="Google Chrome" width={18} height={18} />
 );
 
 const FirefoxIcon = () => (
-  <img
-    src={getLogoSrc('firefox.png', firefoxImg)}
-    alt="Mozilla Firefox"
-    width={18}
-    height={18}
-  />
+  <img src={getLogoSrc('firefox.png', firefoxImg)} alt="Mozilla Firefox" width={18} height={18} />
 );
 
 const EdgeIcon = () => (
-  <img
-    src={getLogoSrc('edge.png', edgeImg)}
-    alt="Microsoft Edge"
-    width={18}
-    height={18}
-  />
+  <img src={getLogoSrc('edge.png', edgeImg)} alt="Microsoft Edge" width={18} height={18} />
 );
 
 const ExternalArrowIcon = () => (
@@ -362,7 +347,14 @@ export const SettingsView = () => {
                     handleDeleteLabel(tag.name);
                   }}
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="12" height="12">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    width="12"
+                    height="12"
+                  >
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
@@ -407,11 +399,7 @@ export const SettingsView = () => {
                   {editingTag ? 'Save Changes' : '+ Add Label'}
                 </button>
                 {editingTag && (
-                  <button
-                    type="button"
-                    class={styles.cancelTagBtn}
-                    onClick={handleCancelEdit}
-                  >
+                  <button type="button" class={styles.cancelTagBtn} onClick={handleCancelEdit}>
                     Cancel
                   </button>
                 )}
@@ -441,10 +429,7 @@ export const SettingsView = () => {
           aria-valuemax={100}
           aria-label="Storage Usage Meter"
         >
-          <div
-            class={styles.storageFill}
-            style={{ width: `${visualFillPercent}%` }}
-          />
+          <div class={styles.storageFill} style={{ width: `${visualFillPercent}%` }} />
         </div>
 
         <div class={styles.storageStatsGrid}>

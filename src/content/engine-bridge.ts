@@ -758,7 +758,9 @@
     const backBtn =
       document.querySelector('.player-header path[d*="M19 12H5"]')?.closest('svg') ||
       header?.querySelector('svg.player-icon, button, svg, [role="button"]') ||
-      document.querySelector('[class*="back-icon" i], [class*="back-btn" i], [aria-label*="back" i]');
+      document.querySelector(
+        '[class*="back-icon" i], [class*="back-btn" i], [aria-label*="back" i]',
+      );
 
     let clickAttempted = false;
     if (backBtn instanceof HTMLElement) {

@@ -408,172 +408,172 @@ export const DatePicker = ({
             }}
             onClick={(e) => e.stopPropagation()}
           >
-          {/* Header */}
-          <div class={styles.header}>
-            <button type="button" class={styles.viewTitleBtn} onClick={handleTitleClick}>
-              <span>
-                {view === 'day' && `${MONTH_NAMES[viewMonth]}, ${viewYear}`}
-                {view === 'month' && `${viewYear}`}
-                {view === 'year' && `${yearStart} - ${yearStart + 11}`}
-              </span>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                width="13"
-                height="13"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-
-            <div class={styles.navGroup}>
-              <button
-                type="button"
-                class={styles.navBtn}
-                onClick={handlePrev}
-                aria-label="Previous"
-                title="Previous"
-              >
+            {/* Header */}
+            <div class={styles.header}>
+              <button type="button" class={styles.viewTitleBtn} onClick={handleTitleClick}>
+                <span>
+                  {view === 'day' && `${MONTH_NAMES[viewMonth]}, ${viewYear}`}
+                  {view === 'month' && `${viewYear}`}
+                  {view === 'year' && `${yearStart} - ${yearStart + 11}`}
+                </span>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={2}
-                  width="16"
-                  height="16"
+                  width="13"
+                  height="13"
                 >
-                  <polyline points="15 18 9 12 15 6" />
+                  <polyline points="6 9 12 15 18 9" />
                 </svg>
               </button>
 
-              <button
-                type="button"
-                class={styles.navBtn}
-                onClick={handleNext}
-                aria-label="Next"
-                title="Next"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  width="16"
-                  height="16"
+              <div class={styles.navGroup}>
+                <button
+                  type="button"
+                  class={styles.navBtn}
+                  onClick={handlePrev}
+                  aria-label="Previous"
+                  title="Previous"
                 >
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    width="16"
+                    height="16"
+                  >
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  class={styles.navBtn}
+                  onClick={handleNext}
+                  aria-label="Next"
+                  title="Next"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    width="16"
+                    height="16"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* 1. Day View */}
-          {view === 'day' && (
-            <>
-              {/* Day of Week Labels */}
-              <div class={styles.weekdaysGrid}>
-                {WEEK_DAYS.map((d) => (
-                  <span key={d} class={styles.weekdayLabel}>
-                    {d}
-                  </span>
+            {/* 1. Day View */}
+            {view === 'day' && (
+              <>
+                {/* Day of Week Labels */}
+                <div class={styles.weekdaysGrid}>
+                  {WEEK_DAYS.map((d) => (
+                    <span key={d} class={styles.weekdayLabel}>
+                      {d}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Day Cells Grid */}
+                <div class={styles.daysGrid}>
+                  {calendarDays.map((cell) => {
+                    let cellClasses = styles.dayCell;
+                    if (!cell.isCurrentMonth) cellClasses += ` ${styles.dayOtherMonth}`;
+                    if (cell.isToday) cellClasses += ` ${styles.dayToday}`;
+                    if (cell.isSelected) cellClasses += ` ${styles.daySelected}`;
+
+                    return (
+                      <button
+                        key={cell.iso}
+                        type="button"
+                        class={cellClasses}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onChange(cell.iso);
+                          setIsOpen(false);
+                        }}
+                      >
+                        <span class={styles.dayText}>{cell.dayNumber}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* 2. Month View */}
+            {view === 'month' && (
+              <div class={styles.selectionGrid}>
+                {MONTH_SHORT.map((name, idx) => (
+                  <button
+                    key={name}
+                    type="button"
+                    class={`${styles.gridItemBtn} ${
+                      Boolean(value) && idx === parsedMonth && viewYear === parsedYear
+                        ? styles.gridItemSelected
+                        : ''
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setViewMonth(idx);
+                      setView('day');
+                    }}
+                  >
+                    <span class={styles.dayText}>{name}</span>
+                  </button>
                 ))}
               </div>
+            )}
 
-              {/* Day Cells Grid */}
-              <div class={styles.daysGrid}>
-                {calendarDays.map((cell) => {
-                  let cellClasses = styles.dayCell;
-                  if (!cell.isCurrentMonth) cellClasses += ` ${styles.dayOtherMonth}`;
-                  if (cell.isToday) cellClasses += ` ${styles.dayToday}`;
-                  if (cell.isSelected) cellClasses += ` ${styles.daySelected}`;
-
-                  return (
-                    <button
-                      key={cell.iso}
-                      type="button"
-                      class={cellClasses}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onChange(cell.iso);
-                        setIsOpen(false);
-                      }}
-                    >
-                      <span class={styles.dayText}>{cell.dayNumber}</span>
-                    </button>
-                  );
-                })}
+            {/* 3. Year View */}
+            {view === 'year' && (
+              <div class={styles.selectionGrid}>
+                {yearsList.map((y) => (
+                  <button
+                    key={y}
+                    type="button"
+                    class={`${styles.gridItemBtn} ${
+                      Boolean(value) && y === parsedYear ? styles.gridItemSelected : ''
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setViewYear(y);
+                      setView('month');
+                    }}
+                  >
+                    <span class={styles.dayText}>{y}</span>
+                  </button>
+                ))}
               </div>
-            </>
-          )}
+            )}
 
-          {/* 2. Month View */}
-          {view === 'month' && (
-            <div class={styles.selectionGrid}>
-              {MONTH_SHORT.map((name, idx) => (
-                <button
-                  key={name}
-                  type="button"
-                  class={`${styles.gridItemBtn} ${
-                    Boolean(value) && idx === parsedMonth && viewYear === parsedYear
-                      ? styles.gridItemSelected
-                      : ''
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setViewMonth(idx);
-                    setView('day');
-                  }}
-                >
-                  <span class={styles.dayText}>{name}</span>
-                </button>
-              ))}
+            {/* Footer Shortcuts */}
+            <div class={styles.footer}>
+              <button
+                type="button"
+                class={`${styles.footerBtn} ${styles.clearFooterBtn}`}
+                onClick={handleClear}
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                class={`${styles.footerBtn} ${styles.todayFooterBtn}`}
+                onClick={handleToday}
+              >
+                Today
+              </button>
             </div>
-          )}
-
-          {/* 3. Year View */}
-          {view === 'year' && (
-            <div class={styles.selectionGrid}>
-              {yearsList.map((y) => (
-                <button
-                  key={y}
-                  type="button"
-                  class={`${styles.gridItemBtn} ${
-                    Boolean(value) && y === parsedYear ? styles.gridItemSelected : ''
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setViewYear(y);
-                    setView('month');
-                  }}
-                >
-                  <span class={styles.dayText}>{y}</span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Footer Shortcuts */}
-          <div class={styles.footer}>
-            <button
-              type="button"
-              class={`${styles.footerBtn} ${styles.clearFooterBtn}`}
-              onClick={handleClear}
-            >
-              Clear
-            </button>
-            <button
-              type="button"
-              class={`${styles.footerBtn} ${styles.todayFooterBtn}`}
-              onClick={handleToday}
-            >
-              Today
-            </button>
-          </div>
-        </div>,
-        document.body,
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };

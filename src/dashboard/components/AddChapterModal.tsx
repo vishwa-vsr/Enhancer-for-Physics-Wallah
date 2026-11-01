@@ -177,7 +177,11 @@ export const AddChapterModal = ({
                   class={`${styles.iconCategoryChip} ${selectedCategory === cat ? styles.iconCategoryChipActive : ''}`}
                   onClick={() => setSelectedCategory(cat)}
                 >
-                  {cat === 'Chemistry & Biology' ? 'Chem & Bio' : cat === 'Study & General' ? 'General' : cat}
+                  {cat === 'Chemistry & Biology'
+                    ? 'Chem & Bio'
+                    : cat === 'Study & General'
+                      ? 'General'
+                      : cat}
                 </button>
               ))}
             </div>

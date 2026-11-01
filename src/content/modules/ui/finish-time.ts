@@ -224,7 +224,11 @@ export function updateFinishTime(): void {
 
 // Inject finish time badge into player toolbar
 export function injectFinishTimeBadge(): void {
-  if (!state.extensionEnabled || !state.lectureTimeEnabled || (!state.showFinishTime && !state.showLiveCatchUp)) {
+  if (
+    !state.extensionEnabled ||
+    !state.lectureTimeEnabled ||
+    (!state.showFinishTime && !state.showLiveCatchUp)
+  ) {
     const existing = document.getElementById('pwc-finish-time-badge');
     if (existing) existing.remove();
     return;

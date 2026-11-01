@@ -17,13 +17,7 @@ const FeedbackIcon = () => (
 );
 
 const GithubIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    width="12"
-    height="12"
-    aria-hidden="true"
-  >
+  <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12" aria-hidden="true">
     <path
       fillRule="evenodd"
       clipRule="evenodd"

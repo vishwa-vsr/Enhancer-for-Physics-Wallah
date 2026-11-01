@@ -98,7 +98,10 @@ function init(): void {
       }
     }
 
-    if (changedKeys.includes('enableInstantHide') || changedKeys.includes('allowShortcutsWhenHidden')) {
+    if (
+      changedKeys.includes('enableInstantHide') ||
+      changedKeys.includes('allowShortcutsWhenHidden')
+    ) {
       injectInstantHideButton();
       focusChanged = true;
     }
@@ -111,7 +114,11 @@ function init(): void {
       applyAlwaysExpandState();
     }
 
-    if (changedKeys.includes('lectureTimeEnabled') || changedKeys.includes('showFinishTime') || changedKeys.includes('showLiveCatchUp')) {
+    if (
+      changedKeys.includes('lectureTimeEnabled') ||
+      changedKeys.includes('showFinishTime') ||
+      changedKeys.includes('showLiveCatchUp')
+    ) {
       injectFinishTimeBadge();
       updateFinishTime();
     }

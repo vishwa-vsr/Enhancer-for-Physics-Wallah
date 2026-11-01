@@ -237,9 +237,8 @@ export function ColorPicker({
 
   // Eyedropper API
   const handleEyeDropper = async () => {
-    const EyeDropperCtor = (
-      window as unknown as { EyeDropper?: { new (): EyeDropperType } }
-    ).EyeDropper;
+    const EyeDropperCtor = (window as unknown as { EyeDropper?: { new (): EyeDropperType } })
+      .EyeDropper;
     if (EyeDropperCtor) {
       try {
         const eyeDropper = new EyeDropperCtor();

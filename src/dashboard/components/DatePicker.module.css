@@ -84,7 +84,9 @@
   outline: none;
   border-radius: var(--radius-xl, 16px);
   padding: 14px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.6),
+    0 4px 16px rgba(0, 0, 0, 0.35);
   z-index: 99999;
   font-family: var(--font-sans);
   user-select: none;

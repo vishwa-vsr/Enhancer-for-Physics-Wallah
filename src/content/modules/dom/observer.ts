@@ -1,6 +1,10 @@
 import { state } from '../../state';
 import { getActiveVideo, clearVideoCache } from '../video/detector';
-import { getActiveVideoElement, setupVideoListeners, setActiveVideoElement } from '../video/controller';
+import {
+  getActiveVideoElement,
+  setupVideoListeners,
+  setActiveVideoElement,
+} from '../video/controller';
 import { isInsidePreferredToolbar, resetDistractionCaches } from '../distractions/elements';
 import { handlePromoAds } from '../distractions/promo-skipper';
 import { applyDistractorsState } from '../distractions/focus-css';

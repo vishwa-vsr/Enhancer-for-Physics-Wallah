@@ -88,7 +88,9 @@ function handleWheel(event: WheelEvent): void {
   const absDelta = Math.abs(event.deltaY);
   const isMouseWheel =
     event.deltaMode !== 0 ||
-    (Number.isInteger(event.deltaY) && absDelta >= 100 && (absDelta % 100 === 0 || absDelta % 120 === 0));
+    (Number.isInteger(event.deltaY) &&
+      absDelta >= 100 &&
+      (absDelta % 100 === 0 || absDelta % 120 === 0));
 
   if (isMouseWheel) {
     // Physical mouse wheel: rolling forward/up is negative deltaY, which increases volume

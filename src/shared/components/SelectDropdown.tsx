@@ -181,10 +181,7 @@ export const SelectDropdown = ({
                           (isSelected ? 'var(--accent-primary)' : 'var(--text-secondary)'),
                       )
                     ) : option.color ? (
-                      <span
-                        class={styles.colorDot}
-                        style={{ backgroundColor: option.color }}
-                      />
+                      <span class={styles.colorDot} style={{ backgroundColor: option.color }} />
                     ) : null}
                     <span class={styles.optionLabel}>{option.label}</span>
                   </div>

@@ -62,5 +62,3 @@ export interface StudyPlannerData {
   tags?: TagItem[];
   displaySettings?: Record<string, ViewDisplaySettings>;
 }
-
-

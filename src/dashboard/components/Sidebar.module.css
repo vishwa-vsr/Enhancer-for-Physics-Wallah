@@ -9,7 +9,9 @@
   overflow: hidden;
   user-select: none;
   font-family: var(--font-sans);
-  transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    width 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .collapseToggleBtn {
@@ -175,7 +177,9 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .subjectItem:hover {
@@ -206,7 +210,10 @@
   color: var(--text-muted);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
   flex-shrink: 0;
   margin-left: 6px;
 }
@@ -330,7 +337,10 @@
   color: var(--text-muted);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
   flex-shrink: 0;
   margin-left: 4px;
 }
@@ -363,7 +373,9 @@
   font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
   margin-top: 2px;
   text-align: left;
 }
@@ -511,5 +523,3 @@
   flex: initial;
   justify-content: center;
 }
-
-

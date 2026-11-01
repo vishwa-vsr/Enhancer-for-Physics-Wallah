@@ -95,7 +95,9 @@
   justify-content: center;
   margin-left: 8px;
   color: var(--text-muted, #8e9bb0);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
+  transition:
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 0.2s ease;
   flex-shrink: 0;
 }
 
@@ -135,7 +137,9 @@
 :global(body.light-theme) .menuContainer {
   background-color: #ffffff;
   border: 1px solid var(--border-subtle);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .menuContainerSm {
@@ -149,7 +153,9 @@
 }
 
 :global(body.light-theme) .menuContainerSm {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .alignRight {

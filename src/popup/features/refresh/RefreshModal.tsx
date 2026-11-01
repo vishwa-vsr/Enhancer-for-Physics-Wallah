@@ -51,11 +51,10 @@ export function RefreshModal() {
       <div class={styles.card}>
         <h2 class={styles.title}>Before You Start</h2>
         <p class={styles.desc}>
-          If you already had a Physics Wallah lecture tab open, please refresh that tab once so the enhancer features can activate.
+          If you already had a Physics Wallah lecture tab open, please refresh that tab once so the
+          enhancer features can activate.
         </p>
-        <p class={styles.note}>
-          Note: This extension does not work on YouTube routed lectures.
-        </p>
+        <p class={styles.note}>Note: This extension does not work on YouTube routed lectures.</p>
         <div class={styles.actions}>
           <button class={`${styles.btn} ${styles.btnPrimary}`} onClick={handleAcknowledge}>
             Got it

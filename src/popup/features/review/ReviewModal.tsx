@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'preact/hooks';
-import { installDate, reviewPromptStatus, reviewPromptNextShowTime, hasSeenRefreshPrompt } from '@popup/store';
+import {
+  installDate,
+  reviewPromptStatus,
+  reviewPromptNextShowTime,
+  hasSeenRefreshPrompt,
+} from '@popup/store';
 import { saveSetting } from '@shared/storage';
 import styles from './ReviewModal.module.css';
 
@@ -42,7 +47,13 @@ export function ReviewModal() {
       clearTimeout(timer);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [installDate.value, reviewPromptStatus.value, reviewPromptNextShowTime.value, hasSeenRefreshPrompt.value, visible]);
+  }, [
+    installDate.value,
+    reviewPromptStatus.value,
+    reviewPromptNextShowTime.value,
+    hasSeenRefreshPrompt.value,
+    visible,
+  ]);
 
   const openLink = (url: string) => {
     if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
