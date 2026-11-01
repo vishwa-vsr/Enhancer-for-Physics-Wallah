@@ -122,7 +122,7 @@ export function initKeyboardShortcuts(): void {
       state.enableHotkeys &&
       !isPointerHolding() &&
       !isUserHoldingSpace() &&
-      !(state.skipSilenceEnabled && getSSCurrentState() === 'silence')
+      !(state.skipSilenceEnabled && state.skipSilenceActive && getSSCurrentState() === 'silence')
     ) {
       if (matchKey(e, state.keySpeedUp)) {
         e.preventDefault();

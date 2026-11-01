@@ -274,7 +274,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
 
   slider.addEventListener('input', (e: Event) => {
     const target = e.target as HTMLInputElement;
-    if (state.skipSilenceEnabled && getSSCurrentState() === 'silence') {
+    if (state.skipSilenceEnabled && state.skipSilenceActive && getSSCurrentState() === 'silence') {
       const pct = speedToSliderPercent(state.currentSpeed, state.snapPoints);
       target.value = String(Math.round(pct * 10));
       releaseSliderFocus();

@@ -328,11 +328,6 @@ html.pwc-hide-quality #pwc-quality-control {
   display: none !important;
 }
 
-/* --- Hide Skip Silence Icon: our injected skip silence badge and menu --- */
-html.pwc-hide-skipsilence #pwc-ss-container {
-  display: none !important;
-}
-
 /* --- Hide Finish Time Badge: our injected finish time pill --- */
 html.pwc-hide-finishtime #pwc-finish-time-badge {
   display: none !important;

@@ -1,4 +1,4 @@
-import { state, initState, subscribeState } from './state';
+import { state, initState, subscribeState, safeSetSettings } from './state';
 import {
   applySpeedToActiveVideo,
   setVideoPlaybackRate,
@@ -17,6 +17,7 @@ import {
 import { applyAlwaysExpandState, updatePlayerTicks } from './modules/ui/speed-hud';
 import { injectFinishTimeBadge, updateFinishTime } from './modules/ui/finish-time';
 import { injectInstantHideButton } from './modules/ui/focus-mode';
+import { injectSkipSilenceButton, updateSkipSilenceUI } from './modules/ui/silence-hud';
 import {
   ssInit,
   ssDestroy,
@@ -68,7 +69,8 @@ function init(): void {
       }
       const initVid = getActiveVideo();
       if (
-        (currentState.skipSilenceEnabled || currentState.volumeBalancerEnabled) &&
+        ((currentState.skipSilenceEnabled && currentState.skipSilenceActive) ||
+          currentState.volumeBalancerEnabled) &&
         initVid &&
         !initVid.paused
       ) {
@@ -130,14 +132,29 @@ function init(): void {
     if (changedKeys.includes('skipSilenceEnabled')) {
       const wasEnabled = previousSkipSilenceEnabled;
       previousSkipSilenceEnabled = currentState.skipSilenceEnabled;
-      if (currentState.skipSilenceEnabled && !wasEnabled) {
+      if (!currentState.skipSilenceEnabled) {
+        state.skipSilenceActive = false;
+        safeSetSettings({ skipSilenceActive: false });
+        ssDestroy();
+      } else if (currentState.skipSilenceEnabled && !wasEnabled) {
+        state.skipSilenceActive = false;
+        safeSetSettings({ skipSilenceActive: false });
+        injectSkipSilenceButton();
+      }
+      updateSkipSilenceUI();
+    }
+
+    if (changedKeys.includes('skipSilenceActive')) {
+      state.skipSilenceActive = currentState.skipSilenceActive;
+      if (currentState.skipSilenceEnabled && currentState.skipSilenceActive) {
         const activeVid = getActiveVideo();
         if (activeVid && !activeVid.paused) {
           ssInit();
         }
-      } else if (!currentState.skipSilenceEnabled && wasEnabled) {
+      } else {
         ssDestroy();
       }
+      updateSkipSilenceUI();
     }
 
     if (changedKeys.includes('skipSilenceSilenceSpeed')) {

@@ -29,7 +29,7 @@ export function formatTimeSaved(ms: number): string {
 
 // Build and inject the Skip Silence toggle button + visualizer + status into the player toolbar
 export function injectSkipSilenceButton(): void {
-  if (!state.extensionEnabled) {
+  if (!state.extensionEnabled || !state.skipSilenceEnabled) {
     const existing = document.getElementById('pwc-ss-container');
     if (existing) existing.remove();
     return;
@@ -143,14 +143,15 @@ export function injectSkipSilenceButton(): void {
       const isRunning = isSSEngineRunning();
       const video = getActiveVideo();
 
-      // If enabled but stalled while video is playing:
+      const nextActive = !state.skipSilenceActive;
+
+      // If enabling but stalled while video is playing:
       // Direct click on the button IS a direct user gesture! Wake up audio immediately!
-      if (state.skipSilenceEnabled && !isRunning && video && !video.paused) {
+      if (nextActive && !isRunning && video && !video.paused) {
         wakeUpSSEngine();
-        return;
       }
 
-      toggleSkipSilence(!state.skipSilenceEnabled);
+      toggleSkipSilence(nextActive);
     });
   }
 
@@ -162,7 +163,7 @@ export function updateSkipSilenceUI(): void {
   const container = document.getElementById('pwc-ss-container');
   if (!container) return;
 
-  setHidden(container, !state.extensionEnabled || state.hideSettings.hideSkipSilence);
+  setHidden(container, !state.extensionEnabled || !state.skipSilenceEnabled);
 
   const btn = document.getElementById('pwc-ss-toggle');
   const viz = document.getElementById('pwc-ss-visualizer');
@@ -174,18 +175,19 @@ export function updateSkipSilenceUI(): void {
   const sessionSaved = getSSSessionSaved();
   const activeVid = getActiveVideo();
   const isActivelyPlaying = Boolean(activeVid && !activeVid.paused && !activeVid.ended);
+  const isFeatureActive = state.skipSilenceEnabled && state.skipSilenceActive;
 
   if (btn) {
-    btn.classList.toggle('active', state.skipSilenceEnabled);
+    btn.classList.toggle('active', isFeatureActive);
     btn.classList.toggle(
       'speech',
-      state.skipSilenceEnabled && isActivelyPlaying && currentState === 'speech',
+      isFeatureActive && isActivelyPlaying && currentState === 'speech',
     );
     btn.classList.toggle(
       'silence',
-      state.skipSilenceEnabled && isActivelyPlaying && currentState === 'silence',
+      isFeatureActive && isActivelyPlaying && currentState === 'silence',
     );
-    if (!state.skipSilenceEnabled) {
+    if (!isFeatureActive) {
       btn.setAttribute('title', 'Skip Silence: Off (Click to enable)');
     } else if (isRunning) {
       btn.setAttribute('title', 'Skip Silence: Active (Click to disable)');
@@ -199,13 +201,13 @@ export function updateSkipSilenceUI(): void {
   }
 
   if (viz) {
-    viz.classList.toggle('active', state.skipSilenceEnabled);
+    viz.classList.toggle('active', isFeatureActive);
     viz.classList.toggle(
       'silence',
-      state.skipSilenceEnabled && isActivelyPlaying && currentState === 'silence',
+      isFeatureActive && isActivelyPlaying && currentState === 'silence',
     );
     const bars = viz.querySelectorAll<HTMLElement>('.pwc-ss-bar');
-    if (state.skipSilenceEnabled && isRunning && isActivelyPlaying && currentState === 'speech') {
+    if (isFeatureActive && isRunning && isActivelyPlaying && currentState === 'speech') {
       const baseHeight = Math.min(lastLevel * 500, 1); // Normalize to 0-1
       bars.forEach((bar) => {
         const variation = 0.3 + Math.random() * 0.7;
@@ -220,8 +222,8 @@ export function updateSkipSilenceUI(): void {
   }
 
   if (status) {
-    status.classList.toggle('active', state.skipSilenceEnabled);
-    if (!state.skipSilenceEnabled) {
+    status.classList.toggle('active', isFeatureActive);
+    if (!isFeatureActive) {
       status.textContent = '';
     } else if (isActivelyPlaying && currentState === 'silence') {
       status.textContent = 'Skipping';
@@ -236,10 +238,10 @@ export function updateSkipSilenceUI(): void {
 // Managed periodic UI update for skip silence visualizer (active only when running)
 export function manageSSVisualizerInterval(): void {
   const isRunning = isSSEngineRunning();
-  if (state.skipSilenceEnabled && isRunning) {
+  if (state.skipSilenceEnabled && state.skipSilenceActive && isRunning) {
     if (!ssVisualizerInterval) {
       ssVisualizerInterval = setInterval(() => {
-        if (state.skipSilenceEnabled && isSSEngineRunning()) {
+        if (state.skipSilenceEnabled && state.skipSilenceActive && isSSEngineRunning()) {
           updateSkipSilenceUI();
         } else if (ssVisualizerInterval) {
           clearInterval(ssVisualizerInterval);

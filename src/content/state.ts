@@ -16,7 +16,6 @@ export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideNoteTimeline: false,
   hideSpeed: false,
   hideQuality: true,
-  hideSkipSilence: false,
   hideSetting: false,
   hideTimeLine: false,
   hideTimeText: false,
@@ -65,6 +64,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   autoHideWhenPaused: false,
 
   skipSilenceEnabled: false,
+  skipSilenceActive: false,
   skipSilenceSilenceSpeed: 6.0,
   skipSilenceThreshold: -40,
   skipSilenceDynamicThreshold: true,
@@ -153,7 +153,6 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'hideNoteTimeline',
         'hideSpeed',
         'hideQuality',
-        'hideSkipSilence',
         'hideSetting',
         'hideTimeLine',
         'hideTimeText',
@@ -190,6 +189,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'snapPoints',
         'extensionEnabled',
         'skipSilenceEnabled',
+        'skipSilenceActive',
         'skipSilenceSilenceSpeed',
         'skipSilenceThreshold',
         'skipSilenceDynamicThreshold',
@@ -322,6 +322,7 @@ export function initState(onLoaded?: () => void): void {
     }
 
     state.skipSilenceEnabled = !!result.skipSilenceEnabled;
+    state.skipSilenceActive = !!result.skipSilenceActive;
     state.skipSilenceSilenceSpeed =
       result.skipSilenceSilenceSpeed !== undefined
         ? parseFloat(result.skipSilenceSilenceSpeed)
@@ -482,6 +483,10 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceEnabled')) {
               state.skipSilenceEnabled = !!changes.skipSilenceEnabled.newValue;
               changedKeys.push('skipSilenceEnabled');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceActive')) {
+              state.skipSilenceActive = !!changes.skipSilenceActive.newValue;
+              changedKeys.push('skipSilenceActive');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceSilenceSpeed')) {
               state.skipSilenceSilenceSpeed =

@@ -160,7 +160,11 @@ export function monitor(): void {
       } finally {
         isModifyingDOM = false;
       }
-      if ((state.skipSilenceEnabled || state.volumeBalancerEnabled) && !video.paused) {
+      if (
+        ((state.skipSilenceEnabled && state.skipSilenceActive) ||
+          state.volumeBalancerEnabled) &&
+        !video.paused
+      ) {
         ensureAudioPipelineRunning();
       }
       return;
@@ -177,7 +181,11 @@ export function monitor(): void {
     } finally {
       isModifyingDOM = false;
     }
-    if ((state.skipSilenceEnabled || state.volumeBalancerEnabled) && !video.paused) {
+    if (
+      ((state.skipSilenceEnabled && state.skipSilenceActive) ||
+        state.volumeBalancerEnabled) &&
+      !video.paused
+    ) {
       ensureAudioPipelineRunning();
     }
   }
