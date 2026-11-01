@@ -410,6 +410,18 @@
   user-select: none;
 }
 
+.hudSubRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px -14px -8px -14px;
+  padding: 8px 14px;
+  background: var(--bg-control);
+  border-top: 1px solid var(--divider-color);
+  transition: opacity var(--transition-fast);
+  animation: subBoxFadeIn 180ms ease-out forwards;
+}
+
 /* === Shortcuts & Controls Card === */
 .shortcutsSection {
   display: flex;

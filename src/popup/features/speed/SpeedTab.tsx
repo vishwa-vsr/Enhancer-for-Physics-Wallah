@@ -430,46 +430,50 @@ export function SpeedTab() {
           </div>
         </div>
 
-        {/* Integrated Speed Widget Footer Rows */}
+        {/* Integrated Speed Widget Footer Row & Sub-option */}
         <div class={styles.hudFooterRow}>
           <label
             class={styles.hudFooterTitle}
             onClick={() => {
-              hideSpeed.value = !hideSpeed.value;
-              saveSetting('hideSpeed', hideSpeed.value);
+              const nextHidden = !hideSpeed.value;
+              hideSpeed.value = nextHidden;
+              saveSetting('hideSpeed', nextHidden);
             }}
           >
-            Hide Speed Widget
+            Show Speed Widget
           </label>
           <Toggle
-            checked={hideSpeed.value}
+            checked={!hideSpeed.value}
             onChange={(v) => {
-              hideSpeed.value = v;
-              saveSetting('hideSpeed', v);
+              hideSpeed.value = !v;
+              saveSetting('hideSpeed', !v);
             }}
-            ariaLabel="Toggle Hide Speed Widget"
+            ariaLabel="Toggle Show Speed Widget"
           />
         </div>
 
-        <div class={styles.hudFooterRow}>
-          <label
-            class={styles.hudFooterTitle}
-            onClick={() => {
-              alwaysExpandWidget.value = !alwaysExpandWidget.value;
-              saveSetting('alwaysExpandWidget', alwaysExpandWidget.value);
-            }}
-          >
-            Always Expand Speed Bar
-          </label>
-          <Toggle
-            checked={alwaysExpandWidget.value}
-            onChange={(v) => {
-              alwaysExpandWidget.value = v;
-              saveSetting('alwaysExpandWidget', v);
-            }}
-            ariaLabel="Toggle Always Expand Speed Bar"
-          />
-        </div>
+        {!hideSpeed.value && (
+          <div class={styles.hudSubRow}>
+            <label
+              class={styles.configLabel}
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => {
+                alwaysExpandWidget.value = !alwaysExpandWidget.value;
+                saveSetting('alwaysExpandWidget', alwaysExpandWidget.value);
+              }}
+            >
+              Always Expand Speed Bar
+            </label>
+            <Toggle
+              checked={alwaysExpandWidget.value}
+              onChange={(v) => {
+                alwaysExpandWidget.value = v;
+                saveSetting('alwaysExpandWidget', v);
+              }}
+              ariaLabel="Toggle Always Expand Speed Bar"
+            />
+          </div>
+        )}
       </section>
 
       {/* === 2. Extra Controls Card === */}
