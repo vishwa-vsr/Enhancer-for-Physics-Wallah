@@ -4,7 +4,12 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0.5] - 2026-10-31
+## [1.1.0.5] - 2026-11-01
+
+### Changed
+
+- **Skip Silence Controls**: Simplified "Enable Skip Silence" to directly show or hide the player icon, removed the confusing "Hide Skip Silence Icon" switch, and kept extra settings hidden until enabled.
+- **Show Speed Widget**: Replaced the backwards "Hide Speed Widget" switch with "Show Speed Widget", and nested "Always Expand Speed Bar" as a clean sub-option that only appears when the widget is turned on.
 
 ### Improved
 
