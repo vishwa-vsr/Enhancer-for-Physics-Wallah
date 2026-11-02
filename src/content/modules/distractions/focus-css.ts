@@ -29,7 +29,6 @@ export const classMap: Record<keyof HideSettings, string> = {
   hideNoteTimeline: 'pwc-hide-notetimeline',
   hideSpeed: 'pwc-hide-speed',
   hideQuality: 'pwc-hide-quality',
-  hideSkipSilence: 'pwc-hide-skipsilence',
   hideSetting: 'pwc-hide-setting',
   hideTimeLine: 'pwc-hide-timeline',
   hideTimeText: 'pwc-hide-timetext',
@@ -160,7 +159,7 @@ export function applyDistractorsState(): void {
   // Handle Skip Silence icon hiding
   const ssContainer = document.getElementById('pwc-ss-container');
   if (ssContainer) {
-    setHidden(ssContainer, !state.extensionEnabled || activeSettings.hideSkipSilence);
+    setHidden(ssContainer, !state.extensionEnabled || !state.skipSilenceEnabled);
   }
 
   // Handle timeline hiding and prevent duplicate progress bars on AI-chapter lectures

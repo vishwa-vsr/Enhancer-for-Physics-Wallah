@@ -1,5 +1,12 @@
 import { signal } from '@preact/signals';
-import { FinishTimeFormat, LiveCatchUpFormat, PopupSettings, ReviewPromptStatus, VideoQuality, VolumeBalancerMode } from '@shared/types';
+import {
+  FinishTimeFormat,
+  LiveCatchUpFormat,
+  PopupSettings,
+  ReviewPromptStatus,
+  VideoQuality,
+  VolumeBalancerMode,
+} from '@shared/types';
 import { loadSettings, onSettingsChanged, saveSettings } from '@shared/storage';
 import {
   getReservedShortcutWarning,
@@ -23,7 +30,6 @@ export const hideNotes = signal(false);
 export const hideNoteTimeline = signal(false);
 export const hideSpeed = signal(false);
 export const hideQuality = signal(true);
-export const hideSkipSilence = signal(false);
 export const hideSetting = signal(false);
 export const hideTimeLine = signal(false);
 export const hideTimeText = signal(false);
@@ -37,7 +43,6 @@ export const autoPauseOnHide = signal(false);
 
 // ===== Shortcut signals =====
 export const enableHotkeys = signal(false);
-export const disableScroll = signal(false);
 export const volumeScrollEnabled = signal(false);
 export const showVolumeBubble = signal(true);
 export const volumeBubbleDelay = signal(0.4);
@@ -112,6 +117,7 @@ export const autoHideWhenPaused = signal(false);
 
 // ===== Skip Silence signals =====
 export const skipSilenceEnabled = signal(false);
+export const skipSilenceActive = signal(false);
 export const skipSilenceSilenceSpeed = signal(6.0);
 export const skipSilenceThreshold = signal(-40);
 export const skipSilenceDynamicThreshold = signal(true);
@@ -150,7 +156,6 @@ export async function initStore() {
   hideNoteTimeline.value = !!s.hideNoteTimeline;
   hideSpeed.value = !!s.hideSpeed;
   hideQuality.value = s.hideQuality !== undefined ? !!s.hideQuality : true;
-  hideSkipSilence.value = !!s.hideSkipSilence;
   hideSetting.value = !!s.hideSetting;
   hideTimeLine.value = !!s.hideTimeLine;
   hideTimeText.value = !!s.hideTimeText;
@@ -163,7 +168,6 @@ export async function initStore() {
   autoPauseOnHide.value = !!s.autoPauseOnHide;
 
   enableHotkeys.value = !!s.enableHotkeys;
-  disableScroll.value = !!s.disableScroll;
   volumeScrollEnabled.value = !!s.volumeScrollEnabled;
   showVolumeBubble.value = s.showVolumeBubble !== false;
   volumeBubbleDelay.value = s.volumeBubbleDelay ?? 0.4;
@@ -216,6 +220,7 @@ export async function initStore() {
   autoHideWhenPaused.value = !!s.autoHideWhenPaused;
 
   skipSilenceEnabled.value = !!s.skipSilenceEnabled;
+  skipSilenceActive.value = !!s.skipSilenceActive;
   skipSilenceSilenceSpeed.value = s.skipSilenceSilenceSpeed ?? 6.0;
   skipSilenceThreshold.value = s.skipSilenceThreshold ?? -40;
   skipSilenceDynamicThreshold.value = s.skipSilenceDynamicThreshold !== false; // defaults to true
@@ -303,8 +308,11 @@ export async function initStore() {
     if (changes.hideQuality !== undefined) {
       hideQuality.value = !!changes.hideQuality;
     }
-    if (changes.hideSkipSilence !== undefined) {
-      hideSkipSilence.value = !!changes.hideSkipSilence;
+    if (changes.skipSilenceEnabled !== undefined) {
+      skipSilenceEnabled.value = !!changes.skipSilenceEnabled;
+    }
+    if (changes.skipSilenceActive !== undefined) {
+      skipSilenceActive.value = !!changes.skipSilenceActive;
     }
     if (changes.installDate !== undefined) {
       installDate.value = (changes.installDate as number) || 0;

@@ -66,4 +66,3 @@ export function getAlphaColor(hex: string, alpha: number = 0.12): string {
   }
   return `rgba(107, 127, 215, ${alpha})`;
 }
-

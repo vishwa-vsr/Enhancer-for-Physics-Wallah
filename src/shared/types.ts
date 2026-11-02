@@ -22,7 +22,6 @@ export interface PopupSettings {
   hideNoteTimeline: boolean;
   hideSpeed: boolean;
   hideQuality: boolean;
-  hideSkipSilence: boolean;
   hideSetting: boolean;
   hideTimeLine: boolean;
   hideTimeText: boolean;
@@ -35,7 +34,6 @@ export interface PopupSettings {
 
   // Shortcut & control settings
   enableHotkeys: boolean;
-  disableScroll: boolean;
   volumeScrollEnabled: boolean;
   showVolumeBubble: boolean;
   volumeBubbleDelay: number;
@@ -68,6 +66,7 @@ export interface PopupSettings {
 
   // Skip Silence settings
   skipSilenceEnabled: boolean;
+  skipSilenceActive: boolean;
   skipSilenceSilenceSpeed: number;
   skipSilenceThreshold: number; // dB value, e.g. -40
   skipSilenceDynamicThreshold: boolean;
@@ -107,7 +106,6 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   hideNoteTimeline: false,
   hideSpeed: false,
   hideQuality: true,
-  hideSkipSilence: false,
   hideSetting: false,
   hideTimeLine: false,
   hideTimeText: false,
@@ -119,7 +117,6 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   blockRecordedPolls: false,
 
   enableHotkeys: false,
-  disableScroll: false,
   volumeScrollEnabled: false,
   showVolumeBubble: true,
   volumeBubbleDelay: 0.4,
@@ -149,6 +146,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   autoHideWhenPaused: false,
 
   skipSilenceEnabled: false,
+  skipSilenceActive: false,
   skipSilenceSilenceSpeed: 6.0,
   skipSilenceThreshold: -40,
   skipSilenceDynamicThreshold: true,

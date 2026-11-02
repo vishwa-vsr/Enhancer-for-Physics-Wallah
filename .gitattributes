@@ -1,4 +1,7 @@
-﻿# GitHub Language Statistics Customizations
+# Ensure standard line endings across all platforms
+* text=auto eol=lf
+
+# GitHub Language Statistics Customizations
 # Treat non-code asset directories and images as documentation/non-detectable
 assets/* linguist-documentation
 docs/* linguist-documentation

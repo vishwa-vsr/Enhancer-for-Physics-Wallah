@@ -32,9 +32,7 @@ export const Sidebar = ({
   const isCollapsed = isSidebarCollapsed.value;
 
   // Accurate counts for Tasks (all pending dated tasks) and Inbox views
-  const tasksCount = tasks.value.filter(
-    (t) => !t.completed && !!t.dueDate,
-  ).length;
+  const tasksCount = tasks.value.filter((t) => !t.completed && !!t.dueDate).length;
   const inboxCount = tasks.value.filter(
     (t) => !t.completed && (!t.subjectId || !t.chapterId),
   ).length;
@@ -124,154 +122,157 @@ export const Sidebar = ({
           </div>
         )}
 
-        {subjects.value.length === 0 ? null : (
-          subjects.value.map((sub) => {
-            const isExpanded = !isCollapsed && !!expandedSubjects.value[sub.id];
-            const subChapters = chapters.value.filter((c) => c.subjectId === sub.id);
-            const subColor = sub.color || '#6366f1';
-            const chapterIconLightColor = getLightShade(subColor, 30);
-            const isSubActive =
-              currentView.type === 'chapter' && currentView.subjectId === sub.id;
-            const isSubjectSelected =
-              isSubActive && (!currentView.chapterId || subChapters.length === 0);
+        {subjects.value.length === 0
+          ? null
+          : subjects.value.map((sub) => {
+              const isExpanded = !isCollapsed && !!expandedSubjects.value[sub.id];
+              const subChapters = chapters.value.filter((c) => c.subjectId === sub.id);
+              const subColor = sub.color || '#6366f1';
+              const chapterIconLightColor = getLightShade(subColor, 30);
+              const isSubActive =
+                currentView.type === 'chapter' && currentView.subjectId === sub.id;
+              const isSubjectSelected =
+                isSubActive && (!currentView.chapterId || subChapters.length === 0);
 
-            return (
-              <div key={sub.id} class={styles.subjectGroup}>
-                <div
-                  class={`${styles.subjectItem} ${
-                    isCollapsed && isSubActive ? styles.subjectItemActiveCollapsed : ''
-                  } ${!isCollapsed && isSubjectSelected ? styles.subjectItemActive : ''}`}
-                  title={isCollapsed ? sub.name : undefined}
-                  onClick={() => {
-                    if (isCollapsed) {
-                      setSidebarCollapsed(false);
-                      activeView.value = {
-                        type: 'chapter',
-                        subjectId: sub.id,
-                        chapterId: subChapters.length > 0 ? subChapters[0].id : '',
-                      };
-                      if (!expandedSubjects.value[sub.id]) {
-                        toggleSubjectExpanded(sub.id);
-                      }
-                    } else {
-                      toggleSubjectExpanded(sub.id);
-                      if (activeView.value.type === 'settings' || activeView.value.subjectId !== sub.id) {
+              return (
+                <div key={sub.id} class={styles.subjectGroup}>
+                  <div
+                    class={`${styles.subjectItem} ${
+                      isCollapsed && isSubActive ? styles.subjectItemActiveCollapsed : ''
+                    } ${!isCollapsed && isSubjectSelected ? styles.subjectItemActive : ''}`}
+                    title={isCollapsed ? sub.name : undefined}
+                    onClick={() => {
+                      if (isCollapsed) {
+                        setSidebarCollapsed(false);
                         activeView.value = {
                           type: 'chapter',
                           subjectId: sub.id,
                           chapterId: subChapters.length > 0 ? subChapters[0].id : '',
                         };
+                        if (!expandedSubjects.value[sub.id]) {
+                          toggleSubjectExpanded(sub.id);
+                        }
+                      } else {
+                        toggleSubjectExpanded(sub.id);
+                        if (
+                          activeView.value.type === 'settings' ||
+                          activeView.value.subjectId !== sub.id
+                        ) {
+                          activeView.value = {
+                            type: 'chapter',
+                            subjectId: sub.id,
+                            chapterId: subChapters.length > 0 ? subChapters[0].id : '',
+                          };
+                        }
                       }
-                    }
-                  }}
-                >
-                  <div class={styles.subjectLeft}>
-                    <StudyIcon
-                      name={sub.icon || 'book'}
-                      size={18}
-                      color={sub.color || 'var(--accent-primary)'}
-                      class={styles.subjectBookIcon}
-                    />
-                    {!isCollapsed && <span class={styles.subjectName}>{sub.name}</span>}
-                  </div>
+                    }}
+                  >
+                    <div class={styles.subjectLeft}>
+                      <StudyIcon
+                        name={sub.icon || 'book'}
+                        size={18}
+                        color={sub.color || 'var(--accent-primary)'}
+                        class={styles.subjectBookIcon}
+                      />
+                      {!isCollapsed && <span class={styles.subjectName}>{sub.name}</span>}
+                    </div>
 
-                  {!isCollapsed && (
-                    <button
-                      type="button"
-                      class={styles.subjectMenuBtn}
-                      aria-label={`Options for ${sub.name}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRenameSubject(sub);
-                      }}
-                    >
-                      <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                        <circle cx="5" cy="12" r="2.2" />
-                        <circle cx="12" cy="12" r="2.2" />
-                        <circle cx="19" cy="12" r="2.2" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-
-                {!isCollapsed && isExpanded && (
-                  <div class={styles.chaptersList}>
-                    {subChapters.map((chap) => {
-                      const isChapActive =
-                        currentView.type === 'chapter' && currentView.chapterId === chap.id;
-
-                      return (
-                        <div
-                          key={chap.id}
-                          class={`${styles.chapterItem} ${isChapActive ? styles.chapterItemActive : ''}`}
-                          onClick={() => {
-                            activeView.value = {
-                              type: 'chapter',
-                              subjectId: sub.id,
-                              chapterId: chap.id,
-                            };
-                          }}
-                        >
-                          <div class={styles.chapterLeft}>
-                            <StudyIcon
-                              name={chap.icon || 'file-text'}
-                              size={14}
-                              color={isChapActive ? subColor : chapterIconLightColor}
-                              class={styles.chapterIcon}
-                            />
-                            <span class={styles.chapterName}>{chap.name}</span>
-                          </div>
-
-                          {onEditChapter && (
-                            <button
-                              type="button"
-                              class={styles.chapterMenuBtn}
-                              aria-label={`Options for ${chap.name}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onEditChapter(chap);
-                              }}
-                            >
-                              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
-                                <circle cx="5" cy="12" r="2.2" />
-                                <circle cx="12" cy="12" r="2.2" />
-                                <circle cx="19" cy="12" r="2.2" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
-
-                    {onOpenAddChapter && (
+                    {!isCollapsed && (
                       <button
                         type="button"
-                        class={styles.addChapterRowBtn}
+                        class={styles.subjectMenuBtn}
+                        aria-label={`Options for ${sub.name}`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          onOpenAddChapter(sub.id);
+                          onRenameSubject(sub);
                         }}
                       >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2.2}
-                          width="12"
-                          height="12"
-                        >
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                          <circle cx="5" cy="12" r="2.2" />
+                          <circle cx="12" cy="12" r="2.2" />
+                          <circle cx="19" cy="12" r="2.2" />
                         </svg>
-                        <span>Add Chapter</span>
                       </button>
                     )}
                   </div>
-                )}
-              </div>
-            );
-          })
-        )}
+
+                  {!isCollapsed && isExpanded && (
+                    <div class={styles.chaptersList}>
+                      {subChapters.map((chap) => {
+                        const isChapActive =
+                          currentView.type === 'chapter' && currentView.chapterId === chap.id;
+
+                        return (
+                          <div
+                            key={chap.id}
+                            class={`${styles.chapterItem} ${isChapActive ? styles.chapterItemActive : ''}`}
+                            onClick={() => {
+                              activeView.value = {
+                                type: 'chapter',
+                                subjectId: sub.id,
+                                chapterId: chap.id,
+                              };
+                            }}
+                          >
+                            <div class={styles.chapterLeft}>
+                              <StudyIcon
+                                name={chap.icon || 'file-text'}
+                                size={14}
+                                color={isChapActive ? subColor : chapterIconLightColor}
+                                class={styles.chapterIcon}
+                              />
+                              <span class={styles.chapterName}>{chap.name}</span>
+                            </div>
+
+                            {onEditChapter && (
+                              <button
+                                type="button"
+                                class={styles.chapterMenuBtn}
+                                aria-label={`Options for ${chap.name}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onEditChapter(chap);
+                                }}
+                              >
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                                  <circle cx="5" cy="12" r="2.2" />
+                                  <circle cx="12" cy="12" r="2.2" />
+                                  <circle cx="19" cy="12" r="2.2" />
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+
+                      {onOpenAddChapter && (
+                        <button
+                          type="button"
+                          class={styles.addChapterRowBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenAddChapter(sub.id);
+                          }}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2.2}
+                            width="12"
+                            height="12"
+                          >
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                          </svg>
+                          <span>Add Chapter</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
       </div>
 
       {/* Settings & Collapse Toggle at the very bottom */}
@@ -305,11 +306,25 @@ export const Sidebar = ({
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isCollapsed ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.3} width={16} height={16}>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.3}
+              width={16}
+              height={16}
+            >
               <polyline points="9 18 15 12 9 6" />
             </svg>
           ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.3} width={16} height={16}>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.3}
+              width={16}
+              height={16}
+            >
               <polyline points="15 18 9 12 15 6" />
             </svg>
           )}

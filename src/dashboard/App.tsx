@@ -189,8 +189,7 @@ export const App = () => {
   };
 
   const showDisplayMenu =
-    currentView.type !== 'settings' &&
-    !(currentView.type === 'chapter' && !currentView.chapterId);
+    currentView.type !== 'settings' && !(currentView.type === 'chapter' && !currentView.chapterId);
 
   const renderHeaderActions = () => (
     <div class={styles.headerActions}>
@@ -218,11 +217,7 @@ export const App = () => {
 
       {showDisplayMenu && <DisplayMenu />}
 
-      <button
-        type="button"
-        class={styles.addTaskBtn}
-        onClick={handleAddTaskClick}
-      >
+      <button type="button" class={styles.addTaskBtn} onClick={handleAddTaskClick}>
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -237,9 +232,7 @@ export const App = () => {
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
         <span>
-          {currentView.type === 'chapter' && !currentView.chapterId
-            ? 'Add Chapter'
-            : 'Add Task'}
+          {currentView.type === 'chapter' && !currentView.chapterId ? 'Add Chapter' : 'Add Task'}
         </span>
       </button>
     </div>
@@ -278,8 +271,8 @@ export const App = () => {
             isBoardView
               ? styles.scrollAreaBoard
               : currentView.type === 'settings'
-              ? styles.scrollAreaSettings
-              : ''
+                ? styles.scrollAreaSettings
+                : ''
           }`}
         >
           <div class={`${styles.contentMaxWidth} ${isBoardView ? styles.contentBoardWidth : ''}`}>
@@ -291,14 +284,19 @@ export const App = () => {
                 {currentView.type === 'chapter' && !currentView.chapterId ? (
                   <div class={styles.emptyChapterCard}>
                     <div class={styles.emptyChapterIcon}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="24" height="24">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        width="24"
+                        height="24"
+                      >
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                       </svg>
                     </div>
-                    <h3 class={styles.emptyChapterTitle}>
-                      No chapters in this subject yet
-                    </h3>
+                    <h3 class={styles.emptyChapterTitle}>No chapters in this subject yet</h3>
                     <p class={styles.emptyChapterDesc}>
                       Add your first chapter to begin adding study tasks.
                     </p>
@@ -308,7 +306,14 @@ export const App = () => {
                         class={styles.primaryActionBtn}
                         onClick={() => handleOpenAddChapter(activeSubject.id)}
                       >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width="14" height="14">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                          width="14"
+                          height="14"
+                        >
                           <line x1="12" y1="5" x2="12" y2="19" />
                           <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
@@ -322,8 +327,8 @@ export const App = () => {
                       {currentView.type === 'chapter'
                         ? 'No tasks in this chapter yet.'
                         : currentView.type === 'inbox'
-                        ? 'Your Inbox is empty. Add a quick task without needing a subject or chapter.'
-                        : 'No scheduled tasks yet.'}
+                          ? 'Your Inbox is empty. Add a quick task without needing a subject or chapter.'
+                          : 'No scheduled tasks yet.'}
                     </p>
                   </div>
                 ) : layout === 'board' ? (
@@ -343,11 +348,7 @@ export const App = () => {
 
                         <div class={styles.boardColumnCards}>
                           {group.tasks.map((task) => (
-                            <TaskItem
-                              key={task.id}
-                              task={task}
-                              onEditRequest={handleEditTask}
-                            />
+                            <TaskItem key={task.id} task={task} onEditRequest={handleEditTask} />
                           ))}
                         </div>
                       </div>
@@ -370,11 +371,7 @@ export const App = () => {
 
                         <div>
                           {group.tasks.map((task) => (
-                            <TaskItem
-                              key={task.id}
-                              task={task}
-                              onEditRequest={handleEditTask}
-                            />
+                            <TaskItem key={task.id} task={task} onEditRequest={handleEditTask} />
                           ))}
                         </div>
                       </section>

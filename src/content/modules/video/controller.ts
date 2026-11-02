@@ -69,7 +69,12 @@ export function setVideoPlaybackRate(rate: number): void {
 // Restore user's preferred speed (or active silence speed) after releasing PW native hold-click
 export function restoreSpeedAfterPointerHold(): void {
   if (isUserHoldingSpace() || isPointerHolding()) return;
-  if (state.skipSilenceEnabled && isSSEngineRunning() && getSSCurrentState() === 'silence') {
+  if (
+    state.skipSilenceEnabled &&
+    state.skipSilenceActive &&
+    isSSEngineRunning() &&
+    getSSCurrentState() === 'silence'
+  ) {
     setVideoPlaybackRate(getEffectiveSilenceSpeed());
   } else {
     setVideoPlaybackRate(getEffectiveNormalSpeed());
@@ -124,10 +129,10 @@ export function setupVideoListeners(video: HTMLVideoElement): void {
 
   // Reset skip silence session counter and reconnect engine for new video
   resetSSSessionSaved();
-  if (state.skipSilenceEnabled && getSSConnectedVideo() !== video) {
+  if (state.skipSilenceEnabled && state.skipSilenceActive && getSSConnectedVideo() !== video) {
     ssDestroy();
     setTimeout(() => {
-      if (state.skipSilenceEnabled) ssInit();
+      if (state.skipSilenceEnabled && state.skipSilenceActive) ssInit();
     }, 500);
   }
 
@@ -178,7 +183,7 @@ export function onRateChange(): void {
   }
 
   // If Skip Silence is running, never let automated or native player events overwrite user's preferred speed
-  if (state.skipSilenceEnabled && isSSEngineRunning()) {
+  if (state.skipSilenceEnabled && state.skipSilenceActive && isSSEngineRunning()) {
     const expectedSpeed =
       getSSCurrentState() === 'silence' ? getEffectiveSilenceSpeed() : getEffectiveNormalSpeed();
     if (Math.abs(activeVideo.playbackRate - expectedSpeed) > 0.05) {
@@ -194,13 +199,13 @@ export function onRateChange(): void {
 
 // Apply speed and wake up audio immediately on play to preserve user gesture
 export function onVideoPlay(): void {
-  if (state.skipSilenceEnabled && !isSSEngineRunning()) {
+  if (state.skipSilenceEnabled && state.skipSilenceActive && !isSSEngineRunning()) {
     ssInit();
   }
   setTimeout(() => {
     applySpeedToActiveVideo();
     autoApplyPreferredQuality();
-    if (state.skipSilenceEnabled && !isSSEngineRunning()) {
+    if (state.skipSilenceEnabled && state.skipSilenceActive && !isSSEngineRunning()) {
       ssInit();
     }
   }, 200);

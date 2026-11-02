@@ -92,9 +92,7 @@ export async function loadPlannerData(): Promise<void> {
         customTags.value = loadedData.tags;
       }
 
-      const validTagNames = new Set(
-        customTags.value.map((t) => t.name.toLowerCase()),
-      );
+      const validTagNames = new Set(customTags.value.map((t) => t.name.toLowerCase()));
 
       subjects.value = (loadedData.subjects || []).map((s) => ({
         ...s,
@@ -108,9 +106,7 @@ export async function loadPlannerData(): Promise<void> {
       let hadGhostTags = false;
       tasks.value = (loadedData.tasks || []).map((t) => {
         if (!t.tags || t.tags.length === 0) return t;
-        const cleanedTags = t.tags.filter((tag) =>
-          validTagNames.has(tag.toLowerCase()),
-        );
+        const cleanedTags = t.tags.filter((tag) => validTagNames.has(tag.toLowerCase()));
         if (cleanedTags.length !== t.tags.length) {
           hadGhostTags = true;
           return { ...t, tags: cleanedTags };
@@ -132,11 +128,7 @@ export async function loadPlannerData(): Promise<void> {
     }
 
     // Auto-update dashboard if synced from popup or another tab
-    if (
-      !storageListenerRegistered &&
-      typeof chrome !== 'undefined' &&
-      chrome.storage?.onChanged
-    ) {
+    if (!storageListenerRegistered && typeof chrome !== 'undefined' && chrome.storage?.onChanged) {
       storageListenerRegistered = true;
       chrome.storage.onChanged.addListener((changes, areaName) => {
         if (areaName === 'local' && changes[STORAGE_KEY]?.newValue) {
@@ -179,11 +171,7 @@ async function persistData(): Promise<void> {
 }
 
 // Subject actions
-export async function addSubject(
-  name: string,
-  color?: string,
-  icon?: string,
-): Promise<Subject> {
+export async function addSubject(name: string, color?: string, icon?: string): Promise<Subject> {
   const newSubject: Subject = {
     id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
     name: name.trim(),
@@ -255,11 +243,7 @@ export async function deleteSubject(id: string): Promise<void> {
 }
 
 // Chapter actions
-export async function addChapter(
-  subjectId: string,
-  name: string,
-  icon?: string,
-): Promise<Chapter> {
+export async function addChapter(subjectId: string, name: string, icon?: string): Promise<Chapter> {
   const newChapter: Chapter = {
     id: 'chap_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
     name: name.trim(),
@@ -404,9 +388,7 @@ export async function updateCustomTag(
 
   // Update tag in customTags
   customTags.value = customTags.value.map((t) =>
-    t.name.toLowerCase() === trimmedOld
-      ? { name: trimmedNew, color: newColor || t.color }
-      : t,
+    t.name.toLowerCase() === trimmedOld ? { name: trimmedNew, color: newColor || t.color } : t,
   );
 
   // If name changed, update all tasks that have this tag
@@ -415,9 +397,7 @@ export async function updateCustomTag(
       t.tags?.some((tag) => tag.toLowerCase() === trimmedOld)
         ? {
             ...t,
-            tags: t.tags.map((tag) =>
-              tag.toLowerCase() === trimmedOld ? trimmedNew : tag,
-            ),
+            tags: t.tags.map((tag) => (tag.toLowerCase() === trimmedOld ? trimmedNew : tag)),
           }
         : t,
     );
@@ -607,7 +587,11 @@ export const groupedTasks = computed<TaskGroup[]>(() => {
       noDateTasks.push(task);
     } else if (task.dueDate < todayStr && !task.completed) {
       overdueTasks.push(task);
-    } else if (task.completed && task.completedDate === todayStr && activeView.value.type === 'today') {
+    } else if (
+      task.completed &&
+      task.completedDate === todayStr &&
+      activeView.value.type === 'today'
+    ) {
       const bucket = dateBuckets.get(todayStr) || [];
       bucket.push(task);
       dateBuckets.set(todayStr, bucket);
@@ -634,11 +618,7 @@ export const groupedTasks = computed<TaskGroup[]>(() => {
     const bucketTasks = dateBuckets.get(dateStr) || [];
     if (bucketTasks.length > 0) {
       const color =
-        dateStr === todayStr
-          ? '#10b981'
-          : dateStr === tomorrowStr
-          ? '#f59e0b'
-          : '#6366f1';
+        dateStr === todayStr ? '#10b981' : dateStr === tomorrowStr ? '#f59e0b' : '#6366f1';
       result.push({
         id: `date_${dateStr}`,
         title: formatDateGroupHeader(dateStr, todayStr, tomorrowStr),
@@ -659,4 +639,3 @@ export const groupedTasks = computed<TaskGroup[]>(() => {
 
   return result;
 });
-

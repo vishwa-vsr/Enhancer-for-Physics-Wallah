@@ -15,7 +15,6 @@ export interface HideSettings {
   hideNoteTimeline: boolean;
   hideSpeed: boolean;
   hideQuality: boolean;
-  hideSkipSilence: boolean;
   hideSetting: boolean;
   hideTimeLine: boolean;
   hideTimeText: boolean;
@@ -40,7 +39,6 @@ export interface ContentState {
 
   // Shortcuts & UI settings
   enableHotkeys: boolean;
-  disableScroll: boolean;
   volumeScrollEnabled: boolean;
   showVolumeBubble: boolean;
   volumeBubbleDelay: number;
@@ -73,6 +71,7 @@ export interface ContentState {
 
   // Skip Silence settings
   skipSilenceEnabled: boolean;
+  skipSilenceActive: boolean;
   skipSilenceSilenceSpeed: number;
   skipSilenceThreshold: number;
   skipSilenceDynamicThreshold: boolean;

@@ -57,8 +57,8 @@ export const AddTaskDialog = ({
   const initialChapId = editingTask
     ? editingTask.chapterId || ''
     : selectedSubjectId
-    ? defaultChapterId || currentView.chapterId || availableChapters[0]?.id || ''
-    : '';
+      ? defaultChapterId || currentView.chapterId || availableChapters[0]?.id || ''
+      : '';
   const [selectedChapterId, setSelectedChapterId] = useState<string>(initialChapId);
 
   const subjectOptions = [
@@ -88,17 +88,15 @@ export const AddTaskDialog = ({
   const getValidInitialTag = (task?: Task | null): string => {
     const rawTag = task?.tags?.[0];
     if (!rawTag) return '';
-    const match = customTags.value.find(
-      (t) => t.name.toLowerCase() === rawTag.toLowerCase(),
-    );
+    const match = customTags.value.find((t) => t.name.toLowerCase() === rawTag.toLowerCase());
     return match ? match.name : '';
   };
 
   const defaultDueDate = editingTask
     ? editingTask.dueDate || ''
     : currentView.type === 'today'
-    ? getLocalDateStr()
-    : '';
+      ? getLocalDateStr()
+      : '';
 
   const [title, setTitle] = useState(editingTask?.title || '');
   const [dueDate, setDueDate] = useState(defaultDueDate);
@@ -128,7 +126,9 @@ export const AddTaskDialog = ({
             : defaultSubjectId || currentView.subjectId || subjects.value[0]?.id || '';
         setSelectedSubjectId(subId);
         const chaps = subId ? chapters.value.filter((c) => c.subjectId === subId) : [];
-        setSelectedChapterId(subId ? defaultChapterId || currentView.chapterId || chaps[0]?.id || '' : '');
+        setSelectedChapterId(
+          subId ? defaultChapterId || currentView.chapterId || chaps[0]?.id || '' : '',
+        );
       }
 
       const timer = setTimeout(() => {
@@ -330,8 +330,8 @@ export const AddTaskDialog = ({
                           !selectedSubjectId
                             ? 'None (Inbox)'
                             : availableChapters.length === 0
-                            ? 'No chapters'
-                            : 'Select Chapter'
+                              ? 'No chapters'
+                              : 'Select Chapter'
                         }
                         disabled={!selectedSubjectId || availableChapters.length === 0}
                         emptyLabel="No chapters available"

@@ -1,6 +1,14 @@
 import { useState, useRef, useEffect } from 'preact/hooks';
 import { Task } from '../types';
-import { subjects, chapters, toggleTask, updateTask, activeView, getLocalDateStr, customTags } from '../store';
+import {
+  subjects,
+  chapters,
+  toggleTask,
+  updateTask,
+  activeView,
+  getLocalDateStr,
+  customTags,
+} from '../store';
 import { getAlphaColor } from '@shared/theme';
 import { DatePicker } from './DatePicker';
 import styles from './TaskItem.module.css';
@@ -176,12 +184,11 @@ export const TaskItem = ({ task, onEditRequest }: TaskItemProps) => {
             ) : null)}
 
           {/* Overdue Badge */}
-          {isOverdue && (
-            <span class={styles.overdueBadge}>Overdue</span>
-          )}
+          {isOverdue && <span class={styles.overdueBadge}>Overdue</span>}
 
           {/* Tag Pills */}
-          {task.tags && task.tags.length > 0 && (
+          {task.tags &&
+            task.tags.length > 0 &&
             task.tags.map((tag) => {
               const color = getTagColor(tag);
               return (
@@ -197,8 +204,7 @@ export const TaskItem = ({ task, onEditRequest }: TaskItemProps) => {
                   {tag}
                 </span>
               );
-            })
-          )}
+            })}
 
           {/* Due date / Quick Date Picker */}
           <DatePicker

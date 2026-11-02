@@ -216,7 +216,7 @@ export function wakeUpSSEngine(): void {
     }
   } catch (_e) {}
 
-  if (state.skipSilenceEnabled && !isSSEngineRunning()) {
+  if (state.skipSilenceEnabled && state.skipSilenceActive && !isSSEngineRunning()) {
     const vid = getActiveVideo();
     if (vid && !vid.paused) {
       ssInit();
@@ -455,7 +455,7 @@ export async function ensureAudioPipelineRunning(): Promise<AudioGraph | null> {
   if (!graph) return null;
   resumeAudioContextOnInteraction(graph.context);
   applyVolumeBalancerToGraph(graph);
-  if (state.skipSilenceEnabled && !isSSEngineRunning()) {
+  if (state.skipSilenceEnabled && state.skipSilenceActive && !isSSEngineRunning()) {
     ssInit();
   }
   return graph;
@@ -683,11 +683,11 @@ export function scheduleSkipSilenceSave(forceImmediate = false): void {
   }
 }
 
-// Toggle skip silence on/off
-export function toggleSkipSilence(enable: boolean): void {
-  state.skipSilenceEnabled = enable;
-  safeSetSettings({ skipSilenceEnabled: enable });
-  if (enable) {
+// Toggle skip silence active state on/off
+export function toggleSkipSilence(active: boolean): void {
+  state.skipSilenceActive = active;
+  safeSetSettings({ skipSilenceActive: active });
+  if (active && state.skipSilenceEnabled) {
     const video = getActiveVideo();
     if (video && !video.paused) {
       ssInit();
