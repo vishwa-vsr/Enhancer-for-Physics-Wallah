@@ -235,6 +235,29 @@
     isConstantQualityEnabled = localStorage.getItem('pwc_constant_quality') === 'true';
   } catch (_e) {}
 
+  let isBlockRecordedPollsEnabled: boolean = false;
+  try {
+    isBlockRecordedPollsEnabled = localStorage.getItem('pwc_block_recorded_polls') === 'true';
+  } catch (_e) {}
+
+  // Path A: Neutralize recorded poll cuepoints/text tracks if scheduled via Video.js / HTMLMediaElement
+  try {
+    if (typeof TextTrack !== 'undefined' && TextTrack.prototype && TextTrack.prototype.addCue) {
+      const origAddCue = TextTrack.prototype.addCue;
+      TextTrack.prototype.addCue = function (cue: TextTrackCue) {
+        if (isBlockRecordedPollsEnabled) {
+          const cueObj = cue as unknown as { id?: string; text?: string };
+          const cueText = (cueObj.text || cueObj.id || '').toLowerCase();
+          const trackLabel = (this.label || this.id || '').toLowerCase();
+          if (cueText.includes('poll') || trackLabel.includes('poll')) {
+            return;
+          }
+        }
+        return origAddCue.call(this, cue);
+      };
+    }
+  } catch (_e) {}
+
   console.log(
     '[PWC-QUALITY] Engine Bridge initialized at document_start. Constant quality active:',
     isConstantQualityEnabled,
@@ -667,6 +690,19 @@
         }
         applyQuality('auto');
       }
+    }
+  });
+
+  window.addEventListener('PWC_SET_BLOCK_RECORDED_POLLS', (event: Event) => {
+    const customEvt = event as CustomEvent<{ enabled?: boolean }>;
+    if (customEvt && customEvt.detail !== undefined) {
+      isBlockRecordedPollsEnabled = !!customEvt.detail.enabled;
+      try {
+        localStorage.setItem(
+          'pwc_block_recorded_polls',
+          isBlockRecordedPollsEnabled ? 'true' : 'false',
+        );
+      } catch (_e) {}
     }
   });
 

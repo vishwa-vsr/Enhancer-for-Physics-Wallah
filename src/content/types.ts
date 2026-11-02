@@ -35,6 +35,7 @@ export interface ContentState {
   hideSettings: HideSettings;
   enableInstantHide: boolean;
   autoSkipPromoAds: boolean;
+  blockRecordedPolls: boolean;
 
   // Shortcuts & UI settings
   enableHotkeys: boolean;

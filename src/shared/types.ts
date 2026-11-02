@@ -30,6 +30,7 @@ export interface PopupSettings {
   hideAttemptDPP: boolean;
   enableInstantHide: boolean;
   autoSkipPromoAds: boolean;
+  blockRecordedPolls: boolean;
 
   // Shortcut & control settings
   enableHotkeys: boolean;
@@ -113,6 +114,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   hideAttemptDPP: false,
   enableInstantHide: false,
   autoSkipPromoAds: false,
+  blockRecordedPolls: false,
 
   enableHotkeys: false,
   volumeScrollEnabled: false,
