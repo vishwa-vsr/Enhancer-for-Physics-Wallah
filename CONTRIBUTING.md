@@ -1,12 +1,11 @@
 # Contributing to Enhancer for Physics Wallah
 
-First off, thank you for considering contributing to **Enhancer for Physics Wallah**! 💜
+First off, thank you for considering contributing to **Enhancer for Physics Wallah**!
 
 Whether you're fixing a bug, adding a new distraction toggle, or polishing the player interface, your contributions directly help thousands of students study with fewer distractions.
 
 ---
 
-## ⚡ Quick Start (60 Seconds)
 
 ### 1. Clone & Install
 ```bash
@@ -45,7 +44,7 @@ npm run format  # Formats all TS, TSX, CSS, and HTML files cleanly with Prettier
 
 ---
 
-## 🗺️ Project Architecture Overview
+## Project Architecture Overview
 
 The codebase is organized into four clean areas under `src/`:
 
@@ -59,7 +58,7 @@ The codebase is organized into four clean areas under `src/`:
 
 ---
 
-## 🍳 Recipe: Adding a New Distraction Toggle
+## Recipe: Adding a New Distraction Toggle
 
 Most contributions involve adding a new toggle to hide distracting elements on the player. Here is the complete, step-by-step recipe:
 
@@ -108,7 +107,7 @@ Most contributions involve adding a new toggle to hide distracting elements on t
 
 ---
 
-## 🔍 Testing & Debugging
+## Testing & Debugging
 
 1. **How to Test on PhysicsWallah:**
    * Open any lecture on `pw.live`. *(Note: You do not need a paid course—free demo lectures and trial videos work great for testing!)*
@@ -122,7 +121,7 @@ Most contributions involve adding a new toggle to hide distracting elements on t
 
 ---
 
-## 🚀 Pull Request Process
+## Pull Request Process
 
 1. **Verify your build completes with zero errors:**
    ```bash
