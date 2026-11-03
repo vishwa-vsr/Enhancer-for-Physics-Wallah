@@ -10,6 +10,8 @@ import {
   alwaysExpandWidget,
   enableHotkeys,
   volumeScrollEnabled,
+  volumeScrollMouseStep,
+  volumeScrollTrackpadStep,
   showVolumeBubble,
   volumeBubbleDelay,
   holdSpaceSpeedUp,
@@ -590,7 +592,13 @@ export function SpeedTab() {
               ariaLabel="Toggle Auto-pause on Tab Switch"
             />
           </FeatureRow>
+        </div>
+      </section>
 
+      {/* === 3. Volume Scroll Card === */}
+      <section class={styles.shortcutsSection}>
+        <h2 class={styles.sectionTitle}>Volume Scroll</h2>
+        <div class={styles.settingsGroupCard}>
           <div class={styles.settingRowGroup}>
             <FeatureRow label="Scroll to Adjust Volume">
               <Toggle
@@ -604,6 +612,38 @@ export function SpeedTab() {
             </FeatureRow>
             {volumeScrollEnabled.value && (
               <>
+                <div class={styles.featureConfigRow}>
+                  <span class={styles.configLabel}>Mouse Sensy</span>
+                  <Stepper
+                    className={styles.stepperCard}
+                    value={volumeScrollMouseStep.value}
+                    min={1}
+                    max={30}
+                    step={1}
+                    unit="%"
+                    onChange={(v) => {
+                      const clamped = Math.max(1, Math.min(30, Math.round(v)));
+                      volumeScrollMouseStep.value = clamped;
+                      saveSetting('volumeScrollMouseStep', clamped);
+                    }}
+                  />
+                </div>
+                <div class={styles.featureConfigRow}>
+                  <span class={styles.configLabel}>Trackpad Sensy</span>
+                  <Stepper
+                    className={styles.stepperCard}
+                    value={volumeScrollTrackpadStep.value}
+                    min={1}
+                    max={10}
+                    step={1}
+                    unit="%"
+                    onChange={(v) => {
+                      const clamped = Math.max(1, Math.min(10, Math.round(v)));
+                      volumeScrollTrackpadStep.value = clamped;
+                      saveSetting('volumeScrollTrackpadStep', clamped);
+                    }}
+                  />
+                </div>
                 <div class={styles.featureConfigRow}>
                   <label
                     class={styles.configLabel}

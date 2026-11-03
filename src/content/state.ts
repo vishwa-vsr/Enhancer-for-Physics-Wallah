@@ -37,6 +37,8 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
 
   enableHotkeys: false,
   volumeScrollEnabled: false,
+  volumeScrollMouseStep: 5,
+  volumeScrollTrackpadStep: 2,
   showVolumeBubble: true,
   volumeBubbleDelay: 0.4,
   holdSpaceSpeedUp: false,
@@ -165,6 +167,8 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'blockRecordedPolls',
         'enableHotkeys',
         'volumeScrollEnabled',
+        'volumeScrollMouseStep',
+        'volumeScrollTrackpadStep',
         'showVolumeBubble',
         'volumeBubbleDelay',
         'holdSpaceSpeedUp',
@@ -273,6 +277,14 @@ export function initState(onLoaded?: () => void): void {
     state.blockRecordedPolls = !!result.blockRecordedPolls;
     state.enableHotkeys = !!result.enableHotkeys;
     state.volumeScrollEnabled = !!result.volumeScrollEnabled;
+    state.volumeScrollMouseStep =
+      result.volumeScrollMouseStep !== undefined
+        ? Math.max(1, Math.min(30, Math.round(Number(result.volumeScrollMouseStep) || 5)))
+        : 5;
+    state.volumeScrollTrackpadStep =
+      result.volumeScrollTrackpadStep !== undefined
+        ? Math.max(1, Math.min(10, Math.round(Number(result.volumeScrollTrackpadStep) || 2)))
+        : 2;
     state.showVolumeBubble = result.showVolumeBubble !== false;
     state.volumeBubbleDelay =
       result.volumeBubbleDelay !== undefined ? parseFloat(result.volumeBubbleDelay) : 0.4;
@@ -426,6 +438,20 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollEnabled')) {
               state.volumeScrollEnabled = !!changes.volumeScrollEnabled.newValue;
               changedKeys.push('volumeScrollEnabled');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollMouseStep')) {
+              state.volumeScrollMouseStep =
+                changes.volumeScrollMouseStep.newValue !== undefined
+                  ? Math.max(1, Math.min(30, Math.round(Number(changes.volumeScrollMouseStep.newValue) || 5)))
+                  : 5;
+              changedKeys.push('volumeScrollMouseStep');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollTrackpadStep')) {
+              state.volumeScrollTrackpadStep =
+                changes.volumeScrollTrackpadStep.newValue !== undefined
+                  ? Math.max(1, Math.min(10, Math.round(Number(changes.volumeScrollTrackpadStep.newValue) || 2)))
+                  : 2;
+              changedKeys.push('volumeScrollTrackpadStep');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'showVolumeBubble')) {
               state.showVolumeBubble = changes.showVolumeBubble.newValue !== false;

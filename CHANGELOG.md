@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - **Block Recorded Poll Popups**: Turn off automatic poll popups in recorded lectures (#10).
+- **Volume Scroll Sensitivity**: Added options to adjust scroll sensitivity for mouse and trackpad (#36).
 
 ## [1.1.0.5] - 2026-11-01
 

@@ -40,6 +40,8 @@ export interface ContentState {
   // Shortcuts & UI settings
   enableHotkeys: boolean;
   volumeScrollEnabled: boolean;
+  volumeScrollMouseStep: number;
+  volumeScrollTrackpadStep: number;
   showVolumeBubble: boolean;
   volumeBubbleDelay: number;
   holdSpaceSpeedUp: boolean;

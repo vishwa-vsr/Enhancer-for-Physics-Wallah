@@ -60,7 +60,12 @@ function handleWheel(event: WheelEvent): void {
     return;
   }
 
-  // 2. Locate active video and player container
+  // 2. Guard: ignore modified scroll events so browser zoom (Ctrl+wheel) and shortcuts work normally
+  if (event.ctrlKey || event.altKey || event.metaKey) {
+    return;
+  }
+
+  // 3. Locate active video and player container
   const video = getActiveVideo();
   if (!video) return;
 
@@ -70,21 +75,21 @@ function handleWheel(event: WheelEvent): void {
   const target = event.target as HTMLElement | null;
   if (!target) return;
 
-  // 3. Verify event is inside the player container (if outside, let page scroll normally)
+  // 4. Verify event is inside the player container (if outside, let page scroll normally)
   if (!container.contains(target) && target !== video) {
     return;
   }
 
-  // 4. Exclude bottom control bar, buttons, and custom widgets
+  // 5. Exclude bottom control bar, buttons, and custom widgets
   if (target.closest && target.closest(EXCLUDED_CONTROLS_SELECTOR)) {
     return;
   }
 
-  // 5. Intercept wheel event on the main video screen area
+  // 6. Intercept wheel event on the main video screen area
   event.preventDefault();
   event.stopPropagation();
 
-  // 6. Differentiate between mouse wheel notches and continuous touchpad swipes
+  // 7. Differentiate between mouse wheel notches and continuous touchpad swipes
   const absDelta = Math.abs(event.deltaY);
   const isMouseWheel =
     event.deltaMode !== 0 ||
@@ -95,7 +100,8 @@ function handleWheel(event: WheelEvent): void {
   if (isMouseWheel) {
     // Physical mouse wheel: rolling forward/up is negative deltaY, which increases volume
     const direction = event.deltaY < 0 ? 1 : -1;
-    applyVolumeAdjustment(video, direction * 0.05);
+    const mouseStep = (state.volumeScrollMouseStep ?? 5) / 100;
+    applyVolumeAdjustment(video, direction * mouseStep);
   } else {
     // Touchpad swipe: two-finger upward gesture sends positive deltaY on Windows natural scroll
     const STEP_THRESHOLD = 14;
@@ -112,7 +118,8 @@ function handleWheel(event: WheelEvent): void {
       const steps = Math.trunc(touchpadAccumulator / STEP_THRESHOLD);
       touchpadAccumulator -= steps * STEP_THRESHOLD;
       // Positive steps (swiping up) increases volume
-      const deltaPercent = steps * 0.02;
+      const trackpadStep = (state.volumeScrollTrackpadStep ?? 2) / 100;
+      const deltaPercent = steps * trackpadStep;
       applyVolumeAdjustment(video, deltaPercent);
     }
   }
