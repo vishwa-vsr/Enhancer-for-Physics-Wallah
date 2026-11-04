@@ -138,7 +138,7 @@ function init(): void {
       updateFinishTime();
     }
 
-    if (changedKeys.includes('finishTimeFormat') || changedKeys.includes('liveCatchUpFormat')) {
+    if (changedKeys.includes('finishTimeFormat')) {
       updateFinishTime();
     }
 

@@ -5,7 +5,6 @@ import {
   activeView,
   expandedSubjects,
   toggleSubjectExpanded,
-  getLocalDateStr,
   isSidebarCollapsed,
   toggleSidebarCollapsed,
   setSidebarCollapsed,

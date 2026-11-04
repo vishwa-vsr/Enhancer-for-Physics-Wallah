@@ -1,7 +1,6 @@
 import { signal } from '@preact/signals';
 import {
   FinishTimeFormat,
-  LiveCatchUpFormat,
   PopupSettings,
   ReviewPromptStatus,
   VideoQuality,
@@ -58,7 +57,6 @@ export const lectureTimeEnabled = signal(true);
 export const showFinishTime = signal(true);
 export const finishTimeFormat = signal<FinishTimeFormat>('clock');
 export const showLiveCatchUp = signal(true);
-export const liveCatchUpFormat = signal<LiveCatchUpFormat>('catch');
 
 // ===== Focus shortcuts signals (Issue #14) =====
 export const keyChat = signal('c');
@@ -183,7 +181,6 @@ export async function initStore() {
   showFinishTime.value = s.showFinishTime !== false; // defaults to true
   finishTimeFormat.value = s.finishTimeFormat === 'full' ? 'full' : 'clock';
   showLiveCatchUp.value = s.showLiveCatchUp !== false;
-  liveCatchUpFormat.value = s.liveCatchUpFormat === 'lag' ? 'lag' : 'catch';
 
   keyChat.value = s.keyChat ?? 'c';
   keyTimeline.value = s.keyTimeline ?? 't';
@@ -244,7 +241,7 @@ export async function initStore() {
   // Listen for real-time updates from content script (e.g., time saved or quality)
   onSettingsChanged((changes) => {
     if (changes.finishTimeFormat !== undefined) {
-      finishTimeFormat.value = (changes.finishTimeFormat as FinishTimeFormat) || 'minimal';
+      finishTimeFormat.value = (changes.finishTimeFormat as FinishTimeFormat) || 'clock';
     }
     if (changes.lectureTimeEnabled !== undefined) {
       lectureTimeEnabled.value = changes.lectureTimeEnabled !== false;
@@ -254,9 +251,6 @@ export async function initStore() {
     }
     if (changes.showLiveCatchUp !== undefined) {
       showLiveCatchUp.value = changes.showLiveCatchUp !== false;
-    }
-    if (changes.liveCatchUpFormat !== undefined) {
-      liveCatchUpFormat.value = (changes.liveCatchUpFormat as LiveCatchUpFormat) || 'catch';
     }
     if (changes.keySpeedUp !== undefined) {
       keySpeedUp.value = sanitizeSpeedShortcut(changes.keySpeedUp, 'h');

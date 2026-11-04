@@ -24,7 +24,6 @@ import {
   showFinishTime,
   finishTimeFormat,
   showLiveCatchUp,
-  liveCatchUpFormat,
   keyChat,
   keyTimeline,
   keyNotes,

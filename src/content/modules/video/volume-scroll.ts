@@ -130,14 +130,3 @@ export function initVolumeScroll(): void {
   window.addEventListener('wheel', handleWheel, { passive: false, capture: true });
   isListenerActive = true;
 }
-
-export function destroyVolumeScroll(): void {
-  if (!isListenerActive) return;
-  window.removeEventListener('wheel', handleWheel, { capture: true });
-  isListenerActive = false;
-  if (touchpadTimer) {
-    clearTimeout(touchpadTimer);
-    touchpadTimer = null;
-  }
-  touchpadAccumulator = 0;
-}

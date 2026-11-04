@@ -6,12 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [1.1.0.6] - 2026-11-02
+## [1.1.0.6] - 2026-11-04
 
 ### Added
 
 - **Block Recorded Poll Popups**: Turn off automatic poll popups in recorded lectures [#10](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/10).
 - **Volume Scroll Sensitivity**: Added options to adjust scroll sensitivity for mouse and trackpad [#36](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/36).
+
+### Removed
+
+- **Dead Code & Ghost Settings**: Cleaned up leftover code, old toolbar button logic, obsolete audio math, and unused background settings for faster performance and a leaner extension.
 
 ## [1.1.0.5] - 2026-11-01
 

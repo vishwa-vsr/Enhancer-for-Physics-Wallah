@@ -37,8 +37,6 @@ export function clearPollButtonFocus(): void {
   }
 }
 
-export const restorePlayerFocus = clearPollButtonFocus;
-
 /**
  * Schedules multiple frames of focus clearing to beat React / HeadlessUI deferred focus restoration.
  */
@@ -53,8 +51,6 @@ export function schedulePollButtonBlur(): void {
   setTimeout(clearPollButtonFocus, 150);
   setTimeout(clearPollButtonFocus, 300);
 }
-
-export const schedulePlayerFocusRestoration = schedulePollButtonBlur;
 
 /**
  * Synchronizes the zero-flicker CSS suppression class on the root HTML element
@@ -346,7 +342,7 @@ export function handleRecordedPolls(): void {
       } catch {
         // Ignored
       }
-      schedulePlayerFocusRestoration();
+      schedulePollButtonBlur();
     }
   }
 

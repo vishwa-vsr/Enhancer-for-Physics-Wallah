@@ -94,13 +94,6 @@ function copyExtensionAssetsPlugin(): Plugin {
             outfile: resolve(targetDir, 'content.js'),
             format: 'iife',
           });
-        } else {
-          const legacyContent = resolve(srcDir, 'content.js');
-          if (fs.existsSync(legacyContent)) {
-            const rawContent = fs.readFileSync(legacyContent, 'utf-8');
-            const minified = transformSync(rawContent, { minify: true, target: 'chrome90' });
-            fs.writeFileSync(resolve(targetDir, 'content.js'), minified.code, 'utf-8');
-          }
         }
 
         // Bundle TypeScript engine bridge into target engine-bridge.js

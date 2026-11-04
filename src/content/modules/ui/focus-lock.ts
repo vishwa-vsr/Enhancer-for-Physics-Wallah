@@ -12,7 +12,6 @@ import { showInfoToast } from './toast';
  * a reminder modal if the student tries to exit fullscreen or leave the lecture tab.
  */
 
-const FOCUS_LOCK_BTN_ID = 'pwc-focus-lock-btn';
 const MODAL_ID = 'pwc-focus-lock-modal';
 const INTERSTITIAL_ID = 'pwc-focus-lock-interstitial';
 
@@ -89,7 +88,6 @@ export function activateFocusLock(): boolean {
   // 2. Clean fullscreen presentation.
   requestPlayerFullscreen();
 
-  updateFocusLockButton();
   showInfoToast('Focus Lock ON — pauses if you leave full screen');
   return true;
 }
@@ -112,16 +110,7 @@ export function deactivateFocusLock(): void {
     }
   }
 
-  updateFocusLockButton();
   showInfoToast('Focus Lock OFF');
-}
-
-export function toggleFocusLock(): boolean {
-  if (focusLockActive) {
-    deactivateFocusLock();
-    return false;
-  }
-  return activateFocusLock();
 }
 
 // ===== Anti-Distraction Guards =====
@@ -278,22 +267,6 @@ function showInterstitial(): void {
 
 function removeInterstitial(): void {
   document.getElementById(INTERSTITIAL_ID)?.remove();
-}
-
-// ===== Player Toolbar Button =====
-
-function updateFocusLockButton(): void {
-  const btn = document.getElementById(FOCUS_LOCK_BTN_ID);
-  if (!btn) return;
-  btn.classList.toggle('active', focusLockActive);
-  btn.setAttribute(
-    'title',
-    focusLockActive ? 'Exit Focus Lock' : 'Focus Lock (Full screen study session)',
-  );
-}
-
-export function injectFocusLockButton(): void {
-  document.getElementById(FOCUS_LOCK_BTN_ID)?.remove();
 }
 
 // ===== Initialization & Popup Bridge =====

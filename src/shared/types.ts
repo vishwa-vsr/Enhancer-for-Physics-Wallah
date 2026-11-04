@@ -1,7 +1,6 @@
 // ===== Theme & Format Types =====
 export type ThemeMode = 'light' | 'dark';
 export type FinishTimeFormat = 'clock' | 'full';
-export type LiveCatchUpFormat = 'lag' | 'catch';
 export type ReviewPromptStatus = 'pending' | 'reviewed' | 'dismissed_permanently';
 export type VideoQuality = 'auto' | '720p' | '480p' | '360p' | '240p';
 export type VolumeBalancerMode = 'gentle' | 'balanced' | 'max';
@@ -46,7 +45,6 @@ export interface PopupSettings {
   showFinishTime: boolean;
   finishTimeFormat: FinishTimeFormat;
   showLiveCatchUp: boolean;
-  liveCatchUpFormat: LiveCatchUpFormat;
   keySpeedUp: string;
   keySlowDown: string;
   keyReset: string;
@@ -131,7 +129,6 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   showFinishTime: true,
   finishTimeFormat: 'clock',
   showLiveCatchUp: true,
-  liveCatchUpFormat: 'catch',
   keySpeedUp: 'h',
   keySlowDown: 'j',
   keyReset: 'l',

@@ -99,13 +99,6 @@ export function updateFinishTime(): void {
 
   // ===== LIVE CLASS BADGE =====
   if (isLive) {
-    if (!state.lectureTimeEnabled) {
-      badges.forEach((b) => {
-        b.style.display = 'none';
-      });
-      return;
-    }
-
     const hasGoLive = hasGoLiveButton();
     const lagSec = getLiveStreamLag(video);
     const isBehind = hasGoLive || (lagSec !== null && lagSec > 25);
@@ -125,13 +118,11 @@ export function updateFinishTime(): void {
       badge.classList.toggle('pwc-finish-behind-live', isBehind);
       badge.title = '';
 
-      const iconEl = badge.querySelector<HTMLElement>('.pwc-finish-icon');
       const dotEl = badge.querySelector<HTMLElement>('.pwc-finish-live-dot');
       const prefixEl = badge.querySelector<HTMLElement>('.pwc-finish-prefix');
       const clockEl = badge.querySelector<HTMLElement>('.pwc-finish-clock');
       const leftEl = badge.querySelector<HTMLElement>('.pwc-finish-left');
 
-      if (iconEl) iconEl.remove();
       if (dotEl) dotEl.style.display = 'none';
       if (prefixEl && prefixEl.textContent !== liveText) prefixEl.textContent = liveText;
       if (clockEl && clockEl.textContent !== '') clockEl.textContent = '';
@@ -187,35 +178,21 @@ export function updateFinishTime(): void {
     remStr = remM > 0 ? `${remH}h ${remM}m` : `${remH}h`;
   }
 
-  let prefix = 'Ends at ';
-  let clock = clockStr;
-  let left = ` • ${remStr} left`;
-
-  if (state.finishTimeFormat === 'clock') {
-    // Simple mode: "Ends at 4:49 PM"
-    prefix = 'Ends at ';
-    clock = clockStr;
-    left = '';
-  } else {
-    // Detailed mode ('full'): "Ends at 4:49 PM • 25m left"
-    prefix = 'Ends at ';
-    clock = clockStr;
-    left = ` • ${remStr} left`;
-  }
+  const prefix = 'Ends at ';
+  const clock = clockStr;
+  const left = state.finishTimeFormat === 'clock' ? '' : ` • ${remStr} left`;
 
   badges.forEach((badge) => {
     badge.style.display = 'inline-flex';
     badge.title = '';
     badge.classList.remove('pwc-finish-live');
     badge.classList.remove('pwc-finish-behind-live');
-    const iconEl = badge.querySelector<HTMLElement>('.pwc-finish-icon');
     const dotEl = badge.querySelector<HTMLElement>('.pwc-finish-live-dot');
     const prefixEl = badge.querySelector<HTMLElement>('.pwc-finish-prefix');
     const clockEl = badge.querySelector<HTMLElement>('.pwc-finish-clock');
     const leftEl = badge.querySelector<HTMLElement>('.pwc-finish-left');
 
     if (dotEl) dotEl.style.display = 'none';
-    if (iconEl) iconEl.remove();
     if (prefixEl && prefixEl.textContent !== prefix) prefixEl.textContent = prefix;
     if (clockEl && clockEl.textContent !== clock) clockEl.textContent = clock;
     if (leftEl && leftEl.textContent !== left) leftEl.textContent = left;

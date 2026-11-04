@@ -6,10 +6,6 @@ export function getCachedVideo(): HTMLVideoElement | null {
   return cachedVideo;
 }
 
-export function setCachedVideo(video: HTMLVideoElement | null): void {
-  cachedVideo = video;
-}
-
 export function clearVideoCache(): void {
   cachedVideo = null;
 }

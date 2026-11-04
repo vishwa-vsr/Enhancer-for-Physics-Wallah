@@ -1,7 +1,6 @@
 import {
   ContentState,
   HideSettings,
-  LiveCatchUpFormat,
   StateChangeListener,
   ThemeMode,
   VideoQuality,
@@ -48,7 +47,6 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   showFinishTime: true,
   finishTimeFormat: 'clock',
   showLiveCatchUp: true,
-  liveCatchUpFormat: 'catch',
   keySpeedUp: 'h',
   keySlowDown: 'j',
   keyReset: 'l',
@@ -178,7 +176,6 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'showFinishTime',
         'finishTimeFormat',
         'showLiveCatchUp',
-        'liveCatchUpFormat',
         'keySpeedUp',
         'keySlowDown',
         'keyReset',
@@ -358,7 +355,6 @@ export function initState(onLoaded?: () => void): void {
     state.showFinishTime = result.showFinishTime !== false;
     state.finishTimeFormat = result.finishTimeFormat === 'full' ? 'full' : 'clock';
     state.showLiveCatchUp = result.showLiveCatchUp !== false;
-    state.liveCatchUpFormat = result.liveCatchUpFormat === 'lag' ? 'lag' : 'catch';
     state.autoPauseOnHide = !!result.autoPauseOnHide;
     state.themeMode = result.themeMode || 'dark';
     if (typeof document !== 'undefined' && document.documentElement) {
@@ -507,11 +503,6 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'showLiveCatchUp')) {
               state.showLiveCatchUp = changes.showLiveCatchUp.newValue !== false;
               changedKeys.push('showLiveCatchUp');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'liveCatchUpFormat')) {
-              state.liveCatchUpFormat =
-                changes.liveCatchUpFormat.newValue === 'lag' ? 'lag' : 'catch';
-              changedKeys.push('liveCatchUpFormat');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceEnabled')) {
               state.skipSilenceEnabled = !!changes.skipSilenceEnabled.newValue;

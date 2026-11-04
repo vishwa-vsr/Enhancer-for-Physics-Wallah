@@ -84,22 +84,6 @@ let ssInitializing = false;
 let skipSilenceSessionSaved = 0;
 let ssSaveTimer: ReturnType<typeof setTimeout> | null = null;
 
-export function getSSSilenceStartTime(): number {
-  return ssSilenceStartTime;
-}
-
-export function getSSLastVolumeDb(): number {
-  return ssLastVolumeDb;
-}
-
-export function getSSSourceNode(): MediaElementAudioSourceNode | MediaStreamAudioSourceNode | null {
-  return ssSourceNode;
-}
-
-export function getSSDelayNode(): DelayNode | null {
-  return ssDelayNode;
-}
-
 export function isSSEngineRunning(): boolean {
   return ssEngineRunning;
 }
@@ -144,9 +128,7 @@ export function manualThresholdToDb(val: number): number {
   if (typeof val === 'number' && val < 0) {
     return Math.max(-60, Math.min(-20, val));
   }
-  // Fallback if legacy 1-100 scale: 1 -> -60dB, 100 -> -20dB
-  const legacy = Math.max(1, Math.min(100, val || 30));
-  return Math.round(-60 + ((legacy - 1) / 99) * 40);
+  return -40;
 }
 
 // Calculate effective thresholds with 3dB Hysteresis (Schmitt Trigger)

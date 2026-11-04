@@ -328,10 +328,6 @@ html.pwc-hide-quality #pwc-quality-control {
   display: none !important;
 }
 
-/* --- Hide Finish Time Badge: our injected finish time pill --- */
-html.pwc-hide-finishtime #pwc-finish-time-badge {
-  display: none !important;
-}
 
 /* --- Hide Settings Icon: VideoJS setting icon or any gear/quality controls --- */
 html.pwc-hide-setting #setting-icon,
@@ -391,7 +387,6 @@ html.pwc-hide-nextchapter.pwc-hide-attemptdpp
   display: none !important;
 }
 
-/* --- Hide floating container if all navigation cards are hidden --- */
 /* --- Block Recorded Poll Popups: zero-flicker suppression of poll drawer --- */
 html.pwc-block-recorded-polls
   .player
@@ -827,14 +822,6 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   white-space: nowrap;
   font-variant-numeric: tabular-nums !important;
   flex-shrink: 0;
-}
-
-.pwc-finish-icon {
-  width: 13px;
-  height: 13px;
-  stroke: #b5bbc5;
-  flex-shrink: 0;
-  opacity: 0.85;
 }
 
 .pwc-finish-prefix {
