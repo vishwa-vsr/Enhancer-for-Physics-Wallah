@@ -59,6 +59,13 @@ export const finishTimeFormat = signal<FinishTimeFormat>('clock');
 export const showLiveCatchUp = signal(true);
 
 // ===== Focus shortcuts signals (Issue #14) =====
+export const enableFocusShortcuts = signal(true);
+export const enableKeyChat = signal(true);
+export const enableKeyTimeline = signal(true);
+export const enableKeyNotes = signal(true);
+export const enableKeyDoubt = signal(true);
+export const enableKeyFullscreen = signal(true);
+export const enableKeyExit = signal(true);
 export const keyChat = signal('c');
 export const keyTimeline = signal('t');
 export const keyNotes = signal('n');
@@ -182,6 +189,13 @@ export async function initStore() {
   finishTimeFormat.value = s.finishTimeFormat === 'full' ? 'full' : 'clock';
   showLiveCatchUp.value = s.showLiveCatchUp !== false;
 
+  enableFocusShortcuts.value = s.enableFocusShortcuts !== false;
+  enableKeyChat.value = s.enableKeyChat !== false;
+  enableKeyTimeline.value = s.enableKeyTimeline !== false;
+  enableKeyNotes.value = s.enableKeyNotes !== false;
+  enableKeyDoubt.value = s.enableKeyDoubt !== false;
+  enableKeyFullscreen.value = s.enableKeyFullscreen !== false;
+  enableKeyExit.value = s.enableKeyExit !== false;
   keyChat.value = s.keyChat ?? 'c';
   keyTimeline.value = s.keyTimeline ?? 't';
   keyNotes.value = s.keyNotes ?? 'n';
@@ -260,6 +274,27 @@ export async function initStore() {
     }
     if (changes.keyReset !== undefined) {
       keyReset.value = sanitizeSpeedShortcut(changes.keyReset, 'l');
+    }
+    if (changes.enableFocusShortcuts !== undefined) {
+      enableFocusShortcuts.value = changes.enableFocusShortcuts !== false;
+    }
+    if (changes.enableKeyChat !== undefined) {
+      enableKeyChat.value = changes.enableKeyChat !== false;
+    }
+    if (changes.enableKeyTimeline !== undefined) {
+      enableKeyTimeline.value = changes.enableKeyTimeline !== false;
+    }
+    if (changes.enableKeyNotes !== undefined) {
+      enableKeyNotes.value = changes.enableKeyNotes !== false;
+    }
+    if (changes.enableKeyDoubt !== undefined) {
+      enableKeyDoubt.value = changes.enableKeyDoubt !== false;
+    }
+    if (changes.enableKeyFullscreen !== undefined) {
+      enableKeyFullscreen.value = changes.enableKeyFullscreen !== false;
+    }
+    if (changes.enableKeyExit !== undefined) {
+      enableKeyExit.value = changes.enableKeyExit !== false;
     }
     if (changes.keyChat !== undefined) keyChat.value = changes.keyChat;
     if (changes.keyTimeline !== undefined) keyTimeline.value = changes.keyTimeline;

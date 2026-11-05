@@ -30,6 +30,12 @@ import {
   keyDoubt,
   keyFullscreen,
   keyExit,
+  enableKeyChat,
+  enableKeyTimeline,
+  enableKeyNotes,
+  enableKeyDoubt,
+  enableKeyFullscreen,
+  enableKeyExit,
   allowShortcutsWhenHidden,
   autoHideControls,
   autoHideDelay,
@@ -65,11 +71,11 @@ function sendFocusLockMessage(action: 'get' | 'toggle'): Promise<LockStatus> {
             }
             resolve(res.active ? 'active' : 'inactive');
           });
-        } catch (_err) {
+        } catch {
           resolve('unavailable');
         }
       });
-    } catch (_err) {
+    } catch {
       resolve('unavailable');
     }
   });
@@ -103,17 +109,31 @@ export function FocusTab() {
 
   return (
     <>
+      {/* 1. Focus Lock Card */}
       <FocusLockSection
         lockUnavailable={lockUnavailable}
         lockActive={lockActive}
         onToggle={handleToggleLock}
       />
-      <FocusTogglesSection />
+
+      {/* 2. Auto-Hide Controls Card (Directly below Focus Lock) */}
       <AutoHideSection />
+
+      {/* 3. Distraction Cleaners Card */}
+      <DistractionsSection />
+
+      {/* 4. Smart Lecture Tools Card */}
+      <SmartToolsSection />
+
+      {/* 5. Keyboard Shortcuts Card */}
+      <ShortcutsSection />
     </>
   );
 }
 
+/* =========================================================================
+   1. FOCUS LOCK SECTION (Retains sublabel for live status feedback)
+   ========================================================================= */
 interface FocusLockSectionProps {
   lockUnavailable: boolean;
   lockActive: boolean;
@@ -148,6 +168,254 @@ function FocusLockSection({ lockUnavailable, lockActive, onToggle }: FocusLockSe
   );
 }
 
+/* =========================================================================
+   2. AUTO-HIDE CONTROLS SECTION
+   ========================================================================= */
+function AutoHideSection() {
+  return (
+    <section aria-label="Auto-Hide Controls">
+      <h2 class={styles.sectionTitle}>Auto-Hide Controls</h2>
+      <div class={styles.settingsGroupCard}>
+        <FeatureRow label="Auto-Hide Controls & Cursor">
+          <Toggle
+            checked={autoHideControls.value}
+            onChange={(v) => {
+              autoHideControls.value = v;
+              saveSetting('autoHideControls', v);
+            }}
+            ariaLabel="Toggle Auto-Hide Controls & Cursor"
+          />
+        </FeatureRow>
+        {autoHideControls.value && (
+          <>
+            <div class={styles.featureConfigRow}>
+              <span class={styles.configLabel}>Inactivity Delay</span>
+              <Stepper
+                className={styles.stepperCard}
+                value={autoHideDelay.value}
+                min={0.5}
+                max={5.0}
+                step={0.1}
+                unit="s"
+                onChange={(v) => {
+                  autoHideDelay.value = v;
+                  saveSetting('autoHideDelay', v);
+                }}
+              />
+            </div>
+            <FeatureRow label="Also Hide When Paused">
+              <Toggle
+                checked={autoHideWhenPaused.value}
+                onChange={(v) => {
+                  autoHideWhenPaused.value = v;
+                  saveSetting('autoHideWhenPaused', v);
+                }}
+                ariaLabel="Toggle Auto-Hide When Paused"
+              />
+            </FeatureRow>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* =========================================================================
+   3. DISTRACTION CLEANERS SECTION
+   ========================================================================= */
+function DistractionsSection() {
+  return (
+    <section aria-label="Distraction Cleaners">
+      <h2 class={styles.sectionTitle}>Distraction Cleaners</h2>
+      <div class={styles.settingsGroupCard}>
+        <FeatureRow label="Instant Hide Button">
+          <Toggle
+            checked={enableInstantHide.value}
+            onChange={(v) => {
+              enableInstantHide.value = v;
+              saveSetting('enableInstantHide', v);
+            }}
+            ariaLabel="Toggle Instant Hide Button"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Live Chat">
+          <Toggle
+            checked={hideChat.value}
+            onChange={(v) => {
+              hideChat.value = v;
+              saveSetting('hideChat', v);
+            }}
+            ariaLabel="Toggle Hide Live Chat"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Doubt Q&A">
+          <Toggle
+            checked={hideDoubt.value}
+            onChange={(v) => {
+              hideDoubt.value = v;
+              saveSetting('hideDoubt', v);
+            }}
+            ariaLabel="Toggle Hide Doubt Q&A"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide 'Ask AI'">
+          <Toggle
+            checked={hideAskAI.value}
+            onChange={(v) => {
+              hideAskAI.value = v;
+              saveSetting('hideAskAI', v);
+            }}
+            ariaLabel="Toggle Hide 'Ask AI'"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Study Notes">
+          <Toggle
+            checked={hideNotes.value}
+            onChange={(v) => {
+              hideNotes.value = v;
+              saveSetting('hideNotes', v);
+            }}
+            ariaLabel="Toggle Hide Study Notes"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Attempt DPP">
+          <Toggle
+            checked={hideAttemptDPP.value}
+            onChange={(v) => {
+              hideAttemptDPP.value = v;
+              saveSetting('hideAttemptDPP', v);
+            }}
+            ariaLabel="Toggle Hide Attempt DPP"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Next Lecture">
+          <Toggle
+            checked={hideNextLecture.value}
+            onChange={(v) => {
+              hideNextLecture.value = v;
+              saveSetting('hideNextLecture', v);
+            }}
+            ariaLabel="Toggle Hide Next Lecture"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Next Chapter">
+          <Toggle
+            checked={hideNextChapter.value}
+            onChange={(v) => {
+              hideNextChapter.value = v;
+              saveSetting('hideNextChapter', v);
+            }}
+            ariaLabel="Toggle Hide Next Chapter"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Note Timeline">
+          <Toggle
+            checked={hideNoteTimeline.value}
+            onChange={(v) => {
+              hideNoteTimeline.value = v;
+              saveSetting('hideNoteTimeline', v);
+            }}
+            ariaLabel="Toggle Hide Note Timeline"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Timeline Line">
+          <Toggle
+            checked={hideTimeLine.value}
+            onChange={(v) => {
+              hideTimeLine.value = v;
+              saveSetting('hideTimeLine', v);
+            }}
+            ariaLabel="Toggle Hide Timeline Line"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Time Display">
+          <Toggle
+            checked={hideTimeText.value}
+            onChange={(v) => {
+              hideTimeText.value = v;
+              saveSetting('hideTimeText', v);
+            }}
+            ariaLabel="Toggle Hide Time Display"
+          />
+        </FeatureRow>
+        <FeatureRow label="Hide Settings Icon">
+          <Toggle
+            checked={hideSetting.value}
+            onChange={(v) => {
+              hideSetting.value = v;
+              saveSetting('hideSetting', v);
+            }}
+            ariaLabel="Toggle Hide Settings Icon"
+          />
+        </FeatureRow>
+      </div>
+    </section>
+  );
+}
+
+/* =========================================================================
+   4. SMART LECTURE TOOLS SECTION
+   ========================================================================= */
+function SmartToolsSection() {
+  return (
+    <section aria-label="Smart Lecture Tools">
+      <h2 class={styles.sectionTitle}>Smart Lecture Tools</h2>
+      <div class={styles.settingsGroupCard}>
+        <FeatureRow label="Auto-Skip Promo Ads">
+          <Toggle
+            checked={autoSkipPromoAds.value}
+            onChange={(v) => {
+              autoSkipPromoAds.value = v;
+              saveSetting('autoSkipPromoAds', v);
+            }}
+            ariaLabel="Toggle Auto-Skip Promo Ads"
+          />
+        </FeatureRow>
+        <FeatureRow label="Block Recorded Poll Popups">
+          <Toggle
+            checked={blockRecordedPolls.value}
+            onChange={(v) => {
+              blockRecordedPolls.value = v;
+              saveSetting('blockRecordedPolls', v);
+            }}
+            ariaLabel="Toggle Block Recorded Poll Popups"
+          />
+        </FeatureRow>
+        <FeatureRow label="Lecture Finish Time">
+          <div class={styles.finishTimeControls}>
+            <SelectDropdown
+              size="sm"
+              options={FINISH_TIME_FORMAT_OPTIONS}
+              value={finishTimeFormat.value === 'full' ? 'full' : 'clock'}
+              onChange={(val) => {
+                const format = val as FinishTimeFormat;
+                finishTimeFormat.value = format;
+                saveSetting('finishTimeFormat', format);
+              }}
+              ariaLabel="Lecture Finish Time Format"
+            />
+            <Toggle
+              checked={lectureTimeEnabled.value}
+              onChange={(v) => {
+                lectureTimeEnabled.value = v;
+                saveSetting('lectureTimeEnabled', v);
+                showFinishTime.value = v;
+                saveSetting('showFinishTime', v);
+                showLiveCatchUp.value = v;
+                saveSetting('showLiveCatchUp', v);
+              }}
+              ariaLabel="Toggle Lecture Finish Time"
+            />
+          </div>
+        </FeatureRow>
+      </div>
+    </section>
+  );
+}
+
+/* =========================================================================
+   5. KEYBOARD SHORTCUTS SECTION
+   ========================================================================= */
 type FocusKeyType =
   'keyChat' | 'keyTimeline' | 'keyNotes' | 'keyDoubt' | 'keyFullscreen' | 'keyExit';
 
@@ -160,7 +428,7 @@ const FOCUS_KEY_SIGNALS: Record<FocusKeyType, { value: string }> = {
   keyExit,
 };
 
-function FocusTogglesSection() {
+function ShortcutsSection() {
   const [activeHotkeyField, setActiveHotkeyField] = useState<FocusKeyType | null>(null);
   const [hotkeyNotice, setHotkeyNotice] = useState<{
     keyType: FocusKeyType;
@@ -194,8 +462,11 @@ function FocusTogglesSection() {
     }, 3600);
   };
 
-  const getShortcutDisplayValue = (keyType: FocusKeyType): string =>
-    activeHotkeyField === keyType ? 'Press key...' : FOCUS_KEY_SIGNALS[keyType].value;
+  const getShortcutDisplayValue = (keyType: FocusKeyType): string => {
+    if (activeHotkeyField === keyType) return 'Press key...';
+    const val = FOCUS_KEY_SIGNALS[keyType].value;
+    return val ? val.toUpperCase() : '—';
+  };
 
   const handleHotkeyFocus = (keyType: FocusKeyType) => {
     clearNoticeTimer();
@@ -265,84 +536,43 @@ function FocusTogglesSection() {
 
   const isShortcutDisabled = (isHidden: boolean): boolean =>
     isHidden && !allowShortcutsWhenHidden.value;
-  const doubtShortcutDisabled = isShortcutDisabled(hideDoubt.value);
-  const chatShortcutDisabled = isShortcutDisabled(hideChat.value);
-  const notesShortcutDisabled = isShortcutDisabled(hideNotes.value);
-  const timelineShortcutDisabled = isShortcutDisabled(hideNoteTimeline.value);
+
+  const chatKeyDisabled = !enableKeyChat.value || isShortcutDisabled(hideChat.value);
+  const doubtKeyDisabled = !enableKeyDoubt.value || isShortcutDisabled(hideDoubt.value);
+  const notesKeyDisabled = !enableKeyNotes.value || isShortcutDisabled(hideNotes.value);
+  const timelineKeyDisabled = !enableKeyTimeline.value || isShortcutDisabled(hideNoteTimeline.value);
+  const fullscreenKeyDisabled = !enableKeyFullscreen.value;
+  const exitKeyDisabled = !enableKeyExit.value;
 
   return (
-    <section>
-      <h2 class={styles.sectionTitle}>Focus Toggles</h2>
+    <section aria-label="Keyboard Shortcuts">
+      <h2 class={styles.sectionTitle}>Keyboard Shortcuts</h2>
       <div class={styles.settingsGroupCard}>
-        <FeatureRow label="Instant Hide Button">
-          <Toggle
-            checked={enableInstantHide.value}
-            onChange={(v) => {
-              enableInstantHide.value = v;
-              saveSetting('enableInstantHide', v);
-            }}
-            ariaLabel="Toggle Instant Hide Button"
-          />
-        </FeatureRow>
-        <FeatureRow label="Allow Shortcuts When Hidden">
+        <FeatureRow label="Allow Shortcuts When Icon is Hidden">
           <Toggle
             checked={allowShortcutsWhenHidden.value}
             onChange={(v) => {
               allowShortcutsWhenHidden.value = v;
               saveSetting('allowShortcutsWhenHidden', v);
             }}
-            ariaLabel="Toggle Allow Shortcuts When Hidden"
+            ariaLabel="Toggle Allow Shortcuts When Icon is Hidden"
           />
         </FeatureRow>
-        <FeatureRow label="Hide 'Ask AI'">
-          <Toggle
-            checked={hideAskAI.value}
-            onChange={(v) => {
-              hideAskAI.value = v;
-              saveSetting('hideAskAI', v);
-            }}
-          />
-        </FeatureRow>
-        <FeatureRow label="Hide Doubt Q&A">
+
+        <FeatureRow label="Live Chat">
           <div class={styles.rowControls}>
             <input
               type="text"
               readonly
-              class={`${styles.shortcutInput} ${doubtShortcutDisabled ? styles.shortcutDisabled : ''}`}
-              value={getShortcutDisplayValue('keyDoubt')}
-              disabled={doubtShortcutDisabled}
-              title={
-                doubtShortcutDisabled
-                  ? 'Shortcut disabled because Doubt Q&A is hidden'
-                  : 'Doubt shortcut key (Backspace to clear)'
-              }
-              onFocus={() => handleHotkeyFocus('keyDoubt')}
-              onBlur={() => handleHotkeyBlur('keyDoubt')}
-              onKeyDown={(e) => handleHotkeyDown('keyDoubt', e)}
-              aria-label="Doubt Shortcut Key"
-            />
-            <Toggle
-              checked={hideDoubt.value}
-              onChange={(v) => {
-                hideDoubt.value = v;
-                saveSetting('hideDoubt', v);
-              }}
-            />
-          </div>
-        </FeatureRow>
-        {renderRowNotice('keyDoubt')}
-        <FeatureRow label="Hide Live Chat">
-          <div class={styles.rowControls}>
-            <input
-              type="text"
-              readonly
-              class={`${styles.shortcutInput} ${chatShortcutDisabled ? styles.shortcutDisabled : ''}`}
+              class={`${styles.shortcutInput} ${chatKeyDisabled ? styles.shortcutDisabled : ''}`}
               value={getShortcutDisplayValue('keyChat')}
-              disabled={chatShortcutDisabled}
+              disabled={chatKeyDisabled}
               title={
-                chatShortcutDisabled
-                  ? 'Shortcut disabled because Live Chat is hidden'
-                  : 'Chat shortcut key (Backspace to clear)'
+                !enableKeyChat.value
+                  ? 'Shortcut is toggled off'
+                  : isShortcutDisabled(hideChat.value)
+                    ? 'Shortcut disabled because Live Chat is hidden'
+                    : 'Chat shortcut key (Backspace to clear)'
               }
               onFocus={() => handleHotkeyFocus('keyChat')}
               onBlur={() => handleHotkeyBlur('keyChat')}
@@ -350,27 +580,63 @@ function FocusTogglesSection() {
               aria-label="Live Chat Shortcut Key"
             />
             <Toggle
-              checked={hideChat.value}
+              checked={enableKeyChat.value}
               onChange={(v) => {
-                hideChat.value = v;
-                saveSetting('hideChat', v);
+                enableKeyChat.value = v;
+                saveSetting('enableKeyChat', v);
               }}
+              ariaLabel="Toggle Live Chat Shortcut"
             />
           </div>
         </FeatureRow>
         {renderRowNotice('keyChat')}
-        <FeatureRow label="Hide Study Notes">
+
+        <FeatureRow label="Doubt Q&A">
           <div class={styles.rowControls}>
             <input
               type="text"
               readonly
-              class={`${styles.shortcutInput} ${notesShortcutDisabled ? styles.shortcutDisabled : ''}`}
-              value={getShortcutDisplayValue('keyNotes')}
-              disabled={notesShortcutDisabled}
+              class={`${styles.shortcutInput} ${doubtKeyDisabled ? styles.shortcutDisabled : ''}`}
+              value={getShortcutDisplayValue('keyDoubt')}
+              disabled={doubtKeyDisabled}
               title={
-                notesShortcutDisabled
-                  ? 'Shortcut disabled because Study Notes is hidden'
-                  : 'Study Notes shortcut key (Backspace to clear)'
+                !enableKeyDoubt.value
+                  ? 'Shortcut is toggled off'
+                  : isShortcutDisabled(hideDoubt.value)
+                    ? 'Shortcut disabled because Doubt Q&A is hidden'
+                    : 'Doubt shortcut key (Backspace to clear)'
+              }
+              onFocus={() => handleHotkeyFocus('keyDoubt')}
+              onBlur={() => handleHotkeyBlur('keyDoubt')}
+              onKeyDown={(e) => handleHotkeyDown('keyDoubt', e)}
+              aria-label="Doubt Shortcut Key"
+            />
+            <Toggle
+              checked={enableKeyDoubt.value}
+              onChange={(v) => {
+                enableKeyDoubt.value = v;
+                saveSetting('enableKeyDoubt', v);
+              }}
+              ariaLabel="Toggle Doubt Q&A Shortcut"
+            />
+          </div>
+        </FeatureRow>
+        {renderRowNotice('keyDoubt')}
+
+        <FeatureRow label="Study Notes">
+          <div class={styles.rowControls}>
+            <input
+              type="text"
+              readonly
+              class={`${styles.shortcutInput} ${notesKeyDisabled ? styles.shortcutDisabled : ''}`}
+              value={getShortcutDisplayValue('keyNotes')}
+              disabled={notesKeyDisabled}
+              title={
+                !enableKeyNotes.value
+                  ? 'Shortcut is toggled off'
+                  : isShortcutDisabled(hideNotes.value)
+                    ? 'Shortcut disabled because Study Notes is hidden'
+                    : 'Study Notes shortcut key (Backspace to clear)'
               }
               onFocus={() => handleHotkeyFocus('keyNotes')}
               onBlur={() => handleHotkeyBlur('keyNotes')}
@@ -378,27 +644,31 @@ function FocusTogglesSection() {
               aria-label="Study Notes Shortcut Key"
             />
             <Toggle
-              checked={hideNotes.value}
+              checked={enableKeyNotes.value}
               onChange={(v) => {
-                hideNotes.value = v;
-                saveSetting('hideNotes', v);
+                enableKeyNotes.value = v;
+                saveSetting('enableKeyNotes', v);
               }}
+              ariaLabel="Toggle Study Notes Shortcut"
             />
           </div>
         </FeatureRow>
         {renderRowNotice('keyNotes')}
-        <FeatureRow label="Hide Note Timeline">
+
+        <FeatureRow label="Note Timeline">
           <div class={styles.rowControls}>
             <input
               type="text"
               readonly
-              class={`${styles.shortcutInput} ${timelineShortcutDisabled ? styles.shortcutDisabled : ''}`}
+              class={`${styles.shortcutInput} ${timelineKeyDisabled ? styles.shortcutDisabled : ''}`}
               value={getShortcutDisplayValue('keyTimeline')}
-              disabled={timelineShortcutDisabled}
+              disabled={timelineKeyDisabled}
               title={
-                timelineShortcutDisabled
-                  ? 'Shortcut disabled because Note Timeline is hidden'
-                  : 'Note Timeline shortcut key (Backspace to clear)'
+                !enableKeyTimeline.value
+                  ? 'Shortcut is toggled off'
+                  : isShortcutDisabled(hideNoteTimeline.value)
+                    ? 'Shortcut disabled because Note Timeline is hidden'
+                    : 'Note Timeline shortcut key (Backspace to clear)'
               }
               onFocus={() => handleHotkeyFocus('keyTimeline')}
               onBlur={() => handleHotkeyBlur('keyTimeline')}
@@ -406,193 +676,76 @@ function FocusTogglesSection() {
               aria-label="Note Timeline Shortcut Key"
             />
             <Toggle
-              checked={hideNoteTimeline.value}
+              checked={enableKeyTimeline.value}
               onChange={(v) => {
-                hideNoteTimeline.value = v;
-                saveSetting('hideNoteTimeline', v);
+                enableKeyTimeline.value = v;
+                saveSetting('enableKeyTimeline', v);
               }}
+              ariaLabel="Toggle Note Timeline Shortcut"
             />
           </div>
         </FeatureRow>
         {renderRowNotice('keyTimeline')}
-        <FeatureRow label="Hide Settings Icon">
-          <Toggle
-            checked={hideSetting.value}
-            onChange={(v) => {
-              hideSetting.value = v;
-              saveSetting('hideSetting', v);
-            }}
-          />
-        </FeatureRow>
-        <FeatureRow label="Hide Timeline Line">
-          <Toggle
-            checked={hideTimeLine.value}
-            onChange={(v) => {
-              hideTimeLine.value = v;
-              saveSetting('hideTimeLine', v);
-            }}
-          />
-        </FeatureRow>
-        <FeatureRow label="Hide Time Display">
-          <Toggle
-            checked={hideTimeText.value}
-            onChange={(v) => {
-              hideTimeText.value = v;
-              saveSetting('hideTimeText', v);
-            }}
-          />
-        </FeatureRow>
-        <FeatureRow label="Hide Next Lecture">
-          <Toggle
-            checked={hideNextLecture.value}
-            onChange={(v) => {
-              hideNextLecture.value = v;
-              saveSetting('hideNextLecture', v);
-            }}
-          />
-        </FeatureRow>
-        <FeatureRow label="Hide Next Chapter">
-          <Toggle
-            checked={hideNextChapter.value}
-            onChange={(v) => {
-              hideNextChapter.value = v;
-              saveSetting('hideNextChapter', v);
-            }}
-          />
-        </FeatureRow>
-        <FeatureRow label="Hide Attempt DPP">
-          <Toggle
-            checked={hideAttemptDPP.value}
-            onChange={(v) => {
-              hideAttemptDPP.value = v;
-              saveSetting('hideAttemptDPP', v);
-            }}
-          />
-        </FeatureRow>
-        <FeatureRow label="Auto-Skip Promo Ads">
-          <Toggle
-            checked={autoSkipPromoAds.value}
-            onChange={(v) => {
-              autoSkipPromoAds.value = v;
-              saveSetting('autoSkipPromoAds', v);
-            }}
-            ariaLabel="Toggle Auto-Skip Promo Ads"
-          />
-        </FeatureRow>
-        <FeatureRow label="Block Recorded Poll Popups">
-          <Toggle
-            checked={blockRecordedPolls.value}
-            onChange={(v) => {
-              blockRecordedPolls.value = v;
-              saveSetting('blockRecordedPolls', v);
-            }}
-            ariaLabel="Toggle Block Recorded Poll Popups"
-          />
-        </FeatureRow>
-        <FeatureRow label="Lecture Finish Time">
-          <div class={styles.finishTimeControls}>
-            <SelectDropdown
-              size="sm"
-              options={FINISH_TIME_FORMAT_OPTIONS}
-              value={finishTimeFormat.value === 'full' ? 'full' : 'clock'}
-              onChange={(val) => {
-                const format = val as FinishTimeFormat;
-                finishTimeFormat.value = format;
-                saveSetting('finishTimeFormat', format);
-              }}
-              ariaLabel="Lecture Finish Time Format"
+
+        <FeatureRow label="Full Screen">
+          <div class={styles.rowControls}>
+            <input
+              type="text"
+              readonly
+              class={`${styles.shortcutInput} ${fullscreenKeyDisabled ? styles.shortcutDisabled : ''}`}
+              value={getShortcutDisplayValue('keyFullscreen')}
+              disabled={fullscreenKeyDisabled}
+              title={
+                !enableKeyFullscreen.value
+                  ? 'Shortcut is toggled off'
+                  : 'Full Screen shortcut key (Backspace to clear)'
+              }
+              onFocus={() => handleHotkeyFocus('keyFullscreen')}
+              onBlur={() => handleHotkeyBlur('keyFullscreen')}
+              onKeyDown={(e) => handleHotkeyDown('keyFullscreen', e)}
+              aria-label="Full Screen Shortcut Key"
             />
             <Toggle
-              checked={lectureTimeEnabled.value}
+              checked={enableKeyFullscreen.value}
               onChange={(v) => {
-                lectureTimeEnabled.value = v;
-                saveSetting('lectureTimeEnabled', v);
-                showFinishTime.value = v;
-                saveSetting('showFinishTime', v);
-                showLiveCatchUp.value = v;
-                saveSetting('showLiveCatchUp', v);
+                enableKeyFullscreen.value = v;
+                saveSetting('enableKeyFullscreen', v);
               }}
-              ariaLabel="Toggle Lecture Finish Time"
+              ariaLabel="Toggle Full Screen Shortcut"
             />
           </div>
         </FeatureRow>
-        <FeatureRow label="Toggle Fullscreen">
-          <input
-            type="text"
-            readonly
-            class={styles.shortcutInput}
-            value={getShortcutDisplayValue('keyFullscreen')}
-            title="Fullscreen shortcut key (Backspace to clear)"
-            onFocus={() => handleHotkeyFocus('keyFullscreen')}
-            onBlur={() => handleHotkeyBlur('keyFullscreen')}
-            onKeyDown={(e) => handleHotkeyDown('keyFullscreen', e)}
-            aria-label="Fullscreen Shortcut Key"
-          />
-        </FeatureRow>
         {renderRowNotice('keyFullscreen')}
+
         <FeatureRow label="Quick Exit Class">
-          <input
-            type="text"
-            readonly
-            class={styles.shortcutInput}
-            value={getShortcutDisplayValue('keyExit')}
-            title="Quick Exit shortcut key (Backspace to clear)"
-            onFocus={() => handleHotkeyFocus('keyExit')}
-            onBlur={() => handleHotkeyBlur('keyExit')}
-            onKeyDown={(e) => handleHotkeyDown('keyExit', e)}
-            aria-label="Quick Exit Shortcut Key"
-          />
+          <div class={styles.rowControls}>
+            <input
+              type="text"
+              readonly
+              class={`${styles.shortcutInput} ${exitKeyDisabled ? styles.shortcutDisabled : ''}`}
+              value={getShortcutDisplayValue('keyExit')}
+              disabled={exitKeyDisabled}
+              title={
+                !enableKeyExit.value
+                  ? 'Shortcut is toggled off'
+                  : 'Quick Exit shortcut key (Backspace to clear)'
+              }
+              onFocus={() => handleHotkeyFocus('keyExit')}
+              onBlur={() => handleHotkeyBlur('keyExit')}
+              onKeyDown={(e) => handleHotkeyDown('keyExit', e)}
+              aria-label="Quick Exit Shortcut Key"
+            />
+            <Toggle
+              checked={enableKeyExit.value}
+              onChange={(v) => {
+                enableKeyExit.value = v;
+                saveSetting('enableKeyExit', v);
+              }}
+              ariaLabel="Toggle Quick Exit Shortcut"
+            />
+          </div>
         </FeatureRow>
         {renderRowNotice('keyExit')}
-      </div>
-    </section>
-  );
-}
-
-function AutoHideSection() {
-  return (
-    <section aria-label="Auto-Hide Controls">
-      <h2 class={styles.sectionTitle}>Auto-Hide Controls</h2>
-      <div class={styles.settingsGroupCard}>
-        <FeatureRow label="Auto-Hide Controls & Cursor">
-          <Toggle
-            checked={autoHideControls.value}
-            onChange={(v) => {
-              autoHideControls.value = v;
-              saveSetting('autoHideControls', v);
-            }}
-            ariaLabel="Toggle Auto-Hide Controls & Cursor"
-          />
-        </FeatureRow>
-        {autoHideControls.value && (
-          <>
-            <div class={styles.featureConfigRow}>
-              <span class={styles.configLabel}>Inactivity Delay</span>
-              <Stepper
-                className={styles.stepperCard}
-                value={autoHideDelay.value}
-                min={0.5}
-                max={5.0}
-                step={0.1}
-                unit="s"
-                onChange={(v) => {
-                  autoHideDelay.value = v;
-                  saveSetting('autoHideDelay', v);
-                }}
-              />
-            </div>
-            <FeatureRow label="Also Hide When Paused">
-              <Toggle
-                checked={autoHideWhenPaused.value}
-                onChange={(v) => {
-                  autoHideWhenPaused.value = v;
-                  saveSetting('autoHideWhenPaused', v);
-                }}
-                ariaLabel="Toggle Auto-Hide When Paused"
-              />
-            </FeatureRow>
-          </>
-        )}
       </div>
     </section>
   );

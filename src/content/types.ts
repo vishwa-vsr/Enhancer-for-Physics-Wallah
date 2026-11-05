@@ -56,6 +56,13 @@ export interface ContentState {
   autoPauseOnHide: boolean;
 
   // Focus shortcuts (Issue #14)
+  enableFocusShortcuts: boolean;
+  enableKeyChat: boolean;
+  enableKeyTimeline: boolean;
+  enableKeyNotes: boolean;
+  enableKeyDoubt: boolean;
+  enableKeyFullscreen: boolean;
+  enableKeyExit: boolean;
   keyChat: string;
   keyTimeline: string;
   keyNotes: string;

@@ -51,6 +51,13 @@ export interface PopupSettings {
   autoPauseOnHide: boolean;
 
   // Focus shortcuts (Issue #14)
+  enableFocusShortcuts: boolean;
+  enableKeyChat: boolean;
+  enableKeyTimeline: boolean;
+  enableKeyNotes: boolean;
+  enableKeyDoubt: boolean;
+  enableKeyFullscreen: boolean;
+  enableKeyExit: boolean;
   keyChat: string;
   keyTimeline: string;
   keyNotes: string;
@@ -134,6 +141,13 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   keyReset: 'l',
   autoPauseOnHide: false,
 
+  enableFocusShortcuts: true,
+  enableKeyChat: true,
+  enableKeyTimeline: true,
+  enableKeyNotes: true,
+  enableKeyDoubt: true,
+  enableKeyFullscreen: true,
+  enableKeyExit: true,
   keyChat: 'c',
   keyTimeline: 't',
   keyNotes: 'n',

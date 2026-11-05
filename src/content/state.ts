@@ -52,6 +52,13 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   keyReset: 'l',
   autoPauseOnHide: false,
 
+  enableFocusShortcuts: true,
+  enableKeyChat: true,
+  enableKeyTimeline: true,
+  enableKeyNotes: true,
+  enableKeyDoubt: true,
+  enableKeyFullscreen: true,
+  enableKeyExit: true,
   keyChat: 'c',
   keyTimeline: 't',
   keyNotes: 'n',
@@ -179,6 +186,13 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'keySpeedUp',
         'keySlowDown',
         'keyReset',
+        'enableFocusShortcuts',
+        'enableKeyChat',
+        'enableKeyTimeline',
+        'enableKeyNotes',
+        'enableKeyDoubt',
+        'enableKeyFullscreen',
+        'enableKeyExit',
         'keyChat',
         'keyTimeline',
         'keyNotes',
@@ -290,6 +304,13 @@ export function initState(onLoaded?: () => void): void {
       result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed) : 2.0;
     state.alwaysExpandWidget = !!result.alwaysExpandWidget;
 
+    state.enableFocusShortcuts = result.enableFocusShortcuts !== false;
+    state.enableKeyChat = result.enableKeyChat !== false;
+    state.enableKeyTimeline = result.enableKeyTimeline !== false;
+    state.enableKeyNotes = result.enableKeyNotes !== false;
+    state.enableKeyDoubt = result.enableKeyDoubt !== false;
+    state.enableKeyFullscreen = result.enableKeyFullscreen !== false;
+    state.enableKeyExit = result.enableKeyExit !== false;
     state.keyChat = readShortcutKey(result.keyChat, 'c');
     state.keyTimeline = readShortcutKey(result.keyTimeline, 't');
     state.keyNotes = readShortcutKey(result.keyNotes, 'n');
@@ -563,6 +584,34 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'autoPauseOnHide')) {
               state.autoPauseOnHide = !!changes.autoPauseOnHide.newValue;
               changedKeys.push('autoPauseOnHide');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'enableFocusShortcuts')) {
+              state.enableFocusShortcuts = changes.enableFocusShortcuts.newValue !== false;
+              changedKeys.push('enableFocusShortcuts');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyChat')) {
+              state.enableKeyChat = changes.enableKeyChat.newValue !== false;
+              changedKeys.push('enableKeyChat');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyTimeline')) {
+              state.enableKeyTimeline = changes.enableKeyTimeline.newValue !== false;
+              changedKeys.push('enableKeyTimeline');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyNotes')) {
+              state.enableKeyNotes = changes.enableKeyNotes.newValue !== false;
+              changedKeys.push('enableKeyNotes');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyDoubt')) {
+              state.enableKeyDoubt = changes.enableKeyDoubt.newValue !== false;
+              changedKeys.push('enableKeyDoubt');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyFullscreen')) {
+              state.enableKeyFullscreen = changes.enableKeyFullscreen.newValue !== false;
+              changedKeys.push('enableKeyFullscreen');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyExit')) {
+              state.enableKeyExit = changes.enableKeyExit.newValue !== false;
+              changedKeys.push('enableKeyExit');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'keyChat')) {
               state.keyChat = readShortcutKey(changes.keyChat.newValue, 'c');

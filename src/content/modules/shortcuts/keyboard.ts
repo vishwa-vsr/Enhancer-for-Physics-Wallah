@@ -140,17 +140,20 @@ export function initKeyboardShortcuts(): void {
     }
 
     // 2. Focus & Player Shortcuts (Issue #14)
+    // Rule: If focus shortcuts are disabled globally, ignore all focus keys
+    if (!state.enableFocusShortcuts) return;
+
     // Rule: If an item is HIDDEN by focus mode, its action is blocked unless allowShortcutsWhenHidden is enabled.
 
     // Fullscreen (F)
-    if (state.keyFullscreen && matchKey(e, state.keyFullscreen)) {
+    if (state.enableKeyFullscreen && state.keyFullscreen && matchKey(e, state.keyFullscreen)) {
       e.preventDefault();
       toggleFullscreen();
       return;
     }
 
     // Quick Exit (E)
-    if (state.keyExit && matchKey(e, state.keyExit)) {
+    if (state.enableKeyExit && state.keyExit && matchKey(e, state.keyExit)) {
       e.preventDefault();
       if (isFocusLockActive()) {
         handleFocusLockExitShortcut(executeQuickExit);
@@ -171,7 +174,7 @@ export function initKeyboardShortcuts(): void {
     };
 
     // Live Chat (C)
-    if (state.keyChat && matchKey(e, state.keyChat)) {
+    if (state.enableKeyChat && state.keyChat && matchKey(e, state.keyChat)) {
       e.preventDefault();
       if (!state.hideSettings.hideChat || state.allowShortcutsWhenHidden) {
         triggerPanel('chat');
@@ -180,7 +183,7 @@ export function initKeyboardShortcuts(): void {
     }
 
     // Note Timeline (T)
-    if (state.keyTimeline && matchKey(e, state.keyTimeline)) {
+    if (state.enableKeyTimeline && state.keyTimeline && matchKey(e, state.keyTimeline)) {
       e.preventDefault();
       if (!state.hideSettings.hideNoteTimeline || state.allowShortcutsWhenHidden) {
         triggerPanel('notetimeline');
@@ -189,7 +192,7 @@ export function initKeyboardShortcuts(): void {
     }
 
     // Study Notes (N / A)
-    if (state.keyNotes && matchKey(e, state.keyNotes)) {
+    if (state.enableKeyNotes && state.keyNotes && matchKey(e, state.keyNotes)) {
       e.preventDefault();
       if (!state.hideSettings.hideNotes || state.allowShortcutsWhenHidden) {
         triggerPanel('notes');
@@ -198,7 +201,7 @@ export function initKeyboardShortcuts(): void {
     }
 
     // Doubt Q&A (D)
-    if (state.keyDoubt && matchKey(e, state.keyDoubt)) {
+    if (state.enableKeyDoubt && state.keyDoubt && matchKey(e, state.keyDoubt)) {
       e.preventDefault();
       if (!state.hideSettings.hideDoubt || state.allowShortcutsWhenHidden) {
         triggerPanel('doubt');

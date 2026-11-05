@@ -6,12 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [1.1.0.6] - 2026-11-04
+## [1.1.0.6] - 2026-11-05
 
 ### Added
 
 - **Block Recorded Poll Popups**: Turn off automatic poll popups in recorded lectures [#10](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/10).
 - **Volume Scroll Sensitivity**: Added options to adjust scroll sensitivity for mouse and trackpad [#36](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/36).
+- **Individual Shortcut Toggles**: Turn individual keyboard shortcuts on or off without losing your saved keys.
+
+### Changed
+
+- **Focus Tab Redesign**: Reorganized settings into clean cards, moved Auto-Hide directly below Focus Lock, slimmed row heights, and made shortcut key boxes smoothly expand when clicked.
 
 ### Removed
 
