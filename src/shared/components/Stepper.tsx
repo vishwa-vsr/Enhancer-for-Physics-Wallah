@@ -8,6 +8,7 @@ interface StepperProps {
   max: number;
   step: number;
   unit?: string;
+  decimals?: number;
   className?: string;
 }
 
@@ -18,33 +19,43 @@ export function Stepper({
   max,
   step,
   unit = 'x',
+  decimals,
   className = '',
 }: StepperProps) {
-  const [inputValue, setInputValue] = useState(value.toFixed(1));
+  const precision = decimals !== undefined ? decimals : step % 1 === 0 ? 0 : 1;
+  const formatVal = (v: number) =>
+    precision === 0 ? Math.round(v).toString() : v.toFixed(precision);
+
+  const [inputValue, setInputValue] = useState(formatVal(value));
 
   useEffect(() => {
-    setInputValue(value.toFixed(1));
-  }, [value]);
+    setInputValue(formatVal(value));
+  }, [value, precision]);
 
   const handleIncrement = () => {
-    const newValue = Math.min(max, Math.round((value + step) * 10) / 10);
+    const raw = value + step;
+    const newValue = Math.min(max, precision === 0 ? Math.round(raw) : Math.round(raw * 10) / 10);
     onChange(newValue);
   };
 
   const handleDecrement = () => {
-    const newValue = Math.max(min, Math.round((value - step) * 10) / 10);
+    const raw = value - step;
+    const newValue = Math.max(min, precision === 0 ? Math.round(raw) : Math.round(raw * 10) / 10);
     onChange(newValue);
   };
 
   const handleBlur = () => {
     let parsed = parseFloat(inputValue);
     if (isNaN(parsed)) {
-      setInputValue(value.toFixed(1));
+      setInputValue(formatVal(value));
       return;
     }
-    parsed = Math.min(max, Math.max(min, Math.round(parsed * 10) / 10));
+    parsed = Math.min(
+      max,
+      Math.max(min, precision === 0 ? Math.round(parsed) : Math.round(parsed * 10) / 10),
+    );
     onChange(parsed);
-    setInputValue(parsed.toFixed(1));
+    setInputValue(formatVal(parsed));
   };
 
   const handleChange = (e: Event) => {
@@ -79,7 +90,7 @@ export function Stepper({
       </button>
       <div class={styles.stepperValueWrapper}>
         <input
-          class={styles.stepperInput}
+          class={`${styles.stepperInput} ${!unit ? styles.noUnit : ''}`.trim()}
           type="number"
           step={step}
           min={min}
@@ -89,7 +100,7 @@ export function Stepper({
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
         />
-        {unit && <span class={styles.stepperUnit}>{unit}</span>}
+        {Boolean(unit) && <span class={styles.stepperUnit}>{unit}</span>}
       </div>
       <button
         class={styles.stepperBtn}

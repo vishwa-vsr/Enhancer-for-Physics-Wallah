@@ -28,7 +28,7 @@
 }
 
 .settingsGroupCard {
-  background: var(--bg-card);
+  background: var(--card-main-bg, var(--bg-card));
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
   border: var(--card-border, none);
@@ -54,11 +54,11 @@
   justify-content: space-between;
   gap: var(--space-3);
   transition: background-color var(--transition-fast);
-  background: var(--bg-card);
+  background: var(--card-main-bg, var(--bg-card));
 }
 
 .featureRow:hover {
-  background-color: var(--bg-card-hover);
+  background-color: var(--card-main-bg-hover, var(--bg-card-hover));
 }
 
 .featureInfo {
@@ -90,7 +90,7 @@
   align-items: center;
   gap: 8px;
   padding: 6px 14px 10px 14px;
-  background: var(--bg-control);
+  background: var(--card-sub-bg, var(--bg-control));
   width: 100%;
   box-sizing: border-box;
 }
@@ -103,7 +103,7 @@
 }
 
 .ssSensitivityValue {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Inter', var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: 700;
   color: var(--accent-primary);
@@ -159,9 +159,9 @@
   padding: 4px 6px;
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--bg-control);
+  background: var(--card-sub-control-bg, var(--bg-control));
   color: var(--text-primary);
-  font-family: 'Space Mono', monospace;
+  font-family: 'Inter', var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: 700;
   text-align: center;
@@ -182,7 +182,7 @@
 }
 
 .ssTimeSavedCard {
-  background: var(--bg-card);
+  background: var(--card-main-bg, var(--bg-card));
   border: var(--card-border, none);
 }
 
@@ -193,7 +193,7 @@
 }
 
 .ssTimeSavedValue {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Inter', var(--font-sans);
   font-size: var(--font-size-md);
   font-weight: 700;
   color: var(--accent-primary);
@@ -292,4 +292,41 @@
 
 .qualitySelect:focus {
   box-shadow: 0 0 0 2px var(--accent-primary);
+}
+
+.featureConfigRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--card-sub-bg, var(--bg-control));
+  border: none;
+  transition: opacity var(--transition-fast);
+  animation: subBoxFadeIn 180ms ease-out forwards;
+}
+
+.featureConfigRow + .featureConfigRow {
+  border-top: 1px solid var(--divider-color);
+}
+
+.configLabel {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.stepperCard {
+  background: var(--card-sub-control-bg, var(--bg-card));
+  box-shadow: none;
+}
+
+@keyframes subBoxFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

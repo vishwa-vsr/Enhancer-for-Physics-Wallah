@@ -48,7 +48,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["engine-bridge.js"],
+      "resources": ["engine-bridge.js", "fonts/*"],
       "matches": [
         "*://*.pw.live/*",
         "*://*.penpencil.co/*",

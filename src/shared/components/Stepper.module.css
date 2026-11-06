@@ -34,7 +34,11 @@
 
 .stepperBtn:hover {
   color: var(--text-primary);
-  background: var(--bg-control-hover);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+:global(body.light-theme) .stepperBtn:hover {
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .stepperBtn:active {
@@ -67,6 +71,11 @@
 .stepperInput::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.noUnit {
+  text-align: center;
+  width: 32px;
 }
 
 .stepperUnit {

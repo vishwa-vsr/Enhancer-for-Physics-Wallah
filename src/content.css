@@ -1,5 +1,15 @@
 /* PW Control Video Speed Changer Styling */
 
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src:
+    local('Inter'),
+    url('chrome-extension://__MSG_@@extension_id__/fonts/InterVariable.woff2') format('woff2');
+}
+
 /* Main Container - row places button on left and expands slider to the right */
 .pwc-speed-container {
   display: inline-flex;
@@ -8,7 +18,15 @@
   justify-content: center;
   height: 100%;
   margin: 0 6px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
   user-select: none;
   position: relative;
   flex-shrink: 0 !important;
@@ -327,7 +345,6 @@ html.pwc-hide-speed #pwc-speed-control {
 html.pwc-hide-quality #pwc-quality-control {
   display: none !important;
 }
-
 
 /* --- Hide Settings Icon: VideoJS setting icon or any gear/quality controls --- */
 html.pwc-hide-setting #setting-icon,
@@ -650,7 +667,13 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   padding: 10px 18px !important;
   border-radius: 999px !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif !important;
   font-size: 13.5px !important;
   font-weight: 600 !important;
   cursor: pointer !important;
@@ -790,7 +813,13 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   font-variant-numeric: tabular-nums !important;
   letter-spacing: 0.02em;
   opacity: 0.9;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 
 .pwc-ss-status.active {
@@ -1160,4 +1189,3 @@ video.vjs-tech:focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
-

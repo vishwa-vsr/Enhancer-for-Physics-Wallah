@@ -62,6 +62,10 @@ function copyExtensionAssetsPlugin(): Plugin {
         if (fs.existsSync(resolve(srcDir, 'icons'))) {
           copyDir(resolve(srcDir, 'icons'), resolve(targetDir, 'icons'));
         }
+        // Copy fonts
+        if (fs.existsSync(resolve(srcDir, 'fonts'))) {
+          copyDir(resolve(srcDir, 'fonts'), resolve(targetDir, 'fonts'));
+        }
         // Minify and copy static background script and CSS
         for (const file of staticFiles) {
           const srcFile = resolve(srcDir, file);

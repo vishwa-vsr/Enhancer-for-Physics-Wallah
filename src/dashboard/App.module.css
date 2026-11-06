@@ -299,6 +299,30 @@
   flex-wrap: wrap;
 }
 
+.themeToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 31px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background-color: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+  user-select: none;
+  padding: 0;
+}
+
+.themeToggleBtn:hover {
+  background-color: var(--bg-control);
+  color: var(--accent-primary);
+}
+
 .feedbackBtn {
   display: inline-flex;
   align-items: center;

@@ -31,7 +31,7 @@
 }
 
 .hudValue {
-  font-family: 'Space Mono', monospace;
+  font-family: 'Inter', var(--font-sans);
   font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--accent-primary);
@@ -260,7 +260,7 @@
   border: none;
   border-radius: var(--radius-md);
   padding: 10px;
-  background: var(--bg-control);
+  background: var(--card-sub-bg, var(--bg-control));
 }
 
 .presetEditorHeader {
@@ -279,7 +279,7 @@
 }
 
 .snapResetDefaultsBtn {
-  background: var(--bg-card);
+  background: var(--card-sub-control-bg, var(--bg-card));
   border: none;
   border-radius: var(--radius-sm);
   color: var(--text-muted);
@@ -302,7 +302,7 @@
 
 .snapResetDefaultsBtn:hover {
   color: var(--accent-primary);
-  background: var(--bg-card-hover);
+  background: var(--card-sub-bg-hover, var(--bg-card-hover));
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
@@ -339,7 +339,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-card);
+  background: var(--card-sub-control-bg, var(--bg-card));
   border: none;
   border-radius: var(--radius-sm);
   padding: 4px 6px;
@@ -350,7 +350,7 @@
 }
 
 .snapInputWrapper:focus-within {
-  background: var(--bg-card);
+  background: var(--card-sub-control-bg, var(--bg-card));
   box-shadow: 0 0 0 2px var(--accent-primary);
 }
 
@@ -416,7 +416,7 @@
   align-items: center;
   margin: 10px -14px -8px -14px;
   padding: 8px 14px;
-  background: var(--bg-control);
+  background: var(--card-sub-bg, var(--bg-control));
   border-top: 1px solid var(--divider-color);
   transition: opacity var(--transition-fast);
   animation: subBoxFadeIn 180ms ease-out forwards;
@@ -442,7 +442,7 @@
 }
 
 .settingsGroupCard {
-  background: var(--bg-card);
+  background: var(--card-main-bg, var(--bg-card));
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
   border: var(--card-border, none);
@@ -467,7 +467,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  background: var(--bg-control);
+  background: var(--card-sub-bg, var(--bg-control));
   border: none;
   padding: 8px 14px 10px 14px;
   box-sizing: border-box;
@@ -490,10 +490,10 @@
 }
 
 .hotkeyInput {
-  background: var(--bg-card);
+  background: var(--card-sub-control-bg, var(--bg-card));
   border: none;
   color: var(--input-fg);
-  font-family: 'Space Mono', monospace;
+  font-family: 'Inter', var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: 700;
   text-transform: uppercase;
@@ -517,7 +517,7 @@
 }
 
 .hotkeyNotice {
-  background: var(--bg-control);
+  background: var(--card-sub-bg, var(--bg-control));
   color: var(--warning-text);
   font-size: 11px;
   font-weight: 600;
@@ -531,7 +531,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 14px;
-  background: var(--bg-control);
+  background: var(--card-sub-bg, var(--bg-control));
   border: none;
   transition: opacity var(--transition-fast);
   animation: subBoxFadeIn 180ms ease-out forwards;
@@ -548,6 +548,6 @@
 }
 
 .stepperCard {
-  background: var(--bg-card);
+  background: var(--card-sub-control-bg, var(--bg-card));
   box-shadow: none;
 }

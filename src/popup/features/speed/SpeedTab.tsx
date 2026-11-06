@@ -620,7 +620,7 @@ export function SpeedTab() {
                     min={1}
                     max={30}
                     step={1}
-                    unit="%"
+                    unit=""
                     onChange={(v) => {
                       const clamped = Math.max(1, Math.min(30, Math.round(v)));
                       volumeScrollMouseStep.value = clamped;
@@ -636,7 +636,7 @@ export function SpeedTab() {
                     min={1}
                     max={10}
                     step={1}
-                    unit="%"
+                    unit=""
                     onChange={(v) => {
                       const clamped = Math.max(1, Math.min(10, Math.round(v)));
                       volumeScrollTrackpadStep.value = clamped;
