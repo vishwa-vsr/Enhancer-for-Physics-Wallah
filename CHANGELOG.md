@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.1.0.7] - 2026-11-06
+
+### Added
+
+- **Dashboard Theme Toggle**: Added a one-click dark/light theme switcher in the dashboard header.
+- **Offline Inter Font**: Bundled the Inter font locally for fast, completely offline text and badges.
+
+### Changed
+
+- **Media Tab Layout**: Grouped video quality and skip silence settings into clean master toggle cards.
+- **Min. Silence Controls**: Added a dedicated +/- stepper box for adjusting silence duration in seconds.
+- **Simpler Dropdown Menus**: Removed blur, bounce animations, and hover sliding for faster menus.
+- **Sensitivity Controls**: Removed the `%` icon from sensitivity settings and formatted numbers cleanly.
+
+### Fixed
+
+- **Divider & Slider Visibility**: Fixed missing divider lines and restored the slider track between Strict and Aggressive.
+
 ## [1.1.0.6] - 2026-11-05
 
 ### Added

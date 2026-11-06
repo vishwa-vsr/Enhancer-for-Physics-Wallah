@@ -81,6 +81,10 @@
   width: 100%;
 }
 
+.featureConfigRow + .settingRowGroup {
+  border-top: 1px solid var(--divider-color);
+}
+
 .settingRowGroup:not(:last-child) {
   border-bottom: 1px solid var(--divider-color);
 }
@@ -116,7 +120,13 @@
   appearance: none;
   flex: 1;
   height: 4px;
-  background: var(--slider-track-bg);
+  background: linear-gradient(
+    to right,
+    var(--accent-primary) 0%,
+    var(--accent-primary) var(--percent, 100%),
+    var(--slider-track-bg) var(--percent, 100%),
+    var(--slider-track-bg) 100%
+  );
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -147,38 +157,6 @@
   background: var(--slider-thumb-bg);
   border: 2.5px solid var(--accent-primary);
   cursor: pointer;
-}
-
-.ssMinDurationGroup {
-  display: flex;
-  align-items: center;
-}
-
-.ssMinDurationInput {
-  width: 52px;
-  padding: 4px 6px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: var(--card-sub-control-bg, var(--bg-control));
-  color: var(--text-primary);
-  font-family: 'Inter', var(--font-sans);
-  font-size: var(--font-size-sm);
-  font-weight: 700;
-  text-align: center;
-  outline: none;
-  transition: box-shadow var(--transition-fast);
-  -moz-appearance: textfield;
-  box-sizing: border-box;
-}
-
-.ssMinDurationInput::-webkit-outer-spin-button,
-.ssMinDurationInput::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.ssMinDurationInput:focus {
-  box-shadow: 0 0 0 2px var(--accent-primary);
 }
 
 .ssTimeSavedCard {
@@ -294,6 +272,15 @@
   box-shadow: 0 0 0 2px var(--accent-primary);
 }
 
+.qualitySection:has([role='listbox']),
+.silenceSection:has([role='listbox']),
+.settingsGroupCard:has([role='listbox']),
+.featureConfigRow:has([role='listbox']),
+.featureRow:has([role='listbox']) {
+  position: relative;
+  z-index: 100;
+}
+
 .featureConfigRow {
   display: flex;
   justify-content: space-between;
@@ -323,10 +310,8 @@
 @keyframes subBoxFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-3px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }

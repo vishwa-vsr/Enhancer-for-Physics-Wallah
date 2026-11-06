@@ -203,6 +203,9 @@ export function SilenceTab() {
                       max="-20"
                       step="1"
                       value={skipSilenceThreshold.value}
+                      style={{
+                        '--percent': `${Math.max(0, Math.min(100, ((skipSilenceThreshold.value - -60) / 40) * 100))}%`,
+                      }}
                       onInput={(e) => {
                         const val = Number((e.target as HTMLInputElement).value);
                         skipSilenceThreshold.value = val;
@@ -217,33 +220,20 @@ export function SilenceTab() {
 
               {/* Minimum Silence Duration */}
               <div class={styles.featureConfigRow}>
-                <label
-                  class={styles.configLabel}
-                  htmlFor="ss-min-duration"
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
-                >
-                  Min. Silence (sec)
-                </label>
-                <div class={styles.ssMinDurationGroup}>
-                  <input
-                    type="number"
-                    id="ss-min-duration"
-                    class={styles.ssMinDurationInput}
-                    min="0.3"
-                    max="3.0"
-                    step="0.1"
-                    value={skipSilenceMinDuration.value}
-                    onChange={(e) => {
-                      let val = Number((e.target as HTMLInputElement).value);
-                      if (isNaN(val) || val < 0.3) val = 0.3;
-                      if (val > 3.0) val = 3.0;
-                      val = Math.round(val * 10) / 10;
-                      skipSilenceMinDuration.value = val;
-                      saveSetting('skipSilenceMinDuration', val);
-                    }}
-                    aria-label="Minimum Silence Duration"
-                  />
-                </div>
+                <span class={styles.configLabel}>Min. Silence</span>
+                <Stepper
+                  className={styles.stepperCard}
+                  value={skipSilenceMinDuration.value}
+                  min={0.3}
+                  max={3.0}
+                  step={0.1}
+                  unit="s"
+                  onChange={(val) => {
+                    const clamped = Math.round(val * 10) / 10;
+                    skipSilenceMinDuration.value = clamped;
+                    saveSetting('skipSilenceMinDuration', clamped);
+                  }}
+                />
               </div>
 
               {/* Mute During Silence */}

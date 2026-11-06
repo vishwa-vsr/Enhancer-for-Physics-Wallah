@@ -181,13 +181,17 @@
   opacity: 0.5;
 }
 
+.settingsGroupCard:has([role='listbox']),
+.featureRow:has([role='listbox']) {
+  position: relative;
+  z-index: 100;
+}
+
 @keyframes subBoxFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-4px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }

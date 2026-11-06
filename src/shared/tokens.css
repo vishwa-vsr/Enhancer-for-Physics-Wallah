@@ -24,8 +24,8 @@
   --card-sub-bg: #262933;
   --card-sub-bg-hover: #2e323e;
   --card-sub-control-bg: #12141a;
-  --divider-color: rgba(255, 255, 255, 0.06);
-  --border-subtle: rgba(255, 255, 255, 0.1);
+  --divider-color: rgba(255, 255, 255, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.12);
   --card-border: none;
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
@@ -41,7 +41,7 @@
   --tab-btn-fg-active: #ffffff;
   --tab-indicator-bg: #262933;
   --tab-indicator-shadow: none;
-  --slider-track-bg: #262933;
+  --slider-track-bg: rgba(255, 255, 255, 0.16);
   --slider-thumb-bg: #ffffff;
   --slider-thumb-border: var(--accent-primary);
   --switch-bg-off: #2e323e;
@@ -89,7 +89,7 @@ body.light-theme {
   --card-sub-bg: #dcdee4;
   --card-sub-bg-hover: #d2d4dc;
   --card-sub-control-bg: #ffffff;
-  --divider-color: #dedfe4;
+  --divider-color: rgba(0, 0, 0, 0.1);
   --border-subtle: rgba(0, 0, 0, 0.08);
   --card-border: none;
   --text-primary: #18181b;
@@ -106,7 +106,7 @@ body.light-theme {
   --tab-btn-fg-active: #18181b;
   --tab-indicator-bg: #ffffff;
   --tab-indicator-shadow: none;
-  --slider-track-bg: #dcdee4;
+  --slider-track-bg: rgba(0, 0, 0, 0.14);
   --slider-thumb-bg: #ffffff;
   --slider-thumb-border: var(--accent-primary);
   --switch-bg-off: #cbced6;
