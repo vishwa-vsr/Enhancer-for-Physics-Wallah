@@ -141,7 +141,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   keyReset: 'l',
   autoPauseOnHide: false,
 
-  enableFocusShortcuts: true,
+  enableFocusShortcuts: false,
   enableKeyChat: true,
   enableKeyTimeline: true,
   enableKeyNotes: true,

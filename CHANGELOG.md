@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- **Focus Shortcut Redesign**: Redesigned all shortcut boxes in the Focus tab to match the Speed tab's dark purple look with smooth click expansion and conflict warnings.
+- **Focus Shortcut Redesign**: Redesigned all shortcut boxes to match the Speed tab's dark purple look with smooth click expansion and conflict warnings, and added a master 'Enable Keyboard Shortcuts' switch with shortcuts turned off by default.
 - **Media Tab Layout**: Grouped video quality and skip silence settings into clean master toggle cards.
 - **Min. Silence Controls**: Added a dedicated +/- stepper box for adjusting silence duration in seconds.
 - **Simpler Dropdown Menus**: Removed blur, bounce animations, and hover sliding for faster menus.

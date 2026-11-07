@@ -59,7 +59,7 @@ export const finishTimeFormat = signal<FinishTimeFormat>('clock');
 export const showLiveCatchUp = signal(true);
 
 // ===== Focus shortcuts signals (Issue #14) =====
-export const enableFocusShortcuts = signal(true);
+export const enableFocusShortcuts = signal(false);
 export const enableKeyChat = signal(true);
 export const enableKeyTimeline = signal(true);
 export const enableKeyNotes = signal(true);
@@ -189,7 +189,7 @@ export async function initStore() {
   finishTimeFormat.value = s.finishTimeFormat === 'full' ? 'full' : 'clock';
   showLiveCatchUp.value = s.showLiveCatchUp !== false;
 
-  enableFocusShortcuts.value = s.enableFocusShortcuts !== false;
+  enableFocusShortcuts.value = !!s.enableFocusShortcuts;
   enableKeyChat.value = s.enableKeyChat !== false;
   enableKeyTimeline.value = s.enableKeyTimeline !== false;
   enableKeyNotes.value = s.enableKeyNotes !== false;
@@ -276,7 +276,7 @@ export async function initStore() {
       keyReset.value = sanitizeSpeedShortcut(changes.keyReset, 'l');
     }
     if (changes.enableFocusShortcuts !== undefined) {
-      enableFocusShortcuts.value = changes.enableFocusShortcuts !== false;
+      enableFocusShortcuts.value = !!changes.enableFocusShortcuts;
     }
     if (changes.enableKeyChat !== undefined) {
       enableKeyChat.value = changes.enableKeyChat !== false;

@@ -131,6 +131,17 @@
   flex-direction: column;
   background: var(--card-sub-bg, var(--bg-control));
   animation: subBoxFadeIn 180ms ease-out forwards;
+  overflow: hidden;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+.shortcutsExpandBox > div {
+  background: var(--card-sub-bg, var(--bg-control));
+}
+
+.shortcutsExpandBox > div:not(.hotkeyNotice):hover {
+  background: var(--card-sub-bg-hover, var(--bg-control-hover));
 }
 
 .shortcutsExpandBox > .featureConfigRow:first-child {

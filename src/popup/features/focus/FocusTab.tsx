@@ -31,6 +31,7 @@ import {
   keyDoubt,
   keyFullscreen,
   keyExit,
+  enableFocusShortcuts,
   enableKeyChat,
   enableKeyTimeline,
   enableKeyNotes,
@@ -485,210 +486,225 @@ function ShortcutsSection() {
     <section aria-label="Keyboard Shortcuts">
       <h2 class={styles.sectionTitle}>Keyboard Shortcuts</h2>
       <div class={styles.settingsGroupCard}>
-        <FeatureRow label="Allow Shortcuts When Icon is Hidden">
+        <FeatureRow label="Enable Keyboard Shortcuts">
           <Toggle
-            checked={allowShortcutsWhenHidden.value}
+            checked={enableFocusShortcuts.value}
             onChange={(v) => {
-              allowShortcutsWhenHidden.value = v;
-              saveSetting('allowShortcutsWhenHidden', v);
+              enableFocusShortcuts.value = v;
+              saveSetting('enableFocusShortcuts', v);
             }}
-            ariaLabel="Toggle Allow Shortcuts When Icon is Hidden"
+            ariaLabel="Toggle Enable Keyboard Shortcuts"
           />
         </FeatureRow>
 
-        <FeatureRow label="Live Chat">
-          <div class={styles.rowControls}>
-            <ShortcutInput
-              value={keyChat.value}
-              onChange={(v) => {
-                keyChat.value = v;
-                saveSetting('keyChat', v);
-              }}
-              disabled={chatKeyDisabled}
-              validate={validateKey('keyChat')}
-              onNotice={(msg) => showHotkeyNotice('keyChat', msg)}
-              className={styles.focusShortcutInput}
-              ariaLabel="Live Chat Shortcut Key"
-              title={
-                !enableKeyChat.value
-                  ? 'Shortcut is toggled off'
-                  : isShortcutDisabled(hideChat.value)
-                    ? 'Shortcut disabled because Live Chat is hidden'
-                    : 'Chat shortcut key (Backspace to clear)'
-              }
-            />
-            <Toggle
-              checked={enableKeyChat.value}
-              onChange={(v) => {
-                enableKeyChat.value = v;
-                saveSetting('enableKeyChat', v);
-              }}
-              ariaLabel="Toggle Live Chat Shortcut"
-            />
-          </div>
-        </FeatureRow>
-        {renderRowNotice('keyChat')}
+        {enableFocusShortcuts.value && (
+          <div class={styles.shortcutsExpandBox}>
+            <FeatureRow label="Allow Shortcuts When Icon is Hidden">
+              <Toggle
+                checked={allowShortcutsWhenHidden.value}
+                onChange={(v) => {
+                  allowShortcutsWhenHidden.value = v;
+                  saveSetting('allowShortcutsWhenHidden', v);
+                }}
+                ariaLabel="Toggle Allow Shortcuts When Icon is Hidden"
+              />
+            </FeatureRow>
 
-        <FeatureRow label="Doubt Q&A">
-          <div class={styles.rowControls}>
-            <ShortcutInput
-              value={keyDoubt.value}
-              onChange={(v) => {
-                keyDoubt.value = v;
-                saveSetting('keyDoubt', v);
-              }}
-              disabled={doubtKeyDisabled}
-              validate={validateKey('keyDoubt')}
-              onNotice={(msg) => showHotkeyNotice('keyDoubt', msg)}
-              className={styles.focusShortcutInput}
-              ariaLabel="Doubt Shortcut Key"
-              title={
-                !enableKeyDoubt.value
-                  ? 'Shortcut is toggled off'
-                  : isShortcutDisabled(hideDoubt.value)
-                    ? 'Shortcut disabled because Doubt Q&A is hidden'
-                    : 'Doubt shortcut key (Backspace to clear)'
-              }
-            />
-            <Toggle
-              checked={enableKeyDoubt.value}
-              onChange={(v) => {
-                enableKeyDoubt.value = v;
-                saveSetting('enableKeyDoubt', v);
-              }}
-              ariaLabel="Toggle Doubt Q&A Shortcut"
-            />
-          </div>
-        </FeatureRow>
-        {renderRowNotice('keyDoubt')}
+            <FeatureRow label="Live Chat">
+              <div class={styles.rowControls}>
+                <ShortcutInput
+                  value={keyChat.value}
+                  onChange={(v) => {
+                    keyChat.value = v;
+                    saveSetting('keyChat', v);
+                  }}
+                  disabled={chatKeyDisabled}
+                  validate={validateKey('keyChat')}
+                  onNotice={(msg) => showHotkeyNotice('keyChat', msg)}
+                  className={styles.focusShortcutInput}
+                  ariaLabel="Live Chat Shortcut Key"
+                  title={
+                    !enableKeyChat.value
+                      ? 'Shortcut is toggled off'
+                      : isShortcutDisabled(hideChat.value)
+                        ? 'Shortcut disabled because Live Chat is hidden'
+                        : 'Chat shortcut key (Backspace to clear)'
+                  }
+                />
+                <Toggle
+                  checked={enableKeyChat.value}
+                  onChange={(v) => {
+                    enableKeyChat.value = v;
+                    saveSetting('enableKeyChat', v);
+                  }}
+                  ariaLabel="Toggle Live Chat Shortcut"
+                />
+              </div>
+            </FeatureRow>
+            {renderRowNotice('keyChat')}
 
-        <FeatureRow label="Study Notes">
-          <div class={styles.rowControls}>
-            <ShortcutInput
-              value={keyNotes.value}
-              onChange={(v) => {
-                keyNotes.value = v;
-                saveSetting('keyNotes', v);
-              }}
-              disabled={notesKeyDisabled}
-              validate={validateKey('keyNotes')}
-              onNotice={(msg) => showHotkeyNotice('keyNotes', msg)}
-              className={styles.focusShortcutInput}
-              ariaLabel="Study Notes Shortcut Key"
-              title={
-                !enableKeyNotes.value
-                  ? 'Shortcut is toggled off'
-                  : isShortcutDisabled(hideNotes.value)
-                    ? 'Shortcut disabled because Study Notes is hidden'
-                    : 'Study Notes shortcut key (Backspace to clear)'
-              }
-            />
-            <Toggle
-              checked={enableKeyNotes.value}
-              onChange={(v) => {
-                enableKeyNotes.value = v;
-                saveSetting('enableKeyNotes', v);
-              }}
-              ariaLabel="Toggle Study Notes Shortcut"
-            />
-          </div>
-        </FeatureRow>
-        {renderRowNotice('keyNotes')}
+            <FeatureRow label="Doubt Q&A">
+              <div class={styles.rowControls}>
+                <ShortcutInput
+                  value={keyDoubt.value}
+                  onChange={(v) => {
+                    keyDoubt.value = v;
+                    saveSetting('keyDoubt', v);
+                  }}
+                  disabled={doubtKeyDisabled}
+                  validate={validateKey('keyDoubt')}
+                  onNotice={(msg) => showHotkeyNotice('keyDoubt', msg)}
+                  className={styles.focusShortcutInput}
+                  ariaLabel="Doubt Shortcut Key"
+                  title={
+                    !enableKeyDoubt.value
+                      ? 'Shortcut is toggled off'
+                      : isShortcutDisabled(hideDoubt.value)
+                        ? 'Shortcut disabled because Doubt Q&A is hidden'
+                        : 'Doubt shortcut key (Backspace to clear)'
+                  }
+                />
+                <Toggle
+                  checked={enableKeyDoubt.value}
+                  onChange={(v) => {
+                    enableKeyDoubt.value = v;
+                    saveSetting('enableKeyDoubt', v);
+                  }}
+                  ariaLabel="Toggle Doubt Q&A Shortcut"
+                />
+              </div>
+            </FeatureRow>
+            {renderRowNotice('keyDoubt')}
 
-        <FeatureRow label="Note Timeline">
-          <div class={styles.rowControls}>
-            <ShortcutInput
-              value={keyTimeline.value}
-              onChange={(v) => {
-                keyTimeline.value = v;
-                saveSetting('keyTimeline', v);
-              }}
-              disabled={timelineKeyDisabled}
-              validate={validateKey('keyTimeline')}
-              onNotice={(msg) => showHotkeyNotice('keyTimeline', msg)}
-              className={styles.focusShortcutInput}
-              ariaLabel="Note Timeline Shortcut Key"
-              title={
-                !enableKeyTimeline.value
-                  ? 'Shortcut is toggled off'
-                  : isShortcutDisabled(hideNoteTimeline.value)
-                    ? 'Shortcut disabled because Note Timeline is hidden'
-                    : 'Note Timeline shortcut key (Backspace to clear)'
-              }
-            />
-            <Toggle
-              checked={enableKeyTimeline.value}
-              onChange={(v) => {
-                enableKeyTimeline.value = v;
-                saveSetting('enableKeyTimeline', v);
-              }}
-              ariaLabel="Toggle Note Timeline Shortcut"
-            />
-          </div>
-        </FeatureRow>
-        {renderRowNotice('keyTimeline')}
+            <FeatureRow label="Study Notes">
+              <div class={styles.rowControls}>
+                <ShortcutInput
+                  value={keyNotes.value}
+                  onChange={(v) => {
+                    keyNotes.value = v;
+                    saveSetting('keyNotes', v);
+                  }}
+                  disabled={notesKeyDisabled}
+                  validate={validateKey('keyNotes')}
+                  onNotice={(msg) => showHotkeyNotice('keyNotes', msg)}
+                  className={styles.focusShortcutInput}
+                  ariaLabel="Study Notes Shortcut Key"
+                  title={
+                    !enableKeyNotes.value
+                      ? 'Shortcut is toggled off'
+                      : isShortcutDisabled(hideNotes.value)
+                        ? 'Shortcut disabled because Study Notes is hidden'
+                        : 'Study Notes shortcut key (Backspace to clear)'
+                  }
+                />
+                <Toggle
+                  checked={enableKeyNotes.value}
+                  onChange={(v) => {
+                    enableKeyNotes.value = v;
+                    saveSetting('enableKeyNotes', v);
+                  }}
+                  ariaLabel="Toggle Study Notes Shortcut"
+                />
+              </div>
+            </FeatureRow>
+            {renderRowNotice('keyNotes')}
 
-        <FeatureRow label="Full Screen">
-          <div class={styles.rowControls}>
-            <ShortcutInput
-              value={keyFullscreen.value}
-              onChange={(v) => {
-                keyFullscreen.value = v;
-                saveSetting('keyFullscreen', v);
-              }}
-              disabled={fullscreenKeyDisabled}
-              validate={validateKey('keyFullscreen')}
-              onNotice={(msg) => showHotkeyNotice('keyFullscreen', msg)}
-              className={styles.focusShortcutInput}
-              ariaLabel="Full Screen Shortcut Key"
-              title={
-                !enableKeyFullscreen.value
-                  ? 'Shortcut is toggled off'
-                  : 'Full Screen shortcut key (Backspace to clear)'
-              }
-            />
-            <Toggle
-              checked={enableKeyFullscreen.value}
-              onChange={(v) => {
-                enableKeyFullscreen.value = v;
-                saveSetting('enableKeyFullscreen', v);
-              }}
-              ariaLabel="Toggle Full Screen Shortcut"
-            />
-          </div>
-        </FeatureRow>
-        {renderRowNotice('keyFullscreen')}
+            <FeatureRow label="Note Timeline">
+              <div class={styles.rowControls}>
+                <ShortcutInput
+                  value={keyTimeline.value}
+                  onChange={(v) => {
+                    keyTimeline.value = v;
+                    saveSetting('keyTimeline', v);
+                  }}
+                  disabled={timelineKeyDisabled}
+                  validate={validateKey('keyTimeline')}
+                  onNotice={(msg) => showHotkeyNotice('keyTimeline', msg)}
+                  className={styles.focusShortcutInput}
+                  ariaLabel="Note Timeline Shortcut Key"
+                  title={
+                    !enableKeyTimeline.value
+                      ? 'Shortcut is toggled off'
+                      : isShortcutDisabled(hideNoteTimeline.value)
+                        ? 'Shortcut disabled because Note Timeline is hidden'
+                        : 'Note Timeline shortcut key (Backspace to clear)'
+                  }
+                />
+                <Toggle
+                  checked={enableKeyTimeline.value}
+                  onChange={(v) => {
+                    enableKeyTimeline.value = v;
+                    saveSetting('enableKeyTimeline', v);
+                  }}
+                  ariaLabel="Toggle Note Timeline Shortcut"
+                />
+              </div>
+            </FeatureRow>
+            {renderRowNotice('keyTimeline')}
 
-        <FeatureRow label="Quick Exit Class">
-          <div class={styles.rowControls}>
-            <ShortcutInput
-              value={keyExit.value}
-              onChange={(v) => {
-                keyExit.value = v;
-                saveSetting('keyExit', v);
-              }}
-              disabled={exitKeyDisabled}
-              validate={validateKey('keyExit')}
-              onNotice={(msg) => showHotkeyNotice('keyExit', msg)}
-              className={styles.focusShortcutInput}
-              ariaLabel="Quick Exit Shortcut Key"
-              title={
-                !enableKeyExit.value
-                  ? 'Shortcut is toggled off'
-                  : 'Quick Exit shortcut key (Backspace to clear)'
-              }
-            />
-            <Toggle
-              checked={enableKeyExit.value}
-              onChange={(v) => {
-                enableKeyExit.value = v;
-                saveSetting('enableKeyExit', v);
-              }}
-              ariaLabel="Toggle Quick Exit Shortcut"
-            />
+            <FeatureRow label="Full Screen">
+              <div class={styles.rowControls}>
+                <ShortcutInput
+                  value={keyFullscreen.value}
+                  onChange={(v) => {
+                    keyFullscreen.value = v;
+                    saveSetting('keyFullscreen', v);
+                  }}
+                  disabled={fullscreenKeyDisabled}
+                  validate={validateKey('keyFullscreen')}
+                  onNotice={(msg) => showHotkeyNotice('keyFullscreen', msg)}
+                  className={styles.focusShortcutInput}
+                  ariaLabel="Full Screen Shortcut Key"
+                  title={
+                    !enableKeyFullscreen.value
+                      ? 'Shortcut is toggled off'
+                      : 'Full Screen shortcut key (Backspace to clear)'
+                  }
+                />
+                <Toggle
+                  checked={enableKeyFullscreen.value}
+                  onChange={(v) => {
+                    enableKeyFullscreen.value = v;
+                    saveSetting('enableKeyFullscreen', v);
+                  }}
+                  ariaLabel="Toggle Full Screen Shortcut"
+                />
+              </div>
+            </FeatureRow>
+            {renderRowNotice('keyFullscreen')}
+
+            <FeatureRow label="Quick Exit Class">
+              <div class={styles.rowControls}>
+                <ShortcutInput
+                  value={keyExit.value}
+                  onChange={(v) => {
+                    keyExit.value = v;
+                    saveSetting('keyExit', v);
+                  }}
+                  disabled={exitKeyDisabled}
+                  validate={validateKey('keyExit')}
+                  onNotice={(msg) => showHotkeyNotice('keyExit', msg)}
+                  className={styles.focusShortcutInput}
+                  ariaLabel="Quick Exit Shortcut Key"
+                  title={
+                    !enableKeyExit.value
+                      ? 'Shortcut is toggled off'
+                      : 'Quick Exit shortcut key (Backspace to clear)'
+                  }
+                />
+                <Toggle
+                  checked={enableKeyExit.value}
+                  onChange={(v) => {
+                    enableKeyExit.value = v;
+                    saveSetting('enableKeyExit', v);
+                  }}
+                  ariaLabel="Toggle Quick Exit Shortcut"
+                />
+              </div>
+            </FeatureRow>
+            {renderRowNotice('keyExit')}
           </div>
-        </FeatureRow>
-        {renderRowNotice('keyExit')}
+        )}
       </div>
     </section>
   );

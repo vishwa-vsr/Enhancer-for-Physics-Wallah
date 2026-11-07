@@ -52,7 +52,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   keyReset: 'l',
   autoPauseOnHide: false,
 
-  enableFocusShortcuts: true,
+  enableFocusShortcuts: false,
   enableKeyChat: true,
   enableKeyTimeline: true,
   enableKeyNotes: true,
@@ -304,7 +304,7 @@ export function initState(onLoaded?: () => void): void {
       result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed) : 2.0;
     state.alwaysExpandWidget = !!result.alwaysExpandWidget;
 
-    state.enableFocusShortcuts = result.enableFocusShortcuts !== false;
+    state.enableFocusShortcuts = !!result.enableFocusShortcuts;
     state.enableKeyChat = result.enableKeyChat !== false;
     state.enableKeyTimeline = result.enableKeyTimeline !== false;
     state.enableKeyNotes = result.enableKeyNotes !== false;
@@ -586,7 +586,7 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('autoPauseOnHide');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'enableFocusShortcuts')) {
-              state.enableFocusShortcuts = changes.enableFocusShortcuts.newValue !== false;
+              state.enableFocusShortcuts = !!changes.enableFocusShortcuts.newValue;
               changedKeys.push('enableFocusShortcuts');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyChat')) {
