@@ -11,6 +11,8 @@ import {
   getLocalDateStr,
 } from '../store';
 import { Task } from '../types';
+import { Modal } from '@shared/components/Modal';
+import { ConfirmDeleteButton } from '@shared/components/ConfirmDeleteButton';
 import { DatePicker } from './DatePicker';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
 import { StudyIcon } from '@shared/components/StudyIcons';
@@ -62,11 +64,11 @@ export const AddTaskDialog = ({
   const [selectedChapterId, setSelectedChapterId] = useState<string>(initialChapId);
 
   const subjectOptions = [
-    { value: '', label: 'None (Inbox)' },
+    { value: '', label: 'No Subject' },
     ...subjects.value.map((s) => ({
       value: s.id,
       label: s.name,
-      icon: s.icon || 'book',
+      icon: s.icon || 'calculator',
       color: s.color || 'var(--accent-primary)',
     })),
   ];
@@ -102,12 +104,10 @@ export const AddTaskDialog = ({
   const [dueDate, setDueDate] = useState(defaultDueDate);
   const [description, setDescription] = useState(editingTask?.description || '');
   const [selectedTag, setSelectedTag] = useState<string>(getValidInitialTag(editingTask));
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) {
-      setConfirmDelete(false);
       if (editingTask) {
         setTitle(editingTask.title);
         setDueDate(editingTask.dueDate || '');
@@ -143,14 +143,6 @@ export const AddTaskDialog = ({
   }, [open, editingTask]);
 
   useEffect(() => {
-    if (!confirmDelete) return;
-    const timer = setTimeout(() => {
-      setConfirmDelete(false);
-    }, 3500);
-    return () => clearTimeout(timer);
-  }, [confirmDelete]);
-
-  useEffect(() => {
     if (!selectedSubjectId) {
       setSelectedChapterId('');
       return;
@@ -164,30 +156,6 @@ export const AddTaskDialog = ({
       setSelectedChapterId('');
     }
   }, [selectedSubjectId]);
-
-  const isOverlayMouseDownRef = useRef(false);
-
-  useEffect(() => {
-    if (!open) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, onClose]);
-
-  const handleOverlayMouseDown = (e: MouseEvent) => {
-    isOverlayMouseDownRef.current = e.target === e.currentTarget;
-  };
-
-  const handleOverlayClick = (e: MouseEvent) => {
-    if (isOverlayMouseDownRef.current && e.target === e.currentTarget) {
-      onClose();
-    }
-    isOverlayMouseDownRef.current = false;
-  };
 
   const isValidSelection =
     hideSubjectChapter ||
@@ -234,10 +202,6 @@ export const AddTaskDialog = ({
 
   const handleDelete = async () => {
     if (!editingTask) return;
-    if (!confirmDelete) {
-      setConfirmDelete(true);
-      return;
-    }
     if (onDelete) {
       await onDelete(editingTask);
     } else {
@@ -246,174 +210,131 @@ export const AddTaskDialog = ({
     onClose();
   };
 
-  if (!open) return null;
-
   return (
-    <div
-      class={styles.modalOverlay}
-      onMouseDown={handleOverlayMouseDown}
-      onClick={handleOverlayClick}
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={editingTask ? 'Edit Task' : 'Add New Task'}
+      size="lg"
     >
-      <div class={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <div class={styles.modalHeader}>
-          <h2>{editingTask ? 'Edit Task' : 'Add New Task'}</h2>
-          <button class={styles.closeBtn} onClick={onClose}>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              width="18"
-              height="18"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+      <form onSubmit={handleSubmit} class={styles.dialogForm}>
+        <div class={styles.columnsContainer}>
+          {/* Left Column: Core Fields */}
+          <div class={styles.leftColumn}>
+            <div class={styles.formGroupFlush}>
+              <label class={styles.label}>Task Title</label>
+              <input
+                ref={inputRef}
+                type="text"
+                class={styles.input}
+                placeholder="What needs to be studied or completed?"
+                value={title}
+                onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
+                required
+              />
+            </div>
 
-        <form onSubmit={handleSubmit} class={styles.dialogForm}>
-          <div class={styles.columnsContainer}>
-            {/* Left Column: Title and Notes */}
-            <div class={styles.leftColumn}>
-              <div class={styles.formGroup}>
-                <label class={styles.label}>Task Title</label>
-                <input
-                  ref={inputRef}
-                  type="text"
-                  class={styles.input}
-                  placeholder="Enter task title..."
-                  value={title}
-                  maxLength={150}
-                  onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
-                  required
+            <div class={styles.formGroupFlush}>
+              <label class={styles.label}>Description</label>
+              <textarea
+                class={styles.textarea}
+                placeholder="Add sub-topics, questions, or lecture notes..."
+                value={description}
+                onInput={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
+                rows={7}
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Meta & Actions */}
+          <div class={styles.rightColumn}>
+            <div class={styles.rightMetaFields}>
+              {/* Subject */}
+              {!hideSubjectChapter && (
+                <div class={styles.formGroupFlush}>
+                  <label class={styles.label}>Subject</label>
+                  <SelectDropdown
+                    options={subjectOptions}
+                    value={selectedSubjectId}
+                    onChange={(val) => {
+                      setSelectedSubjectId(val);
+                      const chaps = val ? chapters.value.filter((c) => c.subjectId === val) : [];
+                      setSelectedChapterId(chaps[0]?.id || '');
+                    }}
+                    placeholder="Select subject"
+                    ariaLabel="Subject"
+                    renderIcon={renderStudyIcon}
+                  />
+                </div>
+              )}
+
+              {/* Chapter */}
+              {!hideSubjectChapter && selectedSubjectId && (
+                <div class={styles.formGroupFlush}>
+                  <label class={styles.label}>Chapter</label>
+                  <SelectDropdown
+                    options={chapterOptions}
+                    value={selectedChapterId}
+                    onChange={(val) => setSelectedChapterId(val)}
+                    placeholder="Select chapter"
+                    ariaLabel="Chapter"
+                    emptyLabel="No chapters"
+                    renderIcon={renderStudyIcon}
+                  />
+                </div>
+              )}
+
+              {/* Due Date */}
+              <div class={styles.formGroupFlush}>
+                <label class={styles.label}>Due Date</label>
+                <DatePicker
+                  value={dueDate}
+                  onChange={(val) => setDueDate(val)}
+                  placeholder="dd-mm-yyyy"
                 />
               </div>
 
-              <div class={`${styles.formGroup} ${styles.notesGroup}`}>
-                <label class={styles.label}>Notes</label>
-                <textarea
-                  class={styles.textarea}
-                  placeholder="Add notes, formulas, or details (optional)..."
-                  value={description}
-                  onInput={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
-                  rows={10}
+              {/* Study Label */}
+              <div class={styles.formGroupFlush}>
+                <label class={styles.label}>Study Label</label>
+                <SelectDropdown
+                  options={tagOptions}
+                  value={selectedTag}
+                  onChange={(val) => setSelectedTag(val)}
+                  placeholder="No Label"
+                  ariaLabel="Study Label"
                 />
               </div>
             </div>
 
-            {/* Right Column: Subject, Chapter, Due Date, Study Label, Actions */}
-            <div class={styles.rightColumn}>
-              <div class={styles.rightFields}>
-                {/* Subject & Chapter (hidden in Inbox tab) */}
-                {!hideSubjectChapter && (
-                  <>
-                    <div class={styles.formGroupFlush}>
-                      <label class={styles.label}>Subject</label>
-                      <SelectDropdown
-                        options={subjectOptions}
-                        value={selectedSubjectId}
-                        onChange={(val) => setSelectedSubjectId(val)}
-                        placeholder="None (Inbox)"
-                        ariaLabel="Subject"
-                        renderIcon={renderStudyIcon}
-                      />
-                    </div>
+            {/* Modal Footer anchored at bottom of right column */}
+            <div
+              class={`${styles.modalFooter} ${editingTask ? styles.modalFooterSpaceBetween : ''}`}
+            >
+              {editingTask && (
+                <ConfirmDeleteButton
+                  onConfirm={handleDelete}
+                  label="Delete"
+                  confirmLabel="Confirm?"
+                />
+              )}
 
-                    <div class={styles.formGroupFlush}>
-                      <label class={styles.label}>Chapter</label>
-                      <SelectDropdown
-                        options={chapterOptions}
-                        value={selectedChapterId}
-                        onChange={(val) => setSelectedChapterId(val)}
-                        placeholder={
-                          !selectedSubjectId
-                            ? 'None (Inbox)'
-                            : availableChapters.length === 0
-                              ? 'No chapters'
-                              : 'Select Chapter'
-                        }
-                        disabled={!selectedSubjectId || availableChapters.length === 0}
-                        emptyLabel="No chapters available"
-                        ariaLabel="Chapter"
-                        renderIcon={renderStudyIcon}
-                      />
-                    </div>
-
-                    {selectedSubjectId && availableChapters.length === 0 && (
-                      <p class={styles.noChaptersHint}>
-                        No chapters in this subject yet — "Chapter 1" will be automatically created.
-                      </p>
-                    )}
-                  </>
-                )}
-
-                {/* Due Date */}
-                <div class={styles.formGroupFlush}>
-                  <label class={styles.label}>Due Date</label>
-                  <DatePicker
-                    value={dueDate}
-                    onChange={(val) => setDueDate(val)}
-                    placeholder="dd-mm-yyyy"
-                  />
-                </div>
-
-                {/* Study Label */}
-                <div class={styles.formGroupFlush}>
-                  <label class={styles.label}>Study Label</label>
-                  <SelectDropdown
-                    options={tagOptions}
-                    value={selectedTag}
-                    onChange={(val) => setSelectedTag(val)}
-                    placeholder="No Label"
-                    ariaLabel="Study Label"
-                  />
-                </div>
-              </div>
-
-              {/* Modal Footer anchored at bottom of right column */}
-              <div
-                class={`${styles.modalFooter} ${editingTask ? styles.modalFooterSpaceBetween : ''}`}
-              >
-                {editingTask && (
-                  <button
-                    type="button"
-                    class={`${styles.deleteActionBtn} ${confirmDelete ? styles.deleteActionBtnConfirm : ''}`}
-                    onClick={handleDelete}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      width="14"
-                      height="14"
-                    >
-                      <path d="M3 6h18" />
-                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                    </svg>
-                    {confirmDelete ? 'Confirm?' : 'Delete'}
-                  </button>
-                )}
-
-                <div class={styles.footerRightActions}>
-                  <button type="button" class={styles.cancelBtn} onClick={onClose}>
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    class={styles.submitBtn}
-                    disabled={!title.trim() || !isValidSelection}
-                  >
-                    {editingTask ? 'Save Changes' : 'Add Task'}
-                  </button>
-                </div>
+              <div class={styles.footerRightActions}>
+                <button type="button" class={styles.cancelBtn} onClick={onClose}>
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class={styles.submitBtn}
+                  disabled={!title.trim() || !isValidSelection}
+                >
+                  {editingTask ? 'Save Changes' : 'Add Task'}
+                </button>
               </div>
             </div>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      </form>
+    </Modal>
   );
 };

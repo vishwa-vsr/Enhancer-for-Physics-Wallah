@@ -1,0 +1,42 @@
+.shortcutInput {
+  background: var(--card-sub-control-bg, var(--bg-card));
+  border: none;
+  color: var(--input-fg, #9b95ff);
+  font-family: 'Inter', var(--font-sans, sans-serif);
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  border-radius: var(--radius-sm, 6px);
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  box-sizing: border-box;
+  padding: 0 6px;
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast, 0.15s ease);
+  user-select: none;
+}
+
+.shortcutInput:hover:not(:disabled) {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.shortcutInput:focus:not(:disabled) {
+  box-shadow: 0 0 0 2px var(--accent-primary, #6c63ff);
+  background: var(--bg-card, #181a22);
+}
+
+.shortcutInput:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.editing {
+  color: var(--text-muted, #8e9bb0) !important;
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  text-transform: none !important;
+}

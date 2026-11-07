@@ -3,6 +3,7 @@ import { Toggle } from '@shared/components/Toggle';
 import { FeatureRow } from '@shared/components/FeatureRow';
 import { Stepper } from '@shared/components/Stepper';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
+import { ShortcutInput } from '@shared/components/ShortcutInput';
 import { saveSetting } from '@shared/storage';
 import type { FinishTimeFormat } from '@shared/types';
 import {
@@ -419,17 +420,7 @@ function SmartToolsSection() {
 type FocusKeyType =
   'keyChat' | 'keyTimeline' | 'keyNotes' | 'keyDoubt' | 'keyFullscreen' | 'keyExit';
 
-const FOCUS_KEY_SIGNALS: Record<FocusKeyType, { value: string }> = {
-  keyChat,
-  keyTimeline,
-  keyNotes,
-  keyDoubt,
-  keyFullscreen,
-  keyExit,
-};
-
 function ShortcutsSection() {
-  const [activeHotkeyField, setActiveHotkeyField] = useState<FocusKeyType | null>(null);
   const [hotkeyNotice, setHotkeyNotice] = useState<{
     keyType: FocusKeyType;
     message: string;
@@ -462,67 +453,12 @@ function ShortcutsSection() {
     }, 3600);
   };
 
-  const getShortcutDisplayValue = (keyType: FocusKeyType): string => {
-    if (activeHotkeyField === keyType) return 'Press key...';
-    const val = FOCUS_KEY_SIGNALS[keyType].value;
-    return val ? val.toUpperCase() : '—';
-  };
-
-  const handleHotkeyFocus = (keyType: FocusKeyType) => {
-    clearNoticeTimer();
-    setHotkeyNotice(null);
-    setActiveHotkeyField(keyType);
-  };
-
-  const handleHotkeyBlur = (keyType: FocusKeyType) => {
-    setActiveHotkeyField((prev) => (prev === keyType ? null : prev));
-  };
-
-  const handleHotkeyDown = (keyType: FocusKeyType, e: KeyboardEvent) => {
-    e.preventDefault();
-    if (['Control', 'Shift', 'Alt', 'Meta', 'CapsLock'].includes(e.key)) return;
-
-    const input = e.target as HTMLInputElement;
-    const currentSignal = FOCUS_KEY_SIGNALS[keyType];
-
-    const reservedWarning = getReservedShortcutWarning(e.key);
-    if (reservedWarning) {
-      setActiveHotkeyField(null);
-      showHotkeyNotice(keyType, reservedWarning);
-      input.blur();
-      return;
-    }
-
-    if (e.key === 'Backspace' || e.key === 'Delete') {
-      currentSignal.value = '';
-      setActiveHotkeyField(null);
-      saveSetting(keyType, '');
-      showHotkeyNotice(keyType, null);
-      input.blur();
-      return;
-    }
-
-    // Only allow single alphanumeric keys (A-Z, 0-9), keeping Spacebar reserved
-    if (/^[a-zA-Z0-9]$/.test(e.key)) {
-      const boundKey = e.key.toLowerCase();
-      const conflict = findConflictingShortcut(keyType, boundKey);
-      if (conflict) {
-        setActiveHotkeyField(null);
-        showHotkeyNotice(keyType, `"${boundKey.toUpperCase()}" is already used by ${conflict}.`);
-        input.blur();
-        return;
-      }
-      currentSignal.value = boundKey;
-      setActiveHotkeyField(null);
-      saveSetting(keyType, boundKey);
-      showHotkeyNotice(keyType, null);
-      input.blur();
-      return;
-    }
-
-    setActiveHotkeyField(null);
-    showHotkeyNotice(keyType, 'Please press a single letter (A–Z) or number (0–9).');
-    input.blur();
+  const validateKey = (keyType: FocusKeyType) => (candidateKey: string) => {
+    const reservedWarning = getReservedShortcutWarning(candidateKey);
+    if (reservedWarning) return reservedWarning;
+    const conflict = findConflictingShortcut(keyType, candidateKey);
+    if (conflict) return `"${candidateKey.toUpperCase()}" is already used by ${conflict}.`;
+    return null;
   };
 
   const renderRowNotice = (keyType: FocusKeyType) => {
@@ -540,7 +476,8 @@ function ShortcutsSection() {
   const chatKeyDisabled = !enableKeyChat.value || isShortcutDisabled(hideChat.value);
   const doubtKeyDisabled = !enableKeyDoubt.value || isShortcutDisabled(hideDoubt.value);
   const notesKeyDisabled = !enableKeyNotes.value || isShortcutDisabled(hideNotes.value);
-  const timelineKeyDisabled = !enableKeyTimeline.value || isShortcutDisabled(hideNoteTimeline.value);
+  const timelineKeyDisabled =
+    !enableKeyTimeline.value || isShortcutDisabled(hideNoteTimeline.value);
   const fullscreenKeyDisabled = !enableKeyFullscreen.value;
   const exitKeyDisabled = !enableKeyExit.value;
 
@@ -561,12 +498,17 @@ function ShortcutsSection() {
 
         <FeatureRow label="Live Chat">
           <div class={styles.rowControls}>
-            <input
-              type="text"
-              readonly
-              class={`${styles.shortcutInput} ${chatKeyDisabled ? styles.shortcutDisabled : ''}`}
-              value={getShortcutDisplayValue('keyChat')}
+            <ShortcutInput
+              value={keyChat.value}
+              onChange={(v) => {
+                keyChat.value = v;
+                saveSetting('keyChat', v);
+              }}
               disabled={chatKeyDisabled}
+              validate={validateKey('keyChat')}
+              onNotice={(msg) => showHotkeyNotice('keyChat', msg)}
+              className={styles.focusShortcutInput}
+              ariaLabel="Live Chat Shortcut Key"
               title={
                 !enableKeyChat.value
                   ? 'Shortcut is toggled off'
@@ -574,10 +516,6 @@ function ShortcutsSection() {
                     ? 'Shortcut disabled because Live Chat is hidden'
                     : 'Chat shortcut key (Backspace to clear)'
               }
-              onFocus={() => handleHotkeyFocus('keyChat')}
-              onBlur={() => handleHotkeyBlur('keyChat')}
-              onKeyDown={(e) => handleHotkeyDown('keyChat', e)}
-              aria-label="Live Chat Shortcut Key"
             />
             <Toggle
               checked={enableKeyChat.value}
@@ -593,12 +531,17 @@ function ShortcutsSection() {
 
         <FeatureRow label="Doubt Q&A">
           <div class={styles.rowControls}>
-            <input
-              type="text"
-              readonly
-              class={`${styles.shortcutInput} ${doubtKeyDisabled ? styles.shortcutDisabled : ''}`}
-              value={getShortcutDisplayValue('keyDoubt')}
+            <ShortcutInput
+              value={keyDoubt.value}
+              onChange={(v) => {
+                keyDoubt.value = v;
+                saveSetting('keyDoubt', v);
+              }}
               disabled={doubtKeyDisabled}
+              validate={validateKey('keyDoubt')}
+              onNotice={(msg) => showHotkeyNotice('keyDoubt', msg)}
+              className={styles.focusShortcutInput}
+              ariaLabel="Doubt Shortcut Key"
               title={
                 !enableKeyDoubt.value
                   ? 'Shortcut is toggled off'
@@ -606,10 +549,6 @@ function ShortcutsSection() {
                     ? 'Shortcut disabled because Doubt Q&A is hidden'
                     : 'Doubt shortcut key (Backspace to clear)'
               }
-              onFocus={() => handleHotkeyFocus('keyDoubt')}
-              onBlur={() => handleHotkeyBlur('keyDoubt')}
-              onKeyDown={(e) => handleHotkeyDown('keyDoubt', e)}
-              aria-label="Doubt Shortcut Key"
             />
             <Toggle
               checked={enableKeyDoubt.value}
@@ -625,12 +564,17 @@ function ShortcutsSection() {
 
         <FeatureRow label="Study Notes">
           <div class={styles.rowControls}>
-            <input
-              type="text"
-              readonly
-              class={`${styles.shortcutInput} ${notesKeyDisabled ? styles.shortcutDisabled : ''}`}
-              value={getShortcutDisplayValue('keyNotes')}
+            <ShortcutInput
+              value={keyNotes.value}
+              onChange={(v) => {
+                keyNotes.value = v;
+                saveSetting('keyNotes', v);
+              }}
               disabled={notesKeyDisabled}
+              validate={validateKey('keyNotes')}
+              onNotice={(msg) => showHotkeyNotice('keyNotes', msg)}
+              className={styles.focusShortcutInput}
+              ariaLabel="Study Notes Shortcut Key"
               title={
                 !enableKeyNotes.value
                   ? 'Shortcut is toggled off'
@@ -638,10 +582,6 @@ function ShortcutsSection() {
                     ? 'Shortcut disabled because Study Notes is hidden'
                     : 'Study Notes shortcut key (Backspace to clear)'
               }
-              onFocus={() => handleHotkeyFocus('keyNotes')}
-              onBlur={() => handleHotkeyBlur('keyNotes')}
-              onKeyDown={(e) => handleHotkeyDown('keyNotes', e)}
-              aria-label="Study Notes Shortcut Key"
             />
             <Toggle
               checked={enableKeyNotes.value}
@@ -657,12 +597,17 @@ function ShortcutsSection() {
 
         <FeatureRow label="Note Timeline">
           <div class={styles.rowControls}>
-            <input
-              type="text"
-              readonly
-              class={`${styles.shortcutInput} ${timelineKeyDisabled ? styles.shortcutDisabled : ''}`}
-              value={getShortcutDisplayValue('keyTimeline')}
+            <ShortcutInput
+              value={keyTimeline.value}
+              onChange={(v) => {
+                keyTimeline.value = v;
+                saveSetting('keyTimeline', v);
+              }}
               disabled={timelineKeyDisabled}
+              validate={validateKey('keyTimeline')}
+              onNotice={(msg) => showHotkeyNotice('keyTimeline', msg)}
+              className={styles.focusShortcutInput}
+              ariaLabel="Note Timeline Shortcut Key"
               title={
                 !enableKeyTimeline.value
                   ? 'Shortcut is toggled off'
@@ -670,10 +615,6 @@ function ShortcutsSection() {
                     ? 'Shortcut disabled because Note Timeline is hidden'
                     : 'Note Timeline shortcut key (Backspace to clear)'
               }
-              onFocus={() => handleHotkeyFocus('keyTimeline')}
-              onBlur={() => handleHotkeyBlur('keyTimeline')}
-              onKeyDown={(e) => handleHotkeyDown('keyTimeline', e)}
-              aria-label="Note Timeline Shortcut Key"
             />
             <Toggle
               checked={enableKeyTimeline.value}
@@ -689,21 +630,22 @@ function ShortcutsSection() {
 
         <FeatureRow label="Full Screen">
           <div class={styles.rowControls}>
-            <input
-              type="text"
-              readonly
-              class={`${styles.shortcutInput} ${fullscreenKeyDisabled ? styles.shortcutDisabled : ''}`}
-              value={getShortcutDisplayValue('keyFullscreen')}
+            <ShortcutInput
+              value={keyFullscreen.value}
+              onChange={(v) => {
+                keyFullscreen.value = v;
+                saveSetting('keyFullscreen', v);
+              }}
               disabled={fullscreenKeyDisabled}
+              validate={validateKey('keyFullscreen')}
+              onNotice={(msg) => showHotkeyNotice('keyFullscreen', msg)}
+              className={styles.focusShortcutInput}
+              ariaLabel="Full Screen Shortcut Key"
               title={
                 !enableKeyFullscreen.value
                   ? 'Shortcut is toggled off'
                   : 'Full Screen shortcut key (Backspace to clear)'
               }
-              onFocus={() => handleHotkeyFocus('keyFullscreen')}
-              onBlur={() => handleHotkeyBlur('keyFullscreen')}
-              onKeyDown={(e) => handleHotkeyDown('keyFullscreen', e)}
-              aria-label="Full Screen Shortcut Key"
             />
             <Toggle
               checked={enableKeyFullscreen.value}
@@ -719,21 +661,22 @@ function ShortcutsSection() {
 
         <FeatureRow label="Quick Exit Class">
           <div class={styles.rowControls}>
-            <input
-              type="text"
-              readonly
-              class={`${styles.shortcutInput} ${exitKeyDisabled ? styles.shortcutDisabled : ''}`}
-              value={getShortcutDisplayValue('keyExit')}
+            <ShortcutInput
+              value={keyExit.value}
+              onChange={(v) => {
+                keyExit.value = v;
+                saveSetting('keyExit', v);
+              }}
               disabled={exitKeyDisabled}
+              validate={validateKey('keyExit')}
+              onNotice={(msg) => showHotkeyNotice('keyExit', msg)}
+              className={styles.focusShortcutInput}
+              ariaLabel="Quick Exit Shortcut Key"
               title={
                 !enableKeyExit.value
                   ? 'Shortcut is toggled off'
                   : 'Quick Exit shortcut key (Backspace to clear)'
               }
-              onFocus={() => handleHotkeyFocus('keyExit')}
-              onBlur={() => handleHotkeyBlur('keyExit')}
-              onKeyDown={(e) => handleHotkeyDown('keyExit', e)}
-              aria-label="Quick Exit Shortcut Key"
             />
             <Toggle
               checked={enableKeyExit.value}

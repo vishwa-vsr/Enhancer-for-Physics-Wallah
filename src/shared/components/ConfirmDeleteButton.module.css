@@ -1,0 +1,40 @@
+.deleteActionBtn {
+  height: 30px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-radius: var(--radius-sm, 6px);
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #ef4444;
+  font-size: 12.5px;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 550;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast, 0.15s ease);
+  font-family: inherit;
+}
+
+.deleteActionBtn:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.deleteActionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deleteActionBtnConfirm {
+  background-color: rgba(239, 68, 68, 0.16) !important;
+  color: #f87171 !important;
+  font-weight: 600 !important;
+}
+
+.deleteActionBtnConfirm:hover:not(:disabled) {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+}

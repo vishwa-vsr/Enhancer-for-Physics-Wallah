@@ -12,9 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **Dashboard Theme Toggle**: Added a one-click dark/light theme switcher in the dashboard header.
 - **Offline Inter Font**: Bundled the Inter font locally for fast, completely offline text and badges.
+- **Unified Dialogs & Icon Picker**: Standardized popup windows and study icon selectors with smooth pop-in animations and subject color matching.
+- **Safety Delete Countdown**: Added a 2-step countdown button across tasks, subjects, and chapters to prevent accidental deletions.
 
 ### Changed
 
+- **Focus Shortcut Redesign**: Redesigned all shortcut boxes in the Focus tab to match the Speed tab's dark purple look with smooth click expansion and conflict warnings.
 - **Media Tab Layout**: Grouped video quality and skip silence settings into clean master toggle cards.
 - **Min. Silence Controls**: Added a dedicated +/- stepper box for adjusting silence duration in seconds.
 - **Simpler Dropdown Menus**: Removed blur, bounce animations, and hover sliding for faster menus.
