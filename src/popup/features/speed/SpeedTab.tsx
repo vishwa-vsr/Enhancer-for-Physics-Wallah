@@ -3,6 +3,7 @@ import { Toggle } from '@shared/components/Toggle';
 import { FeatureRow } from '@shared/components/FeatureRow';
 import { Stepper } from '@shared/components/Stepper';
 import { ShortcutInput } from '@shared/components/ShortcutInput';
+import { CollapsibleSubOption } from '@shared/components/CollapsibleSubOption';
 import { saveSetting } from '@shared/storage';
 import {
   preferredSpeed,
@@ -90,9 +91,8 @@ function sanitizeAndSortSnapPoints(raw: number[]): number[] {
 type SpeedKeyType = 'keySpeedUp' | 'keySlowDown' | 'keyReset';
 
 export function SpeedTab() {
-  const [editorState, setEditorState] = useState<'closed' | 'expanded' | 'collapsing'>('closed');
+  const [editorOpen, setEditorOpen] = useState(false);
   const [hotkeyNotice, setHotkeyNotice] = useState<string | null>(null);
-  const collapseTimerRef = useRef<number | null>(null);
   const noticeTimerRef = useRef<number | null>(null);
   const sliderRef = useRef<HTMLInputElement>(null);
   const speedValueRef = useRef<HTMLSpanElement>(null);
@@ -122,7 +122,6 @@ export function SpeedTab() {
 
   useEffect(() => {
     return () => {
-      if (collapseTimerRef.current) clearTimeout(collapseTimerRef.current);
       clearNoticeTimer();
     };
   }, []);
@@ -139,19 +138,7 @@ export function SpeedTab() {
   };
 
   const toggleEditor = () => {
-    if (collapseTimerRef.current) {
-      clearTimeout(collapseTimerRef.current);
-      collapseTimerRef.current = null;
-    }
-    if (editorState === 'expanded') {
-      setEditorState('collapsing');
-      collapseTimerRef.current = window.setTimeout(() => {
-        setEditorState('closed');
-        collapseTimerRef.current = null;
-      }, 220);
-    } else {
-      setEditorState('expanded');
-    }
+    setEditorOpen((prev) => !prev);
   };
 
   const handleSliderInput = (e: Event) => {
@@ -259,7 +246,7 @@ export function SpeedTab() {
               type="button"
               class={styles.settingsToggleBtn}
               onClick={toggleEditor}
-              aria-expanded={editorState === 'expanded' ? 'true' : 'false'}
+              aria-expanded={editorOpen ? 'true' : 'false'}
               title="Customize Speed Snap Points"
               aria-label="Customize Speed Snap Points"
             >
@@ -316,15 +303,7 @@ export function SpeedTab() {
         </div>
 
         {/* Snap Points Collapsible Editor with Smooth 2-way Animation */}
-        <div
-          class={`${styles.presetsEditorContainer} ${
-            editorState === 'expanded'
-              ? styles.expanded
-              : editorState === 'collapsing'
-                ? styles.collapsing
-                : ''
-          }`}
-        >
+        <CollapsibleSubOption isOpen={editorOpen} variant="hud">
           <div class={styles.presetsEditorSection}>
             <div class={styles.presetEditorHeader}>
               <span class={styles.presetEditorTitle}>Edit Snap Points</span>
@@ -372,7 +351,7 @@ export function SpeedTab() {
               ))}
             </div>
           </div>
-        </div>
+        </CollapsibleSubOption>
 
         {/* Integrated Speed Widget Footer Row & Sub-option */}
         <div class={styles.hudFooterRow}>
@@ -396,7 +375,7 @@ export function SpeedTab() {
           />
         </div>
 
-        {!hideSpeed.value && (
+        <CollapsibleSubOption isOpen={!hideSpeed.value} variant="hud">
           <div class={styles.hudSubRow}>
             <label
               class={styles.configLabel}
@@ -417,7 +396,7 @@ export function SpeedTab() {
               ariaLabel="Toggle Always Expand Speed Bar"
             />
           </div>
-        )}
+        </CollapsibleSubOption>
       </section>
 
       {/* === 2. Extra Controls Card === */}
@@ -435,59 +414,57 @@ export function SpeedTab() {
                 ariaLabel="Toggle Speed Keyboard Shortcuts"
               />
             </FeatureRow>
-            {enableHotkeys.value && (
-              <>
-                <div class={styles.hotkeysEditor}>
-                  <div class={styles.inputRow}>
-                    <span class={styles.inputLabel}>Speed Up</span>
-                    <ShortcutInput
-                      value={keySpeedUp.value}
-                      onChange={(v) => {
-                        keySpeedUp.value = v;
-                        saveSetting('keySpeedUp', v);
-                      }}
-                      validate={validateSpeedKey('keySpeedUp')}
-                      onNotice={showHotkeyNotice}
-                      title="Speed Up shortcut key (Backspace to clear, default: H)"
-                      ariaLabel="Speed Up Hotkey"
-                    />
-                  </div>
-                  <div class={styles.inputRow}>
-                    <span class={styles.inputLabel}>Slow Down</span>
-                    <ShortcutInput
-                      value={keySlowDown.value}
-                      onChange={(v) => {
-                        keySlowDown.value = v;
-                        saveSetting('keySlowDown', v);
-                      }}
-                      validate={validateSpeedKey('keySlowDown')}
-                      onNotice={showHotkeyNotice}
-                      title="Slow Down shortcut key (Backspace to clear, default: J)"
-                      ariaLabel="Slow Down Hotkey"
-                    />
-                  </div>
-                  <div class={styles.inputRow}>
-                    <span class={styles.inputLabel}>Reset Speed</span>
-                    <ShortcutInput
-                      value={keyReset.value}
-                      onChange={(v) => {
-                        keyReset.value = v;
-                        saveSetting('keyReset', v);
-                      }}
-                      validate={validateSpeedKey('keyReset')}
-                      onNotice={showHotkeyNotice}
-                      title="Reset Speed shortcut key (Backspace to clear, default: L)"
-                      ariaLabel="Reset Speed Hotkey"
-                    />
-                  </div>
+            <CollapsibleSubOption isOpen={enableHotkeys.value}>
+              <div class={styles.hotkeysEditor}>
+                <div class={styles.inputRow}>
+                  <span class={styles.inputLabel}>Speed Up</span>
+                  <ShortcutInput
+                    value={keySpeedUp.value}
+                    onChange={(v) => {
+                      keySpeedUp.value = v;
+                      saveSetting('keySpeedUp', v);
+                    }}
+                    validate={validateSpeedKey('keySpeedUp')}
+                    onNotice={showHotkeyNotice}
+                    title="Speed Up shortcut key (Backspace to clear, default: H)"
+                    ariaLabel="Speed Up Hotkey"
+                  />
                 </div>
-                {hotkeyNotice && (
-                  <div class={styles.hotkeyNotice} role="status" aria-live="polite">
-                    {hotkeyNotice}
-                  </div>
-                )}
-              </>
-            )}
+                <div class={styles.inputRow}>
+                  <span class={styles.inputLabel}>Slow Down</span>
+                  <ShortcutInput
+                    value={keySlowDown.value}
+                    onChange={(v) => {
+                      keySlowDown.value = v;
+                      saveSetting('keySlowDown', v);
+                    }}
+                    validate={validateSpeedKey('keySlowDown')}
+                    onNotice={showHotkeyNotice}
+                    title="Slow Down shortcut key (Backspace to clear, default: J)"
+                    ariaLabel="Slow Down Hotkey"
+                  />
+                </div>
+                <div class={styles.inputRow}>
+                  <span class={styles.inputLabel}>Reset Speed</span>
+                  <ShortcutInput
+                    value={keyReset.value}
+                    onChange={(v) => {
+                      keyReset.value = v;
+                      saveSetting('keyReset', v);
+                    }}
+                    validate={validateSpeedKey('keyReset')}
+                    onNotice={showHotkeyNotice}
+                    title="Reset Speed shortcut key (Backspace to clear, default: L)"
+                    ariaLabel="Reset Speed Hotkey"
+                  />
+                </div>
+              </div>
+              {hotkeyNotice && (
+                <div class={styles.hotkeyNotice} role="status" aria-live="polite">
+                  {hotkeyNotice}
+                </div>
+              )}
+            </CollapsibleSubOption>
           </div>
 
           <div class={styles.settingRowGroup}>
@@ -501,7 +478,7 @@ export function SpeedTab() {
                 ariaLabel="Toggle Hold Space"
               />
             </FeatureRow>
-            {holdSpaceSpeedUp.value && (
+            <CollapsibleSubOption isOpen={holdSpaceSpeedUp.value}>
               <div class={styles.featureConfigRow}>
                 <span class={styles.configLabel}>Speed Up Rate</span>
                 <Stepper
@@ -517,7 +494,7 @@ export function SpeedTab() {
                   }}
                 />
               </div>
-            )}
+            </CollapsibleSubOption>
           </div>
 
           <FeatureRow label="Auto-pause on Tab Switch">
@@ -548,80 +525,78 @@ export function SpeedTab() {
                 ariaLabel="Toggle Scroll to Adjust Volume"
               />
             </FeatureRow>
-            {volumeScrollEnabled.value && (
-              <>
+            <CollapsibleSubOption isOpen={volumeScrollEnabled.value}>
+              <div class={styles.featureConfigRow}>
+                <span class={styles.configLabel}>Mouse Sensy</span>
+                <Stepper
+                  className={styles.stepperCard}
+                  value={volumeScrollMouseStep.value}
+                  min={1}
+                  max={30}
+                  step={1}
+                  unit=""
+                  onChange={(v) => {
+                    const clamped = Math.max(1, Math.min(30, Math.round(v)));
+                    volumeScrollMouseStep.value = clamped;
+                    saveSetting('volumeScrollMouseStep', clamped);
+                  }}
+                />
+              </div>
+              <div class={styles.featureConfigRow}>
+                <span class={styles.configLabel}>Trackpad Sensy</span>
+                <Stepper
+                  className={styles.stepperCard}
+                  value={volumeScrollTrackpadStep.value}
+                  min={1}
+                  max={10}
+                  step={1}
+                  unit=""
+                  onChange={(v) => {
+                    const clamped = Math.max(1, Math.min(10, Math.round(v)));
+                    volumeScrollTrackpadStep.value = clamped;
+                    saveSetting('volumeScrollTrackpadStep', clamped);
+                  }}
+                />
+              </div>
+              <div class={styles.featureConfigRow}>
+                <label
+                  class={styles.configLabel}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                  onClick={() => {
+                    showVolumeBubble.value = !showVolumeBubble.value;
+                    saveSetting('showVolumeBubble', showVolumeBubble.value);
+                  }}
+                >
+                  Show Volume Bubble
+                </label>
+                <Toggle
+                  checked={showVolumeBubble.value}
+                  onChange={(v) => {
+                    showVolumeBubble.value = v;
+                    saveSetting('showVolumeBubble', v);
+                  }}
+                  ariaLabel="Toggle Show Volume Bubble"
+                />
+              </div>
+              <CollapsibleSubOption isOpen={showVolumeBubble.value}>
                 <div class={styles.featureConfigRow}>
-                  <span class={styles.configLabel}>Mouse Sensy</span>
+                  <span class={styles.configLabel}>Disappear Delay</span>
                   <Stepper
                     className={styles.stepperCard}
-                    value={volumeScrollMouseStep.value}
-                    min={1}
-                    max={30}
-                    step={1}
-                    unit=""
+                    value={volumeBubbleDelay.value}
+                    min={0.2}
+                    max={2.0}
+                    step={0.1}
+                    unit="s"
                     onChange={(v) => {
-                      const clamped = Math.max(1, Math.min(30, Math.round(v)));
-                      volumeScrollMouseStep.value = clamped;
-                      saveSetting('volumeScrollMouseStep', clamped);
+                      const clamped = Math.round(v * 10) / 10;
+                      volumeBubbleDelay.value = clamped;
+                      saveSetting('volumeBubbleDelay', clamped);
                     }}
                   />
                 </div>
-                <div class={styles.featureConfigRow}>
-                  <span class={styles.configLabel}>Trackpad Sensy</span>
-                  <Stepper
-                    className={styles.stepperCard}
-                    value={volumeScrollTrackpadStep.value}
-                    min={1}
-                    max={10}
-                    step={1}
-                    unit=""
-                    onChange={(v) => {
-                      const clamped = Math.max(1, Math.min(10, Math.round(v)));
-                      volumeScrollTrackpadStep.value = clamped;
-                      saveSetting('volumeScrollTrackpadStep', clamped);
-                    }}
-                  />
-                </div>
-                <div class={styles.featureConfigRow}>
-                  <label
-                    class={styles.configLabel}
-                    style={{ cursor: 'pointer', userSelect: 'none' }}
-                    onClick={() => {
-                      showVolumeBubble.value = !showVolumeBubble.value;
-                      saveSetting('showVolumeBubble', showVolumeBubble.value);
-                    }}
-                  >
-                    Show Volume Bubble
-                  </label>
-                  <Toggle
-                    checked={showVolumeBubble.value}
-                    onChange={(v) => {
-                      showVolumeBubble.value = v;
-                      saveSetting('showVolumeBubble', v);
-                    }}
-                    ariaLabel="Toggle Show Volume Bubble"
-                  />
-                </div>
-                {showVolumeBubble.value && (
-                  <div class={styles.featureConfigRow}>
-                    <span class={styles.configLabel}>Disappear Delay</span>
-                    <Stepper
-                      className={styles.stepperCard}
-                      value={volumeBubbleDelay.value}
-                      min={0.2}
-                      max={2.0}
-                      step={0.1}
-                      unit="s"
-                      onChange={(v) => {
-                        const clamped = Math.round(v * 10) / 10;
-                        volumeBubbleDelay.value = clamped;
-                        saveSetting('volumeBubbleDelay', clamped);
-                      }}
-                    />
-                  </div>
-                )}
-              </>
-            )}
+              </CollapsibleSubOption>
+            </CollapsibleSubOption>
           </div>
         </div>
       </section>

@@ -4,6 +4,7 @@ import { FeatureRow } from '@shared/components/FeatureRow';
 import { Stepper } from '@shared/components/Stepper';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
 import { ShortcutInput } from '@shared/components/ShortcutInput';
+import { CollapsibleSubOption } from '@shared/components/CollapsibleSubOption';
 import { saveSetting } from '@shared/storage';
 import type { FinishTimeFormat } from '@shared/types';
 import {
@@ -188,35 +189,33 @@ function AutoHideSection() {
             ariaLabel="Toggle Auto-Hide Controls & Cursor"
           />
         </FeatureRow>
-        {autoHideControls.value && (
-          <>
-            <div class={styles.featureConfigRow}>
-              <span class={styles.configLabel}>Inactivity Delay</span>
-              <Stepper
-                className={styles.stepperCard}
-                value={autoHideDelay.value}
-                min={0.5}
-                max={5.0}
-                step={0.1}
-                unit="s"
-                onChange={(v) => {
-                  autoHideDelay.value = v;
-                  saveSetting('autoHideDelay', v);
-                }}
-              />
-            </div>
-            <FeatureRow label="Also Hide When Paused">
-              <Toggle
-                checked={autoHideWhenPaused.value}
-                onChange={(v) => {
-                  autoHideWhenPaused.value = v;
-                  saveSetting('autoHideWhenPaused', v);
-                }}
-                ariaLabel="Toggle Auto-Hide When Paused"
-              />
-            </FeatureRow>
-          </>
-        )}
+        <CollapsibleSubOption isOpen={autoHideControls.value}>
+          <div class={styles.featureConfigRow}>
+            <span class={styles.configLabel}>Inactivity Delay</span>
+            <Stepper
+              className={styles.stepperCard}
+              value={autoHideDelay.value}
+              min={0.5}
+              max={5.0}
+              step={0.1}
+              unit="s"
+              onChange={(v) => {
+                autoHideDelay.value = v;
+                saveSetting('autoHideDelay', v);
+              }}
+            />
+          </div>
+          <FeatureRow label="Also Hide When Paused">
+            <Toggle
+              checked={autoHideWhenPaused.value}
+              onChange={(v) => {
+                autoHideWhenPaused.value = v;
+                saveSetting('autoHideWhenPaused', v);
+              }}
+              ariaLabel="Toggle Auto-Hide When Paused"
+            />
+          </FeatureRow>
+        </CollapsibleSubOption>
       </div>
     </section>
   );
@@ -497,7 +496,7 @@ function ShortcutsSection() {
           />
         </FeatureRow>
 
-        {enableFocusShortcuts.value && (
+        <CollapsibleSubOption isOpen={enableFocusShortcuts.value}>
           <div class={styles.shortcutsExpandBox}>
             <FeatureRow label="Allow Shortcuts When Icon is Hidden">
               <Toggle
@@ -704,7 +703,7 @@ function ShortcutsSection() {
             </FeatureRow>
             {renderRowNotice('keyExit')}
           </div>
-        )}
+        </CollapsibleSubOption>
       </div>
     </section>
   );

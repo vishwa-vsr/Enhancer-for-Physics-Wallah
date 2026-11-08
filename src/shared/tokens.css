@@ -13,19 +13,19 @@
 :root {
   /* Dark theme variables (Default) */
   --bg-main: #000000;
-  --bg-card: #181a22;
-  --bg-card-hover: #20232c;
-  --bg-control: #262933;
-  --bg-control-hover: #2e323e;
+  --bg-card: #141416;
+  --bg-card-hover: #1b1b1e;
+  --bg-control: #222226;
+  --bg-control-hover: #2a2a2f;
 
-  /* Card main & sub-option theme colors (high contrast for dark mode) */
-  --card-main-bg: #181a22;
-  --card-main-bg-hover: #20232c;
-  --card-sub-bg: #262933;
-  --card-sub-bg-hover: #2e323e;
-  --card-sub-control-bg: #12141a;
-  --divider-color: rgba(255, 255, 255, 0.12);
-  --border-subtle: rgba(255, 255, 255, 0.12);
+  /* Card main & sub-option theme colors (neutral dark charcoal for dark mode) */
+  --card-main-bg: #141416;
+  --card-main-bg-hover: #1b1b1e;
+  --card-sub-bg: #202024;
+  --card-sub-bg-hover: #26262b;
+  --card-sub-control-bg: #101012;
+  --divider-color: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.08);
   --card-border: none;
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
@@ -36,18 +36,18 @@
   --accent-active: #5b52f0;
   --accent-dim: rgba(108, 99, 255, 0.15);
   --accent-focus: #8b85ff;
-  --tab-nav-bg: #181a22;
+  --tab-nav-bg: #141416;
   --tab-btn-fg: #8e9bb0;
   --tab-btn-fg-active: #ffffff;
-  --tab-indicator-bg: #262933;
+  --tab-indicator-bg: #25252a;
   --tab-indicator-shadow: none;
-  --slider-track-bg: rgba(255, 255, 255, 0.16);
+  --slider-track-bg: rgba(255, 255, 255, 0.14);
   --slider-thumb-bg: #ffffff;
   --slider-thumb-border: var(--accent-primary);
-  --switch-bg-off: #2e323e;
+  --switch-bg-off: #2a2a2f;
   --switch-bg-on: var(--accent-primary);
   --switch-thumb-bg: #ffffff;
-  --input-bg: #181a22;
+  --input-bg: #141416;
   --input-fg: #9b95ff;
   --warning-text: #fbbf24;
   --card-shadow: none;
@@ -77,19 +77,19 @@
 }
 
 body.light-theme {
-  --bg-main: #e8e9ee;
+  --bg-main: #f0f1f4;
   --bg-card: #ffffff;
   --bg-card-hover: #fafafa;
-  --bg-control: #dcdee4;
-  --bg-control-hover: #d2d4dc;
+  --bg-control: #e4e5eb;
+  --bg-control-hover: #dbdce2;
 
-  /* Card main & sub-option theme colors (preserved for light mode) */
+  /* Card main & sub-option theme colors (clean neutral for light mode) */
   --card-main-bg: #ffffff;
   --card-main-bg-hover: #fafafa;
-  --card-sub-bg: #dcdee4;
-  --card-sub-bg-hover: #d2d4dc;
+  --card-sub-bg: #e5e6ec;
+  --card-sub-bg-hover: #dcdee4;
   --card-sub-control-bg: #ffffff;
-  --divider-color: rgba(0, 0, 0, 0.1);
+  --divider-color: rgba(0, 0, 0, 0.08);
   --border-subtle: rgba(0, 0, 0, 0.08);
   --card-border: none;
   --text-primary: #18181b;
@@ -101,12 +101,12 @@ body.light-theme {
   --accent-active: #433dbe;
   --accent-dim: rgba(90, 85, 234, 0.1);
   --accent-focus: #5a55ea;
-  --tab-nav-bg: #dcdee4;
+  --tab-nav-bg: #e5e6ec;
   --tab-btn-fg: #64748b;
   --tab-btn-fg-active: #18181b;
   --tab-indicator-bg: #ffffff;
   --tab-indicator-shadow: none;
-  --slider-track-bg: rgba(0, 0, 0, 0.14);
+  --slider-track-bg: rgba(0, 0, 0, 0.12);
   --slider-thumb-bg: #ffffff;
   --slider-thumb-border: var(--accent-primary);
   --switch-bg-off: #cbced6;

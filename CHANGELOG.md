@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [1.1.0.7] - 2026-11-06
+## [1.1.0.7] - 2026-11-08
 
 ### Added
 
@@ -14,9 +14,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Offline Inter Font**: Bundled the Inter font locally for fast, completely offline text and badges.
 - **Unified Dialogs & Icon Picker**: Standardized popup windows and study icon selectors with smooth pop-in animations and subject color matching.
 - **Safety Delete Countdown**: Added a 2-step countdown button across tasks, subjects, and chapters to prevent accidental deletions.
+- **Unified Smooth Collapsible Drawer**: Created a shared drawer component so every expandable sub-option across Speed, Media, and Focus tabs glides open and closed with a silky-smooth height animation.
 
 ### Changed
 
+- **Neutral Dark Charcoal Theme**: Removed cool navy/purple tinting from cards, sub-boxes, and tab bars in dark mode, upgrading them to sleek neutral dark charcoal with subtle dividers while reserving purple strictly for active toggle switches, speed slider bars, and shortcut letters.
+- **Purple-Free Tab Bar**: Active tabs now shine in crisp, bright white on a neutral pill in dark mode (and dark charcoal on white in light mode), removing purple glow from the top tab bar.
+- **Squircle Header Buttons**: Changed the Dashboard and Theme toggle buttons in the popup header from circles to rounded squares, matching the dashboard's squircle design.
+- **Seamless Snap Points Sub-Option**: Redesigned the "Edit Snap Points" feature so it expands edge-to-edge as a clean sub-option drawer directly under the speed slider without creating a floating "card inside a card".
 - **Focus Shortcut Redesign**: Redesigned all shortcut boxes to match the Speed tab's dark purple look with smooth click expansion and conflict warnings, and added a master 'Enable Keyboard Shortcuts' switch with shortcuts turned off by default.
 - **Media Tab Layout**: Grouped video quality and skip silence settings into clean master toggle cards.
 - **Min. Silence Controls**: Added a dedicated +/- stepper box for adjusting silence duration in seconds.

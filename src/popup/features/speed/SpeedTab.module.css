@@ -201,66 +201,16 @@
   color: var(--text-primary);
 }
 
-/* Custom Snap Points Collapsible Editor */
-.presetsEditorContainer:not(.expanded):not(.collapsing) {
-  display: none !important;
-}
-
-.presetsEditorContainer {
-  display: block;
-  overflow: hidden;
-  transform-origin: top center;
-}
-
-@keyframes slideDownExpand {
-  0% {
-    opacity: 0;
-    max-height: 0;
-    margin-top: 0;
-    transform: translateY(-6px);
-  }
-  100% {
-    opacity: 1;
-    max-height: 130px;
-    margin-top: 10px;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideUpCollapse {
-  0% {
-    opacity: 1;
-    max-height: 130px;
-    margin-top: 10px;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    max-height: 0;
-    margin-top: 0;
-    transform: translateY(-6px);
-  }
-}
-
-.presetsEditorContainer.expanded {
-  display: block;
-  animation: slideDownExpand 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.presetsEditorContainer.collapsing {
-  display: block;
-  animation: slideUpCollapse 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
+/* Custom Snap Points Collapsible Editor (Seamless Full-Width Sub-Option) */
 .presetsEditorSection {
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
   border: none;
-  border-radius: var(--radius-md);
-  padding: 10px;
-  background: var(--card-sub-bg, var(--bg-control));
+  border-radius: 0;
+  padding: 10px 14px 12px 14px;
+  background: transparent;
 }
 
 .presetEditorHeader {
@@ -414,12 +364,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px -14px -8px -14px;
   padding: 8px 14px;
   background: var(--card-sub-bg, var(--bg-control));
-  border-top: 1px solid var(--divider-color);
-  transition: opacity var(--transition-fast);
-  animation: subBoxFadeIn 180ms ease-out forwards;
 }
 
 /* === Shortcuts & Controls Card === */

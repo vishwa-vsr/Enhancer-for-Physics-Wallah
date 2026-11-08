@@ -42,25 +42,27 @@
 .themeBtn {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  background-color: var(--bg-control);
+  border-radius: 8px;
+  background-color: var(--bg-card);
   border: none;
   outline: none;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+  user-select: none;
+  padding: 0;
 }
 
 .actionBtn:hover,
 .themeBtn:hover {
-  transform: scale(1.05);
+  background-color: var(--bg-control);
   color: var(--accent-primary);
-  background-color: var(--bg-control-hover);
-  border: none;
-  outline: none;
 }
 
 .actionBtn:active,

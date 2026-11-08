@@ -25,7 +25,7 @@
 
 .shortcutInput:focus:not(:disabled) {
   box-shadow: 0 0 0 2px var(--accent-primary, #6c63ff);
-  background: var(--bg-card, #181a22);
+  background: var(--bg-card, #141416);
 }
 
 .shortcutInput:disabled {

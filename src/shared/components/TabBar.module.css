@@ -74,6 +74,6 @@
 }
 
 .tabBtn.active .tabIcon {
-  color: var(--accent-primary);
+  color: var(--tab-btn-fg-active);
   transform: scale(1.05);
 }

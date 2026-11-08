@@ -48,15 +48,17 @@ Theme variables are defined in [`src/shared/tokens.css`](file:///d:/Anti%20Gravi
 
 | Token Variable | Dark Theme (Default) | Light Theme (`body.light-theme`) | Role & Purpose |
 | :--- | :--- | :--- | :--- |
-| `--bg-main` | `#000000` | `#e8e9ee` | Main app window background |
-| `--bg-card` | `#181a22` | `#ffffff` | Primary container cards, modals, and sheets |
-| `--bg-card-hover` | `#20232c` | `#fafafa` | Card hover state |
-| `--bg-control` | `#262933` | `#dcdee4` | Neutral buttons, inputs, category chips |
-| `--bg-control-hover` | `#2e323e` | `#d2d4dc` | Neutral button hover state |
-| `--card-sub-bg` | `#262933` | `#dcdee4` | Nested sub-boxes and shortcut containers |
-| `--card-sub-control-bg` | `#12141a` | `#ffffff` | High-contrast inner inputs inside sub-boxes |
-| `--border-subtle` | `rgba(255, 255, 255, 0.12)` | `rgba(0, 0, 0, 0.08)` | Subtle card borders and dividers |
-| `--divider-color` | `rgba(255, 255, 255, 0.12)` | `rgba(0, 0, 0, 0.10)` | Separator lines between sections |
+| `--bg-main` | `#000000` | `#f0f1f4` | Main app window background |
+| `--bg-card` | `#141416` | `#ffffff` | Primary container cards, modals, and sheets (Neutral Dark Charcoal) |
+| `--bg-card-hover` | `#1b1b1e` | `#fafafa` | Card hover state |
+| `--bg-control` | `#222226` | `#e4e5eb` | Neutral buttons, inputs, category chips |
+| `--bg-control-hover` | `#2a2a2f` | `#dbdce2` | Neutral button hover state |
+| `--card-sub-bg` | `#202024` | `#e5e6ec` | Nested sub-boxes and shortcut containers |
+| `--card-sub-control-bg` | `#101012` | `#ffffff` | High-contrast inner inputs inside sub-boxes |
+| `--border-subtle` | `rgba(255, 255, 255, 0.08)` | `rgba(0, 0, 0, 0.08)` | Subtle card borders and dividers |
+| `--divider-color` | `rgba(255, 255, 255, 0.08)` | `rgba(0, 0, 0, 0.08)` | Separator lines between sections |
+| `--tab-nav-bg` | `#141416` | `#e5e6ec` | Tab navigation background bar |
+| `--tab-indicator-bg` | `#25252a` | `#ffffff` | Active tab indicator pill (100% purple-free) |
 
 ### Text & Accent Tokens
 
@@ -160,6 +162,7 @@ src/shared/components/
 ├── ColorPicker.tsx & ColorPicker.module.css
 ├── FeatureRow.tsx & FeatureRow.module.css
 ├── TabBar.tsx & TabBar.module.css
+├── CollapsibleSubOption.tsx & CollapsibleSubOption.module.css
 └── StudyIcons.tsx
 ```
 
