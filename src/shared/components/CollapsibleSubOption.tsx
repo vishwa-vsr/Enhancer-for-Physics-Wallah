@@ -5,7 +5,7 @@ interface CollapsibleSubOptionProps {
   isOpen: boolean;
   children: ComponentChildren;
   className?: string;
-  variant?: 'default' | 'hud';
+  variant?: 'default' | 'hud' | 'hudSub';
 }
 
 export function CollapsibleSubOption({
@@ -14,7 +14,12 @@ export function CollapsibleSubOption({
   className = '',
   variant = 'default',
 }: CollapsibleSubOptionProps) {
-  const variantClass = variant === 'hud' ? styles.hudVariant : styles.defaultVariant;
+  let variantClass = styles.defaultVariant;
+  if (variant === 'hud') {
+    variantClass = styles.hudVariant;
+  } else if (variant === 'hudSub') {
+    variantClass = styles.hudSubVariant;
+  }
 
   return (
     <div

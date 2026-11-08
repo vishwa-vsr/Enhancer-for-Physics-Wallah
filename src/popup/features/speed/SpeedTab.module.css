@@ -4,7 +4,7 @@
   border: var(--card-border, none);
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
-  padding: 14px 14px 8px 14px;
+  padding: 14px 14px 0 14px;
   overflow: hidden;
 }
 
@@ -338,9 +338,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 0;
+  margin-left: -14px;
+  margin-right: -14px;
+  width: calc(100% + 28px);
+  box-sizing: border-box;
+  padding: 10px 14px 11px 14px;
   border-top: 1px solid var(--divider-color);
+  background: var(--card-main-bg, var(--bg-card));
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.hudFooterRow:hover {
+  background-color: var(--card-main-bg-hover, var(--bg-card-hover));
 }
 
 .disabledRow {
@@ -364,7 +375,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 14px;
+  padding: 10px 14px 12px 14px;
   background: var(--card-sub-bg, var(--bg-control));
 }
 

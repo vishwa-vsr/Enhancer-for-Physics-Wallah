@@ -375,7 +375,7 @@ export function SpeedTab() {
           />
         </div>
 
-        <CollapsibleSubOption isOpen={!hideSpeed.value} variant="hud">
+        <CollapsibleSubOption isOpen={!hideSpeed.value} variant="hudSub">
           <div class={styles.hudSubRow}>
             <label
               class={styles.configLabel}

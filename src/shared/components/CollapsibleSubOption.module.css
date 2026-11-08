@@ -37,6 +37,19 @@
 }
 
 .hudVariant:not(.open) {
+  margin: 10px -14px 0 -14px;
+  width: calc(100% + 28px);
+}
+
+/* HUD Sub-Row Variant (direct child below a footer row, flush margin) */
+.hudSubVariant.open {
+  margin: 0 -14px 0 -14px;
+  width: calc(100% + 28px);
+  background: var(--card-sub-bg, var(--bg-control));
+  border-top: 1px solid var(--divider-color);
+}
+
+.hudSubVariant:not(.open) {
   margin: 0 -14px 0 -14px;
   width: calc(100% + 28px);
 }
