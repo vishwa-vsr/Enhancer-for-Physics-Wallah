@@ -1,14 +1,25 @@
 import { state } from '../../state';
 import { VideoQuality } from '../../types';
-import {
-  findPWToolbar,
-  isInsidePreferredToolbar,
-  preventFocusSteal,
-} from '../distractions/elements';
+import { preventFocusSteal } from '../distractions/elements';
 import { getCurrentQuality, saveQuality, getAvailableQualities } from '../video/quality-controller';
+import {
+  findControlsToolbar,
+  isInsideControlsTray,
+  placeControlInTray,
+  removeControlsTrayIfEmpty,
+} from './toast';
 
 let isMenuOpen = false;
 let closeMenuTimer: ReturnType<typeof setTimeout> | null = null;
+let isDocumentClickBound = false;
+
+function handleDocumentClick(e: MouseEvent): void {
+  if (!isMenuOpen) return;
+  const container = document.getElementById('pwc-quality-control');
+  if (!container || !container.contains(e.target as Node)) {
+    closeQualityMenu();
+  }
+}
 
 function populateQualityMenuItems(menu: HTMLElement): void {
   const title = menu.querySelector('.pwc-quality-menu-title');
@@ -58,6 +69,11 @@ function populateQualityMenuItems(menu: HTMLElement): void {
 }
 
 export function buildQualityControl(container: HTMLElement): void {
+  if (closeMenuTimer) {
+    clearTimeout(closeMenuTimer);
+    closeMenuTimer = null;
+  }
+  isMenuOpen = false;
   container.innerHTML = '';
 
   // 1. Quality Trigger Button
@@ -139,12 +155,11 @@ export function buildQualityControl(container: HTMLElement): void {
     }, 300);
   });
 
-  // Close when clicking elsewhere on the page
-  document.addEventListener('click', (e) => {
-    if (isMenuOpen && !container.contains(e.target as Node)) {
-      closeQualityMenu();
-    }
-  });
+  // Close when clicking elsewhere on the page (bound once at module level to avoid leaks on rebuild)
+  if (!isDocumentClickBound) {
+    document.addEventListener('click', handleDocumentClick);
+    isDocumentClickBound = true;
+  }
 
   updateQualityHUD();
 }
@@ -180,16 +195,19 @@ export function injectQualityControl(): void {
   if (!state.extensionEnabled || !state.constantVideoQuality) {
     const container = document.getElementById('pwc-quality-control');
     if (container) container.remove();
+    isMenuOpen = false;
+    removeControlsTrayIfEmpty();
     return;
   }
 
   const existing = document.getElementById('pwc-quality-control') as HTMLElement | null;
-  if (existing && isInsidePreferredToolbar(existing)) {
+  if (existing && isInsideControlsTray(existing)) {
+    placeControlInTray(existing);
     existing.style.display = state.hideSettings.hideQuality ? 'none' : '';
     return;
   }
 
-  const toolbar = findPWToolbar();
+  const toolbar = findControlsToolbar();
   if (toolbar) {
     let container = existing;
     if (!container) {
@@ -199,17 +217,7 @@ export function injectQualityControl(): void {
       buildQualityControl(container);
     }
 
-    // Insert right next to speed control for neat grouping
-    const speedCtrl = document.getElementById('pwc-speed-control');
-    if (speedCtrl && speedCtrl.parentElement === toolbar && speedCtrl.nextSibling) {
-      toolbar.insertBefore(container, speedCtrl.nextSibling);
-    } else if (speedCtrl && speedCtrl.parentElement === toolbar) {
-      toolbar.appendChild(container);
-    } else if (toolbar.firstChild) {
-      toolbar.insertBefore(container, toolbar.firstChild);
-    } else {
-      toolbar.appendChild(container);
-    }
+    placeControlInTray(container);
 
     if (container) {
       if (state.hideSettings.hideQuality) {

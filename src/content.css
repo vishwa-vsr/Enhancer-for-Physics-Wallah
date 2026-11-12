@@ -404,27 +404,130 @@ html.pwc-hide-nextchapter.pwc-hide-attemptdpp
   display: none !important;
 }
 
-/* --- Block Recorded Poll Popups: zero-flicker suppression of poll drawer --- */
+/* --- Hide Chat / Comments toolbar icon, drawer & SVG fallback --- */
+html.pwc-hide-chat #footer-right-section > button[aria-label*='chat' i],
+html.pwc-hide-chat #footer-right-section > button[aria-label*='comment' i],
+html.pwc-hide-chat #footer-right-section > [title*='chat' i],
+html.pwc-hide-chat #footer-right-section > [title*='comment' i],
+html.pwc-hide-chat
+  #footer-right-section
+  > div:has(
+    button[aria-label*='chat' i],
+    button[aria-label*='comment' i],
+    [title*='chat' i],
+    [title*='comment' i]
+  ),
+html.pwc-hide-chat
+  #footer-right-section
+  > :is(div, button):has(path[d*='M26.982 21.097'], path[d^='M21 15C21 15.5304']),
+html.pwc-hide-chat [data-pwc-slot='chat'] {
+  display: none !important;
+}
+
+html.pwc-hide-chat:not(.pwc-allow-hidden-shortcuts)
+  :is(div[class*='slide-in' i], [class*='bottom-0'][class*='fixed'], [role='dialog']):has(
+    [data-drawer-close][aria-label*='chat' i],
+    [data-drawer-close][aria-label*='comment' i],
+    button[aria-label*='close chat' i],
+    button[aria-label*='close live chat' i],
+    button[aria-label*='close comment' i]
+  ) {
+  display: none !important;
+}
+
+/* --- Hide Doubt toolbar icon, drawer & SVG fallback --- */
+html.pwc-hide-doubt #footer-right-section > button[aria-label*='doubt' i],
+html.pwc-hide-doubt #footer-right-section > [title*='doubt' i],
+html.pwc-hide-doubt #footer-right-section > [title*='qna' i],
+html.pwc-hide-doubt
+  #footer-right-section
+  > div:has(button[aria-label*='doubt' i], [title*='doubt' i], [title*='qna' i]),
+html.pwc-hide-doubt
+  #footer-right-section
+  > :is(div, button):has(path[d*='M32.363 15.664'], path[d*='27.486 19.848']),
+html.pwc-hide-doubt [data-pwc-slot='doubt'] {
+  display: none !important;
+}
+
+html.pwc-hide-doubt:not(.pwc-allow-hidden-shortcuts)
+  :is(div[class*='slide-in' i], [class*='bottom-0'][class*='fixed'], [role='dialog']):has(
+    [data-drawer-close][aria-label*='doubt' i],
+    button[aria-label*='close doubt' i],
+    button[aria-label*='ask doubt' i]
+  ) {
+  display: none !important;
+}
+
+/* --- Hide Ask AI toolbar wrapper, #askAiIcon & drawer --- */
+html.pwc-hide-ask-ai
+  #footer-right-section
+  > div:has(#askAiIcon, .ask-ai-button, [aria-label*='ask ai' i], [title*='ask ai' i]),
+html.pwc-hide-ask-ai #footer-right-section > button[aria-label*='ask ai' i],
+html.pwc-hide-ask-ai #footer-right-section > [title*='ask ai' i],
+html.pwc-hide-ask-ai #askAiIcon,
+html.pwc-hide-ask-ai .ask-ai-button,
+html.pwc-hide-ask-ai [data-pwc-slot='askai'] {
+  display: none !important;
+}
+
+html.pwc-hide-ask-ai:not(.pwc-allow-hidden-shortcuts)
+  :is(div[class*='slide-in' i], [class*='bottom-0'][class*='fixed'], [role='dialog']):has(
+    button[aria-label*='close ask ai' i],
+    [data-drawer-close][aria-label*='ask ai' i]
+  ) {
+  display: none !important;
+}
+
+/* --- Block Recorded Poll Popups: zero-flicker suppression of genuine poll drawers only (not Store/Modules drawers) --- */
 html.pwc-block-recorded-polls
   .player
-  > div:has(#close-poll-wrapperIcon, button[aria-label*='close poll' i]),
+  > div:has(
+    button[aria-label*='close poll' i],
+    button[aria-label*='close quiz' i],
+    #close-poll-wrapperIcon[aria-label*='poll' i],
+    #close-poll-wrapperIcon[aria-label*='quiz' i],
+    [data-drawer-close][aria-label*='poll' i],
+    [data-drawer-close][aria-label*='quiz' i]
+  ),
 html.pwc-block-recorded-polls
-  div[class*='slide-in' i]:has(#close-poll-wrapperIcon, button[aria-label*='close poll' i]),
+  div[class*='slide-in' i]:has(
+    button[aria-label*='close poll' i],
+    button[aria-label*='close quiz' i],
+    #close-poll-wrapperIcon[aria-label*='poll' i],
+    #close-poll-wrapperIcon[aria-label*='quiz' i],
+    [data-drawer-close][aria-label*='poll' i],
+    [data-drawer-close][aria-label*='quiz' i]
+  ),
 html.pwc-block-recorded-polls
-  :is([role='dialog'], [aria-modal='true'], aside, [class*='drawer' i]):has(
-    #close-poll-wrapperIcon,
-    button[aria-label*='close poll' i]
+  :is([role='dialog'], [aria-modal='true'], aside, [class*='drawer' i], [class*='bottom-0'][class*='fixed']):has(
+    button[aria-label*='close poll' i],
+    button[aria-label*='close quiz' i],
+    #close-poll-wrapperIcon[aria-label*='poll' i],
+    #close-poll-wrapperIcon[aria-label*='quiz' i],
+    [data-drawer-close][aria-label*='poll' i],
+    [data-drawer-close][aria-label*='quiz' i]
   ),
 html.pwc-block-recorded-polls
   :is([class*='backdrop' i], [class*='overlay' i]):has(
     ~ :is([class*='drawer' i], [role='dialog'], div):has(
-        #close-poll-wrapperIcon,
-        button[aria-label*='close poll' i]
+        button[aria-label*='close poll' i],
+        button[aria-label*='close quiz' i],
+        #close-poll-wrapperIcon[aria-label*='poll' i],
+        #close-poll-wrapperIcon[aria-label*='quiz' i],
+        [data-drawer-close][aria-label*='poll' i],
+        [data-drawer-close][aria-label*='quiz' i]
       )
   ),
 html.pwc-block-recorded-polls
-  div:not(:has(video)):has(#close-poll-wrapperIcon, button[aria-label*='close poll' i]),
-html.pwc-block-recorded-polls div[data-pwc-poll-suppressed] {
+  div:not(:has(video, iframe, .video-player-app)):has(
+    button[aria-label*='close poll' i],
+    button[aria-label*='close quiz' i],
+    #close-poll-wrapperIcon[aria-label*='poll' i],
+    #close-poll-wrapperIcon[aria-label*='quiz' i],
+    [data-drawer-close][aria-label*='poll' i],
+    [data-drawer-close][aria-label*='quiz' i]
+  ),
+html.pwc-block-recorded-polls [data-pwc-poll-suppressed] {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
@@ -439,9 +542,9 @@ html.pwc-block-recorded-polls #player-footer-controls[class*='!hidden'] {
   display: flex !important;
 }
 
-/* Neutralize PW's 'All controls are disabled during Poll!' blocking overlay */
+/* Neutralize PW's 'All controls are disabled during Poll!' blocking overlay inside #player-body */
 html.pwc-block-recorded-polls #player-body > div:has(.bg-customDarkGray),
-html.pwc-block-recorded-polls .bg-customDarkGray {
+html.pwc-block-recorded-polls #player-body .bg-customDarkGray {
   display: none !important;
   pointer-events: none !important;
 }
@@ -451,13 +554,194 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
 }
 
 /* ==========================================================================
+   Grouped Extension Controls Tray (#pwc-controls-tray)
+   ========================================================================== */
+
+.pwc-controls-tray {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex-wrap: nowrap !important;
+  gap: 6px !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex-shrink: 1 !important;
+  overflow: visible !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Keep native PW right-hand buttons (Settings, Fullscreen) un-squashed alongside the tray */
+#footer-right-section > :not(#pwc-controls-tray) {
+  flex-shrink: 0 !important;
+}
+
+.pwc-controls-tray > #pwc-finish-time-badge,
+.pwc-controls-tray > #pwc-ss-container,
+.pwc-controls-tray > #pwc-quality-control,
+.pwc-controls-tray > #pwc-speed-control,
+.pwc-controls-tray > #pwc-instant-hide-btn {
+  margin: 0 !important;
+}
+
+.pwc-controls-tray > #pwc-finish-time-badge {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  flex-shrink: 1 !important;
+}
+
+/* Auto-compacting layout when viewport or player container width shrinks (never overlaps Settings/Fullscreen) */
+.pwc-controls-tray.pwc-tray-compact {
+  gap: 4px !important;
+}
+
+.pwc-controls-tray.pwc-tray-compact .pwc-finish-left {
+  display: none !important;
+}
+
+.pwc-controls-tray.pwc-tray-compact .pwc-quality-btn {
+  padding: 0 4px !important;
+  gap: 4px !important;
+}
+
+.pwc-controls-tray.pwc-tray-compact
+  .pwc-speed-container:not(.pwc-escape-collapsed):hover
+  .pwc-speed-slider-container,
+.pwc-controls-tray.pwc-tray-compact
+  .pwc-speed-container.pwc-expanded
+  .pwc-speed-slider-container,
+.pwc-controls-tray.pwc-tray-compact
+  .pwc-speed-container.pwc-always-expanded
+  .pwc-speed-slider-container {
+  width: 145px !important;
+  flex: 0 0 145px !important;
+  padding-left: 10px !important;
+}
+
+.pwc-controls-tray.pwc-tray-tight {
+  gap: 2px !important;
+}
+
+.pwc-controls-tray.pwc-tray-tight .pwc-finish-prefix,
+.pwc-controls-tray.pwc-tray-tight .pwc-finish-left {
+  display: none !important;
+}
+
+.pwc-controls-tray.pwc-tray-tight .pwc-quality-btn svg,
+.pwc-controls-tray.pwc-tray-tight .pwc-ss-status {
+  display: none !important;
+}
+
+.pwc-controls-tray.pwc-tray-tight .pwc-speed-badge {
+  flex: 0 0 44px !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  font-size: 12px !important;
+}
+
+.pwc-controls-tray.pwc-tray-tight
+  .pwc-speed-container:not(.pwc-escape-collapsed):hover
+  .pwc-speed-slider-container,
+.pwc-controls-tray.pwc-tray-tight
+  .pwc-speed-container.pwc-expanded
+  .pwc-speed-slider-container,
+.pwc-controls-tray.pwc-tray-tight
+  .pwc-speed-container.pwc-always-expanded
+  .pwc-speed-slider-container {
+  width: 116px !important;
+  flex: 0 0 116px !important;
+  padding-left: 6px !important;
+}
+
+.pwc-controls-tray.pwc-tray-tight .pwc-instant-hide-btn {
+  width: 28px !important;
+}
+
+.pwc-controls-tray.pwc-tray-tight .pwc-instant-hide-btn svg {
+  width: 19px !important;
+  height: 19px !important;
+}
+
+@media (max-width: 1024px) {
+  .pwc-controls-tray {
+    gap: 4px !important;
+  }
+
+  .pwc-controls-tray .pwc-finish-left {
+    display: none !important;
+  }
+
+  .pwc-controls-tray .pwc-quality-btn {
+    padding: 0 4px !important;
+    gap: 4px !important;
+  }
+
+  .pwc-controls-tray
+    .pwc-speed-container:not(.pwc-escape-collapsed):hover
+    .pwc-speed-slider-container,
+  .pwc-controls-tray .pwc-speed-container.pwc-expanded .pwc-speed-slider-container,
+  .pwc-controls-tray .pwc-speed-container.pwc-always-expanded .pwc-speed-slider-container {
+    width: 145px !important;
+    flex: 0 0 145px !important;
+    padding-left: 10px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .pwc-controls-tray {
+    gap: 2px !important;
+  }
+
+  .pwc-controls-tray .pwc-finish-prefix,
+  .pwc-controls-tray .pwc-finish-left,
+  .pwc-controls-tray .pwc-quality-btn svg,
+  .pwc-controls-tray .pwc-ss-status {
+    display: none !important;
+  }
+
+  .pwc-controls-tray .pwc-speed-badge {
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    font-size: 12px !important;
+  }
+
+  .pwc-controls-tray
+    .pwc-speed-container:not(.pwc-escape-collapsed):hover
+    .pwc-speed-slider-container,
+  .pwc-controls-tray .pwc-speed-container.pwc-expanded .pwc-speed-slider-container,
+  .pwc-controls-tray .pwc-speed-container.pwc-always-expanded .pwc-speed-slider-container {
+    width: 116px !important;
+    flex: 0 0 116px !important;
+    padding-left: 6px !important;
+  }
+
+  .pwc-controls-tray .pwc-instant-hide-btn {
+    width: 28px !important;
+  }
+
+  .pwc-controls-tray .pwc-instant-hide-btn svg {
+    width: 19px !important;
+    height: 19px !important;
+  }
+}
+
+/* ==========================================================================
    Instant Hide Controls & Cursor Features (Focus Mode)
    ========================================================================== */
 
-/* The Arrow Button positioned as a normal control button at the bottom-left */
+/* The Arrow Button positioned cleanly as the trailing action in #pwc-controls-tray */
 .pwc-instant-hide-btn {
   height: 100% !important;
-  width: 36px !important;
+  width: 32px !important;
+  flex-shrink: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -471,7 +755,7 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
     transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
     opacity 0.25s ease !important;
   padding: 0 !important;
-  margin: 0 6px !important;
+  margin: 0 !important;
 }
 
 .pwc-instant-hide-btn:hover {
@@ -480,8 +764,8 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
 }
 
 .pwc-instant-hide-btn svg {
-  width: 23px !important;
-  height: 23px !important;
+  width: 22px !important;
+  height: 22px !important;
   stroke: currentColor !important;
   stroke-width: 2.3 !important;
   fill: none !important;
@@ -499,27 +783,38 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
     visibility 0.35s ease !important;
 }
 
-/* --- Focus Mode: Hide everything on the webpage except the video element --- */
-html.pwc-collapsed-state,
-html.pwc-collapsed-state body {
-  visibility: visible !important;
-  background: #000000 !important;
-}
-
-html.pwc-collapsed-state * {
-  visibility: hidden !important;
-}
-
-/* Force the video element itself and the mouse cursor hiding state to work */
-html.pwc-collapsed-state video {
-  visibility: visible !important;
-  display: block !important;
-  opacity: 1 !important;
-}
-
-html.pwc-collapsed-state,
-html.pwc-collapsed-state * {
+/* --- Instant Hide: Hide ONLY video player controls & cursor inside the active outer player container --- */
+.pwc-collapsed-state,
+.pwc-collapsed-state * {
   cursor: none !important;
+}
+
+.pwc-collapsed-state .player-header,
+.pwc-collapsed-state
+  #interactive-layer-wrapper
+  > div:has(.player-header, #three-dots-trigger, button[aria-label='Back'], .player-icon):not(
+    .flex-1
+  ):not(#player-footer-controls):not(
+    :has(.player-footer, [role='dialog'], [aria-modal='true'], [class*='drawer' i])
+  ),
+.pwc-collapsed-state #player-footer-controls,
+.pwc-collapsed-state #interactive-layer-wrapper > div:has(> .player-footer),
+.pwc-collapsed-state .player-footer,
+.pwc-collapsed-state .vjs-control-bar,
+.pwc-collapsed-state #footer-left-section,
+.pwc-collapsed-state #footer-right-section,
+.pwc-collapsed-state #progress-placeholder,
+.pwc-collapsed-state #progress-control,
+.pwc-collapsed-state #pwc-controls-tray,
+.pwc-collapsed-state #pwc-controls-tray *,
+.pwc-collapsed-state #pwc-speed-control,
+.pwc-collapsed-state #pwc-quality-control,
+.pwc-collapsed-state #pwc-ss-container,
+.pwc-collapsed-state #pwc-finish-time-badge,
+.pwc-collapsed-state #pwc-instant-hide-btn {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /* ==========================================================================
@@ -1031,22 +1326,16 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   cursor: none !important;
 }
 
-.pwc-autohide-inactive
-  #interactive-layer-wrapper:not(
-    :has(
-      [role='dialog'],
-      [aria-modal='true'],
-      [class*='timeline-sidebar' i],
-      [id*='timeline-sidebar' i],
-      [class*='Timeline_sidebar'],
-      [class*='Timeline_container'],
-      [class*='drawer' i],
-      [class*='Drawer'],
-      [class*='modal' i],
-      [class*='Modal']
-    )
-  ),
 .pwc-autohide-inactive .player-header,
+.pwc-autohide-inactive
+  #interactive-layer-wrapper
+  > div:has(.player-header, #three-dots-trigger, button[aria-label='Back'], .player-icon):not(
+    .flex-1
+  ):not(#player-footer-controls):not(
+    :has(.player-footer, [role='dialog'], [aria-modal='true'], [class*='drawer' i])
+  ),
+.pwc-autohide-inactive #player-footer-controls,
+.pwc-autohide-inactive #interactive-layer-wrapper > div:has(> .player-footer),
 .pwc-autohide-inactive .player-footer,
 .pwc-autohide-inactive .vjs-control-bar,
 .pwc-autohide-inactive #footer-left-section,
@@ -1056,6 +1345,8 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 .pwc-autohide-inactive #progress-control,
 .pwc-autohide-inactive div:has(> #footer-right-section),
 .pwc-autohide-inactive div:has(> #progress-control),
+.pwc-autohide-inactive #pwc-controls-tray,
+.pwc-autohide-inactive #pwc-controls-tray *,
 .pwc-autohide-inactive #pwc-speed-control,
 .pwc-autohide-inactive #pwc-quality-control,
 .pwc-autohide-inactive #pwc-ss-container,
@@ -1064,6 +1355,58 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 0.35s ease-out !important;
+}
+
+/* Single-Boss Authority: When extensionEnabled is true and player is awake, prevent PW's 5s React fade timer from overriding Auto-Hide OFF or longer delays */
+.pwc-autohide-boss:not(.pwc-collapsed-state):not(.pwc-autohide-inactive)
+  #player-footer-controls:not(.\!hidden):not([class*='!hidden']),
+.pwc-autohide-boss:not(.pwc-collapsed-state):not(.pwc-autohide-inactive)
+  #interactive-layer-wrapper
+  > div:has(> .player-footer),
+.pwc-autohide-boss:not(.pwc-collapsed-state):not(.pwc-autohide-inactive)
+  .vjs-control-bar:has(#pwc-controls-tray) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.pwc-autohide-boss:not(.pwc-collapsed-state):not(.pwc-autohide-inactive) .player-header,
+.pwc-autohide-boss:not(.pwc-collapsed-state):not(.pwc-autohide-inactive)
+  #interactive-layer-wrapper
+  > div:has(.player-header, #three-dots-trigger, button[aria-label='Back'], .player-icon):not(
+    .flex-1
+  ):not(#player-footer-controls):not(
+    :has(.player-footer, [role='dialog'], [aria-modal='true'], [class*='drawer' i])
+  ) {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.pwc-autohide-boss:not(.pwc-collapsed-state):not(.pwc-autohide-inactive)
+  #interactive-layer-wrapper
+  > div:has(.player-header, #three-dots-trigger, button[aria-label='Back'], .player-icon):not(
+    .flex-1
+  ):not(#player-footer-controls):not(
+    :has(.player-footer, [role='dialog'], [aria-modal='true'], [class*='drawer' i])
+  )
+  > div:first-child {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+.pwc-autohide-boss:not(.pwc-collapsed-state):not(.pwc-autohide-inactive)
+  #interactive-layer-wrapper
+  > div:has(.player-header, #three-dots-trigger, button[aria-label='Back'], .player-icon):not(
+    .flex-1
+  ):not(#player-footer-controls):not(
+    :has(.player-footer, [role='dialog'], [aria-modal='true'], [class*='drawer' i])
+  )
+  :is(.opacity-0.h-0.overflow-hidden, .h-0.overflow-hidden),
+.pwc-autohide-boss:not(.pwc-collapsed-state):not(.pwc-autohide-inactive) .player-header .opacity-0 {
+  opacity: 1 !important;
+  height: auto !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 .pwc-autohide-inactive
@@ -1092,6 +1435,65 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   opacity: 1 !important;
   pointer-events: auto !important;
   cursor: auto !important;
+}
+
+/* ==========================================================================
+   Toast Overlay (Matches Volume Scroll Overlay aesthetic, visible even when controls are hidden)
+   ========================================================================== */
+
+#pwc-speed-toast.pwc-speed-toast {
+  position: absolute !important;
+  top: 16px !important;
+  left: 50% !important;
+  transform: translate(-50%, -6px) scale(0.98) !important;
+  z-index: 2147483641 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 9px 16px !important;
+  background: rgba(30, 34, 42, 0.86) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28) !important;
+  color: #ffffff !important;
+  font-family:
+    'RedditSans',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.18s ease !important;
+}
+
+#pwc-speed-toast.pwc-speed-toast.pwc-toast-visible,
+.pwc-autohide-inactive #pwc-speed-toast.pwc-speed-toast.pwc-toast-visible,
+.pwc-collapsed-state #pwc-speed-toast.pwc-speed-toast.pwc-toast-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translate(-50%, 0) scale(1) !important;
+}
+
+#pwc-speed-toast.pwc-speed-toast svg {
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0 !important;
 }
 
 /* ==========================================================================

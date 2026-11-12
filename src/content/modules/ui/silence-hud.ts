@@ -1,11 +1,12 @@
 import { state } from '../../state';
-import {
-  findPWToolbar,
-  isInsidePreferredToolbar,
-  preventFocusSteal,
-  setHidden,
-} from '../distractions/elements';
+import { preventFocusSteal, setHidden } from '../distractions/elements';
 import { getActiveVideo } from '../video/detector';
+import {
+  findControlsToolbar,
+  isInsideControlsTray,
+  placeControlInTray,
+  removeControlsTrayIfEmpty,
+} from './toast';
 import {
   isSSEngineRunning,
   getSSCurrentState,
@@ -32,20 +33,18 @@ export function injectSkipSilenceButton(): void {
   if (!state.extensionEnabled || !state.skipSilenceEnabled) {
     const existing = document.getElementById('pwc-ss-container');
     if (existing) existing.remove();
+    removeControlsTrayIfEmpty();
     return;
   }
 
-  let container = document.getElementById('pwc-ss-container');
-  if (container && isInsidePreferredToolbar(container)) {
+  let container = document.getElementById('pwc-ss-container') as HTMLElement | null;
+  if (container && isInsideControlsTray(container)) {
+    placeControlInTray(container);
     updateSkipSilenceUI();
     return;
   }
-  if (container) {
-    container.remove();
-    container = null;
-  }
 
-  const toolbar = findPWToolbar();
+  const toolbar = findControlsToolbar();
   if (!toolbar) return;
 
   if (!container) {
@@ -125,16 +124,6 @@ export function injectSkipSilenceButton(): void {
     statusText.textContent = '';
     container.appendChild(statusText);
 
-    // Insert after speed control
-    const speedControl = document.getElementById('pwc-speed-control');
-    if (speedControl && speedControl.nextSibling) {
-      toolbar.insertBefore(container, speedControl.nextSibling);
-    } else if (toolbar.children.length > 1) {
-      toolbar.insertBefore(container, toolbar.children[1]);
-    } else {
-      toolbar.appendChild(container);
-    }
-
     // Click handler
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -155,6 +144,7 @@ export function injectSkipSilenceButton(): void {
     });
   }
 
+  placeControlInTray(container);
   updateSkipSilenceUI();
 }
 
