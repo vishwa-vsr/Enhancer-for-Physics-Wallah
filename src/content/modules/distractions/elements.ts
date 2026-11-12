@@ -462,7 +462,7 @@ export type DistractorSlotType = 'notes' | 'notetimeline' | 'doubt' | 'chat' | '
 function getDistractorTypeBySvgPath(el: Element): DistractorSlotType | null {
   const checkPathD = (d: string): DistractorSlotType | null => {
     if (!d) return null;
-    if (d.includes('M26.982 21.097')) return 'chat';
+    if (d.includes('M26.982 21.097') || d.startsWith('M21 15C21 15.5304')) return 'chat';
     if (d.includes('M32.363 15.664') || d.includes('27.486 19.848')) return 'doubt';
     if (d.startsWith('M5.1001') || d.includes('17.4846 17.1081')) return 'notetimeline';
     if (d.includes('M17.8092 3.38739')) return 'notes';
@@ -562,22 +562,15 @@ export function getDistractorType(el: Element): DistractorSlotType | null {
   return null;
 }
 
-// Helper to check the element and its shallow children for classification (2 levels deep)
-export function checkElementOrChildType(el: Element): DistractorSlotType | null {
+// Helper to check the element and its shallow children for classification (up to 3 levels deep)
+export function checkElementOrChildType(el: Element, depth = 0): DistractorSlotType | null {
   const type = getDistractorType(el);
   if (type) return type;
+  if (depth >= 3) return null;
 
-  // Check direct children (level 1)
   for (let i = 0; i < el.children.length; i++) {
-    const child = el.children[i];
-    const t = getDistractorType(child);
-    if (t) return t;
-    // Check grandchildren (level 2)
-    for (let j = 0; j < child.children.length; j++) {
-      const grandchild = child.children[j];
-      const t2 = getDistractorType(grandchild);
-      if (t2) return t2;
-    }
+    const matched = checkElementOrChildType(el.children[i], depth + 1);
+    if (matched) return matched;
   }
   return null;
 }
@@ -866,6 +859,15 @@ export function resolvePlayerToolbarSlots(): ToolbarSlotMap {
   const classifiedButtons = new Set<Element>();
   const claimedSlotTypes = new Set<DistractorSlotType>();
 
+  const registerSlotButton = (btn: Element, type: DistractorSlotType): void => {
+    slots[type].push(btn);
+    classifiedButtons.add(btn);
+    claimedSlotTypes.add(type);
+    if (btn.getAttribute('data-pwc-slot') !== type) {
+      btn.setAttribute('data-pwc-slot', type);
+    }
+  };
+
   // Pass 1: Label / attribute match first (handles missing buttons in recorded lectures accurately)
   for (const btn of nativeButtons) {
     if (btn === settingsBtn || btn.id === 'setting-icon' || !!btn.querySelector('#setting-icon')) {
@@ -874,9 +876,7 @@ export function resolvePlayerToolbarSlots(): ToolbarSlotMap {
     }
     const type = checkElementOrChildType(btn);
     if (type) {
-      slots[type].push(btn);
-      classifiedButtons.add(btn);
-      claimedSlotTypes.add(type);
+      registerSlotButton(btn, type);
     }
   }
 
@@ -898,9 +898,7 @@ export function resolvePlayerToolbarSlots(): ToolbarSlotMap {
       const offset = settingsIdx - index;
       const slotType = offsetToSlot[offset];
       if (slotType && !claimedSlotTypes.has(slotType)) {
-        slots[slotType].push(btn);
-        classifiedButtons.add(btn);
-        claimedSlotTypes.add(slotType);
+        registerSlotButton(btn, slotType);
       }
     });
   }
@@ -933,7 +931,9 @@ export function findDoubtButton(): Element | null {
   return (
     slots.doubt[0] ||
     document.querySelector(
-      '[title*="doubt" i]:not([class*="pwc-"]), [aria-label*="doubt" i]:not([class*="pwc-"]), [title*="qna" i]:not([class*="pwc-"])',
+      '[title*="doubt" i]:not([class*="pwc-"]):not([data-drawer-close]):not([aria-label^="close " i]), ' +
+        '[aria-label*="doubt" i]:not([class*="pwc-"]):not([data-drawer-close]):not([aria-label^="close " i]), ' +
+        '[title*="qna" i]:not([class*="pwc-"]):not([data-drawer-close])',
     )
   );
 }
@@ -943,9 +943,29 @@ export function findChatButton(): Element | null {
   return (
     slots.chat[0] ||
     document.querySelector(
-      '[title*="chat" i]:not([class*="pwc-"]), [aria-label*="chat" i]:not([class*="pwc-"]), [title*="comment" i]:not([class*="pwc-"])',
+      '[title*="chat" i]:not([class*="pwc-"]):not([data-drawer-close]):not([aria-label^="close " i]), ' +
+        '[aria-label*="chat" i]:not([class*="pwc-"]):not([data-drawer-close]):not([aria-label^="close " i]), ' +
+        '[title*="comment" i]:not([class*="pwc-"]):not([data-drawer-close]):not([aria-label^="close " i]), ' +
+        '[aria-label*="comment" i]:not([class*="pwc-"]):not([data-drawer-close]):not([aria-label^="close " i])',
     )
   );
+}
+
+export function findAskAIButton(): Element | null {
+  const slots = resolvePlayerToolbarSlots();
+  if (slots.askai[0]) return slots.askai[0];
+  const btn = document.querySelector(
+    '#askAiIcon, .ask-ai-button, [aria-label*="ask ai" i]:not([class*="pwc-"]):not([data-drawer-close]):not([aria-label^="close " i]), [title*="ask ai" i]:not([class*="pwc-"]):not([data-drawer-close])',
+  );
+  if (!btn) return null;
+  const fRight = document.getElementById('footer-right-section');
+  if (fRight && fRight.contains(btn)) {
+    const directWrapper = btn.closest('#footer-right-section > *');
+    if (directWrapper && !isProtectedPlayerStructure(directWrapper)) {
+      return directWrapper;
+    }
+  }
+  return btn;
 }
 
 // Wake PW's interactive overlay DOM if the user presses a shortcut before ever hovering/clicking the player
@@ -971,12 +991,20 @@ export function wakePlayerControlsDom(): void {
   }
 }
 
+const HIDE_SLOT_CLASSES = [
+  'pwc-hide-notes',
+  'pwc-hide-notetimeline',
+  'pwc-hide-doubt',
+  'pwc-hide-chat',
+  'pwc-hide-ask-ai',
+];
+
 // Click a toolbar element, synchronously unhiding and re-hiding it if hidden by Focus Toggles
 export function triggerToolbarElement(el: Element | null): boolean {
   if (!el) return false;
 
   const root = document.documentElement;
-  const hadHideNotesClass = root.classList.contains('pwc-hide-notes');
+  const removedClasses = HIDE_SLOT_CLASSES.filter((cls) => root.classList.contains(cls));
 
   const restoreList: Array<{ node: HTMLElement | SVGElement; val: string; priority: string }> = [];
   let curr: Element | null = el;
@@ -1001,8 +1029,8 @@ export function triggerToolbarElement(el: Element | null): boolean {
     curr = curr.parentElement;
   }
 
-  if (hadHideNotesClass) {
-    root.classList.remove('pwc-hide-notes');
+  for (const cls of removedClasses) {
+    root.classList.remove(cls);
   }
 
   try {
@@ -1027,8 +1055,8 @@ export function triggerToolbarElement(el: Element | null): boolean {
     for (const item of restoreList) {
       item.node.style.setProperty('display', item.val, item.priority);
     }
-    if (hadHideNotesClass) {
-      root.classList.add('pwc-hide-notes');
+    for (const cls of removedClasses) {
+      root.classList.add(cls);
     }
   }
   return false;
@@ -1178,4 +1206,92 @@ export function preventFocusSteal(el: HTMLElement): void {
   el.addEventListener('mousedown', (e) => {
     e.preventDefault();
   });
+}
+
+// ===== Genuine Poll Drawer Detection (shared by poll-blocker and click handlers) =====
+
+// PW's shared drawer header module (63240) reuses #close-poll-wrapperIcon across Store/Recommendations
+// ("Close Modules"), Comments, Chat, Doubts, and Polls ("Close Poll"). Never trust the ID alone.
+export const POLL_CLOSE_CANDIDATE_SELECTOR =
+  'button[aria-label*="close poll" i], button[aria-label*="close quiz" i], ' +
+  '#close-poll-wrapperIcon[aria-label*="poll" i], #close-poll-wrapperIcon[aria-label*="quiz" i], ' +
+  '[data-drawer-close][aria-label*="poll" i], [data-drawer-close][aria-label*="quiz" i], ' +
+  '#close-poll-wrapperIcon, [data-drawer-close]';
+
+/**
+ * Resolves the outermost slide-in / dialog container owning a drawer close button.
+ */
+export function resolvePollDrawerContainer(closeBtn: Element): HTMLElement | null {
+  return (
+    closeBtn.closest<HTMLElement>('.player > div') ||
+    closeBtn.closest<HTMLElement>('[class*="slide-in" i]') ||
+    closeBtn.closest<HTMLElement>('aside, [role="dialog"], [aria-modal="true"], [class*="drawer" i]') ||
+    closeBtn.closest<HTMLElement>('div[class*="fixed"][class*="bottom-0"]') ||
+    closeBtn.closest<HTMLElement>('div:not(:has(video, iframe, .video-player-app))') ||
+    closeBtn.parentElement
+  );
+}
+
+/**
+ * Returns true ONLY if the candidate close button belongs to an actual Poll or Quiz drawer,
+ * rejecting Store/Recommendations/Modules, Chat, Comments, Doubts, Notes, and Ask AI drawers.
+ */
+export function isGenuinePollCloseButton(el: Element | null): el is HTMLButtonElement {
+  if (!el || !(el instanceof HTMLElement)) return false;
+  if (el.tagName !== 'BUTTON' && el.getAttribute('role') !== 'button') return false;
+
+  const ariaLabel = (el.getAttribute('aria-label') || '').trim().toLowerCase();
+  const drawer = resolvePollDrawerContainer(el);
+
+  // Check enclosing drawer's heading first when rendered via PW's shared header (63240)
+  const heading = drawer?.querySelector('[data-drawer-heading], [role="heading"]');
+  if (heading) {
+    const headingText = (heading.textContent || '').trim().toLowerCase();
+    if (headingText) {
+      return /\bpoll\b|\bquiz\b/i.test(headingText);
+    }
+  }
+
+  // Fallback to close button's own aria-label ("Close Poll", "Close Recorded Poll", "Close Quiz")
+  if (ariaLabel) {
+    if (/\b(poll|quiz)\b/i.test(ariaLabel)) {
+      return true;
+    }
+    // Explicitly reject labeled non-poll drawers ("Close Modules", "Close Store", "Close Comments", etc.)
+    return false;
+  }
+
+  // Last-resort check for unlabeled #close-poll-wrapperIcon: require explicit poll/quiz DOM markers
+  if (drawer) {
+    if (
+      drawer.querySelector(
+        '[id*="poll" i]:not(#close-poll-wrapperIcon), [class*="poll" i], [data-attr="circle-container"]',
+      )
+    ) {
+      return true;
+    }
+    const bodyText = (drawer.textContent || '').toLowerCase();
+    if (
+      bodyText.includes('poll timer adjusts') ||
+      /\b(single|multiple|numerical|true.?false).{0,25}\bpoll\b/i.test(bodyText)
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Finds the close button of an active Poll or Quiz drawer, ignoring Store and other non-poll drawers.
+ */
+export function findGenuinePollCloseButton(root: ParentNode = document): HTMLButtonElement | null {
+  const candidates = root.querySelectorAll(POLL_CLOSE_CANDIDATE_SELECTOR);
+  for (let i = 0; i < candidates.length; i++) {
+    const candidate = candidates[i];
+    if (isGenuinePollCloseButton(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
 }

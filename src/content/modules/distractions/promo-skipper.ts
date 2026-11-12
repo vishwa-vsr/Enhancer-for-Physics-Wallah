@@ -1,6 +1,21 @@
 import { state } from '../../state';
 
+const PROMO_CLOSE_SELECTOR =
+  'button[aria-label*="advertisement" i], button[aria-label*="close ad" i]';
+const MAX_PROMO_RETRY_ATTEMPTS = 20;
+
 let promoSkipTimer: number | null = null;
+
+function stopPromoSkipTimer(): void {
+  if (promoSkipTimer !== null) {
+    if (typeof window !== 'undefined') {
+      window.clearInterval(promoSkipTimer);
+    } else {
+      clearInterval(promoSkipTimer);
+    }
+    promoSkipTimer = null;
+  }
+}
 
 /**
  * Checks if a given HTMLVideoElement belongs to a promotional commercial ad
@@ -16,118 +31,115 @@ export function isPromoVideo(video: HTMLVideoElement | null | undefined): boolea
       return true;
     }
 
-    // 2. Check if the video is inside or near an advertisement container
-    const container = video.closest('.video-player-app, [class*="player" i], div');
-    if (container) {
-      if (
-        container.querySelector(
-          'button[aria-label*="advertisement" i], button[aria-label*="close ad" i]',
-        )
-      ) {
-        return true;
-      }
+    // Never treat the main Video.js lecture player as an inline promo video
+    if (video.closest('.video-js')) {
+      return false;
     }
 
-    // 3. Document-level check: If there is an active "Close advertisement" button
-    // and the video is NOT inside a standard Video.js player (.video-js)
-    if (
-      document.querySelector(
-        'button[aria-label*="advertisement" i], button[aria-label*="close ad" i]',
-      )
-    ) {
-      if (!video.closest('.video-js')) {
+    // 2. Scoped check: walk a few non-lecture containers around the standalone video
+    let ancestor: HTMLElement | null = video.parentElement;
+    for (let depth = 0; depth < 5 && ancestor; depth += 1) {
+      if (ancestor.querySelector('.video-js')) {
+        break;
+      }
+      if (ancestor.querySelector(PROMO_CLOSE_SELECTOR)) {
         return true;
       }
+      ancestor = ancestor.parentElement;
     }
-  } catch (_e) {
+
+    // 3. Document-level fallback: active advertisement close button while video is outside .video-js
+    const closeBtn = document.querySelector<HTMLElement>(PROMO_CLOSE_SELECTOR);
+    if (closeBtn && !closeBtn.closest('[id^="pwc-"]')) {
+      return true;
+    }
+  } catch {
     // Ignored
   }
 
   return false;
 }
 
-/**
- * Finds any active promotional video ad container and close button,
- * and if autoSkipPromoAds is enabled, skips and closes it immediately.
- */
-export function handlePromoAds(): void {
-  // If auto-skip is disabled, clear any pending timer and exit
-  if (!state.autoSkipPromoAds) {
-    if (promoSkipTimer !== null) {
-      clearInterval(promoSkipTimer);
-      promoSkipTimer = null;
+function fastForwardPromoVideo(video: HTMLVideoElement): void {
+  try {
+    video.muted = true;
+    video.playbackRate = 16.0;
+    if (video.duration && isFinite(video.duration) && video.currentTime < video.duration) {
+      video.currentTime = video.duration;
     }
-    return;
+  } catch {
+    // Ignored
   }
+}
 
-  const closeBtn = document.querySelector<HTMLButtonElement>(
-    'button[aria-label*="advertisement" i], button[aria-label*="close ad" i]',
+function findPromoCloseButton(): HTMLButtonElement | null {
+  const candidates = document.querySelectorAll<HTMLButtonElement>(PROMO_CLOSE_SELECTOR);
+  for (let i = 0; i < candidates.length; i += 1) {
+    const btn = candidates[i];
+    if (!btn.closest('[id^="pwc-"]')) {
+      return btn;
+    }
+  }
+  return null;
+}
+
+/**
+ * Performs a single pass to fast-forward active promo videos and close the ad banner.
+ * Returns true if any promo video or close button is still present.
+ */
+function runPromoSkipPass(): boolean {
+  const closeBtn = findPromoCloseButton();
+  const promoVideos = Array.from(document.querySelectorAll<HTMLVideoElement>('video')).filter(
+    isPromoVideo,
   );
-  const allVideos = Array.from(document.querySelectorAll<HTMLVideoElement>('video'));
-  const promoVideos = allVideos.filter(isPromoVideo);
 
   if (!closeBtn && promoVideos.length === 0) {
-    return;
+    return false;
   }
 
-  // Fast-forward and mute any promo videos to end them immediately
-  for (const v of promoVideos) {
-    try {
-      v.muted = true;
-      v.playbackRate = 16.0;
-      if (v.duration && isFinite(v.duration) && v.currentTime < v.duration) {
-        v.currentTime = v.duration;
-      }
-    } catch (_e) {
-      // Ignored
-    }
+  for (let i = 0; i < promoVideos.length; i += 1) {
+    fastForwardPromoVideo(promoVideos[i]);
   }
 
-  // Click the close button if present and active
   if (closeBtn && !closeBtn.disabled) {
     try {
       closeBtn.click();
-    } catch (_e) {
+    } catch {
       // Ignored
     }
   }
 
+  return true;
+}
+
+/**
+ * Finds any active promotional video ad container and close button,
+ * and if extensionEnabled + autoSkipPromoAds are enabled, skips and closes it immediately.
+ */
+export function handlePromoAds(): void {
+  if (!state.extensionEnabled || !state.autoSkipPromoAds) {
+    stopPromoSkipTimer();
+    return;
+  }
+
+  if (!runPromoSkipPass()) {
+    stopPromoSkipTimer();
+    return;
+  }
+
   // Rapid safety-net pulse (every 50ms for up to 1 second) to dismiss if delayed by countdown
-  if (promoSkipTimer === null) {
+  if (promoSkipTimer === null && typeof window !== 'undefined') {
     let attempts = 0;
     promoSkipTimer = window.setInterval(() => {
-      attempts++;
-      const activeBtn = document.querySelector<HTMLButtonElement>(
-        'button[aria-label*="advertisement" i], button[aria-label*="close ad" i]',
-      );
-      const activeVideos = Array.from(document.querySelectorAll<HTMLVideoElement>('video')).filter(
-        isPromoVideo,
-      );
-
-      if (activeBtn && !activeBtn.disabled) {
-        try {
-          activeBtn.click();
-        } catch (_e) {
-          // Ignored
-        }
-      }
-      for (const v of activeVideos) {
-        try {
-          v.muted = true;
-          v.playbackRate = 16.0;
-          if (v.duration && isFinite(v.duration) && v.currentTime < v.duration) {
-            v.currentTime = v.duration;
-          }
-        } catch (_e) {
-          // Ignored
-        }
+      attempts += 1;
+      if (!state.extensionEnabled || !state.autoSkipPromoAds) {
+        stopPromoSkipTimer();
+        return;
       }
 
-      if ((!activeBtn && activeVideos.length === 0) || attempts >= 20) {
-        if (promoSkipTimer !== null) {
-          clearInterval(promoSkipTimer);
-          promoSkipTimer = null;
-        }
+      const stillActive = runPromoSkipPass();
+      if (!stillActive || attempts >= MAX_PROMO_RETRY_ATTEMPTS) {
+        stopPromoSkipTimer();
       }
     }, 50);
   }

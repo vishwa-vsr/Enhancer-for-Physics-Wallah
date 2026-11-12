@@ -14,6 +14,9 @@ import {
   findNextChapterButton,
   findAttemptDPPButton,
   findNextDppWrapper,
+  findDoubtButton,
+  findChatButton,
+  findAskAIButton,
 } from './elements';
 
 function shouldHideDistraction(key: keyof HideSettings, currentSettings: HideSettings): boolean {
@@ -22,7 +25,7 @@ function shouldHideDistraction(key: keyof HideSettings, currentSettings: HideSet
 
 // Toggle mapping keys to documentElement class names
 export const classMap: Record<keyof HideSettings, string> = {
-  hideAskAI: 'pwc-hide-askai',
+  hideAskAI: 'pwc-hide-ask-ai',
   hideDoubt: 'pwc-hide-doubt',
   hideChat: 'pwc-hide-chat',
   hideNotes: 'pwc-hide-notes',
@@ -77,9 +80,29 @@ export function applyDistractorsState(): void {
     const slots = resolvePlayerToolbarSlots();
     slots.notes.forEach((btn) => setHidden(btn, activeSettings.hideNotes));
     slots.notetimeline.forEach((btn) => setHidden(btn, activeSettings.hideNoteTimeline));
-    slots.doubt.forEach((btn) => setHidden(btn, activeSettings.hideDoubt));
-    slots.chat.forEach((btn) => setHidden(btn, activeSettings.hideChat));
-    slots.askai.forEach((btn) => setHidden(btn, activeSettings.hideAskAI));
+
+    const applySlotOrFallback = (
+      matched: Element[],
+      fallbackFinder: () => Element | null,
+      slotName: string,
+      shouldHide: boolean,
+    ) => {
+      if (matched.length > 0) {
+        matched.forEach((btn) => setHidden(btn, shouldHide));
+        return;
+      }
+      const fallback = fallbackFinder();
+      if (fallback && !isProtectedPlayerStructure(fallback)) {
+        if (fallback.getAttribute('data-pwc-slot') !== slotName) {
+          fallback.setAttribute('data-pwc-slot', slotName);
+        }
+        setHidden(fallback, shouldHide);
+      }
+    };
+
+    applySlotOrFallback(slots.doubt, findDoubtButton, 'doubt', activeSettings.hideDoubt);
+    applySlotOrFallback(slots.chat, findChatButton, 'chat', activeSettings.hideChat);
+    applySlotOrFallback(slots.askai, findAskAIButton, 'askai', activeSettings.hideAskAI);
   }
 
   // Handle floating Next Lecture, Next Chapter & Attempt DPP cards
