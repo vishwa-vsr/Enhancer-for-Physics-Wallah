@@ -15,12 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Auto-Hide Single Authority**: Kept controls visible whenever hovering the bottom bar, tray, or sliders or dragging a progress/speed slider, and prevented PW's built-in 5-second fade from overriding longer delays or Auto-Hide OFF settings.
 - **Shortcut & Hold-for-2x Sync**: Gave extension keyboard shortcuts priority over PW's player keys and matched PW's exact 0.4-second hold-for-2x timing so Skip Silence restores playback speed smoothly.
 - **Instant Distraction Hiding**: Added early style-based hiding for Chat, Doubt, and Ask AI so buttons and panels stay hidden cleanly on page load without flickering.
+- **Unified Player Banner Component**: Combined Volume Scroll, Focus Lock, and Skip Silence player alerts into one shared frosted-glass top banner (`PlayerBanner`) and documented it in `DESIGN.md` so future in-player popups stay consistent and never overlap.
 
 ### Fixed
 
 - **Store Drawer Collision**: Stopped Poll Blocker from mistakenly hiding PW's Store/Modules drawer that shares the same close-icon ID, and reduced unnecessary poll checks during playback.
 - **Click-to-Pause & Wake Behavior**: Kept clicking the video to pause, wheel volume scrolling, and Space/Arrow/Speed shortcuts from unexpectedly waking hidden controls, while waking cleanly on mouse movement inside the player, touch, or Escape.
-- **Toast Popup Styling**: Added styling for `#pwc-speed-toast` notifications so alert banners render clearly even when controls are hidden.
+- **Focus Lock Banner & Double-Popup Fix**: Fixed two overlapping banners appearing when enabling Focus Lock from the popup, replaced the old toast with the shared frosted-glass `"Focus Lock ON — click for fullscreen"` pill (with a close `×` button that turns Focus Lock off and no hover outline or lock icon), and restored sticky prompts cleanly after volume scroll adjustments.
 - **Background Helper & Memory Leaks**: Prevented `engine-bridge.js` from running twice, fixed a Quality menu document click-listener leak, and scoped Live-class button checks inside the player bar instead of scanning the full page.
 
 ## [1.1.0.7] - 2026-11-08

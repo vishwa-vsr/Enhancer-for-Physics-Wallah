@@ -6,7 +6,7 @@ import {
   getEffectiveNormalSpeed,
   getEffectiveSilenceSpeed,
 } from '../video/controller';
-import { showInfoToast } from '../ui/toast';
+import { showPlayerBanner } from '../ui/player-banner';
 import {
   isUserHoldingSpace,
   isPointerHolding,
@@ -499,7 +499,12 @@ export async function ssInit(): Promise<void> {
       error.name === 'NotSupportedError' ||
       (error.message && (error.message.includes('CORS') || error.message.includes('cross-origin')))
     ) {
-      showInfoToast('Skip Silence: Video source blocked (CORS)');
+      showPlayerBanner({
+        key: 'skip-silence-cors',
+        icon: 'warning',
+        text: 'Skip Silence: Video source blocked (CORS)',
+        durationMs: 2400,
+      });
     }
     ssDestroy();
   }

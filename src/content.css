@@ -933,43 +933,6 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   color: #181d27 !important;
 }
 
-/* Click-to-fullscreen pill shown when automatic fullscreen is blocked
-   (e.g. activation from the popup has no user gesture available) */
-.pwc-focus-lock-interstitial {
-  position: fixed !important;
-  top: 18px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  z-index: 2147483647 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  background: rgba(15, 18, 28, 0.94) !important;
-  color: #e2e8f0 !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  padding: 10px 18px !important;
-  border-radius: 999px !important;
-  font-family:
-    'Inter',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif !important;
-  font-size: 13.5px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
-  animation: pwc-focus-fade-in 0.25s ease !important;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease !important;
-}
-
-.pwc-focus-lock-interstitial:hover {
-  background: rgba(108, 99, 255, 0.3) !important;
-  color: #ffffff !important;
-}
-
 @keyframes pwc-focus-fade-in {
   from {
     opacity: 0;
@@ -1450,10 +1413,10 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 }
 
 /* ==========================================================================
-   Toast Overlay (Matches Volume Scroll Overlay aesthetic, visible even when controls are hidden)
+   Shared In-Player Top Banner (Volume Scroll, Focus Lock, Skip Silence)
    ========================================================================== */
 
-#pwc-speed-toast.pwc-speed-toast {
+#pwc-player-banner.pwc-player-banner {
   position: absolute !important;
   top: 16px !important;
   left: 50% !important;
@@ -1461,66 +1424,8 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   z-index: 2147483641 !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  padding: 9px 16px !important;
-  background: rgba(30, 34, 42, 0.86) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: none !important;
-  border-radius: 999px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28) !important;
-  color: #ffffff !important;
-  font-family:
-    'RedditSans',
-    'Inter',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif !important;
-  font-size: 13.5px !important;
-  font-weight: 500 !important;
-  line-height: 1.3 !important;
-  white-space: nowrap !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-  pointer-events: none !important;
-  user-select: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  transition:
-    opacity 0.18s ease,
-    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-    visibility 0.18s ease !important;
-}
-
-#pwc-speed-toast.pwc-speed-toast.pwc-toast-visible,
-.pwc-autohide-inactive #pwc-speed-toast.pwc-speed-toast.pwc-toast-visible,
-.pwc-collapsed-state #pwc-speed-toast.pwc-speed-toast.pwc-toast-visible {
-  opacity: 1 !important;
-  visibility: visible !important;
-  transform: translate(-50%, 0) scale(1) !important;
-}
-
-#pwc-speed-toast.pwc-speed-toast svg {
-  width: 16px !important;
-  height: 16px !important;
-  flex-shrink: 0 !important;
-}
-
-/* ==========================================================================
-   Volume Scroll Overlay (Issue #25)
-   ========================================================================== */
-
-.pwc-volume-overlay {
-  position: absolute !important;
-  top: 16px !important;
-  left: 50% !important;
-  transform: translate(-50%, -6px) scale(0.98) !important;
-  z-index: 2147483640 !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
+  max-width: min(560px, calc(100% - 32px)) !important;
+  box-sizing: border-box !important;
   padding: 10px 18px !important;
   background: rgba(30, 34, 42, 0.82) !important;
   backdrop-filter: blur(12px) !important;
@@ -1530,7 +1435,6 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
   color: #ffffff !important;
   font-family:
-    'RedditSans',
     'Inter',
     -apple-system,
     BlinkMacSystemFont,
@@ -1546,16 +1450,136 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   transition:
     opacity 0.18s ease,
     transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-    visibility 0.18s ease !important;
+    visibility 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease !important;
 }
 
-.pwc-volume-overlay.pwc-volume-visible {
+#pwc-player-banner.pwc-player-banner.pwc-banner-fixed {
+  position: fixed !important;
+}
+
+#pwc-player-banner.pwc-player-banner.pwc-banner-visible,
+.pwc-autohide-inactive #pwc-player-banner.pwc-player-banner.pwc-banner-visible,
+.pwc-collapsed-state #pwc-player-banner.pwc-player-banner.pwc-banner-visible {
   opacity: 1 !important;
   visibility: visible !important;
   transform: translate(-50%, 0) scale(1) !important;
 }
 
-.pwc-volume-icon-wrapper {
+#pwc-player-banner.pwc-player-banner.pwc-banner-dismissible {
+  gap: 8px !important;
+  padding: 8px 10px 8px 18px !important;
+}
+
+#pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
+#pwc-player-banner.pwc-player-banner.pwc-banner-dismissible,
+.pwc-autohide-inactive #pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
+.pwc-autohide-inactive #pwc-player-banner.pwc-player-banner.pwc-banner-dismissible,
+.pwc-collapsed-state #pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
+.pwc-collapsed-state #pwc-player-banner.pwc-player-banner.pwc-banner-dismissible {
+  pointer-events: auto !important;
+}
+
+#pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
+.pwc-autohide-inactive #pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
+.pwc-collapsed-state #pwc-player-banner.pwc-player-banner.pwc-banner-clickable {
+  cursor: pointer !important;
+}
+
+#pwc-player-banner.pwc-player-banner.pwc-banner-clickable:hover {
+  background: rgba(42, 46, 58, 0.9) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32) !important;
+}
+
+#pwc-player-banner.pwc-player-banner [hidden] {
+  display: none !important;
+}
+
+.pwc-player-banner-content,
+.pwc-player-banner-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 999px !important;
+  color: inherit !important;
+  font: inherit !important;
+  text-align: center !important;
+}
+
+#pwc-player-banner.pwc-banner-has-progress .pwc-player-banner-content,
+#pwc-player-banner.pwc-banner-has-progress .pwc-player-banner-btn {
+  gap: 12px !important;
+}
+
+.pwc-player-banner-btn {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  box-shadow: none !important;
+  text-transform: none !important;
+  cursor: pointer !important;
+  outline: none !important;
+}
+
+.pwc-player-banner-close {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, 0.72) !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  outline: none !important;
+  transition:
+    background 0.16s ease,
+    color 0.16s ease !important;
+}
+
+.pwc-player-banner-close:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+}
+
+.pwc-player-banner-close:focus-visible {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 2px #a496ff !important;
+}
+
+.pwc-autohide-inactive .pwc-player-banner-btn,
+.pwc-collapsed-state .pwc-player-banner-btn,
+.pwc-autohide-inactive .pwc-player-banner-btn *,
+.pwc-collapsed-state .pwc-player-banner-btn *,
+.pwc-autohide-inactive .pwc-player-banner-close,
+.pwc-collapsed-state .pwc-player-banner-close,
+.pwc-autohide-inactive .pwc-player-banner-close *,
+.pwc-collapsed-state .pwc-player-banner-close * {
+  cursor: pointer !important;
+}
+
+#pwc-player-banner.pwc-player-banner:has(.pwc-player-banner-btn:focus-visible) {
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 0 0 2px #a496ff !important;
+}
+
+.pwc-player-banner-icon {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -1565,7 +1589,15 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   flex-shrink: 0 !important;
 }
 
-.pwc-volume-bar-wrapper {
+.pwc-player-banner-icon.pwc-banner-icon-accent {
+  color: #a496ff !important;
+}
+
+.pwc-player-banner-icon.pwc-banner-icon-warning {
+  color: #fbbf24 !important;
+}
+
+.pwc-player-banner-bar {
   display: flex !important;
   align-items: center !important;
   width: 74px !important;
@@ -1576,23 +1608,40 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   flex-shrink: 0 !important;
 }
 
-.pwc-volume-bar-fill {
+.pwc-player-banner-bar-fill {
   height: 100% !important;
   background: #a496ff !important;
   border-radius: 999px !important;
   transition: width 0.08s ease-out !important;
 }
 
-.pwc-volume-text {
-  font-size: 16px !important;
+.pwc-player-banner-text {
+  font-size: 13.5px !important;
   font-weight: 500 !important;
+  line-height: 1.35 !important;
+  color: #ffffff !important;
+  letter-spacing: 0.1px !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+#pwc-player-banner.pwc-banner-has-progress .pwc-player-banner-text {
+  font-size: 16px !important;
   line-height: 1 !important;
   font-variant-numeric: tabular-nums !important;
   min-width: 44px !important;
   text-align: right !important;
-  color: #ffffff !important;
   letter-spacing: 0.2px !important;
-  -webkit-font-smoothing: antialiased !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #pwc-player-banner.pwc-player-banner {
+    transform: translate(-50%, 0) scale(1) !important;
+    transition: opacity 0.01ms linear !important;
+  }
+
+  .pwc-player-banner-bar-fill {
+    transition: none !important;
+  }
 }
 
 /* Prevent unwanted focus rings when player container receives programmatic focus */

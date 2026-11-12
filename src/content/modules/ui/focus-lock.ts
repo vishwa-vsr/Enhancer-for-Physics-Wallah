@@ -3,7 +3,7 @@ import { getActiveVideo } from '../video/detector';
 import { getOuterPlayerContainer } from '../distractions/elements';
 import { cancelSpaceHold } from '../shortcuts/space-hold';
 import { isUserTyping } from '../shortcuts/keyboard';
-import { showInfoToast } from './toast';
+import { hidePlayerBanner, showPlayerBanner } from './player-banner';
 
 /**
  * Focus Lock Mode — strict full screen study session.
@@ -13,7 +13,8 @@ import { showInfoToast } from './toast';
  */
 
 const MODAL_ID = 'pwc-focus-lock-modal';
-const INTERSTITIAL_ID = 'pwc-focus-lock-interstitial';
+const FOCUS_LOCK_STATUS_KEY = 'focus-lock-status';
+const FOCUS_LOCK_FULLSCREEN_KEY = 'focus-lock-fullscreen';
 
 let focusLockActive = false;
 let pausedByGuard = false;
@@ -48,11 +49,27 @@ function pauseActiveVideo(): void {
   cancelSpaceHold();
 }
 
+function showFocusLockOnBanner(): void {
+  showPlayerBanner({
+    key: FOCUS_LOCK_STATUS_KEY,
+    icon: 'none',
+    text: 'Focus Lock ON',
+    durationMs: 2200,
+    allowPageFallback: true,
+  });
+}
+
 // Best-effort fullscreen request. When no user gesture is available (e.g.
 // activation triggered from the extension popup), browsers reject the request;
-// a click-to-fullscreen interstitial is shown as a graceful fallback.
-function requestPlayerFullscreen(): void {
-  if (document.fullscreenElement) return;
+// a single combined click-to-fullscreen banner is shown as a graceful fallback.
+function requestPlayerFullscreen(notifyOnEntered = false): void {
+  if (document.fullscreenElement) {
+    removeInterstitial();
+    if (notifyOnEntered) {
+      showFocusLockOnBanner();
+    }
+    return;
+  }
   const container = getOuterPlayerContainer();
   if (!container) {
     showInterstitial();
@@ -61,7 +78,21 @@ function requestPlayerFullscreen(): void {
   try {
     const request = container.requestFullscreen({ navigationUI: 'hide' });
     if (request && typeof request.then === 'function') {
-      request.then(() => removeInterstitial()).catch(() => showInterstitial());
+      request
+        .then(() => {
+          removeInterstitial();
+          if (notifyOnEntered) {
+            showFocusLockOnBanner();
+          }
+        })
+        .catch(() => showInterstitial());
+    } else if (document.fullscreenElement) {
+      removeInterstitial();
+      if (notifyOnEntered) {
+        showFocusLockOnBanner();
+      }
+    } else {
+      showInterstitial();
     }
   } catch (_e) {
     showInterstitial();
@@ -74,7 +105,12 @@ export function activateFocusLock(): boolean {
   if (focusLockActive) return true;
   if (!state.extensionEnabled) return false;
   if (!getActiveVideo()) {
-    showInfoToast('Open a lecture video to use Focus Lock');
+    showPlayerBanner({
+      key: FOCUS_LOCK_STATUS_KEY,
+      icon: 'warning',
+      text: 'Open a lecture video to use Focus Lock',
+      allowPageFallback: true,
+    });
     return false;
   }
 
@@ -85,10 +121,9 @@ export function activateFocusLock(): boolean {
   // 1. Mark the document so CSS hooks can react to the locked session.
   document.documentElement.classList.add('pwc-focus-lock-active');
 
-  // 2. Clean fullscreen presentation.
-  requestPlayerFullscreen();
-
-  showInfoToast('Focus Lock ON — pauses if you leave full screen');
+  // 2. Clean fullscreen presentation (only shows the ON status banner if fullscreen succeeds;
+  //    otherwise the combined click-to-fullscreen banner is shown by requestPlayerFullscreen).
+  requestPlayerFullscreen(true);
   return true;
 }
 
@@ -110,7 +145,12 @@ export function deactivateFocusLock(): void {
     }
   }
 
-  showInfoToast('Focus Lock OFF');
+  showPlayerBanner({
+    key: FOCUS_LOCK_STATUS_KEY,
+    icon: 'none',
+    text: 'Focus Lock OFF',
+    allowPageFallback: true,
+  });
 }
 
 // ===== Anti-Distraction Guards =====
@@ -177,6 +217,7 @@ function getOverlayRoot(): HTMLElement {
 
 function showModal(): void {
   if (isModalVisible()) return;
+  removeInterstitial();
 
   const overlay = document.createElement('div');
   overlay.id = MODAL_ID;
@@ -249,24 +290,25 @@ function removeModal(): void {
 // ===== Click-to-Fullscreen Interstitial (no-gesture fallback) =====
 
 function showInterstitial(): void {
-  if (document.getElementById(INTERSTITIAL_ID)) return;
-
-  const pill = document.createElement('button');
-  pill.type = 'button';
-  pill.id = INTERSTITIAL_ID;
-  pill.className = 'pwc-focus-lock-interstitial';
-  pill.textContent = 'Focus Lock is ON — click to enter fullscreen';
-  pill.addEventListener('click', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    requestPlayerFullscreen();
+  showPlayerBanner({
+    key: FOCUS_LOCK_FULLSCREEN_KEY,
+    icon: 'none',
+    text: 'Focus Lock ON — click for fullscreen',
+    sticky: true,
+    dismissible: true,
+    ariaLabel: 'Focus Lock ON — click for fullscreen',
+    allowPageFallback: true,
+    onClick: () => {
+      requestPlayerFullscreen(false);
+    },
+    onDismiss: () => {
+      deactivateFocusLock();
+    },
   });
-
-  getOverlayRoot().appendChild(pill);
 }
 
 function removeInterstitial(): void {
-  document.getElementById(INTERSTITIAL_ID)?.remove();
+  hidePlayerBanner(FOCUS_LOCK_FULLSCREEN_KEY);
 }
 
 // ===== Initialization & Popup Bridge =====

@@ -1,6 +1,6 @@
 # Enhancer for Physics Wallah — Design System & Style Guide
 
-Welcome to the official design system for the **Enhancer for Physics Wallah** project. This document locks in brand consistency, ergonomics, and anti-slop rules across both the **Extension Popup** and the **Study Dashboard**.
+Welcome to the official design system for the **Enhancer for Physics Wallah** project. This document locks in brand consistency, ergonomics, and anti-slop rules across the **Extension Popup**, **Study Dashboard**, and **In-Player Overlays**.
 
 ---
 
@@ -9,7 +9,7 @@ Welcome to the official design system for the **Enhancer for Physics Wallah** pr
 > [!IMPORTANT]
 > Any AI assistant modifying or creating UI in this repository **must** verify against these rules before completing work:
 
-- [ ] **Always Reuse Existing Building Blocks**: Never roll a custom modal, delete button, shortcut box, toggle, or icon grid from scratch. Use the shared components in `src/shared/components/`.
+- [ ] **Always Reuse Existing Building Blocks**: Never roll a custom modal, delete button, shortcut box, toggle, or icon grid from scratch. Use the shared components in `src/shared/components/` (and `showPlayerBanner()` in `src/content/modules/ui/player-banner.ts` for any top-center video player banner).
 - [ ] **Strict Anti-Slop Policy**:
   - No generic AI purple-to-blue gradient cards or backgrounds.
   - No nested cards (never put a card inside a card inside another card; use spacing, subtle dividers, or flat tinted backgrounds).
@@ -31,12 +31,13 @@ Welcome to the official design system for the **Enhancer for Physics Wallah** pr
 
 ## 2. Surfaces & Density
 
-This project has two distinct operating environments:
+This project has three distinct operating environments:
 
 | Surface | Target Dimensions | Visual Character | Key Components |
 | :--- | :--- | :--- | :--- |
 | **Extension Popup** (`src/popup/`) | Fixed `360px` width, max `580px` height | Compact ergonomics, high information density, instant 1-click toggles, zero clutter | `TabBar`, `FeatureRow`, `Toggle`, `ShortcutInput`, `Stepper` |
 | **Study Dashboard** (`src/dashboard/`) | Full viewport / responsive browser tab | Clean study workspace, focused task list, sidebar navigation, dark/light theme support | `Sidebar`, `TaskItem`, `Modal` (md & lg), `DatePicker`, `SelectDropdown` |
+| **In-Player Overlays** (`src/content/modules/ui/`) | Floating top-center pill (`top: 16px`, `max-width: min(560px, calc(100% - 32px))`) inside the video player | Dark frosted-glass pill (`rgba(30, 34, 42, 0.82)`, `blur(12px)`), borderless, stays readable over any lecture video | `PlayerBanner` (`player-banner.ts`), `SpeedHUD`, `QualityHUD`, `SilenceHUD`, `FocusLock` |
 
 ---
 
@@ -196,6 +197,21 @@ src/shared/components/
 ### 7. `Stepper`
 - **Purpose:** `+` / `-` numeric adjustment box (e.g. video speed steps, silence duration in seconds).
 
+### 8. `PlayerBanner` (In-Player Top HUD Pill)
+- **Location:** [`src/content/modules/ui/player-banner.ts`](file:///d:/Anti%20Gravity/pw%20control/src/content/modules/ui/player-banner.ts) & `#pwc-player-banner` in [`src/content.css`](file:///d:/Anti%20Gravity/pw%20control/src/content.css)
+- **Purpose:** Single reusable top-center floating pill for all transient and interactive in-player notifications (Volume Scroll bar, Focus Lock status & click-to-fullscreen prompt, Skip Silence warnings, and any future player HUD feedback).
+- **Visual Specs:**
+  - **Surface:** `rgba(30, 34, 42, 0.82)` with `backdrop-filter: blur(12px)`, `border-radius: 999px` (`--radius-full`), `padding: 10px 18px`, `box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25)`, borderless by default.
+  - **Icons (`20px` box):** Optional crisp vector icons matched to context — white (`#ffffff`) speaker icon for volume, soft purple (`#a496ff`) for feature icons (`skip-silence`, `info`), amber (`#fbbf24`) **only** for actual warnings/errors (`warning`), or omitted (`none`) for clean text-only status pills like Focus Lock.
+  - **Progress Variant (`progressPercent`):** `74px × 5px` rounded track (`rgba(255, 255, 255, 0.2)`) with `#a496ff` fill + `16px` `tabular-nums` label (`min-width: 44px`).
+  - **Message Variant:** `13.5px` medium (`500`) `#ffffff` text (`line-height: 1.35`).
+  - **Interactive & Dismissible Variants (`onClick` / `dismissible` / `onDismiss` / `sticky`):** Renders a native `<button>` inside the pill with `cursor: pointer`, a gentle borderless tint shift (`rgba(42, 46, 58, 0.9)`) on hover (no hover outline), and an optional `24px` circular `×` close button on the right (`rgba(255, 255, 255, 0.16)` hover tint) that triggers `onDismiss` when clicked (e.g., turning Focus Lock OFF). Mouse clicks never steal video Spacebar focus.
+- **Behavior Rules (Single-Slot Policy):**
+  - Only **one** `PlayerBanner` is displayed at a time (`#pwc-player-banner`), preventing overlapping popups.
+  - Temporary banners auto-hide after `durationMs` (default `1800ms`) and cleanly replace each other.
+  - If a `sticky` banner (such as Focus Lock's click-to-fullscreen prompt) is active and a temporary banner (such as Volume Scroll) triggers, the temporary banner shows briefly and restores the sticky banner once dismissed—unless explicitly cleared via `hidePlayerBanner(key)`.
+  - Remains visible while controls are auto-hidden (`pwc-autohide-inactive`) or instant-hidden (`pwc-collapsed-state`), and respects `prefers-reduced-motion`.
+
 ---
 
 ## 8. Do's and Don'ts Checklist
@@ -207,3 +223,4 @@ src/shared/components/
 | **Do** use `ShortcutInput` whenever capturing keyboard keys. | **Don't** write raw `<input onKeyDown=...>` listeners for hotkeys. |
 | **Do** preserve the 360px width constraint in extension popups. | **Don't** introduce wide horizontal tables that trigger horizontal scrollbars in the popup. |
 | **Do** pair subject colors with `getAlphaColor(color, 0.16)` for soft badges and icon rings. | **Don't** put bright, neon saturated text directly on light backgrounds. |
+| **Do** call `showPlayerBanner()` for any new in-player notification, warning, or click prompt. | **Don't** add separate top-center overlay pills or custom toast CSS in `src/content.css` that can overlap Volume Scroll or Focus Lock banners. |
