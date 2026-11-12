@@ -575,7 +575,8 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
 }
 
 /* Keep native PW right-hand buttons (Settings, Fullscreen) un-squashed alongside the tray */
-#footer-right-section > :not(#pwc-controls-tray) {
+#footer-right-section > :not(#pwc-controls-tray),
+.vjs-control-bar > :not(#pwc-controls-tray) {
   flex-shrink: 0 !important;
 }
 
@@ -803,8 +804,11 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
 .pwc-collapsed-state .vjs-control-bar,
 .pwc-collapsed-state #footer-left-section,
 .pwc-collapsed-state #footer-right-section,
+.pwc-collapsed-state #footer-right-section + div,
 .pwc-collapsed-state #progress-placeholder,
 .pwc-collapsed-state #progress-control,
+.pwc-collapsed-state div:has(> #footer-right-section),
+.pwc-collapsed-state div:has(> #progress-control),
 .pwc-collapsed-state #pwc-controls-tray,
 .pwc-collapsed-state #pwc-controls-tray *,
 .pwc-collapsed-state #pwc-speed-control,
@@ -815,6 +819,7 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
+  transition: none !important;
 }
 
 /* ==========================================================================
@@ -1362,7 +1367,9 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   #player-footer-controls:not(.\!hidden):not([class*='!hidden']),
 .pwc-autohide-boss:not(.pwc-collapsed-state):not(.pwc-autohide-inactive)
   #interactive-layer-wrapper
-  > div:has(> .player-footer),
+  > div:not(#player-footer-controls):not(:has(> #player-footer-controls[class*='!hidden'])):has(
+    > .player-footer
+  ),
 .pwc-autohide-boss:not(.pwc-collapsed-state):not(.pwc-autohide-inactive)
   .vjs-control-bar:has(#pwc-controls-tray) {
   opacity: 1 !important;
@@ -1431,8 +1438,32 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
     [class*='drawer' i],
     [class*='Drawer']
   )
+  *,
+.pwc-collapsed-state
+  :is(
+    [role='dialog'],
+    [aria-modal='true'],
+    [class*='timeline-sidebar' i],
+    [id*='timeline-sidebar' i],
+    [class*='Timeline_sidebar'],
+    [class*='Timeline_container'],
+    [class*='drawer' i],
+    [class*='Drawer']
+  ),
+.pwc-collapsed-state
+  :is(
+    [role='dialog'],
+    [aria-modal='true'],
+    [class*='timeline-sidebar' i],
+    [id*='timeline-sidebar' i],
+    [class*='Timeline_sidebar'],
+    [class*='Timeline_container'],
+    [class*='drawer' i],
+    [class*='Drawer']
+  )
   * {
   opacity: 1 !important;
+  visibility: visible !important;
   pointer-events: auto !important;
   cursor: auto !important;
 }

@@ -11,11 +11,13 @@ import {
 
 const COLLAPSED_CLASS = 'pwc-collapsed-state';
 const POST_CLICK_GRACE_MS = 400;
+const JITTER_TOLERANCE_PX = 3;
+const JITTER_TOLERANCE_SQ = JITTER_TOLERANCE_PX * JITTER_TOLERANCE_PX;
 
 let lastCollapsedTime = 0;
-let lastPointerDownTime = 0;
-let lastPointerDownX = -1;
-let lastPointerDownY = -1;
+let pointerAnchorX = 0;
+let pointerAnchorY = 0;
+let hasPointerAnchor = false;
 let collapsedContainer: HTMLElement | null = null;
 let isWakeListenersBound = false;
 let isLifecycleBound = false;
@@ -31,16 +33,23 @@ function isEventInsidePlayerContainer(e: Event, player: HTMLElement): boolean {
   return false;
 }
 
-function onPlayerPointerDown(e: PointerEvent): void {
-  lastPointerDownTime = Date.now();
-  lastPointerDownX = e.clientX;
-  lastPointerDownY = e.clientY;
+function setPointerAnchor(x: number, y: number): void {
+  pointerAnchorX = x;
+  pointerAnchorY = y;
+  hasPointerAnchor = true;
+}
+
+function onPlayerAnchorDown(e: MouseEvent): void {
+  if (e.isTrusted || e.clientX !== 0 || e.clientY !== 0) {
+    setPointerAnchor(e.clientX, e.clientY);
+  }
 }
 
 function unbindWakeListeners(): void {
   if (!isWakeListenersBound) return;
   isWakeListenersBound = false;
-  document.removeEventListener('pointerdown', onPlayerPointerDown, true);
+  document.removeEventListener('pointerdown', onPlayerAnchorDown, true);
+  document.removeEventListener('mousedown', onPlayerAnchorDown, true);
   document.removeEventListener('mousemove', onPlayerMouseMove);
   document.removeEventListener('touchstart', onPlayerTouchStart);
   document.removeEventListener('keydown', onCaptureEscape, true);
@@ -49,6 +58,9 @@ function unbindWakeListeners(): void {
 function exitCollapsedState(): void {
   unbindWakeListeners();
   collapsedContainer = null;
+  hasPointerAnchor = false;
+  pointerAnchorX = 0;
+  pointerAnchorY = 0;
 
   document.documentElement.classList.remove(COLLAPSED_CLASS);
   document.querySelectorAll(`.${COLLAPSED_CLASS}`).forEach((el) => {
@@ -60,16 +72,24 @@ function exitCollapsedState(): void {
 
 function onPlayerMouseMove(e: MouseEvent): void {
   if (Date.now() - lastCollapsedTime < POST_CLICK_GRACE_MS) {
+    if (e.isTrusted || e.clientX !== 0 || e.clientY !== 0) {
+      setPointerAnchor(e.clientX, e.clientY);
+    }
     return;
   }
-  // Ignore stationary/micro-jitter mousemove emitted by a click-to-pause action
-  if (
-    Date.now() - lastPointerDownTime < 120 &&
-    Math.abs(e.clientX - lastPointerDownX) <= 1 &&
-    Math.abs(e.clientY - lastPointerDownY) <= 1
-  ) {
+
+  // Ignore stationary/micro-jitter (<= 3px) around the click/idle anchor regardless of click duration
+  if (hasPointerAnchor) {
+    const dx = e.clientX - pointerAnchorX;
+    const dy = e.clientY - pointerAnchorY;
+    if (dx * dx + dy * dy <= JITTER_TOLERANCE_SQ) {
+      return;
+    }
+  } else if (e.isTrusted) {
+    setPointerAnchor(e.clientX, e.clientY);
     return;
   }
+
   const activePlayer =
     collapsedContainer && collapsedContainer.isConnected
       ? collapsedContainer
@@ -103,7 +123,8 @@ function onCaptureEscape(e: KeyboardEvent): void {
 function bindWakeListeners(): void {
   if (isWakeListenersBound) return;
   isWakeListenersBound = true;
-  document.addEventListener('pointerdown', onPlayerPointerDown, { capture: true, passive: true });
+  document.addEventListener('pointerdown', onPlayerAnchorDown, { capture: true, passive: true });
+  document.addEventListener('mousedown', onPlayerAnchorDown, { capture: true, passive: true });
   document.addEventListener('mousemove', onPlayerMouseMove, { passive: true });
   document.addEventListener('touchstart', onPlayerTouchStart, { passive: true });
   document.addEventListener('keydown', onCaptureEscape, true);
@@ -115,7 +136,7 @@ function ensureLifecycleCleanupBound(): void {
   window.addEventListener('pagehide', exitCollapsedState, { passive: true });
 }
 
-function enterCollapsedState(): void {
+function enterCollapsedState(anchorX = 0, anchorY = 0): void {
   const player = getOuterPlayerContainer();
   if (!player || player === document.body || player === document.documentElement) return;
 
@@ -129,6 +150,11 @@ function enterCollapsedState(): void {
   player.classList.add(COLLAPSED_CLASS);
   collapsedContainer = player;
   lastCollapsedTime = Date.now();
+  if (anchorX !== 0 || anchorY !== 0) {
+    setPointerAnchor(anchorX, anchorY);
+  } else {
+    hasPointerAnchor = false;
+  }
   syncAutoHideBossClass();
   ensureLifecycleCleanupBound();
   bindWakeListeners();
@@ -161,7 +187,7 @@ function createInstantHideButton(): HTMLButtonElement {
     e.stopPropagation();
     e.preventDefault();
     btn.blur();
-    enterCollapsedState();
+    enterCollapsedState(e.clientX, e.clientY);
   });
 
   return btn;

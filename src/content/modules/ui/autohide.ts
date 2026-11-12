@@ -256,15 +256,23 @@ export function initAutoHide(): void {
 
   const options = { passive: true };
   window.addEventListener('mousemove', onUserActivity, options);
-  window.addEventListener('mousedown', onUserActivity, options);
   window.addEventListener('touchstart', onUserActivity, options);
-  window.addEventListener('wheel', onUserActivity, options);
 
-  // Track explicit user pause actions and keep Space/Arrow/Speed shortcuts consistent with wake rules
+  // Track explicit user pause actions and keep Space/Arrow/Speed/Escape keys consistent with wake rules
   window.addEventListener(
     'keydown',
     (e: KeyboardEvent) => {
-      if (!e.isTrusted || isUserTypingInInput()) return;
+      if (isUserTypingInInput()) return;
+
+      if (e.key === 'Escape') {
+        if (document.querySelector('.pwc-autohide-inactive')) {
+          wakeUp();
+          scheduleNextCheck();
+        }
+        return;
+      }
+
+      if (!e.isTrusted) return;
       if (e.key === ' ' || e.key === 'k' || e.key === 'K') {
         lastUserPauseInteractionTime = Date.now();
       }
