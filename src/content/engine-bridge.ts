@@ -113,12 +113,49 @@
     videojs?: VideoJsGlobal;
   }
 
+  const BRIDGE_LOADED_ATTR = 'pwcBridgeLoaded';
+
+  function markBridgeLoaded(): boolean {
+    if (document.documentElement) {
+      document.documentElement.dataset[BRIDGE_LOADED_ATTR] = '1';
+      return true;
+    }
+    return false;
+  }
+
   const pwcWin = window as unknown as PwcWindow;
-  if (pwcWin.__PWC_ENGINE_BRIDGE_INITIALIZED__) return;
+  if (
+    pwcWin.__PWC_ENGINE_BRIDGE_INITIALIZED__ ||
+    document.documentElement?.dataset?.[BRIDGE_LOADED_ATTR] === '1'
+  ) {
+    markBridgeLoaded();
+    return;
+  }
   pwcWin.__PWC_ENGINE_BRIDGE_INITIALIZED__ = true;
+  if (!markBridgeLoaded()) {
+    document.addEventListener(
+      'readystatechange',
+      () => {
+        markBridgeLoaded();
+      },
+      { once: true },
+    );
+    document.addEventListener(
+      'DOMContentLoaded',
+      () => {
+        markBridgeLoaded();
+      },
+      { once: true },
+    );
+  }
 
   // ===== Quick Exit & beforeunload Silencing Setup (Issue #14) =====
   let isQuickExiting = false;
+  let quickExitResetTimer: ReturnType<typeof setTimeout> | undefined;
+
+  function getCaptureFlag(options?: boolean | AddEventListenerOptions | EventListenerOptions): boolean {
+    return typeof options === 'boolean' ? options : Boolean(options?.capture);
+  }
 
   interface BeforeUnloadRecord {
     target: EventTarget;
@@ -156,13 +193,22 @@
         beforeUnloadListenerMap.set(key, wrapped);
       }
 
-      registeredBeforeUnloadRecords.push({
-        target: this,
-        type,
-        orig: listener,
-        wrapped,
-        options,
-      });
+      const capture = getCaptureFlag(options);
+      const alreadyTracked = registeredBeforeUnloadRecords.some(
+        (r) =>
+          r.target === this &&
+          r.orig === listener &&
+          getCaptureFlag(r.options) === capture,
+      );
+      if (!alreadyTracked) {
+        registeredBeforeUnloadRecords.push({
+          target: this,
+          type,
+          orig: listener,
+          wrapped,
+          options,
+        });
+      }
 
       return origEventTargetAddEventListener.call(this, type, wrapped, options);
     }
@@ -178,8 +224,12 @@
     if (type === 'beforeunload' && listener) {
       const wrapped = beforeUnloadListenerMap.get(listener);
       if (wrapped) {
+        const capture = getCaptureFlag(options);
         const idx = registeredBeforeUnloadRecords.findIndex(
-          (r) => r.target === this && (r.orig === listener || r.wrapped === wrapped),
+          (r) =>
+            r.target === this &&
+            (r.orig === listener || r.wrapped === wrapped) &&
+            getCaptureFlag(r.options) === capture,
         );
         if (idx !== -1) {
           registeredBeforeUnloadRecords.splice(idx, 1);
@@ -833,7 +883,11 @@
     );
 
     // Keep suppression active for 4 seconds during exit navigation
-    setTimeout(() => {
+    if (quickExitResetTimer !== undefined) {
+      clearTimeout(quickExitResetTimer);
+    }
+    quickExitResetTimer = setTimeout(() => {
+      quickExitResetTimer = undefined;
       isQuickExiting = false;
     }, 4000);
   });

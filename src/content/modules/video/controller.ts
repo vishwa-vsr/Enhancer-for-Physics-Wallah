@@ -66,19 +66,23 @@ export function setVideoPlaybackRate(rate: number): void {
   }
 }
 
-// Restore user's preferred speed (or active silence speed) after releasing PW native hold-click
-export function restoreSpeedAfterPointerHold(): void {
-  if (isUserHoldingSpace() || isPointerHolding()) return;
+function resolveTargetPlaybackRate(): number {
   if (
+    !isUserHoldingSpace() &&
     state.skipSilenceEnabled &&
     state.skipSilenceActive &&
     isSSEngineRunning() &&
     getSSCurrentState() === 'silence'
   ) {
-    setVideoPlaybackRate(getEffectiveSilenceSpeed());
-  } else {
-    setVideoPlaybackRate(getEffectiveNormalSpeed());
+    return getEffectiveSilenceSpeed();
   }
+  return getEffectiveNormalSpeed();
+}
+
+// Restore user's preferred speed (or active silence speed) after releasing PW native hold-click
+export function restoreSpeedAfterPointerHold(): void {
+  if (isUserHoldingSpace() || isPointerHolding()) return;
+  setVideoPlaybackRate(resolveTargetPlaybackRate());
   updateUI();
 }
 
@@ -100,7 +104,7 @@ export function applySpeedToActiveVideo(): void {
     setupVideoListeners(video);
   }
 
-  setVideoPlaybackRate(getEffectiveNormalSpeed());
+  setVideoPlaybackRate(resolveTargetPlaybackRate());
   updateUI();
 }
 

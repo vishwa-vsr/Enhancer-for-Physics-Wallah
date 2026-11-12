@@ -8,24 +8,39 @@ import { getActiveVideo } from '../video/detector';
 import { isReservedPlayerKey } from '../../../shared/shortcuts';
 import { isFocusLockActive, handleFocusLockExitShortcut } from '../ui/focus-lock';
 
-// Helper to check if user is typing in a text entry field
-export function isUserTyping(): boolean {
-  const active = document.activeElement;
-  if (!active) return false;
-  const tagName = active.tagName.toLowerCase();
+function isEditableElement(el: EventTarget | null): boolean {
+  if (!(el instanceof Element)) return false;
+  const tagName = el.tagName.toLowerCase();
   if (
     tagName === 'textarea' ||
-    (active as HTMLElement).isContentEditable ||
-    active.getAttribute('role') === 'textbox'
+    (el as HTMLElement).isContentEditable ||
+    el.getAttribute('role') === 'textbox' ||
+    Boolean(el.closest('[role="textbox"]'))
   ) {
     return true;
   }
   if (tagName === 'input') {
-    const type = ((active as HTMLInputElement).type || 'text').toLowerCase();
+    const type = ((el as HTMLInputElement).type || 'text').toLowerCase();
     const textTypes = ['text', 'search', 'email', 'number', 'password', 'tel', 'url'];
     return textTypes.includes(type);
   }
   return false;
+}
+
+// Helper to check if user is typing in a text entry field
+export function isUserTyping(target?: EventTarget | null): boolean {
+  if (isEditableElement(target ?? null)) return true;
+
+  let active: Element | null = document.activeElement;
+  while (active?.shadowRoot?.activeElement) {
+    active = active.shadowRoot.activeElement;
+  }
+  return isEditableElement(active);
+}
+
+function consumeHandledShortcut(e: KeyboardEvent): void {
+  e.preventDefault();
+  e.stopImmediatePropagation();
 }
 
 // Helper function to match keys case-insensitively, supporting shifts while protecting native player keys
@@ -106,107 +121,123 @@ function executeQuickExit(): void {
 
 let isInitialized = false;
 
-// Listen to keyboard shortcuts (bubble phase)
+// Listen to keyboard shortcuts (capture phase to take priority over PW's capture-phase keydown handler)
 export function initKeyboardShortcuts(): void {
   if (isInitialized) return;
   isInitialized = true;
 
-  document.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (!state.extensionEnabled) return;
+  document.addEventListener(
+    'keydown',
+    (e: KeyboardEvent) => {
+      if (!state.extensionEnabled || e.isComposing) return;
 
-    // Safety check: Ignore if typing in text fields
-    if (isUserTyping()) return;
+      // Safety check: Ignore if typing in text fields
+      if (isUserTyping(e.target)) return;
 
-    // 1. Video Speed Hotkeys (controlled by state.enableHotkeys master switch)
-    if (
-      state.enableHotkeys &&
-      !isPointerHolding() &&
-      !isUserHoldingSpace() &&
-      !(state.skipSilenceEnabled && state.skipSilenceActive && getSSCurrentState() === 'silence')
-    ) {
-      if (matchKey(e, state.keySpeedUp)) {
-        e.preventDefault();
-        saveSpeed(stepSpeed(1));
-        return;
-      } else if (matchKey(e, state.keySlowDown)) {
-        e.preventDefault();
-        saveSpeed(stepSpeed(-1));
-        return;
-      } else if (matchKey(e, state.keyReset)) {
-        e.preventDefault();
-        saveSpeed(1.0);
+      // 1. Video Speed Hotkeys (controlled by state.enableHotkeys master switch)
+      if (
+        state.enableHotkeys &&
+        !isPointerHolding() &&
+        !isUserHoldingSpace() &&
+        !(state.skipSilenceEnabled && state.skipSilenceActive && getSSCurrentState() === 'silence')
+      ) {
+        if (matchKey(e, state.keySpeedUp)) {
+          consumeHandledShortcut(e);
+          saveSpeed(stepSpeed(1));
+          return;
+        } else if (matchKey(e, state.keySlowDown)) {
+          consumeHandledShortcut(e);
+          saveSpeed(stepSpeed(-1));
+          return;
+        } else if (matchKey(e, state.keyReset)) {
+          consumeHandledShortcut(e);
+          saveSpeed(1.0);
+          return;
+        }
+      }
+
+      // 2. Focus & Player Shortcuts (Issue #14)
+      // Rule: If focus shortcuts are disabled globally, ignore all focus keys
+      if (!state.enableFocusShortcuts) return;
+
+      // Rule: If an item is HIDDEN by focus mode, its action is blocked unless allowShortcutsWhenHidden is enabled.
+
+      // Fullscreen (F)
+      if (state.enableKeyFullscreen && state.keyFullscreen && matchKey(e, state.keyFullscreen)) {
+        consumeHandledShortcut(e);
+        toggleFullscreen();
         return;
       }
-    }
 
-    // 2. Focus & Player Shortcuts (Issue #14)
-    // Rule: If focus shortcuts are disabled globally, ignore all focus keys
-    if (!state.enableFocusShortcuts) return;
-
-    // Rule: If an item is HIDDEN by focus mode, its action is blocked unless allowShortcutsWhenHidden is enabled.
-
-    // Fullscreen (F)
-    if (state.enableKeyFullscreen && state.keyFullscreen && matchKey(e, state.keyFullscreen)) {
-      e.preventDefault();
-      toggleFullscreen();
-      return;
-    }
-
-    // Quick Exit (E)
-    if (state.enableKeyExit && state.keyExit && matchKey(e, state.keyExit)) {
-      e.preventDefault();
-      if (isFocusLockActive()) {
-        handleFocusLockExitShortcut(executeQuickExit);
-      } else {
-        executeQuickExit();
+      // Quick Exit (E)
+      if (state.enableKeyExit && state.keyExit && matchKey(e, state.keyExit)) {
+        consumeHandledShortcut(e);
+        if (isFocusLockActive()) {
+          handleFocusLockExitShortcut(executeQuickExit);
+        } else {
+          executeQuickExit();
+        }
+        return;
       }
-      return;
-    }
 
-    const triggerPanel = (slot: 'chat' | 'notetimeline' | 'notes' | 'doubt') => {
-      if (document.documentElement.classList.contains('pwc-collapsed-state')) {
-        document.documentElement.classList.remove('pwc-collapsed-state');
-      }
-      triggerPlayerSlot(slot);
-      window.requestAnimationFrame(() => {
-        applyDistractorsState();
-      });
-    };
+      const triggerPanel = (slot: 'chat' | 'notetimeline' | 'notes' | 'doubt') => {
+        if (document.documentElement.classList.contains('pwc-collapsed-state')) {
+          document.documentElement.classList.remove('pwc-collapsed-state');
+        }
+        triggerPlayerSlot(slot);
+        window.requestAnimationFrame(() => {
+          applyDistractorsState();
+        });
+      };
 
-    // Live Chat (C)
-    if (state.enableKeyChat && state.keyChat && matchKey(e, state.keyChat)) {
-      e.preventDefault();
-      if (!state.hideSettings.hideChat || state.allowShortcutsWhenHidden) {
+      // Live Chat (C)
+      if (
+        state.enableKeyChat &&
+        state.keyChat &&
+        matchKey(e, state.keyChat) &&
+        (!state.hideSettings.hideChat || state.allowShortcutsWhenHidden)
+      ) {
+        consumeHandledShortcut(e);
         triggerPanel('chat');
+        return;
       }
-      return;
-    }
 
-    // Note Timeline (T)
-    if (state.enableKeyTimeline && state.keyTimeline && matchKey(e, state.keyTimeline)) {
-      e.preventDefault();
-      if (!state.hideSettings.hideNoteTimeline || state.allowShortcutsWhenHidden) {
+      // Note Timeline (T)
+      if (
+        state.enableKeyTimeline &&
+        state.keyTimeline &&
+        matchKey(e, state.keyTimeline) &&
+        (!state.hideSettings.hideNoteTimeline || state.allowShortcutsWhenHidden)
+      ) {
+        consumeHandledShortcut(e);
         triggerPanel('notetimeline');
+        return;
       }
-      return;
-    }
 
-    // Study Notes (N / A)
-    if (state.enableKeyNotes && state.keyNotes && matchKey(e, state.keyNotes)) {
-      e.preventDefault();
-      if (!state.hideSettings.hideNotes || state.allowShortcutsWhenHidden) {
+      // Study Notes (N / A)
+      if (
+        state.enableKeyNotes &&
+        state.keyNotes &&
+        matchKey(e, state.keyNotes) &&
+        (!state.hideSettings.hideNotes || state.allowShortcutsWhenHidden)
+      ) {
+        consumeHandledShortcut(e);
         triggerPanel('notes');
+        return;
       }
-      return;
-    }
 
-    // Doubt Q&A (D)
-    if (state.enableKeyDoubt && state.keyDoubt && matchKey(e, state.keyDoubt)) {
-      e.preventDefault();
-      if (!state.hideSettings.hideDoubt || state.allowShortcutsWhenHidden) {
+      // Doubt Q&A (D)
+      if (
+        state.enableKeyDoubt &&
+        state.keyDoubt &&
+        matchKey(e, state.keyDoubt) &&
+        (!state.hideSettings.hideDoubt || state.allowShortcutsWhenHidden)
+      ) {
+        consumeHandledShortcut(e);
         triggerPanel('doubt');
+        return;
       }
-      return;
-    }
-  });
+    },
+    true,
+  );
 }

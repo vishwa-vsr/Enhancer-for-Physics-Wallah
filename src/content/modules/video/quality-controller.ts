@@ -40,6 +40,8 @@ export function initQualityController(): void {
 
 // Fallback dynamic injection in case browser doesn't support world: MAIN or blocked
 export function ensureBridgeInjected(): void {
+  if (document.documentElement?.dataset?.pwcBridgeLoaded === '1') return;
+
   const SCRIPT_ID = 'pwc-engine-bridge-script';
   if (document.getElementById(SCRIPT_ID)) return;
 
@@ -48,7 +50,14 @@ export function ensureBridgeInjected(): void {
       const script = document.createElement('script');
       script.id = SCRIPT_ID;
       script.src = chrome.runtime.getURL('engine-bridge.js');
-      (document.head || document.documentElement).appendChild(script);
+      script.addEventListener(
+        'load',
+        () => {
+          window.dispatchEvent(new CustomEvent('PWC_REQUEST_QUALITY'));
+        },
+        { once: true },
+      );
+      (document.head || document.documentElement)?.appendChild(script);
     }
   } catch (_e) {
     // Suppress if runtime unavailable

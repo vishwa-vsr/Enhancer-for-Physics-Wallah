@@ -9,6 +9,8 @@ import {
 import { isUserTyping } from './keyboard';
 
 export const NATIVE_HOLD_SPEED = 2.0;
+export const NATIVE_HOLD_DELAY_MS = 400;
+export const NATIVE_HOLD_MOVE_THRESHOLD_PX = 12;
 
 let spacePressTimer: ReturnType<typeof setTimeout> | null = null;
 let isHoldingSpace = false;
@@ -19,6 +21,8 @@ let isPointerHoldActive = false;
 let isReleasingPointerHold = false;
 let pointerHoldTimer: ReturnType<typeof setTimeout> | null = null;
 let pointerReleaseTimer: ReturnType<typeof setTimeout> | null = null;
+let pointerStartX: number | null = null;
+let pointerStartY: number | null = null;
 
 export function isUserHoldingSpace(): boolean {
   return isHoldingSpace;
@@ -57,11 +61,30 @@ export function activatePointerHold(): void {
 }
 
 export function cancelPointerHold(): void {
+  const wasHoldActive = isPointerHoldActive;
   clearPointerHoldTimer();
   clearPointerReleaseTimer();
   isPointerDownOnPlayer = false;
   isPointerHoldActive = false;
   isReleasingPointerHold = false;
+  pointerStartX = null;
+  pointerStartY = null;
+  if (wasHoldActive) {
+    restoreSpeedAfterPointerHold();
+  }
+}
+
+function getPointerCoords(e: Event): { x: number; y: number } | null {
+  if ('touches' in e) {
+    const touch = (e as TouchEvent).touches?.[0];
+    if (touch) {
+      return { x: touch.clientX, y: touch.clientY };
+    }
+  }
+  if (e instanceof MouseEvent) {
+    return { x: e.clientX, y: e.clientY };
+  }
+  return null;
 }
 
 function isInteractiveControlTarget(target: EventTarget | null): boolean {
@@ -103,12 +126,12 @@ export function initSpaceHold(): void {
   document.addEventListener(
     'keydown',
     (e: KeyboardEvent) => {
-      if (!state.extensionEnabled) return;
+      if (!state.extensionEnabled || e.isComposing) return;
       if (e.key !== ' ' && e.code !== 'Space') return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
 
       // Safety check: Ignore if typing in text fields, or if key is auto-repeating from an input that just closed
-      if (isUserTyping()) return;
+      if (isUserTyping(e.target)) return;
       if (e.repeat && !spaceKeyDownIntercepted) return;
 
       if (state.holdSpaceSpeedUp) {
@@ -164,10 +187,12 @@ export function initSpaceHold(): void {
     true,
   );
 
-  // Track screen hold state for PW native hold-click to 2x
+  // Track screen hold state for PW native hold-click to 2x (matches PW's 400ms / 12px threshold)
   const startHold = (e: Event) => {
     if (!state.extensionEnabled) return;
     if (e instanceof MouseEvent && e.button !== 0) return;
+    if (typeof PointerEvent !== 'undefined' && e instanceof PointerEvent && !e.isPrimary) return;
+    if ('touches' in e && (e as TouchEvent).touches.length > 1) return;
     if (isInteractiveControlTarget(e.target)) return;
 
     const video = getActiveVideoElement() || getCachedVideo() || getActiveVideo();
@@ -177,26 +202,52 @@ export function initSpaceHold(): void {
       video.closest('.video-player-app') ||
       video.parentElement;
     if (playerContainer && e.target && playerContainer.contains(e.target as Node)) {
+      if (!isPointerDownOnPlayer && !isPointerHoldActive) {
+        const coords = getPointerCoords(e);
+        pointerStartX = coords?.x ?? null;
+        pointerStartY = coords?.y ?? null;
+      }
       clearPointerReleaseTimer();
       isReleasingPointerHold = false;
       isPointerDownOnPlayer = true;
-      if (!pointerHoldTimer) {
+      if (!pointerHoldTimer && !isPointerHoldActive) {
         pointerHoldTimer = setTimeout(() => {
           pointerHoldTimer = null;
           const activeVid = getActiveVideoElement() || getCachedVideo() || getActiveVideo();
           if (state.extensionEnabled && isPointerDownOnPlayer && activeVid && !activeVid.paused) {
             isPointerHoldActive = true;
           }
-        }, 300);
+        }, NATIVE_HOLD_DELAY_MS);
       }
     }
   };
 
-  const endHold = () => {
+  const moveHold = (e: Event) => {
+    if (typeof PointerEvent !== 'undefined' && e instanceof PointerEvent && !e.isPrimary) return;
+    if (!isPointerDownOnPlayer || isPointerHoldActive || !pointerHoldTimer) return;
+    const coords = getPointerCoords(e);
+    if (!coords || pointerStartX === null || pointerStartY === null) return;
+    if (
+      Math.abs(coords.x - pointerStartX) > NATIVE_HOLD_MOVE_THRESHOLD_PX ||
+      Math.abs(coords.y - pointerStartY) > NATIVE_HOLD_MOVE_THRESHOLD_PX
+    ) {
+      clearPointerHoldTimer();
+      isPointerDownOnPlayer = false;
+      pointerStartX = null;
+      pointerStartY = null;
+    }
+  };
+
+  const endHold = (e?: Event) => {
+    if (e && typeof PointerEvent !== 'undefined' && e instanceof PointerEvent && !e.isPrimary) {
+      return;
+    }
     clearPointerHoldTimer();
     const wasHoldActive = isPointerHoldActive;
     isPointerDownOnPlayer = false;
     isPointerHoldActive = false;
+    pointerStartX = null;
+    pointerStartY = null;
 
     if (wasHoldActive) {
       isReleasingPointerHold = true;
@@ -217,13 +268,25 @@ export function initSpaceHold(): void {
     endHold();
   });
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      cancelSpaceHold();
+      endHold();
+    }
+  });
+
   document.addEventListener('pointerdown', startHold, true);
   document.addEventListener('mousedown', startHold, true);
   document.addEventListener('touchstart', startHold, true);
 
+  document.addEventListener('pointermove', moveHold, { capture: true, passive: true });
+  document.addEventListener('mousemove', moveHold, { capture: true, passive: true });
+  document.addEventListener('touchmove', moveHold, { capture: true, passive: true });
+
   document.addEventListener('pointerup', endHold, true);
   document.addEventListener('mouseup', endHold, true);
   document.addEventListener('touchend', endHold, true);
+  document.addEventListener('touchcancel', endHold, true);
   document.addEventListener('pointercancel', endHold, true);
   document.addEventListener('contextmenu', endHold, true);
   document.addEventListener('dragstart', endHold, true);
