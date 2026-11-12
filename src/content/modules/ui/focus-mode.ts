@@ -2,12 +2,7 @@ import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { getOuterPlayerContainer, preventFocusSteal } from '../distractions/elements';
 import { syncAutoHide, syncAutoHideBossClass } from './autohide';
-import {
-  findControlsToolbar,
-  isInsideControlsTray,
-  placeControlInTray,
-  removeControlsTrayIfEmpty,
-} from './toast';
+import { findControlsToolbar } from './toast';
 
 const COLLAPSED_CLASS = 'pwc-collapsed-state';
 const POST_CLICK_GRACE_MS = 400;
@@ -193,7 +188,62 @@ function createInstantHideButton(): HTMLButtonElement {
   return btn;
 }
 
-// Inject and manage the arrow hide button inside #pwc-controls-tray
+function resolveInstantHidePlacement(): { parent: Element; anchor: Element | null } | null {
+  const outer = getOuterPlayerContainer();
+  const footerLeft =
+    outer?.querySelector('#footer-left-section') || document.getElementById('footer-left-section');
+  if (footerLeft?.parentElement) {
+    return { parent: footerLeft.parentElement, anchor: footerLeft };
+  }
+
+  const footerRight =
+    outer?.querySelector('#footer-right-section') || document.getElementById('footer-right-section');
+  if (footerRight?.parentElement) {
+    const parent = footerRight.parentElement;
+    return {
+      parent,
+      anchor: parent.firstElementChild?.id === 'pwc-instant-hide-btn' ? parent.firstElementChild.nextElementSibling : parent.firstElementChild,
+    };
+  }
+
+  const video = getActiveVideo();
+  const vjsBar =
+    outer?.querySelector('.vjs-control-bar') ||
+    video?.closest('.video-js')?.querySelector('.vjs-control-bar') ||
+    document.querySelector('.vjs-control-bar');
+  if (vjsBar) {
+    const playBtn = vjsBar.querySelector('.vjs-play-control');
+    const first = vjsBar.firstElementChild;
+    return {
+      parent: vjsBar,
+      anchor: playBtn || (first?.id === 'pwc-instant-hide-btn' ? first.nextElementSibling : first),
+    };
+  }
+
+  const toolbar = findControlsToolbar();
+  if (toolbar) {
+    const first = toolbar.firstElementChild;
+    return {
+      parent: toolbar,
+      anchor: first?.id === 'pwc-instant-hide-btn' ? first.nextElementSibling : first,
+    };
+  }
+
+  return null;
+}
+
+export function isInstantHideButtonHealthy(): boolean {
+  const btn = document.getElementById('pwc-instant-hide-btn');
+  if (!btn || !btn.isConnected) return false;
+  const placement = resolveInstantHidePlacement();
+  if (!placement || btn.parentElement !== placement.parent) return false;
+  if (placement.anchor) {
+    return btn.nextElementSibling === placement.anchor;
+  }
+  return true;
+}
+
+// Inject and manage the arrow hide button on the left side right before Play/Pause
 export function injectInstantHideButton(): void {
   const exactBtn = document.getElementById('pwc-instant-hide-btn') as HTMLElement | null;
 
@@ -202,7 +252,6 @@ export function injectInstantHideButton(): void {
     if (exactBtn) {
       exactBtn.remove();
     }
-    removeControlsTrayIfEmpty();
     exitCollapsedState();
     return;
   }
@@ -210,15 +259,21 @@ export function injectInstantHideButton(): void {
   ensureLifecycleCleanupBound();
 
   const video = getActiveVideo();
-  const toolbar = findControlsToolbar();
-  if (!video && !toolbar) return;
-  if (!toolbar) return;
+  const placement = resolveInstantHidePlacement();
+  if ((!video && !placement) || !placement) return;
 
-  if (exactBtn && isInsideControlsTray(exactBtn)) {
-    placeControlInTray(exactBtn);
+  const { parent, anchor } = placement;
+  const btn = exactBtn || createInstantHideButton();
+
+  if (btn.parentElement === parent && (!anchor || btn.nextElementSibling === anchor)) {
     return;
   }
 
-  const btn = exactBtn || createInstantHideButton();
-  placeControlInTray(btn);
+  if (anchor && anchor.parentElement === parent) {
+    parent.insertBefore(btn, anchor);
+  } else if (parent.firstChild) {
+    parent.insertBefore(btn, parent.firstChild);
+  } else {
+    parent.appendChild(btn);
+  }
 }

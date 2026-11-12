@@ -3,13 +3,12 @@ import { findPWToolbar, getOuterPlayerContainer } from '../distractions/elements
 
 export const CONTROLS_TRAY_ID = 'pwc-controls-tray';
 
-// Canonical left-to-right display order inside #pwc-controls-tray
+// Canonical left-to-right display order inside #pwc-controls-tray (right side)
 export const TRAY_CONTROL_ORDER = [
   'pwc-finish-time-badge',
   'pwc-ss-container',
   'pwc-quality-control',
   'pwc-speed-control',
-  'pwc-instant-hide-btn',
 ] as const;
 
 let toastTimeout: ReturnType<typeof setTimeout> | null = null;

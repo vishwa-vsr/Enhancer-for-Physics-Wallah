@@ -583,8 +583,7 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
 .pwc-controls-tray > #pwc-finish-time-badge,
 .pwc-controls-tray > #pwc-ss-container,
 .pwc-controls-tray > #pwc-quality-control,
-.pwc-controls-tray > #pwc-speed-control,
-.pwc-controls-tray > #pwc-instant-hide-btn {
+.pwc-controls-tray > #pwc-speed-control {
   margin: 0 !important;
 }
 
@@ -660,15 +659,6 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
   padding-left: 6px !important;
 }
 
-.pwc-controls-tray.pwc-tray-tight .pwc-instant-hide-btn {
-  width: 28px !important;
-}
-
-.pwc-controls-tray.pwc-tray-tight .pwc-instant-hide-btn svg {
-  width: 19px !important;
-  height: 19px !important;
-}
-
 @media (max-width: 1024px) {
   .pwc-controls-tray {
     gap: 4px !important;
@@ -723,22 +713,13 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
     flex: 0 0 116px !important;
     padding-left: 6px !important;
   }
-
-  .pwc-controls-tray .pwc-instant-hide-btn {
-    width: 28px !important;
-  }
-
-  .pwc-controls-tray .pwc-instant-hide-btn svg {
-    width: 19px !important;
-    height: 19px !important;
-  }
 }
 
 /* ==========================================================================
    Instant Hide Controls & Cursor Features (Focus Mode)
    ========================================================================== */
 
-/* The Arrow Button positioned cleanly as the trailing action in #pwc-controls-tray */
+/* The Arrow Button positioned cleanly on the left side right before Play/Pause */
 .pwc-instant-hide-btn {
   height: 100% !important;
   width: 32px !important;

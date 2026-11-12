@@ -12,7 +12,7 @@ import { applyDistractorsState } from '../distractions/focus-css';
 import { injectSpeedControl } from '../ui/speed-hud';
 import { injectQualityControl } from '../ui/quality-hud';
 import { injectSkipSilenceButton } from '../ui/silence-hud';
-import { injectInstantHideButton } from '../ui/focus-mode';
+import { injectInstantHideButton, isInstantHideButtonHealthy } from '../ui/focus-mode';
 import { injectFinishTimeBadge } from '../ui/finish-time';
 import { syncAutoHideBossClass } from '../ui/autohide';
 import {
@@ -77,7 +77,7 @@ export function areControlsHealthy(): boolean {
 
   const hideBtn = document.getElementById('pwc-instant-hide-btn');
   if (state.enableInstantHide) {
-    if (!isInsideControlsTray(hideBtn)) return false;
+    if (!isInstantHideButtonHealthy()) return false;
   } else if (hideBtn) {
     return false;
   }

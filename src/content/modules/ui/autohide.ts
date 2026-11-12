@@ -22,7 +22,7 @@ const OPEN_PANEL_SELECTOR =
   '[role="dialog"], [aria-modal="true"], [class*="timeline-sidebar" i], [id*="timeline-sidebar" i], [class*="Timeline_sidebar"], [class*="Timeline_container"], [class*="drawer" i], [class*="Drawer"]';
 
 const CONTROLS_HOVER_SELECTOR =
-  '#player-footer-controls, .player-footer, #progress-placeholder, #progress-control, #footer-left-section, #footer-right-section, #pwc-controls-tray, .pwc-speed-container, .pwc-speed-slider-container, .pwc-quality-container, .pwc-quality-menu, .vjs-progress-control, .vjs-control-bar';
+  '#player-footer-controls, .player-footer, #progress-placeholder, #progress-control, #footer-left-section, #footer-right-section, #pwc-controls-tray, #pwc-instant-hide-btn, .pwc-speed-container, .pwc-speed-slider-container, .pwc-quality-container, .pwc-quality-menu, .vjs-progress-control, .vjs-control-bar';
 
 const SLIDER_DRAG_SELECTOR =
   'input[type="range"], .pwc-speed-slider, .pwc-slider-wrapper, .vjs-progress-control, .vjs-progress-holder, .vjs-slider, [role="slider"], #progress-placeholder, #progress-control';
