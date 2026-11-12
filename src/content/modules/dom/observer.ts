@@ -5,7 +5,7 @@ import {
   setupVideoListeners,
   setActiveVideoElement,
 } from '../video/controller';
-import { isInsidePreferredToolbar, resetDistractionCaches } from '../distractions/elements';
+import { resetDistractionCaches } from '../distractions/elements';
 import { handlePromoAds } from '../distractions/promo-skipper';
 import { handleRecordedPolls } from '../distractions/poll-blocker';
 import { applyDistractorsState } from '../distractions/focus-css';
@@ -14,6 +14,15 @@ import { injectQualityControl } from '../ui/quality-hud';
 import { injectSkipSilenceButton } from '../ui/silence-hud';
 import { injectInstantHideButton } from '../ui/focus-mode';
 import { injectFinishTimeBadge } from '../ui/finish-time';
+import { syncAutoHideBossClass } from '../ui/autohide';
+import {
+  CONTROLS_TRAY_ID,
+  areTrayControlsOrdered,
+  clearControlsTray,
+  findControlsToolbar,
+  isInsideControlsTray,
+  removeControlsTrayIfEmpty,
+} from '../ui/toast';
 import { ensureAudioPipelineRunning } from '../audio/skip-silence';
 import { isUserTyping } from '../shortcuts/keyboard';
 
@@ -22,28 +31,58 @@ let monitorTimeout: ReturnType<typeof setTimeout> | null = null;
 let monitorIntervalId: ReturnType<typeof setInterval> | null = null;
 let observer: MutationObserver | null = null;
 
-// Helper to check if all necessary extension controls are already placed and connected
+// Helper to check if all necessary extension controls are already placed, grouped, and ordered in #pwc-controls-tray
 export function areControlsHealthy(): boolean {
-  if (!state.extensionEnabled) return true;
-  if (!isInsidePreferredToolbar(document.getElementById('pwc-speed-control'))) return false;
-  if (!isInsidePreferredToolbar(document.getElementById('pwc-ss-container'))) return false;
-
-  if (state.showFinishTime) {
-    if (!isInsidePreferredToolbar(document.getElementById('pwc-finish-time-badge'))) return false;
+  if (!state.extensionEnabled) {
+    return (
+      !document.getElementById(CONTROLS_TRAY_ID) &&
+      !document.getElementById('pwc-speed-control') &&
+      !document.getElementById('pwc-quality-control') &&
+      !document.getElementById('pwc-ss-container') &&
+      !document.getElementById('pwc-finish-time-badge') &&
+      !document.getElementById('pwc-instant-hide-btn')
+    );
   }
 
+  const toolbar = findControlsToolbar();
+  const tray = document.getElementById(CONTROLS_TRAY_ID);
+  if (!toolbar || !tray || !tray.isConnected || tray.parentElement !== toolbar) {
+    return false;
+  }
+
+  if (!isInsideControlsTray(document.getElementById('pwc-speed-control'))) return false;
+
+  const ssCtrl = document.getElementById('pwc-ss-container');
+  if (state.skipSilenceEnabled) {
+    if (!isInsideControlsTray(ssCtrl)) return false;
+  } else if (ssCtrl) {
+    return false;
+  }
+
+  const finishBadge = document.getElementById('pwc-finish-time-badge');
+  const needsFinishBadge =
+    state.lectureTimeEnabled && (state.showFinishTime || state.showLiveCatchUp);
+  if (needsFinishBadge) {
+    if (!isInsideControlsTray(finishBadge)) return false;
+  } else if (finishBadge) {
+    return false;
+  }
+
+  const qualityCtrl = document.getElementById('pwc-quality-control');
   if (state.constantVideoQuality) {
-    if (!isInsidePreferredToolbar(document.getElementById('pwc-quality-control'))) return false;
+    if (!isInsideControlsTray(qualityCtrl)) return false;
+  } else if (qualityCtrl) {
+    return false;
   }
 
   const hideBtn = document.getElementById('pwc-instant-hide-btn');
   if (state.enableInstantHide) {
-    if (!hideBtn || !hideBtn.isConnected) return false;
+    if (!isInsideControlsTray(hideBtn)) return false;
   } else if (hideBtn) {
     return false;
   }
 
-  return true;
+  return areTrayControlsOrdered(tray);
 }
 
 // Throttled execution of DOM monitoring to optimize performance
@@ -151,19 +190,35 @@ export function monitor(): void {
   if (isModifyingDOM) return;
 
   const video = getActiveVideo();
-  if (video) {
-    if (video !== getActiveVideoElement()) {
+  const hasToolbar = !video && Boolean(findControlsToolbar());
+
+  if (!state.extensionEnabled && !video && !hasToolbar) {
+    isModifyingDOM = true;
+    try {
+      clearControlsTray();
+      applyDistractorsState();
+      syncAutoHideBossClass();
+    } finally {
+      isModifyingDOM = false;
+    }
+    return;
+  }
+
+  if (video || hasToolbar) {
+    if (video && video !== getActiveVideoElement()) {
       setupVideoListeners(video);
     }
-    // Fast path: if all controls are already in the DOM and connected, still ensure Focus Toggles are enforced
+    // Fast path: if all controls are already in the DOM and connected, still ensure Focus Toggles & Auto-Hide are enforced
     if (areControlsHealthy()) {
       isModifyingDOM = true;
       try {
         applyDistractorsState();
+        syncAutoHideBossClass();
       } finally {
         isModifyingDOM = false;
       }
       if (
+        video &&
         ((state.skipSilenceEnabled && state.skipSilenceActive) ||
           state.volumeBalancerEnabled) &&
         !video.paused
@@ -175,16 +230,23 @@ export function monitor(): void {
 
     isModifyingDOM = true;
     try {
-      injectSpeedControl();
-      injectQualityControl();
-      injectSkipSilenceButton();
-      injectInstantHideButton();
       injectFinishTimeBadge();
+      injectSkipSilenceButton();
+      injectQualityControl();
+      injectSpeedControl();
+      injectInstantHideButton();
+      if (!state.extensionEnabled) {
+        clearControlsTray();
+      } else {
+        removeControlsTrayIfEmpty();
+      }
       applyDistractorsState();
+      syncAutoHideBossClass();
     } finally {
       isModifyingDOM = false;
     }
     if (
+      video &&
       ((state.skipSilenceEnabled && state.skipSilenceActive) ||
         state.volumeBalancerEnabled) &&
       !video.paused

@@ -1,6 +1,12 @@
 import { state } from '../../state';
 import { getActiveVideo, getCachedVideo } from '../video/detector';
-import { findPWToolbar, isInsidePreferredToolbar } from '../distractions/elements';
+import { getOuterPlayerContainer } from '../distractions/elements';
+import {
+  findControlsToolbar,
+  isInsideControlsTray,
+  placeControlInTray,
+  removeControlsTrayIfEmpty,
+} from './toast';
 
 // Helper to detect if the active video is a live stream
 export function isLiveVideo(video: HTMLVideoElement): boolean {
@@ -49,14 +55,34 @@ export function getLiveStreamLag(video: HTMLVideoElement): number | null {
   return null;
 }
 
-// Check if PW has a visible "Go Live" or "Live" button on screen
+// Check if PW has a visible "Go Live" or "Live" button inside the active player container
 export function hasGoLiveButton(): boolean {
-  const candidates = document.querySelectorAll(
-    'button, [role="button"], div.vjs-live-control, [class*="live-control" i], [class*="live" i]',
+  const outer = getOuterPlayerContainer();
+  const progressScope =
+    outer?.querySelector('#progress-placeholder') || document.getElementById('progress-placeholder');
+  const scope =
+    progressScope ||
+    outer?.querySelector('#player-footer-controls, .vjs-control-bar') ||
+    outer;
+  if (!scope) return false;
+
+  const livePoll = scope.querySelector('#live-poll');
+  if (livePoll) {
+    const label = (livePoll.getAttribute('aria-label') || '').trim().toLowerCase();
+    const text = (livePoll.textContent || '').trim().toLowerCase();
+    if (label === 'go live' || text === 'go live' || text.startsWith('go live')) {
+      return true;
+    }
+  }
+
+  const candidates = scope.querySelectorAll(
+    'button, [role="button"], .vjs-live-control, [class*="live-control" i]',
   );
   for (let i = 0; i < candidates.length; i++) {
-    const text = (candidates[i].textContent || '').trim().toLowerCase();
-    if (text === 'go live' || text.startsWith('go live')) {
+    const el = candidates[i];
+    const aria = (el.getAttribute('aria-label') || '').trim().toLowerCase();
+    const text = (el.textContent || '').trim().toLowerCase();
+    if (aria === 'go live' || text === 'go live' || text.startsWith('go live')) {
       return true;
     }
   }
@@ -208,20 +234,18 @@ export function injectFinishTimeBadge(): void {
   ) {
     const existing = document.getElementById('pwc-finish-time-badge');
     if (existing) existing.remove();
+    removeControlsTrayIfEmpty();
     return;
   }
 
-  let badge = document.getElementById('pwc-finish-time-badge');
-  if (badge && isInsidePreferredToolbar(badge)) {
+  let badge = document.getElementById('pwc-finish-time-badge') as HTMLElement | null;
+  if (badge && isInsideControlsTray(badge)) {
+    placeControlInTray(badge);
     updateFinishTime();
     return;
   }
-  if (badge) {
-    badge.remove();
-    badge = null;
-  }
 
-  const toolbar = findPWToolbar();
+  const toolbar = findControlsToolbar();
   if (!toolbar) return;
 
   if (!badge) {
@@ -244,15 +268,7 @@ export function injectFinishTimeBadge(): void {
     const leftSpan = document.createElement('span');
     leftSpan.className = 'pwc-finish-left';
     badge.appendChild(leftSpan);
-
-    const speedCtrl = toolbar.querySelector('#pwc-speed-control');
-    if (speedCtrl) {
-      toolbar.insertBefore(badge, speedCtrl);
-    } else if (toolbar.firstChild) {
-      toolbar.insertBefore(badge, toolbar.firstChild);
-    } else {
-      toolbar.appendChild(badge);
-    }
   }
+  placeControlInTray(badge);
   updateFinishTime();
 }

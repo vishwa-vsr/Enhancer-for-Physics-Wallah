@@ -1,9 +1,14 @@
 import { state, sanitizeSnapPoints } from '../../state';
-import { findPWToolbar, isInsidePreferredToolbar } from '../distractions/elements';
 import { applyDistractorsState } from '../distractions/focus-css';
 import { saveSpeed, togglePlayPause } from '../video/controller';
 import { updateFinishTime } from './finish-time';
 import { getSSCurrentState } from '../audio/skip-silence';
+import {
+  findControlsToolbar,
+  isInsideControlsTray,
+  placeControlInTray,
+  removeControlsTrayIfEmpty,
+} from './toast';
 
 const MIN_SPEED = 0.5;
 const MAX_SPEED = 4.0;
@@ -462,11 +467,13 @@ export function injectSpeedControl(): void {
   if (!state.extensionEnabled) {
     const container = document.getElementById('pwc-speed-control');
     if (container) container.remove();
+    removeControlsTrayIfEmpty();
     return;
   }
 
   const existingContainer = document.getElementById('pwc-speed-control') as HTMLElement | null;
-  if (existingContainer && isInsidePreferredToolbar(existingContainer)) {
+  if (existingContainer && isInsideControlsTray(existingContainer)) {
+    placeControlInTray(existingContainer);
     if (existingContainer.dataset.pwcInitialized !== 'true') {
       setupUIEventListeners(existingContainer);
     }
@@ -474,7 +481,7 @@ export function injectSpeedControl(): void {
     return;
   }
 
-  const toolbar = findPWToolbar();
+  const toolbar = findControlsToolbar();
   if (toolbar) {
     if (!existingContainer) {
       const container = document.createElement('div');
@@ -482,25 +489,11 @@ export function injectSpeedControl(): void {
       container.className = 'pwc-speed-container';
       buildSpeedControl(container);
 
-      const finishBadge = toolbar.querySelector('#pwc-finish-time-badge');
-      if (finishBadge && finishBadge.nextSibling) {
-        toolbar.insertBefore(container, finishBadge.nextSibling);
-      } else if (toolbar.firstChild) {
-        toolbar.insertBefore(container, toolbar.firstChild);
-      } else {
-        toolbar.appendChild(container);
-      }
+      placeControlInTray(container);
       setupUIEventListeners(container);
       applyAlwaysExpandState(container);
     } else {
-      const finishBadge = toolbar.querySelector('#pwc-finish-time-badge');
-      if (finishBadge && finishBadge.nextSibling) {
-        toolbar.insertBefore(existingContainer, finishBadge.nextSibling);
-      } else if (toolbar.firstChild) {
-        toolbar.insertBefore(existingContainer, toolbar.firstChild);
-      } else {
-        toolbar.appendChild(existingContainer);
-      }
+      placeControlInTray(existingContainer);
       if (existingContainer.dataset.pwcInitialized !== 'true') {
         setupUIEventListeners(existingContainer);
       }
