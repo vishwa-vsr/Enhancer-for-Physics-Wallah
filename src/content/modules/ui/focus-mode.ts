@@ -1,7 +1,13 @@
 import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { getOuterPlayerContainer, preventFocusSteal } from '../distractions/elements';
-import { syncAutoHide, syncAutoHideBossClass } from './autohide';
+import { isPointerHolding, isPointerReleasing } from '../shortcuts/space-hold';
+import {
+  isIgnoredWakeTarget,
+  isValidPlayerWakeClick,
+  syncAutoHideBossClass,
+  wakeAutoHide,
+} from './autohide';
 import { findControlsToolbar } from './toast';
 
 const COLLAPSED_CLASS = 'pwc-collapsed-state';
@@ -19,6 +25,9 @@ let isLifecycleBound = false;
 
 function isEventInsidePlayerContainer(e: Event, player: HTMLElement): boolean {
   const target = e.target;
+  if (document.fullscreenElement && target instanceof Node && document.fullscreenElement.contains(target)) {
+    return true;
+  }
   if (target instanceof Node && player.contains(target)) {
     return true;
   }
@@ -47,6 +56,7 @@ function unbindWakeListeners(): void {
   document.removeEventListener('mousedown', onPlayerAnchorDown, true);
   document.removeEventListener('mousemove', onPlayerMouseMove);
   document.removeEventListener('touchstart', onPlayerTouchStart);
+  document.removeEventListener('click', onPlayerClick, true);
   document.removeEventListener('keydown', onCaptureEscape, true);
 }
 
@@ -62,7 +72,26 @@ function exitCollapsedState(): void {
     el.classList.remove(COLLAPSED_CLASS);
   });
 
-  syncAutoHide();
+  wakeAutoHide();
+}
+
+function wakeIfInsideCollapsedPlayer(e: Event): void {
+  if (isIgnoredWakeTarget(e)) {
+    return;
+  }
+
+  const activePlayer =
+    collapsedContainer && collapsedContainer.isConnected
+      ? collapsedContainer
+      : getOuterPlayerContainer();
+  if (!activePlayer) {
+    exitCollapsedState();
+    return;
+  }
+  if (!isEventInsidePlayerContainer(e, activePlayer)) {
+    return;
+  }
+  exitCollapsedState();
 }
 
 function onPlayerMouseMove(e: MouseEvent): void {
@@ -85,22 +114,20 @@ function onPlayerMouseMove(e: MouseEvent): void {
     return;
   }
 
-  const activePlayer =
-    collapsedContainer && collapsedContainer.isConnected
-      ? collapsedContainer
-      : getOuterPlayerContainer();
-  if (!activePlayer) {
-    exitCollapsedState();
-    return;
-  }
-  if (!isEventInsidePlayerContainer(e, activePlayer)) {
-    return;
-  }
-  exitCollapsedState();
+  wakeIfInsideCollapsedPlayer(e);
 }
 
-function onPlayerTouchStart(): void {
-  exitCollapsedState();
+function onPlayerClick(e: MouseEvent): void {
+  if (!isValidPlayerWakeClick(e)) return;
+  if (Date.now() - lastCollapsedTime < POST_CLICK_GRACE_MS) return;
+  if (isPointerHolding() || isPointerReleasing()) return;
+  wakeIfInsideCollapsedPlayer(e);
+}
+
+function onPlayerTouchStart(e: TouchEvent): void {
+  if (!e.isTrusted) return;
+  if (Date.now() - lastCollapsedTime < POST_CLICK_GRACE_MS) return;
+  wakeIfInsideCollapsedPlayer(e);
 }
 
 function onCaptureEscape(e: KeyboardEvent): void {
@@ -122,6 +149,7 @@ function bindWakeListeners(): void {
   document.addEventListener('mousedown', onPlayerAnchorDown, { capture: true, passive: true });
   document.addEventListener('mousemove', onPlayerMouseMove, { passive: true });
   document.addEventListener('touchstart', onPlayerTouchStart, { passive: true });
+  document.addEventListener('click', onPlayerClick, { capture: true, passive: true });
   document.addEventListener('keydown', onCaptureEscape, true);
 }
 

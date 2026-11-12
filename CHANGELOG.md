@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - **Store Drawer Collision**: Stopped Poll Blocker from mistakenly hiding PW's Store/Modules drawer that shares the same close-icon ID, and reduced unnecessary poll checks during playback.
-- **Click-to-Pause & Wake Behavior**: Kept clicking the video to pause, wheel volume scrolling, and Space/Arrow/Speed shortcuts from unexpectedly waking hidden controls, while waking cleanly on mouse movement inside the player, touch, or Escape.
+- **Click-to-Pause & Wake Behavior**: Left-clicking the video player while controls are hidden (in either Auto-Hide or Instant Hide) now wakes controls up immediately whether pausing or playing and restarts the Auto-Hide countdown, while keeping right/middle-clicks, wheel volume scrolling, open drawers/Focus Lock overlays, and `Space`/`K`/Arrow/Speed keyboard shortcuts quiet.
 - **Focus Lock Banner & Double-Popup Fix**: Fixed two overlapping banners appearing when enabling Focus Lock from the popup, replaced the old toast with the shared frosted-glass `"Focus Lock ON — click for fullscreen"` pill (with a close `×` button that turns Focus Lock off and no hover outline or lock icon), and restored sticky prompts cleanly after volume scroll adjustments.
 - **Background Helper & Memory Leaks**: Prevented `engine-bridge.js` from running twice, fixed a Quality menu document click-listener leak, and scoped Live-class button checks inside the player bar instead of scanning the full page.
 

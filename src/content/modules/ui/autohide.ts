@@ -1,6 +1,7 @@
 import { state, subscribeState } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { getOuterPlayerContainer } from '../distractions/elements';
+import { isPointerHolding, isPointerReleasing } from '../shortcuts/space-hold';
 import { isLiveVideo } from './finish-time';
 
 let idleTimer: number | null = null;
@@ -20,6 +21,13 @@ function getPlayerContainer(): HTMLElement | null {
 
 const OPEN_PANEL_SELECTOR =
   '[role="dialog"], [aria-modal="true"], [class*="timeline-sidebar" i], [id*="timeline-sidebar" i], [class*="Timeline_sidebar"], [class*="Timeline_container"], [class*="drawer" i], [class*="Drawer"]';
+
+const NON_VIDEO_OVERLAY_SELECTOR = `${OPEN_PANEL_SELECTOR}, .pwc-focus-lock-overlay, #pwc-focus-lock-interstitial`;
+
+const INTERACTIVE_MENU_SELECTOR =
+  '[role="menu"], [role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="listbox"], [role="option"], [data-headlessui-state*="open"], .vjs-menu, .vjs-setting-menu, .pwc-quality-menu, .pwc-speed-container.pwc-speed-editing, .pwc-speed-container.pwc-expanded:not(.pwc-always-expanded)';
+
+const IGNORED_WAKE_SELECTOR = `${NON_VIDEO_OVERLAY_SELECTOR}, #pwc-player-banner, #pwc-instant-hide-btn, ${INTERACTIVE_MENU_SELECTOR}`;
 
 const CONTROLS_HOVER_SELECTOR =
   '#player-footer-controls, .player-footer, #progress-placeholder, #progress-control, #footer-left-section, #footer-right-section, #pwc-controls-tray, #pwc-instant-hide-btn, .pwc-speed-container, .pwc-speed-slider-container, .pwc-quality-container, .pwc-quality-menu, .vjs-progress-control, .vjs-control-bar';
@@ -65,12 +73,24 @@ function isEventInsidePlayer(e: Event): boolean {
   return false;
 }
 
-function isEventInsideOpenPanel(e: Event): boolean {
-  const target = e.target;
-  if (target instanceof Element && target.closest(OPEN_PANEL_SELECTOR)) {
-    return true;
-  }
-  return false;
+function getEventTargetElement(e: Event): Element | null {
+  if (e.target instanceof Element) return e.target;
+  if (e.target instanceof Node) return e.target.parentElement;
+  return null;
+}
+
+function isEventInsideNonVideoOverlay(e: Event): boolean {
+  const target = getEventTargetElement(e);
+  return Boolean(target?.closest(NON_VIDEO_OVERLAY_SELECTOR));
+}
+
+export function isIgnoredWakeTarget(e: Event): boolean {
+  const target = getEventTargetElement(e);
+  return Boolean(target?.closest(IGNORED_WAKE_SELECTOR));
+}
+
+export function isValidPlayerWakeClick(e: MouseEvent): boolean {
+  return e.isTrusted && e.button === 0 && e.detail > 0;
 }
 
 function isMenuOrPopupOpen(): boolean {
@@ -218,14 +238,22 @@ function isConsistentShortcutKey(e: KeyboardEvent): boolean {
 
 function onUserActivity(e: Event): void {
   if (!e.isTrusted) return;
+  if (!state.extensionEnabled) return;
   const container = getPlayerContainer();
   if (container?.classList.contains('pwc-collapsed-state')) return;
   if (!isEventInsidePlayer(e)) return;
-  if (isEventInsideOpenPanel(e)) return;
+  if (e.type === 'touchstart' ? isIgnoredWakeTarget(e) : isEventInsideNonVideoOverlay(e)) {
+    return;
+  }
   if (e.type === 'mousemove' || e.type === 'mouseover') {
-    const target = e.target as Element | null;
+    const target = getEventTargetElement(e);
     hoveredControlElement = target ? target.closest(CONTROLS_HOVER_SELECTOR) : null;
   }
+  wakeUp();
+  scheduleNextCheck();
+}
+
+export function wakeAutoHide(): void {
   wakeUp();
   scheduleNextCheck();
 }
@@ -257,6 +285,23 @@ export function initAutoHide(): void {
   const options = { passive: true };
   window.addEventListener('mousemove', onUserActivity, options);
   window.addEventListener('touchstart', onUserActivity, options);
+  window.addEventListener(
+    'click',
+    (e: MouseEvent) => {
+      if (!state.extensionEnabled) return;
+      if (!isValidPlayerWakeClick(e)) return;
+      if (isPointerHolding() || isPointerReleasing()) return;
+      const container = getPlayerContainer();
+      if (container?.classList.contains('pwc-collapsed-state')) return;
+      if (!isEventInsidePlayer(e)) return;
+      if (isIgnoredWakeTarget(e)) return;
+
+      lastUserPauseInteractionTime = Date.now();
+      wakeUp();
+      scheduleNextCheck();
+    },
+    { capture: true, passive: true },
+  );
 
   // Track explicit user pause actions and keep Space/Arrow/Speed/Escape keys consistent with wake rules
   window.addEventListener(
