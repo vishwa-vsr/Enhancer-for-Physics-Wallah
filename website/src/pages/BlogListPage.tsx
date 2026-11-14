@@ -43,10 +43,15 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onSelectPost }) => {
       {/* Blog Posts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
         {BLOGS_LIST.map((blog: BlogPostMeta) => (
-          <div
+          <a
             key={blog.slug}
-            onClick={() => onSelectPost(blog.slug)}
-            className="group p-6 sm:p-8 rounded-3xl liquid-glass-card border border-white/10 hover:border-white/25 transition-all duration-300 flex flex-col justify-between cursor-pointer hover:scale-[1.015] hover:shadow-2xl"
+            href={`/blog/${blog.slug}`}
+            onClick={(e) => {
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+              e.preventDefault();
+              onSelectPost(blog.slug);
+            }}
+            className="group p-6 sm:p-8 rounded-3xl liquid-glass-card border border-white/10 hover:border-white/25 transition-all duration-300 flex flex-col justify-between cursor-pointer hover:scale-[1.015] hover:shadow-2xl block text-left no-underline"
           >
             <div>
               {/* Category & Meta */}
@@ -90,7 +95,7 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onSelectPost }) => {
               </span>
               <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </div>

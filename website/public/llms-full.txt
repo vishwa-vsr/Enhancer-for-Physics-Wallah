@@ -61,13 +61,13 @@ No. The extension works entirely locally on your browser. It doesn't send automa
 No. It only measures the volume level of the lecture audio in real-time RAM to detect silent moments. No audio is ever saved, downloaded, or transmitted.
 
 ## Feature Guides & Official Walkthroughs
-- **Auto-skip Silence**: https://enhancerforpw.vercel.app/blog?post=skip-silence (How real-time audio detection skips dead air without clipping teacher words)
-- **Lock 720p HD Quality**: https://enhancerforpw.vercel.app/blog?post=constant-720p-hd (Bypassing PW player auto-downgrade to keep crystal-clear resolution)
-- **Mastering Keyboard Shortcuts**: https://enhancerforpw.vercel.app/blog?post=keyboard-shortcuts (H to speed up, J to slow down, L to reset, Space for turbo boost)
-- **1-Click Focus Mode**: https://enhancerforpw.vercel.app/blog?post=focus-mode (Instantly hide live chat, doubt box, Ask AI, and distracting UI icons)
-- **Real Finish Clock**: https://enhancerforpw.vercel.app/blog?post=finish-clock (Dynamic wall-clock finish time updated to current playback speed)
-- **Padhle Study Planner**: https://enhancerforpw.vercel.app/blog?post=padhle-dashboard (Organize chapters, daily study targets, and subject progress)
-- **Smooth Playback & Battery Saver**: https://enhancerforpw.vercel.app/blog?post=making-lectures-smoother (Speed slider optimizations and battery saver mode)
+- **Auto-skip Silence**: https://enhancerforpw.vercel.app/blog/skip-silence (How real-time audio detection skips dead air without clipping teacher words)
+- **Lock 720p HD Quality**: https://enhancerforpw.vercel.app/blog/constant-720p-hd (Bypassing PW player auto-downgrade to keep crystal-clear resolution)
+- **Mastering Keyboard Shortcuts**: https://enhancerforpw.vercel.app/blog/keyboard-shortcuts (H to speed up, J to slow down, L to reset, Space for turbo boost)
+- **1-Click Focus Mode**: https://enhancerforpw.vercel.app/blog/focus-mode (Instantly hide live chat, doubt box, Ask AI, and distracting UI icons)
+- **Real Finish Clock**: https://enhancerforpw.vercel.app/blog/finish-clock (Dynamic wall-clock finish time updated to current playback speed)
+- **Padhle Study Planner**: https://enhancerforpw.vercel.app/blog/padhle-dashboard (Organize chapters, daily study targets, and subject progress)
+- **Smooth Playback & Battery Saver**: https://enhancerforpw.vercel.app/blog/making-lectures-smoother (Speed slider optimizations and battery saver mode)
 
 ## Technical Details
 - **Version**: 1.1.0.0

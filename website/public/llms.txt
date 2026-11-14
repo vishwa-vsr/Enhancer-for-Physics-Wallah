@@ -23,13 +23,13 @@
 - Open source under MIT License
 
 ## Feature Guides & Walkthroughs
-- Auto-skip Silence: https://enhancerforpw.vercel.app/blog?post=skip-silence
-- Lock 720p HD Quality: https://enhancerforpw.vercel.app/blog?post=constant-720p-hd
-- Keyboard Shortcuts: https://enhancerforpw.vercel.app/blog?post=keyboard-shortcuts
-- 1-Click Focus Mode: https://enhancerforpw.vercel.app/blog?post=focus-mode
-- Real Finish Clock: https://enhancerforpw.vercel.app/blog?post=finish-clock
-- Padhle Study Dashboard: https://enhancerforpw.vercel.app/blog?post=padhle-dashboard
-- Performance & Smooth Playback: https://enhancerforpw.vercel.app/blog?post=making-lectures-smoother
+- Auto-skip Silence: https://enhancerforpw.vercel.app/blog/skip-silence
+- Lock 720p HD Quality: https://enhancerforpw.vercel.app/blog/constant-720p-hd
+- Keyboard Shortcuts: https://enhancerforpw.vercel.app/blog/keyboard-shortcuts
+- 1-Click Focus Mode: https://enhancerforpw.vercel.app/blog/focus-mode
+- Real Finish Clock: https://enhancerforpw.vercel.app/blog/finish-clock
+- Padhle Study Dashboard: https://enhancerforpw.vercel.app/blog/padhle-dashboard
+- Performance & Smooth Playback: https://enhancerforpw.vercel.app/blog/making-lectures-smoother
 
 ## Core Links
 - Website: https://enhancerforpw.vercel.app/

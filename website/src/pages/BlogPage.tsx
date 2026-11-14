@@ -12,18 +12,35 @@ import { BLOGS_LIST } from '@/data/blogsData';
 
 export const BlogPage: React.FC = () => {
   const [currentPostSlug, setCurrentPostSlug] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('post');
+    if (typeof window === 'undefined') return null;
+
+    // 1. Check clean path: /blog/skip-silence or /blog/skip-silence.html
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    if (pathParts[0] === 'blog' && pathParts[1]) {
+      return pathParts[1].replace('.html', '');
     }
+
+    // 2. Check query param: /blog?post=skip-silence (silent migration to clean URL)
+    const params = new URLSearchParams(window.location.search);
+    const querySlug = params.get('post');
+    if (querySlug) {
+      window.history.replaceState({}, '', `/blog/${querySlug}`);
+      return querySlug;
+    }
+
     return null;
   });
 
   // Handle browser back and forward navigation
   useEffect(() => {
     const handlePopState = () => {
-      const params = new URLSearchParams(window.location.search);
-      setCurrentPostSlug(params.get('post'));
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      if (pathParts[0] === 'blog' && pathParts[1]) {
+        setCurrentPostSlug(pathParts[1].replace('.html', ''));
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        setCurrentPostSlug(params.get('post'));
+      }
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -50,7 +67,7 @@ export const BlogPage: React.FC = () => {
   const handleSelectPost = (slug: string) => {
     setCurrentPostSlug(slug);
     if (typeof window !== 'undefined') {
-      window.history.pushState({}, '', `/blog?post=${slug}`);
+      window.history.pushState({}, '', `/blog/${slug}`);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };

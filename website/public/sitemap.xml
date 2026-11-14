@@ -3,70 +3,70 @@
   <!-- Core Pages -->
   <url>
     <loc>https://enhancerforpw.vercel.app/</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://enhancerforpw.vercel.app/faq</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://enhancerforpw.vercel.app/blog</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://enhancerforpw.vercel.app/privacy</loc>
-    <lastmod>2026-11-04</lastmod>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
-  <!-- Feature Guides & Blog Articles -->
+  <!-- Feature Guides & Blog Articles (Clean Standalone URLs) -->
   <url>
-    <loc>https://enhancerforpw.vercel.app/blog?post=skip-silence</loc>
-    <lastmod>2026-11-04</lastmod>
+    <loc>https://enhancerforpw.vercel.app/blog/skip-silence</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://enhancerforpw.vercel.app/blog?post=constant-720p-hd</loc>
-    <lastmod>2026-11-04</lastmod>
+    <loc>https://enhancerforpw.vercel.app/blog/constant-720p-hd</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://enhancerforpw.vercel.app/blog?post=keyboard-shortcuts</loc>
-    <lastmod>2026-11-04</lastmod>
+    <loc>https://enhancerforpw.vercel.app/blog/keyboard-shortcuts</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://enhancerforpw.vercel.app/blog?post=focus-mode</loc>
-    <lastmod>2026-11-04</lastmod>
+    <loc>https://enhancerforpw.vercel.app/blog/focus-mode</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://enhancerforpw.vercel.app/blog?post=finish-clock</loc>
-    <lastmod>2026-11-04</lastmod>
+    <loc>https://enhancerforpw.vercel.app/blog/finish-clock</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://enhancerforpw.vercel.app/blog?post=padhle-dashboard</loc>
-    <lastmod>2026-11-04</lastmod>
+    <loc>https://enhancerforpw.vercel.app/blog/padhle-dashboard</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://enhancerforpw.vercel.app/blog?post=making-lectures-smoother</loc>
-    <lastmod>2026-11-04</lastmod>
+    <loc>https://enhancerforpw.vercel.app/blog/making-lectures-smoother</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
 </urlset>
