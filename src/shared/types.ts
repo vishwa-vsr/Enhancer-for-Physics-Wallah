@@ -65,6 +65,7 @@ export interface PopupSettings {
   keyFullscreen: string;
   keyExit: string;
   allowShortcutsWhenHidden: boolean;
+  showShortcutAlerts: boolean;
 
   // Auto-hide controls & cursor (Issue #14)
   autoHideControls: boolean;
@@ -155,6 +156,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   keyFullscreen: 'f',
   keyExit: 'e',
   allowShortcutsWhenHidden: false,
+  showShortcutAlerts: true,
 
   autoHideControls: false,
   autoHideDelay: 0.8,

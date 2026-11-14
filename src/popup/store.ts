@@ -73,6 +73,7 @@ export const keyDoubt = signal('d');
 export const keyFullscreen = signal('f');
 export const keyExit = signal('e');
 export const allowShortcutsWhenHidden = signal(false);
+export const showShortcutAlerts = signal(true);
 
 export type ShortcutKeyId =
   | 'keySpeedUp'
@@ -203,6 +204,7 @@ export async function initStore() {
   keyFullscreen.value = s.keyFullscreen ?? 'f';
   keyExit.value = s.keyExit ?? 'e';
   allowShortcutsWhenHidden.value = !!s.allowShortcutsWhenHidden;
+  showShortcutAlerts.value = s.showShortcutAlerts !== false;
 
   const resolvedSpeedKeys = resolveSafeSpeedShortcuts(s, [
     keyChat.value,
@@ -306,9 +308,13 @@ export async function initStore() {
     if (changes.hideNextChapter !== undefined) hideNextChapter.value = !!changes.hideNextChapter;
     if (changes.hideAttemptDPP !== undefined) hideAttemptDPP.value = !!changes.hideAttemptDPP;
     if (changes.autoSkipPromoAds !== undefined) autoSkipPromoAds.value = !!changes.autoSkipPromoAds;
-    if (changes.blockRecordedPolls !== undefined) blockRecordedPolls.value = !!changes.blockRecordedPolls;
+    if (changes.blockRecordedPolls !== undefined)
+      blockRecordedPolls.value = !!changes.blockRecordedPolls;
     if (changes.allowShortcutsWhenHidden !== undefined) {
       allowShortcutsWhenHidden.value = !!changes.allowShortcutsWhenHidden;
+    }
+    if (changes.showShortcutAlerts !== undefined) {
+      showShortcutAlerts.value = changes.showShortcutAlerts !== false;
     }
     if (changes.autoHideControls !== undefined) autoHideControls.value = !!changes.autoHideControls;
     if (changes.volumeScrollEnabled !== undefined) {

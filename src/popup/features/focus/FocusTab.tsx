@@ -40,6 +40,7 @@ import {
   enableKeyFullscreen,
   enableKeyExit,
   allowShortcutsWhenHidden,
+  showShortcutAlerts,
   autoHideControls,
   autoHideDelay,
   autoHideWhenPaused,
@@ -498,6 +499,17 @@ function ShortcutsSection() {
 
         <CollapsibleSubOption isOpen={enableFocusShortcuts.value}>
           <div class={styles.shortcutsExpandBox}>
+            <FeatureRow label="Show On-Screen Shortcut Alerts">
+              <Toggle
+                checked={showShortcutAlerts.value}
+                onChange={(v) => {
+                  showShortcutAlerts.value = v;
+                  saveSetting('showShortcutAlerts', v);
+                }}
+                ariaLabel="Toggle Show On-Screen Shortcut Alerts"
+              />
+            </FeatureRow>
+
             <FeatureRow label="Allow Shortcuts When Icon is Hidden">
               <Toggle
                 checked={allowShortcutsWhenHidden.value}

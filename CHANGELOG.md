@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **On-Screen Shortcut Alerts**: Added YouTube-style top-center frosted-glass popups when pressing keyboard shortcuts (speed adjustments, fullscreen, quick exit, and player drawer toggles) with an on/off toggle in the popup Focus tab ([#28](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/28)).
+
 ## [1.1.0.8] - 2026-11-12
 
 ### Changed

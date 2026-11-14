@@ -1,10 +1,4 @@
-import {
-  ContentState,
-  HideSettings,
-  StateChangeListener,
-  ThemeMode,
-  VideoQuality,
-} from './types';
+import { ContentState, HideSettings, StateChangeListener, ThemeMode, VideoQuality } from './types';
 import { resolveSafeSpeedShortcuts, sanitizeSpeedShortcut } from '../shared/shortcuts';
 
 export const DEFAULT_HIDE_SETTINGS: HideSettings = {
@@ -66,6 +60,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   keyFullscreen: 'f',
   keyExit: 'e',
   allowShortcutsWhenHidden: false,
+  showShortcutAlerts: true,
 
   autoHideControls: false,
   autoHideDelay: 0.8,
@@ -200,6 +195,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'keyFullscreen',
         'keyExit',
         'allowShortcutsWhenHidden',
+        'showShortcutAlerts',
         'autoHideControls',
         'autoHideDelay',
         'autoHideWhenPaused',
@@ -318,6 +314,7 @@ export function initState(onLoaded?: () => void): void {
     state.keyFullscreen = readShortcutKey(result.keyFullscreen, 'f');
     state.keyExit = readShortcutKey(result.keyExit, 'e');
     state.allowShortcutsWhenHidden = !!result.allowShortcutsWhenHidden;
+    state.showShortcutAlerts = result.showShortcutAlerts !== false;
 
     const resolvedSpeedKeys = resolveSafeSpeedShortcuts(result, [
       state.keyChat,
@@ -459,14 +456,23 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollMouseStep')) {
               state.volumeScrollMouseStep =
                 changes.volumeScrollMouseStep.newValue !== undefined
-                  ? Math.max(1, Math.min(30, Math.round(Number(changes.volumeScrollMouseStep.newValue) || 5)))
+                  ? Math.max(
+                      1,
+                      Math.min(30, Math.round(Number(changes.volumeScrollMouseStep.newValue) || 5)),
+                    )
                   : 5;
               changedKeys.push('volumeScrollMouseStep');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollTrackpadStep')) {
               state.volumeScrollTrackpadStep =
                 changes.volumeScrollTrackpadStep.newValue !== undefined
-                  ? Math.max(1, Math.min(10, Math.round(Number(changes.volumeScrollTrackpadStep.newValue) || 2)))
+                  ? Math.max(
+                      1,
+                      Math.min(
+                        10,
+                        Math.round(Number(changes.volumeScrollTrackpadStep.newValue) || 2),
+                      ),
+                    )
                   : 2;
               changedKeys.push('volumeScrollTrackpadStep');
             }
@@ -640,6 +646,10 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'allowShortcutsWhenHidden')) {
               state.allowShortcutsWhenHidden = !!changes.allowShortcutsWhenHidden.newValue;
               changedKeys.push('allowShortcutsWhenHidden');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'showShortcutAlerts')) {
+              state.showShortcutAlerts = changes.showShortcutAlerts.newValue !== false;
+              changedKeys.push('showShortcutAlerts');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'autoHideControls')) {
               state.autoHideControls = !!changes.autoHideControls.newValue;

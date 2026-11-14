@@ -7,6 +7,7 @@ import { applyDistractorsState } from '../distractions/focus-css';
 import { getActiveVideo } from '../video/detector';
 import { isReservedPlayerKey } from '../../../shared/shortcuts';
 import { isFocusLockActive, handleFocusLockExitShortcut } from '../ui/focus-lock';
+import { showShortcutBanner } from '../ui/player-banner';
 
 function isEditableElement(el: EventTarget | null): boolean {
   if (!(el instanceof Element)) return false;
@@ -36,6 +37,10 @@ export function isUserTyping(target?: EventTarget | null): boolean {
     active = active.shadowRoot.activeElement;
   }
   return isEditableElement(active);
+}
+
+function formatSpeed(speed: number): string {
+  return speed.toFixed(2).replace(/0$/, '');
 }
 
 function consumeHandledShortcut(e: KeyboardEvent): void {
@@ -120,6 +125,19 @@ function executeQuickExit(): void {
 }
 
 let isInitialized = false;
+let pendingFullscreenTrigger = false;
+let pendingFullscreenTimeout: ReturnType<typeof setTimeout> | null = null;
+
+function setPendingFullscreenShortcut(): void {
+  pendingFullscreenTrigger = true;
+  if (pendingFullscreenTimeout) {
+    clearTimeout(pendingFullscreenTimeout);
+  }
+  pendingFullscreenTimeout = window.setTimeout(() => {
+    pendingFullscreenTrigger = false;
+    pendingFullscreenTimeout = null;
+  }, 1500);
+}
 
 // Listen to keyboard shortcuts (capture phase to take priority over PW's capture-phase keydown handler)
 export function initKeyboardShortcuts(): void {
@@ -134,6 +152,16 @@ export function initKeyboardShortcuts(): void {
       // Safety check: Ignore if typing in text fields
       if (isUserTyping(e.target)) return;
 
+      // Track Escape key when pressed inside fullscreen
+      if (
+        e.key === 'Escape' &&
+        document.fullscreenElement &&
+        state.enableFocusShortcuts &&
+        state.enableKeyFullscreen
+      ) {
+        setPendingFullscreenShortcut();
+      }
+
       // 1. Video Speed Hotkeys (controlled by state.enableHotkeys master switch)
       if (
         state.enableHotkeys &&
@@ -143,15 +171,20 @@ export function initKeyboardShortcuts(): void {
       ) {
         if (matchKey(e, state.keySpeedUp)) {
           consumeHandledShortcut(e);
-          saveSpeed(stepSpeed(1));
+          const next = stepSpeed(1);
+          saveSpeed(next);
+          showShortcutBanner(`${formatSpeed(next)}x`);
           return;
         } else if (matchKey(e, state.keySlowDown)) {
           consumeHandledShortcut(e);
-          saveSpeed(stepSpeed(-1));
+          const next = stepSpeed(-1);
+          saveSpeed(next);
+          showShortcutBanner(`${formatSpeed(next)}x`);
           return;
         } else if (matchKey(e, state.keyReset)) {
           consumeHandledShortcut(e);
           saveSpeed(1.0);
+          showShortcutBanner('1.0x Normal');
           return;
         }
       }
@@ -165,6 +198,7 @@ export function initKeyboardShortcuts(): void {
       // Fullscreen (F)
       if (state.enableKeyFullscreen && state.keyFullscreen && matchKey(e, state.keyFullscreen)) {
         consumeHandledShortcut(e);
+        setPendingFullscreenShortcut();
         toggleFullscreen();
         return;
       }
@@ -172,6 +206,12 @@ export function initKeyboardShortcuts(): void {
       // Quick Exit (E)
       if (state.enableKeyExit && state.keyExit && matchKey(e, state.keyExit)) {
         consumeHandledShortcut(e);
+        pendingFullscreenTrigger = false;
+        if (pendingFullscreenTimeout) {
+          clearTimeout(pendingFullscreenTimeout);
+          pendingFullscreenTimeout = null;
+        }
+        showShortcutBanner('Quick Exit');
         if (isFocusLockActive()) {
           handleFocusLockExitShortcut(executeQuickExit);
         } else {
@@ -180,14 +220,15 @@ export function initKeyboardShortcuts(): void {
         return;
       }
 
-      const triggerPanel = (slot: 'chat' | 'notetimeline' | 'notes' | 'doubt') => {
+      const triggerPanel = (slot: 'chat' | 'notetimeline' | 'notes' | 'doubt'): boolean => {
         if (document.documentElement.classList.contains('pwc-collapsed-state')) {
           document.documentElement.classList.remove('pwc-collapsed-state');
         }
-        triggerPlayerSlot(slot);
+        const clicked = triggerPlayerSlot(slot);
         window.requestAnimationFrame(() => {
           applyDistractorsState();
         });
+        return clicked;
       };
 
       // Live Chat (C)
@@ -198,7 +239,9 @@ export function initKeyboardShortcuts(): void {
         (!state.hideSettings.hideChat || state.allowShortcutsWhenHidden)
       ) {
         consumeHandledShortcut(e);
-        triggerPanel('chat');
+        if (triggerPanel('chat')) {
+          showShortcutBanner('Live Chat');
+        }
         return;
       }
 
@@ -210,7 +253,9 @@ export function initKeyboardShortcuts(): void {
         (!state.hideSettings.hideNoteTimeline || state.allowShortcutsWhenHidden)
       ) {
         consumeHandledShortcut(e);
-        triggerPanel('notetimeline');
+        if (triggerPanel('notetimeline')) {
+          showShortcutBanner('Note Timeline');
+        }
         return;
       }
 
@@ -222,7 +267,9 @@ export function initKeyboardShortcuts(): void {
         (!state.hideSettings.hideNotes || state.allowShortcutsWhenHidden)
       ) {
         consumeHandledShortcut(e);
-        triggerPanel('notes');
+        if (triggerPanel('notes')) {
+          showShortcutBanner('Study Notes');
+        }
         return;
       }
 
@@ -234,10 +281,27 @@ export function initKeyboardShortcuts(): void {
         (!state.hideSettings.hideDoubt || state.allowShortcutsWhenHidden)
       ) {
         consumeHandledShortcut(e);
-        triggerPanel('doubt');
+        if (triggerPanel('doubt')) {
+          showShortcutBanner('Doubt Q&A');
+        }
         return;
       }
     },
     true,
   );
+
+  // Sync fullscreen shortcut feedback with the browser's fullscreen transition
+  document.addEventListener('fullscreenchange', () => {
+    if (pendingFullscreenTrigger) {
+      pendingFullscreenTrigger = false;
+      if (pendingFullscreenTimeout) {
+        clearTimeout(pendingFullscreenTimeout);
+        pendingFullscreenTimeout = null;
+      }
+      const isNowFullscreen = !!document.fullscreenElement;
+      window.requestAnimationFrame(() => {
+        showShortcutBanner(isNowFullscreen ? 'Fullscreen' : 'Exit Fullscreen');
+      });
+    }
+  });
 }

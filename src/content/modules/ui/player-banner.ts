@@ -1,3 +1,4 @@
+import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { getOuterPlayerContainer } from '../distractions/elements';
 
@@ -270,6 +271,12 @@ function resolveBannerMount(allowPageFallback: boolean): {
   isFixed: boolean;
 } | null {
   if (document.fullscreenElement instanceof HTMLElement) {
+    if (
+      document.fullscreenElement.tagName === 'VIDEO' &&
+      document.fullscreenElement.parentElement
+    ) {
+      return { parent: document.fullscreenElement.parentElement, isFixed: false };
+    }
     return { parent: document.fullscreenElement, isFixed: false };
   }
 
@@ -539,4 +546,19 @@ export function hidePlayerBanner(key?: string): void {
       dismissVisibleBanner();
     }
   }
+}
+
+/**
+ * Display a snappy in-player feedback pill when a keyboard shortcut triggers
+ * (e.g. '1.5x', '1.0x Normal', 'Fullscreen', 'Live Chat').
+ * Respects state.showShortcutAlerts and auto-dismisses after 1800ms.
+ */
+export function showShortcutBanner(text: string): void {
+  if (!state.showShortcutAlerts) return;
+  showPlayerBanner({
+    key: 'shortcut-alert',
+    text,
+    durationMs: DEFAULT_DURATION_MS,
+    icon: 'none',
+  });
 }
