@@ -15,6 +15,7 @@ import { injectSkipSilenceButton } from '../ui/silence-hud';
 import { injectInstantHideButton, isInstantHideButtonHealthy } from '../ui/focus-mode';
 import { injectFinishTimeBadge } from '../ui/finish-time';
 import { syncAutoHideBossClass } from '../ui/autohide';
+import { syncTimelineSlideActions, removeAllSlideActions } from '../ui/slide-viewer';
 import {
   CONTROLS_TRAY_ID,
   areTrayControlsOrdered,
@@ -196,6 +197,7 @@ export function monitor(): void {
     isModifyingDOM = true;
     try {
       clearControlsTray();
+      removeAllSlideActions();
       applyDistractorsState();
       syncAutoHideBossClass();
     } finally {
@@ -214,6 +216,7 @@ export function monitor(): void {
       try {
         applyDistractorsState();
         syncAutoHideBossClass();
+        syncTimelineSlideActions();
       } finally {
         isModifyingDOM = false;
       }
@@ -235,8 +238,10 @@ export function monitor(): void {
       injectQualityControl();
       injectSpeedControl();
       injectInstantHideButton();
+      syncTimelineSlideActions();
       if (!state.extensionEnabled) {
         clearControlsTray();
+        removeAllSlideActions();
       } else {
         removeControlsTrayIfEmpty();
       }

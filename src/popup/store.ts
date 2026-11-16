@@ -38,6 +38,7 @@ export const hideAttemptDPP = signal(false);
 export const enableInstantHide = signal(false);
 export const autoSkipPromoAds = signal(false);
 export const blockRecordedPolls = signal(false);
+export const enableSlideViewer = signal(true);
 export const autoPauseOnHide = signal(false);
 
 // ===== Shortcut signals =====
@@ -173,6 +174,7 @@ export async function initStore() {
   enableInstantHide.value = !!s.enableInstantHide;
   autoSkipPromoAds.value = !!s.autoSkipPromoAds;
   blockRecordedPolls.value = !!s.blockRecordedPolls;
+  enableSlideViewer.value = s.enableSlideViewer !== false;
   autoPauseOnHide.value = !!s.autoPauseOnHide;
 
   enableHotkeys.value = !!s.enableHotkeys;

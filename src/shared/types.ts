@@ -30,6 +30,7 @@ export interface PopupSettings {
   enableInstantHide: boolean;
   autoSkipPromoAds: boolean;
   blockRecordedPolls: boolean;
+  enableSlideViewer: boolean;
 
   // Shortcut & control settings
   enableHotkeys: boolean;
@@ -123,6 +124,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   enableInstantHide: false,
   autoSkipPromoAds: false,
   blockRecordedPolls: false,
+  enableSlideViewer: true,
 
   enableHotkeys: false,
   volumeScrollEnabled: false,

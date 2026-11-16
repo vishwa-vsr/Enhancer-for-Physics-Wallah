@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Timeline Slide Viewer & 1-Click Download**: Added a 1-click download button and a fullscreen slide viewer to lecture timeline cards. Slides open in a borderless window fitting your screen, featuring centered slide flipping (`‹` / `›`), keyboard arrow navigation (`←` / `→`), an in-viewer video play/pause toggle, and dynamic color-matching buttons that adapt to native PW active and inactive slide styles ([#15](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/15)).
 - **On-Screen Shortcut Alerts**: Added YouTube-style top-center frosted-glass popups when pressing keyboard shortcuts (speed adjustments, fullscreen, quick exit, and player drawer toggles) with an on/off toggle in the popup Focus tab ([#28](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/28)).
 
 ## [1.1.0.8] - 2026-11-12

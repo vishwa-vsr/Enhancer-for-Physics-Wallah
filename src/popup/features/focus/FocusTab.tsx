@@ -22,6 +22,7 @@ import {
   enableInstantHide,
   autoSkipPromoAds,
   blockRecordedPolls,
+  enableSlideViewer,
   lectureTimeEnabled,
   showFinishTime,
   finishTimeFormat,
@@ -381,6 +382,16 @@ function SmartToolsSection() {
               saveSetting('blockRecordedPolls', v);
             }}
             ariaLabel="Toggle Block Recorded Poll Popups"
+          />
+        </FeatureRow>
+        <FeatureRow label="Timeline Slide Viewer & Download">
+          <Toggle
+            checked={enableSlideViewer.value}
+            onChange={(v) => {
+              enableSlideViewer.value = v;
+              saveSetting('enableSlideViewer', v);
+            }}
+            ariaLabel="Toggle Timeline Slide Viewer and Download"
           />
         </FeatureRow>
         <FeatureRow label="Lecture Finish Time">

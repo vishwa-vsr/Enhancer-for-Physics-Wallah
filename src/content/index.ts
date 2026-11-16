@@ -17,6 +17,7 @@ import {
 import { applyAlwaysExpandState, updatePlayerTicks } from './modules/ui/speed-hud';
 import { injectFinishTimeBadge, updateFinishTime } from './modules/ui/finish-time';
 import { injectInstantHideButton } from './modules/ui/focus-mode';
+import { syncTimelineSlideActions } from './modules/ui/slide-viewer';
 import { injectSkipSilenceButton, updateSkipSilenceUI } from './modules/ui/silence-hud';
 import {
   ssInit,
@@ -71,6 +72,7 @@ function init(): void {
       applyDistractorsState();
       applySpeedToActiveVideo();
       syncAutoHide();
+      syncTimelineSlideActions();
       syncConstantQuality(currentState.constantVideoQuality);
       if (currentState.constantVideoQuality) {
         applyQuality(currentState.preferredQuality);
@@ -140,6 +142,13 @@ function init(): void {
 
     if (changedKeys.includes('finishTimeFormat')) {
       updateFinishTime();
+    }
+
+    if (
+      changedKeys.includes('enableSlideViewer') ||
+      changedKeys.includes('extensionEnabled')
+    ) {
+      syncTimelineSlideActions();
     }
 
     if (changedKeys.includes('skipSilenceEnabled')) {

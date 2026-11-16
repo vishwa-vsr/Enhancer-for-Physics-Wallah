@@ -1652,3 +1652,277 @@ video.vjs-tech:focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
+
+
+/* ==========================================================================
+   Timeline Slide Viewer & 1-Click Download (Issue #15)
+   ========================================================================== */
+
+/* Twin action badge at the bottom-right of each slide card in the timeline */
+.pwc-slide-actions-badge {
+  position: absolute !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 6px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18) !important;
+  z-index: 3 !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+/* Inactive slide (matching default bg-primary text-white) */
+.pwc-slide-actions-badge,
+.pwc-slide-actions-badge.pwc-badge-inactive {
+  background: #5a4bda !important;
+  color: #ffffff !important;
+}
+
+.pwc-slide-actions-badge.pwc-badge-inactive .pwc-slide-card-action-btn {
+  color: #ffffff !important;
+}
+
+.pwc-slide-actions-badge.pwc-badge-inactive .pwc-slide-card-action-btn:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+}
+
+/* Active slide (matching active bg-[#ffffff] text-primary) */
+.pwc-slide-actions-badge.pwc-badge-active {
+  background: #ffffff !important;
+  color: #5a4bda !important;
+}
+
+.pwc-slide-actions-badge.pwc-badge-active .pwc-slide-card-action-btn {
+  color: #5a4bda !important;
+}
+
+.pwc-slide-actions-badge.pwc-badge-active .pwc-slide-card-action-btn:hover {
+  background: #f3f0ff !important;
+}
+
+.pwc-slide-card-action-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease, opacity 0.15s ease !important;
+}
+
+.pwc-slide-card-action-btn:active {
+  background: rgba(255, 255, 255, 0.32) !important;
+}
+
+/* Modal Overlay */
+.pwc-slide-viewer-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483640 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  animation: pwc-slide-fade-in 0.2s ease-out !important;
+  border: none !important;
+  outline: none !important;
+}
+
+@keyframes pwc-slide-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pwc-slide-viewer-backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  background: rgba(10, 12, 16, 0.92) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  cursor: pointer !important;
+  border: none !important;
+}
+
+.pwc-slide-viewer-container {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Main Slide Box edge-to-edge */
+.pwc-slide-box {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  outline: none !important;
+}
+
+.pwc-slide-img-wrapper {
+  position: relative !important;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  height: calc(100vh - 54px) !important;
+  background: #000000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.pwc-slide-img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Top Control Bar - Borderless with Centered Navigation */
+.pwc-slide-top-bar,
+.pwc-slide-bottom-bar {
+  position: relative !important;
+  flex-shrink: 0 !important;
+  width: 100% !important;
+  height: 54px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 20px !important;
+  background: rgba(14, 16, 22, 0.96) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.4) !important;
+  z-index: 5 !important;
+}
+
+.pwc-slide-bar-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex: 1 !important;
+  justify-content: flex-start !important;
+}
+
+.pwc-slide-bar-center {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  flex: 2 !important;
+}
+
+.pwc-slide-bar-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex: 1 !important;
+  justify-content: flex-end !important;
+}
+
+/* Bottom bar action buttons - Borderless, No Motion */
+.pwc-slide-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  height: 34px !important;
+  padding: 0 12px !important;
+  border-radius: 6px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease, opacity 0.15s ease !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.pwc-slide-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+.pwc-slide-btn:disabled {
+  opacity: 0.25 !important;
+  cursor: not-allowed !important;
+}
+
+.pwc-slide-jump-play-icon {
+  font-size: 11px !important;
+  color: #a5b4fc !important;
+}
+
+.pwc-slide-btn-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Light Theme support */
+html.pwc-light-theme .pwc-slide-box {
+  background: #000000 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html.pwc-light-theme .pwc-slide-top-bar,
+html.pwc-light-theme .pwc-slide-bottom-bar {
+  background: rgba(245, 246, 248, 0.96) !important;
+  border: none !important;
+}
+
+html.pwc-light-theme .pwc-slide-btn {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #1f2937 !important;
+  border: none !important;
+}
+
+html.pwc-light-theme .pwc-slide-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+
+html.pwc-light-theme .pwc-slide-jump-play-icon {
+  color: #6366f1 !important;
+}
