@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Scrollbar Visibility Controls**: Added options in dashboard settings to show or hide slim vertical scrollbars in task columns and the popup.
 - **Timeline Slide Viewer (Fullscreen)**: Upgraded lecture timeline slides into a full whiteboard study canvas ([#15](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/15)):
   - **Zoom & Pan Whiteboard**: Smooth zoom in and out (from a 10% overview up to 500%) using mouse wheel, laptop trackpad gestures, or top-bar buttons (`+` / `-`). When zoomed in, your cursor turns into a hand to click-and-drag freely across diagrams and handwriting.
   - **Quick Double-Click Toggle**: Double-click anywhere to instantly zoom in to 200%, and double-click again to snap back to 100% and re-center the slide.
@@ -22,11 +23,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **Settings View Redesign**: Reorganized settings into a balanced 2-column layout with compact scrollbar toggles, full-width dynamic sizing, flat cards, and clean click-to-edit study labels with safe 2-step deletion.
 - **Clean Sidebar Slide Badges**: Removed the cluttering download button from individual timeline cards, keeping a clean single expand icon that matches PW's native badge colors.
 - **Popup Settings Simplification**: Renamed the feature to **Timeline Slide Viewer (Fullscreen)** and its shortcut sub-option to **Current Slide in Fullscreen** for crystal-clear student usability.
 
 ### Fixed
 
+- **Settings Page Title**: Fixed the dashboard header showing "Tasks" instead of "Settings" when viewing the settings tab.
 - **Timeline Idle Wake-Up Bug**: Fixed timeline buttons failing to load when "Hide Live Chat" was toggled or when the timeline drawer was opened after initial page load by adding direct observers and scroll listeners on the timeline wrapper.
 - **Volume Scroll Interference**: Prevented the player's volume scroll listener from capturing mouse wheel events inside the slide viewer, restoring smooth wheel and trackpad slide zooming.
 

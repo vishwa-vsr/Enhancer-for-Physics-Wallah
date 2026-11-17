@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'preact/hooks';
 import { initTheme, isLightTheme, toggleTheme } from '@shared/theme';
+import { initDashboardScrollbars } from '@shared/scrollbars';
 import {
   loadPlannerData,
   subjects,
@@ -36,6 +37,7 @@ export const App = () => {
 
   useEffect(() => {
     initTheme();
+    initDashboardScrollbars();
     loadPlannerData();
   }, []);
 
@@ -128,6 +130,8 @@ export const App = () => {
     title = 'Inbox Tasks';
   } else if (currentView.type === 'chapter') {
     title = activeChapter ? `${activeChapter.name} Tasks` : 'Chapter Tasks';
+  } else if (currentView.type === 'settings') {
+    title = 'Settings';
   }
 
   const handleOpenAddSubject = () => {
@@ -261,24 +265,26 @@ export const App = () => {
 
       {showDisplayMenu && <DisplayMenu />}
 
-      <button type="button" class={styles.addTaskBtn} onClick={handleAddTaskClick}>
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          width="14"
-          height="14"
-        >
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
-        <span>
-          {currentView.type === 'chapter' && !currentView.chapterId ? 'Add Chapter' : 'Add Task'}
-        </span>
-      </button>
+      {currentView.type !== 'settings' && (
+        <button type="button" class={styles.addTaskBtn} onClick={handleAddTaskClick}>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            width="14"
+            height="14"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>
+            {currentView.type === 'chapter' && !currentView.chapterId ? 'Add Chapter' : 'Add Task'}
+          </span>
+        </button>
+      )}
     </div>
   );
 
@@ -294,32 +300,30 @@ export const App = () => {
 
       {/* Main Area */}
       <div class={styles.mainWrapper}>
-        {currentView.type !== 'settings' && (
-          <header class={styles.pinnedHeader}>
-            {currentView.type === 'chapter' && activeSubject ? (
-              <div class={styles.chapterTitleBlock}>
-                <span class={styles.breadcrumbSubject}>{activeSubject.name}</span>
-                <h2 class={styles.viewTitle}>
-                  {activeChapter ? `${activeChapter.name} Tasks` : `${activeSubject.name} Tasks`}
-                </h2>
-              </div>
-            ) : (
-              <h2 class={styles.viewTitle}>{title}</h2>
-            )}
-            {renderHeaderActions()}
-          </header>
-        )}
+        <header class={styles.pinnedHeader}>
+          {currentView.type === 'chapter' && activeSubject ? (
+            <div class={styles.chapterTitleBlock}>
+              <span class={styles.breadcrumbSubject}>{activeSubject.name}</span>
+              <h2 class={styles.viewTitle}>
+                {activeChapter ? `${activeChapter.name} Tasks` : `${activeSubject.name} Tasks`}
+              </h2>
+            </div>
+          ) : (
+            <h2 class={styles.viewTitle}>{title}</h2>
+          )}
+          {renderHeaderActions()}
+        </header>
 
-        <main
-          class={`${styles.scrollArea} ${
-            isBoardView
-              ? styles.scrollAreaBoard
-              : currentView.type === 'settings'
-                ? styles.scrollAreaSettings
-                : ''
-          }`}
-        >
-          <div class={`${styles.contentMaxWidth} ${isBoardView ? styles.contentBoardWidth : ''}`}>
+        <main class={`${styles.scrollArea} ${isBoardView ? styles.scrollAreaBoard : ''}`}>
+          <div
+            class={`${
+              isBoardView
+                ? styles.contentBoardWidth
+                : currentView.type === 'settings'
+                  ? styles.contentSettingsWidth
+                  : styles.contentMaxWidth
+            }`}
+          >
             {currentView.type === 'settings' ? (
               <SettingsView />
             ) : (

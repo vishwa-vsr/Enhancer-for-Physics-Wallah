@@ -92,6 +92,8 @@ export interface PopupSettings {
   // Extension state
   extensionEnabled: boolean;
   themeMode: ThemeMode;
+  showDashboardScrollbars: boolean;
+  showPopupScrollbar: boolean;
 
   // Review prompt
   installDate: number; // Unix timestamp
@@ -181,6 +183,8 @@ export const DEFAULT_SETTINGS: PopupSettings = {
 
   extensionEnabled: true,
   themeMode: 'dark',
+  showDashboardScrollbars: true,
+  showPopupScrollbar: true,
 
   installDate: 0,
   reviewPromptStatus: 'pending',

@@ -12,6 +12,15 @@ import styles from './SettingsView.module.css';
 
 import { PRESET_COLORS } from '@shared/colors';
 import { ColorPicker } from '@shared/components/ColorPicker';
+import { Toggle } from '@shared/components/Toggle';
+import { ConfirmDeleteButton } from '@shared/components/ConfirmDeleteButton';
+import { getAlphaColor } from '@shared/theme';
+import {
+  showDashboardScrollbars,
+  showPopupScrollbar,
+  toggleDashboardScrollbars,
+  togglePopupScrollbar,
+} from '@shared/scrollbars';
 
 import pwLogoImg from '../../icons/icon48.png';
 import chromeImg from '../../icons/chrome.png';
@@ -301,184 +310,274 @@ export const SettingsView = () => {
 
   return (
     <div class={styles.container}>
-      {/* Header */}
-      <div class={styles.headerRow}>
-        <h1 class={styles.title}>Settings</h1>
-      </div>
-
-      {/* Study Labels Section */}
-      <div class={styles.card}>
-        <div class={styles.cardHeader}>
-          <h2 class={styles.cardTitle}>Study Labels</h2>
-        </div>
-
-        {/* Existing labels */}
-        <div class={styles.labelsGrid}>
-          {customTags.value.map((tag) => {
-            const isEditing = editingTag?.name.toLowerCase() === tag.name.toLowerCase();
-            return (
-              <span
-                key={tag.name}
-                class={`${styles.labelChip} ${isEditing ? styles.labelChipEditing : ''}`}
-                style={{ borderColor: `${tag.color}40` }}
-                onClick={() => handleStartEdit(tag)}
-                title={`Click to edit "${tag.name}"`}
-              >
-                <span class={styles.labelDot} style={{ backgroundColor: tag.color }} />
-                <span>{tag.name}</span>
-                <span class={styles.labelEditIcon} title="Edit label">
+      <div class={styles.columnsGrid}>
+        {/* Left Column: Appearance (Top) + Study Labels (Bottom) */}
+        <div class={styles.column}>
+          {/* 1. Appearance Card (Compact) */}
+          <div class={`${styles.card} ${styles.appearanceCard}`}>
+            <div class={styles.cardHeader}>
+              <div class={styles.cardTitleGroup}>
+                <div class={styles.cardIcon}>
                   <svg
                     viewBox="0 0 24 24"
+                    width="15"
+                    height="15"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth={2}
-                    width="11"
-                    height="11"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
-                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z" />
+                    <path d="M12 2v20" />
                   </svg>
-                </span>
-                <button
-                  type="button"
-                  class={styles.labelDeleteBtn}
-                  title={`Delete label "${tag.name}"`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteLabel(tag.name);
-                  }}
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                    width="12"
-                    height="12"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </span>
-            );
-          })}
-        </div>
-
-        {/* Create / Edit label */}
-        <div class={styles.addLabelSection}>
-          <form onSubmit={handleFormSubmit}>
-            <div class={styles.formRow}>
-              <input
-                ref={inputRef}
-                type="text"
-                class={styles.tagInput}
-                placeholder={
-                  editingTag
-                    ? 'Update label name...'
-                    : 'New label name (e.g. PYQs, Formula Sheet)...'
-                }
-                value={newLabelName}
-                onInput={(e) => {
-                  setNewLabelName((e.target as HTMLInputElement).value);
-                  if (labelError) setLabelError('');
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape' && editingTag) {
-                    handleCancelEdit();
-                  }
-                }}
-              />
-              <ColorPicker
-                value={selectedColor}
-                onChange={(c) => setSelectedColor(c)}
-                align="right"
-                size="sm"
-              />
-              <div class={styles.btnGroup}>
-                <button type="submit" class={styles.addTagBtn}>
-                  {editingTag ? 'Save Changes' : '+ Add Label'}
-                </button>
-                {editingTag && (
-                  <button type="button" class={styles.cancelTagBtn} onClick={handleCancelEdit}>
-                    Cancel
-                  </button>
-                )}
+                </div>
+                <h2 class={styles.cardTitle}>Appearance</h2>
               </div>
             </div>
 
-            {labelError && <p class={styles.errorText}>{labelError}</p>}
-          </form>
-        </div>
-      </div>
+            <div class={styles.appearanceRow}>
+              <div class={styles.settingBox}>
+                <span class={styles.settingLabel}>Dashboard Scrollbar</span>
+                <Toggle
+                  checked={showDashboardScrollbars.value}
+                  onChange={(val) => toggleDashboardScrollbars(val)}
+                  ariaLabel="Toggle Dashboard Scrollbar"
+                />
+              </div>
 
-      {/* Storage & Data Section */}
-      <div class={styles.card}>
-        <div class={styles.storageCardHeader}>
-          <h2 class={styles.cardTitle}>Storage & Data</h2>
-          <div class={styles.storageUsageTitle}>
-            <span class={styles.storageUsedText}>{formatBytes(usedBytes)} used</span>
-            <span class={styles.storageTotalText}>of {formatBytes(storageQuota)}</span>
+              <div class={styles.settingBox}>
+                <span class={styles.settingLabel}>Popup Scrollbar</span>
+                <Toggle
+                  checked={showPopupScrollbar.value}
+                  onChange={(val) => togglePopupScrollbar(val)}
+                  ariaLabel="Toggle Popup Scrollbar"
+                />
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div
-          class={styles.storageTrack}
-          role="progressbar"
-          aria-valuenow={usedPercent}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label="Storage Usage Meter"
-        >
-          <div class={styles.storageFill} style={{ width: `${visualFillPercent}%` }} />
-        </div>
-
-        <div class={styles.storageStatsGrid}>
-          <div class={styles.storageStatCard}>
-            <span class={styles.storageStatNumber}>{totalTasks}</span>
-            <span class={styles.storageStatLabel}>Total Tasks</span>
-          </div>
-          <div class={styles.storageStatCard}>
-            <span class={styles.storageStatNumber}>
-              {totalSubjects} Subjects • {totalChapters} Chapters
-            </span>
-            <span class={styles.storageStatLabel}>Course Structure</span>
-          </div>
-          <div class={styles.storageStatCard}>
-            <span class={styles.storageStatNumber}>{totalLabels}</span>
-            <span class={styles.storageStatLabel}>Study Labels</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Community & Stores */}
-      <div class={styles.card}>
-        <div class={styles.cardHeader}>
-          <h2 class={styles.cardTitle}>Community & Stores</h2>
-        </div>
-        <div class={styles.cardsGrid}>
-          {COMMUNITY_AND_STORE_LINKS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <a
-                key={item.title}
-                href={item.url}
-                class={styles.linkCard}
-                title={item.title}
-                onClick={(e) => {
-                  e.preventDefault();
-                  openLink(item.url);
-                }}
-              >
-                <div class={styles.linkCardLeft}>
-                  <div class={styles.iconBadge}>
-                    <Icon />
-                  </div>
-                  <span class={styles.linkTitle}>{item.title}</span>
+          {/* 2. Study Labels Card */}
+          <div class={styles.card}>
+            <div class={styles.cardHeader}>
+              <div class={styles.cardTitleGroup}>
+                <div class={styles.cardIcon}>
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="15"
+                    height="15"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                    <line x1="7" y1="7" x2="7.01" y2="7" />
+                  </svg>
                 </div>
-                <ExternalArrowIcon />
-              </a>
-            );
-          })}
+                <h2 class={styles.cardTitle}>Study Labels</h2>
+              </div>
+              <span class={styles.cardBadge}>{customTags.value.length} labels</span>
+            </div>
+
+            {/* Existing tags list */}
+            <div class={styles.labelsGrid}>
+              {customTags.value.map((tag) => {
+                const isEditing = editingTag?.name.toLowerCase() === tag.name.toLowerCase();
+                return (
+                  <span
+                    key={tag.name}
+                    class={`${styles.labelChip} ${isEditing ? styles.labelChipEditing : ''}`}
+                    style={{
+                      backgroundColor: getAlphaColor(tag.color, 0.14),
+                      borderColor: `${tag.color}45`,
+                    }}
+                    onClick={() => handleStartEdit(tag)}
+                    title={`Click to edit or delete "${tag.name}"`}
+                  >
+                    <span class={styles.labelDot} style={{ backgroundColor: tag.color }} />
+                    <span class={styles.labelChipText}>{tag.name}</span>
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* Create / Edit label form */}
+            <div class={styles.addLabelSection}>
+              <form onSubmit={handleFormSubmit}>
+                <div class={styles.formStack}>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    class={styles.tagInput}
+                    placeholder={
+                      editingTag
+                        ? 'Update label name...'
+                        : 'New label name (e.g. PYQs, Formula Sheet)...'
+                    }
+                    value={newLabelName}
+                    onInput={(e) => {
+                      setNewLabelName((e.target as HTMLInputElement).value);
+                      if (labelError) setLabelError('');
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape' && editingTag) {
+                        handleCancelEdit();
+                      }
+                    }}
+                  />
+                  <div class={styles.formActionsRow}>
+                    <div class={styles.colorAndActionRow}>
+                      <div class={styles.colorPickerWrap}>
+                        <ColorPicker
+                          value={selectedColor}
+                          onChange={(c) => setSelectedColor(c)}
+                          align="left"
+                          size="sm"
+                        />
+                      </div>
+                      {editingTag && (
+                        <ConfirmDeleteButton
+                          onConfirm={() => handleDeleteLabel(editingTag.name)}
+                          label="Delete"
+                          confirmLabel="Confirm?"
+                        />
+                      )}
+                    </div>
+                    <div class={styles.btnGroup}>
+                      {editingTag && (
+                        <button
+                          type="button"
+                          class={styles.cancelTagBtn}
+                          onClick={handleCancelEdit}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                      <button type="submit" class={styles.addTagBtn}>
+                        {editingTag ? 'Save Changes' : '+ Add Label'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {labelError && <p class={styles.errorText}>{labelError}</p>}
+              </form>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Storage & Data (Top) + Community & Stores (Bottom) */}
+        <div class={styles.column}>
+          {/* Storage & Data Card */}
+          <div class={styles.card}>
+            <div class={styles.cardHeader}>
+              <div class={styles.cardTitleGroup}>
+                <div class={styles.cardIcon}>
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="15"
+                    height="15"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <ellipse cx="12" cy="5" rx="9" ry="3" />
+                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                  </svg>
+                </div>
+                <h2 class={styles.cardTitle}>Storage & Data</h2>
+              </div>
+              <div class={styles.storageUsageTitle}>
+                <span class={styles.storageUsedText}>{formatBytes(usedBytes)}</span>
+                <span class={styles.storageTotalText}>/ {formatBytes(storageQuota)}</span>
+              </div>
+            </div>
+
+            <div
+              class={styles.storageTrack}
+              role="progressbar"
+              aria-valuenow={usedPercent}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Storage Usage Meter"
+            >
+              <div class={styles.storageFill} style={{ width: `${visualFillPercent}%` }} />
+            </div>
+
+            <div class={styles.storageStatsGrid}>
+              <div class={styles.storageStatCard}>
+                <span class={styles.storageStatNumber}>{totalTasks}</span>
+                <span class={styles.storageStatLabel}>Total Tasks</span>
+              </div>
+              <div class={styles.storageStatCard}>
+                <span class={styles.storageStatNumber}>
+                  {totalSubjects} Subjects • {totalChapters} Chapters
+                </span>
+                <span class={styles.storageStatLabel}>Course Structure</span>
+              </div>
+              <div class={styles.storageStatCard}>
+                <span class={styles.storageStatNumber}>{totalLabels}</span>
+                <span class={styles.storageStatLabel}>Study Labels</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Community & Stores Card */}
+          <div class={styles.card}>
+            <div class={styles.cardHeader}>
+              <div class={styles.cardTitleGroup}>
+                <div class={styles.cardIcon}>
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="15"
+                    height="15"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  </svg>
+                </div>
+                <h2 class={styles.cardTitle}>Community & Stores</h2>
+              </div>
+            </div>
+
+            <div class={styles.cardsGrid}>
+              {COMMUNITY_AND_STORE_LINKS.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <a
+                    key={item.title}
+                    href={item.url}
+                    class={styles.linkCard}
+                    title={item.title}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openLink(item.url);
+                    }}
+                  >
+                    <div class={styles.linkCardLeft}>
+                      <div class={styles.iconBadge}>
+                        <Icon />
+                      </div>
+                      <span class={styles.linkTitle}>{item.title}</span>
+                    </div>
+                    <ExternalArrowIcon />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { useEffect } from 'preact/hooks';
 import { TabBar } from '@shared/components/TabBar';
 import { initTheme } from '@shared/theme';
+import { initPopupScrollbars } from '@shared/scrollbars';
 import { initStore, activeTab, isLoading } from './store';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -87,6 +88,7 @@ const tabs = [
 export const App = () => {
   useEffect(() => {
     initTheme();
+    initPopupScrollbars();
     initStore();
   }, []);
 

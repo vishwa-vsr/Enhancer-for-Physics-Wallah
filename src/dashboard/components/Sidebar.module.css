@@ -122,6 +122,20 @@
   background: var(--border-subtle);
   border-radius: 4px;
 }
+.subjectsSection::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+:global(body.hide-dashboard-scrollbars) .subjectsSection {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+:global(body.hide-dashboard-scrollbars) .subjectsSection::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
 
 .sectionHeader {
   display: flex;
