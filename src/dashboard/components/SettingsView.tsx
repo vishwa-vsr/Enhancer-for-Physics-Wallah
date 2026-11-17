@@ -397,7 +397,6 @@ export const SettingsView = () => {
                     onClick={() => handleStartEdit(tag)}
                     title={`Click to edit or delete "${tag.name}"`}
                   >
-                    <span class={styles.labelDot} style={{ backgroundColor: tag.color }} />
                     <span class={styles.labelChipText}>{tag.name}</span>
                   </span>
                 );
@@ -443,6 +442,7 @@ export const SettingsView = () => {
                           onConfirm={() => handleDeleteLabel(editingTag.name)}
                           label="Delete"
                           confirmLabel="Confirm?"
+                          className={styles.deleteLabelBtn}
                         />
                       )}
                     </div>
