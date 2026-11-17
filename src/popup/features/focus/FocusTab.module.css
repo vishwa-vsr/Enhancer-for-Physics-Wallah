@@ -61,6 +61,13 @@
   gap: 8px;
 }
 
+.modifierBadge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
 .focusShortcutInput {
   width: 52px;
   height: 28px;

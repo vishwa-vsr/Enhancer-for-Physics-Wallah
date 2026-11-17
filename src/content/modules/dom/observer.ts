@@ -162,8 +162,24 @@ export function initWakeupTriggers(): void {
   if (wakeupInitialized || typeof window === 'undefined') return;
   wakeupInitialized = true;
 
-  const onInteractionOrPlay = () => {
+  const onInteractionOrPlay = (e?: Event) => {
     checkUrlChange();
+    if (state.enableSlideViewer) {
+      const target = e && e.target instanceof Element ? e.target : null;
+      if (
+        !target ||
+        target.closest('#timeline-wrapper') ||
+        target.closest('[aria-label*="timeline" i]') ||
+        target.closest('[title*="timeline" i]') ||
+        target.closest('#footer-right-section') ||
+        target.closest('[class*="slide-in" i]') ||
+        target.closest('[data-drawer-close]')
+      ) {
+        syncTimelineSlideActions();
+        setTimeout(syncTimelineSlideActions, 120);
+        setTimeout(syncTimelineSlideActions, 300);
+      }
+    }
     if (areControlsHealthy()) return;
     throttledMonitor();
   };
@@ -172,18 +188,18 @@ export function initWakeupTriggers(): void {
   window.addEventListener('pointerdown', onInteractionOrPlay, { capture: true, passive: true });
   window.addEventListener(
     'keydown',
-    () => {
+    (e: KeyboardEvent) => {
       if (isUserTyping()) return;
-      onInteractionOrPlay();
+      onInteractionOrPlay(e);
     },
     { capture: true, passive: true },
   );
 
   // Media play event: capture play events from any video on the page
-  window.addEventListener('play', onInteractionOrPlay, { capture: true, passive: true });
+  window.addEventListener('play', () => onInteractionOrPlay(), { capture: true, passive: true });
 
   // Browser back/forward navigation
-  window.addEventListener('popstate', onInteractionOrPlay, { passive: true });
+  window.addEventListener('popstate', () => onInteractionOrPlay(), { passive: true });
 }
 
 // Main monitoring function
@@ -273,6 +289,33 @@ export function startDomObserver(): void {
       const mut = mutations[i];
       const target = mut.target as HTMLElement;
 
+      // Always treat timeline drawer mounts and slide card additions as relevant
+      if (
+        state.enableSlideViewer &&
+        target &&
+        typeof target.closest === 'function' &&
+        (target.id === 'timeline-wrapper' || target.closest('#timeline-wrapper'))
+      ) {
+        hasRelevantMutation = true;
+        break;
+      }
+
+      if (mut.addedNodes.length > 0) {
+        for (let j = 0; j < mut.addedNodes.length; j++) {
+          const node = mut.addedNodes[j] as HTMLElement;
+          if (
+            state.enableSlideViewer &&
+            node.nodeType === 1 &&
+            (node.id === 'timeline-wrapper' ||
+              node.querySelector?.('#timeline-wrapper, [data-slide-id], [id^="timeline-"]'))
+          ) {
+            hasRelevantMutation = true;
+            break;
+          }
+        }
+        if (hasRelevantMutation) break;
+      }
+
       // Skip mutations strictly inside chat, doubt, comment, emote, or live interactive containers
       if (
         target &&
@@ -315,6 +358,8 @@ export function startDomObserver(): void {
   observer.observe(document.documentElement, {
     childList: true,
     subtree: true,
+    attributes: true,
+    attributeFilter: ['class', 'style', 'aria-expanded'],
   });
 
   // Initial execution

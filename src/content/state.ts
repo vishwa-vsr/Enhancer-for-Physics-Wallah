@@ -28,6 +28,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   autoSkipPromoAds: false,
   blockRecordedPolls: false,
   enableSlideViewer: true,
+  keySlideViewer: 't',
 
   enableHotkeys: false,
   volumeScrollEnabled: false,
@@ -167,6 +168,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'autoSkipPromoAds',
         'blockRecordedPolls',
         'enableSlideViewer',
+        'keySlideViewer',
         'enableHotkeys',
         'volumeScrollEnabled',
         'volumeScrollMouseStep',
@@ -285,6 +287,7 @@ export function initState(onLoaded?: () => void): void {
     state.autoSkipPromoAds = !!result.autoSkipPromoAds;
     state.blockRecordedPolls = !!result.blockRecordedPolls;
     state.enableSlideViewer = result.enableSlideViewer !== false;
+    state.keySlideViewer = readShortcutKey(result.keySlideViewer, 't');
     state.enableHotkeys = !!result.enableHotkeys;
     state.volumeScrollEnabled = !!result.volumeScrollEnabled;
     state.volumeScrollMouseStep =
@@ -447,6 +450,10 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'enableSlideViewer')) {
               state.enableSlideViewer = changes.enableSlideViewer.newValue !== false;
               changedKeys.push('enableSlideViewer');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'keySlideViewer')) {
+              state.keySlideViewer = readShortcutKey(changes.keySlideViewer.newValue, 't');
+              changedKeys.push('keySlideViewer');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'enableInstantHide')) {
               state.enableInstantHide = !!changes.enableInstantHide.newValue;

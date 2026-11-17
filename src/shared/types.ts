@@ -31,6 +31,7 @@ export interface PopupSettings {
   autoSkipPromoAds: boolean;
   blockRecordedPolls: boolean;
   enableSlideViewer: boolean;
+  keySlideViewer: string;
 
   // Shortcut & control settings
   enableHotkeys: boolean;
@@ -125,6 +126,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   autoSkipPromoAds: false,
   blockRecordedPolls: false,
   enableSlideViewer: true,
+  keySlideViewer: 't',
 
   enableHotkeys: false,
   volumeScrollEnabled: false,

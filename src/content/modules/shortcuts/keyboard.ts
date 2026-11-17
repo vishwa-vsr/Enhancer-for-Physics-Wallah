@@ -8,6 +8,7 @@ import { getActiveVideo } from '../video/detector';
 import { isReservedPlayerKey } from '../../../shared/shortcuts';
 import { isFocusLockActive, handleFocusLockExitShortcut } from '../ui/focus-lock';
 import { showShortcutBanner } from '../ui/player-banner';
+import { syncTimelineSlideActions, openActiveSlideViewer } from '../ui/slide-viewer';
 
 function isEditableElement(el: EventTarget | null): boolean {
   if (!(el instanceof Element)) return false;
@@ -245,16 +246,38 @@ export function initKeyboardShortcuts(): void {
         return;
       }
 
+      // Open Active Slide in Fullscreen Slide Viewer (Shift + Key)
+      const targetViewerKey = (state.keySlideViewer || 't').toLowerCase();
+      if (
+        state.enableSlideViewer &&
+        targetViewerKey &&
+        e.shiftKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !e.metaKey &&
+        (e.key.toLowerCase() === targetViewerKey ||
+          e.code.toLowerCase() === `key${targetViewerKey}`)
+      ) {
+        consumeHandledShortcut(e);
+        showShortcutBanner(`Current Slide (Shift+${targetViewerKey.toUpperCase()})`);
+        openActiveSlideViewer();
+        return;
+      }
+
       // Note Timeline (T)
       if (
         state.enableKeyTimeline &&
         state.keyTimeline &&
+        !e.shiftKey &&
         matchKey(e, state.keyTimeline) &&
         (!state.hideSettings.hideNoteTimeline || state.allowShortcutsWhenHidden)
       ) {
         consumeHandledShortcut(e);
         if (triggerPanel('notetimeline')) {
           showShortcutBanner('Note Timeline');
+          syncTimelineSlideActions();
+          setTimeout(syncTimelineSlideActions, 120);
+          setTimeout(syncTimelineSlideActions, 300);
         }
         return;
       }

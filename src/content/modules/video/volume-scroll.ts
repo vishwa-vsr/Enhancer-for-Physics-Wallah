@@ -28,6 +28,8 @@ const EXCLUDED_CONTROLS_SELECTOR = [
   'textarea',
   '[class*="timeline-sidebar" i]',
   '[id*="timeline-sidebar" i]',
+  '#pwc-slide-viewer-modal',
+  '.pwc-slide-viewer-modal',
 ].join(', ');
 
 function applyVolumeAdjustment(video: HTMLVideoElement, deltaPercent: number): void {

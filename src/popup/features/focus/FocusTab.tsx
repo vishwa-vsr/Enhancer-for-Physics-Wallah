@@ -23,6 +23,7 @@ import {
   autoSkipPromoAds,
   blockRecordedPolls,
   enableSlideViewer,
+  keySlideViewer,
   lectureTimeEnabled,
   showFinishTime,
   finishTimeFormat,
@@ -384,16 +385,34 @@ function SmartToolsSection() {
             ariaLabel="Toggle Block Recorded Poll Popups"
           />
         </FeatureRow>
-        <FeatureRow label="Timeline Slide Viewer & Download">
+        <FeatureRow label="Timeline Slide Viewer (Fullscreen)">
           <Toggle
             checked={enableSlideViewer.value}
             onChange={(v) => {
               enableSlideViewer.value = v;
               saveSetting('enableSlideViewer', v);
             }}
-            ariaLabel="Toggle Timeline Slide Viewer and Download"
+            ariaLabel="Toggle Timeline Slide Viewer (Fullscreen)"
           />
         </FeatureRow>
+        <CollapsibleSubOption isOpen={enableSlideViewer.value}>
+          <div class={styles.featureConfigRow}>
+            <span class={styles.configLabel}>Current Slide in Fullscreen</span>
+            <div class={styles.rowControls}>
+              <span class={styles.modifierBadge}>Shift +</span>
+              <ShortcutInput
+                className={styles.focusShortcutInput}
+                value={keySlideViewer.value}
+                onChange={(key) => {
+                  keySlideViewer.value = key;
+                  saveSetting('keySlideViewer', key);
+                }}
+                title="Shortcut to open current slide in fullscreen (default: T)"
+                ariaLabel="Current Slide in Fullscreen Shortcut Key"
+              />
+            </div>
+          </div>
+        </CollapsibleSubOption>
         <FeatureRow label="Lecture Finish Time">
           <div class={styles.finishTimeControls}>
             <SelectDropdown

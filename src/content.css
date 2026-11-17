@@ -1889,15 +1889,110 @@ video.vjs-tech:focus-visible {
   cursor: not-allowed !important;
 }
 
-.pwc-slide-jump-play-icon {
-  font-size: 11px !important;
-  color: #a5b4fc !important;
-}
-
 .pwc-slide-btn-icon {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+}
+
+/* Sync Video button */
+.pwc-slide-sync-video-btn {
+  gap: 6px !important;
+}
+
+.pwc-slide-sync-label {
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+}
+
+/* Direct Jump Input Box: Slide [ 4 ] / 18 */
+.pwc-slide-jump-box {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 34px !important;
+  padding: 0 10px !important;
+  border-radius: 6px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  user-select: none !important;
+}
+
+.pwc-slide-jump-prefix,
+.pwc-slide-total-count {
+  color: rgba(255, 255, 255, 0.72) !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+}
+
+.pwc-slide-number-input {
+  width: 44px !important;
+  height: 24px !important;
+  padding: 0 4px !important;
+  margin: 0 !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
+  color: #ffffff !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  -moz-appearance: textfield !important;
+}
+
+.pwc-slide-number-input::-webkit-outer-spin-button,
+.pwc-slide-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+.pwc-slide-number-input:focus {
+  border-color: #a496ff !important;
+  background: rgba(164, 150, 255, 0.16) !important;
+  box-shadow: 0 0 0 1px #a496ff !important;
+}
+
+/* Whiteboard Zoom Controls Group */
+.pwc-slide-zoom-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 34px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+}
+
+.pwc-slide-zoom-btn {
+  height: 34px !important;
+  padding: 0 9px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.pwc-slide-zoom-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+.pwc-slide-zoom-reset-btn {
+  min-width: 48px !important;
+  padding: 0 6px !important;
+}
+
+.pwc-slide-zoom-val {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: -0.2px !important;
+}
+
+.pwc-slide-rotate-btn {
+  width: 34px !important;
+  padding: 0 !important;
 }
 
 /* Light Theme support */
@@ -1913,16 +2008,32 @@ html.pwc-light-theme .pwc-slide-bottom-bar {
   border: none !important;
 }
 
-html.pwc-light-theme .pwc-slide-btn {
+html.pwc-light-theme .pwc-slide-btn,
+html.pwc-light-theme .pwc-slide-jump-box,
+html.pwc-light-theme .pwc-slide-zoom-group {
   background: rgba(0, 0, 0, 0.06) !important;
   color: #1f2937 !important;
   border: none !important;
 }
 
-html.pwc-light-theme .pwc-slide-btn:hover:not(:disabled) {
+html.pwc-light-theme .pwc-slide-btn:hover:not(:disabled),
+html.pwc-light-theme .pwc-slide-zoom-btn:hover:not(:disabled) {
   background: rgba(0, 0, 0, 0.12) !important;
 }
 
-html.pwc-light-theme .pwc-slide-jump-play-icon {
-  color: #6366f1 !important;
+html.pwc-light-theme .pwc-slide-jump-prefix,
+html.pwc-light-theme .pwc-slide-total-count {
+  color: rgba(31, 41, 55, 0.72) !important;
+}
+
+html.pwc-light-theme .pwc-slide-number-input {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.14) !important;
+  color: #1f2937 !important;
+}
+
+html.pwc-light-theme .pwc-slide-number-input:focus {
+  border-color: #6366f1 !important;
+  background: rgba(99, 102, 241, 0.08) !important;
+  box-shadow: 0 0 0 1px #6366f1 !important;
 }

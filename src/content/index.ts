@@ -146,6 +146,7 @@ function init(): void {
 
     if (
       changedKeys.includes('enableSlideViewer') ||
+      changedKeys.includes('keySlideViewer') ||
       changedKeys.includes('extensionEnabled')
     ) {
       syncTimelineSlideActions();
@@ -254,6 +255,7 @@ function init(): void {
     if (focusChanged) {
       applySettingsHTML(currentState.hideSettings);
       applyDistractorsState();
+      syncTimelineSlideActions();
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
       }, 50);

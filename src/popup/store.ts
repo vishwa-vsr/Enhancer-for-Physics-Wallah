@@ -39,6 +39,7 @@ export const enableInstantHide = signal(false);
 export const autoSkipPromoAds = signal(false);
 export const blockRecordedPolls = signal(false);
 export const enableSlideViewer = signal(true);
+export const keySlideViewer = signal('t');
 export const autoPauseOnHide = signal(false);
 
 // ===== Shortcut signals =====
@@ -175,6 +176,7 @@ export async function initStore() {
   autoSkipPromoAds.value = !!s.autoSkipPromoAds;
   blockRecordedPolls.value = !!s.blockRecordedPolls;
   enableSlideViewer.value = s.enableSlideViewer !== false;
+  keySlideViewer.value = s.keySlideViewer || 't';
   autoPauseOnHide.value = !!s.autoPauseOnHide;
 
   enableHotkeys.value = !!s.enableHotkeys;
@@ -312,6 +314,12 @@ export async function initStore() {
     if (changes.autoSkipPromoAds !== undefined) autoSkipPromoAds.value = !!changes.autoSkipPromoAds;
     if (changes.blockRecordedPolls !== undefined)
       blockRecordedPolls.value = !!changes.blockRecordedPolls;
+    if (changes.enableSlideViewer !== undefined) {
+      enableSlideViewer.value = changes.enableSlideViewer !== false;
+    }
+    if (changes.keySlideViewer !== undefined) {
+      keySlideViewer.value = changes.keySlideViewer || 't';
+    }
     if (changes.allowShortcutsWhenHidden !== undefined) {
       allowShortcutsWhenHidden.value = !!changes.allowShortcutsWhenHidden;
     }
