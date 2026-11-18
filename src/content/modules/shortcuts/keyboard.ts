@@ -8,7 +8,15 @@ import { getActiveVideo } from '../video/detector';
 import { isReservedPlayerKey } from '../../../shared/shortcuts';
 import { isFocusLockActive, handleFocusLockExitShortcut } from '../ui/focus-lock';
 import { showShortcutBanner } from '../ui/player-banner';
-import { syncTimelineSlideActions, openActiveSlideViewer } from '../ui/slide-viewer';
+import {
+  syncTimelineSlideActions,
+  openActiveSlideViewer,
+  closeSlideViewer,
+  isSlideViewerOpen,
+  isSlideLoading,
+  cancelPendingSlideLoad,
+  closeTimelineSidebar,
+} from '../ui/slide-viewer';
 
 function isEditableElement(el: EventTarget | null): boolean {
   if (!(el instanceof Element)) return false;
@@ -153,14 +161,22 @@ export function initKeyboardShortcuts(): void {
       // Safety check: Ignore if typing in text fields
       if (isUserTyping(e.target)) return;
 
-      // Track Escape key when pressed inside fullscreen
-      if (
-        e.key === 'Escape' &&
-        document.fullscreenElement &&
-        state.enableFocusShortcuts &&
-        state.enableKeyFullscreen
-      ) {
-        setPendingFullscreenShortcut();
+      // Track Escape key when pressed inside fullscreen or while slides are loading
+      if (e.key === 'Escape') {
+        if (isSlideLoading()) {
+          consumeHandledShortcut(e);
+          cancelPendingSlideLoad();
+          closeTimelineSidebar();
+          showShortcutBanner('Slide Closed');
+          return;
+        }
+        if (
+          document.fullscreenElement &&
+          state.enableFocusShortcuts &&
+          state.enableKeyFullscreen
+        ) {
+          setPendingFullscreenShortcut();
+        }
       }
 
       // 1. Video Speed Hotkeys (controlled by state.enableHotkeys master switch)
@@ -246,7 +262,7 @@ export function initKeyboardShortcuts(): void {
         return;
       }
 
-      // Open Active Slide in Fullscreen Slide Viewer (Shift + Key)
+      // Open / Close Active Slide in Fullscreen Slide Viewer (Shift + Key)
       const targetViewerKey = (state.keySlideViewer || 't').toLowerCase();
       if (
         state.enableSlideViewer &&
@@ -259,8 +275,13 @@ export function initKeyboardShortcuts(): void {
           e.code.toLowerCase() === `key${targetViewerKey}`)
       ) {
         consumeHandledShortcut(e);
-        showShortcutBanner(`Current Slide (Shift+${targetViewerKey.toUpperCase()})`);
-        openActiveSlideViewer();
+        if (isSlideViewerOpen() || isSlideLoading()) {
+          cancelPendingSlideLoad();
+          closeSlideViewer({ closeSidebar: true });
+          showShortcutBanner('Slide Closed');
+        } else {
+          openActiveSlideViewer();
+        }
         return;
       }
 

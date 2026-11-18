@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **Timeline Slide Fullscreen Toggle**: The shortcut to open the current slide (`Shift + T`) now acts as a two-way toggle, cleanly closing the slide viewer if it is already open.
+- **Auto-Closing Timeline Sidebar on Exit**: Closing the fullscreen slide via shortcut or `Escape` now automatically closes the native timeline sidebar that was popped open in the background, returning the video to full width.
+- **Slide Loading on Large Lectures**: Replaced the fixed 120ms timeout with a smart polling retry (up to 2.5s) and a "Loading slide..." indicator, ensuring lectures with dozens or hundreds of slides open reliably without getting stuck with an orphaned timeline sidebar.
+
 ## [1.1.0.10] - 2026-11-18
 
 ### Fixed

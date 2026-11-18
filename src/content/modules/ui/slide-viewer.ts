@@ -1,6 +1,7 @@
 import { state } from '../../state';
 import { getActiveVideo } from '../video/detector';
 import { getOuterPlayerContainer, triggerPlayerSlot } from '../distractions/elements';
+import { showShortcutBanner } from './player-banner';
 
 const MODAL_ID = 'pwc-slide-viewer-modal';
 const ACTION_BADGE_CLASS = 'pwc-slide-actions';
@@ -156,9 +157,15 @@ export function getSanitizedLectureTitle(): string {
 // Extract background-image URL or data-URI from a slide card
 export function extractSlideImageUrl(card: HTMLElement): string | null {
   const bg = card.style.backgroundImage || window.getComputedStyle(card).backgroundImage;
-  if (!bg || bg === 'none') return null;
-  const match = bg.match(/url\((['"]?)(.*?)\1\)/i);
-  return match && match[2] ? match[2] : null;
+  if (bg && bg !== 'none') {
+    const match = bg.match(/url\((['"]?)(.*?)\1\)/i);
+    if (match && match[2]) return match[2];
+  }
+  const img = card.querySelector<HTMLImageElement>('img');
+  if (img && img.src && !img.src.startsWith('data:image/svg')) {
+    return img.src;
+  }
+  return null;
 }
 
 // Extract slide number from card label (e.g. "Slide No. 4" -> 4)
@@ -245,7 +252,15 @@ export function findActiveSlideIndex(cards: SlideItem[]): number {
   for (let i = 0; i < cards.length; i++) {
     const card = cards[i].element;
     const cardClass = card.className || '';
-    if (cardClass.includes('bg-[#9387FF]')) {
+    if (
+      cardClass.includes('bg-[#9387FF]') ||
+      cardClass.includes('border-[#9387FF]') ||
+      cardClass.includes('border-[#5A4BDA]') ||
+      cardClass.includes('ring-') ||
+      cardClass.includes('active') ||
+      card.getAttribute('aria-selected') === 'true' ||
+      card.getAttribute('data-active') === 'true'
+    ) {
       return i;
     }
     const nativeBadge =
@@ -481,27 +496,71 @@ export function openSlideViewer(targetIndex: number): void {
   bindModalEventListeners();
 }
 
-// Jump straight to active slide in fullscreen (even if timeline is closed)
-export function openActiveSlideViewer(): void {
-  if (!state.extensionEnabled || !state.enableSlideViewer) return;
+let isPendingSlideLoad = false;
+let pendingSlideTimer: ReturnType<typeof setInterval> | null = null;
 
-  const cards = queryAllSlideCards();
-  if (cards.length === 0) {
-    // Drawer might be closed. Trigger timeline panel to load cards
-    triggerPlayerSlot('notetimeline');
-    setTimeout(() => {
-      syncTimelineSlideActions();
-      const updatedCards = queryAllSlideCards();
-      if (updatedCards.length > 0) {
-        const activeIdx = findActiveSlideIndex(updatedCards);
-        openSlideViewer(activeIdx);
-      }
-    }, 120);
+// Check if slide cards are actively being awaited in the background
+export function isSlideLoading(): boolean {
+  return isPendingSlideLoad;
+}
+
+// Cancel any active polling timer waiting for slide cards to load
+export function cancelPendingSlideLoad(): void {
+  if (pendingSlideTimer) {
+    clearInterval(pendingSlideTimer);
+    pendingSlideTimer = null;
+  }
+  isPendingSlideLoad = false;
+}
+
+// Jump straight to active slide in fullscreen (even if timeline is closed or slow to render)
+export function openActiveSlideViewer(): void {
+  if (!state.extensionEnabled || !state.enableSlideViewer || isSlideViewerOpen()) return;
+
+  if (isPendingSlideLoad) {
+    cancelPendingSlideLoad();
+    closeTimelineSidebar();
+    showShortcutBanner('Slide Closed');
     return;
   }
 
-  const activeIdx = findActiveSlideIndex(cards);
-  openSlideViewer(activeIdx);
+  const cards = queryAllSlideCards();
+  if (cards.length > 0) {
+    const activeIdx = findActiveSlideIndex(cards);
+    openSlideViewer(activeIdx);
+    return;
+  }
+
+  // Drawer is closed or slide cards are still mounting in the background
+  showShortcutBanner('Loading slide...');
+  triggerPlayerSlot('notetimeline');
+  isPendingSlideLoad = true;
+
+  const startTime = Date.now();
+  const MAX_WAIT_MS = 2500;
+  const POLL_INTERVAL_MS = 50;
+
+  pendingSlideTimer = setInterval(() => {
+    if (!isPendingSlideLoad || isSlideViewerOpen()) {
+      cancelPendingSlideLoad();
+      return;
+    }
+
+    syncTimelineSlideActions();
+    const updatedCards = queryAllSlideCards();
+    if (updatedCards.length > 0) {
+      cancelPendingSlideLoad();
+      const activeIdx = findActiveSlideIndex(updatedCards);
+      openSlideViewer(activeIdx);
+      return;
+    }
+
+    if (Date.now() - startTime >= MAX_WAIT_MS) {
+      cancelPendingSlideLoad();
+      closeTimelineSidebar();
+      showShortcutBanner('No slides available');
+    }
+  }, POLL_INTERVAL_MS);
 }
 
 // Create Modal DOM hierarchy
@@ -971,7 +1030,27 @@ function bindModalEventListeners(): void {
     if (e.key === 'Escape') {
       e.stopPropagation();
       e.preventDefault();
-      closeSlideViewer();
+      closeSlideViewer({ closeSidebar: true });
+      showShortcutBanner('Slide Closed');
+      return;
+    }
+
+    // Toggle close via the slide viewer shortcut (Shift + Key)
+    const targetViewerKey = (state.keySlideViewer || 't').toLowerCase();
+    if (
+      state.enableSlideViewer &&
+      targetViewerKey &&
+      e.shiftKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      !e.metaKey &&
+      (e.key.toLowerCase() === targetViewerKey ||
+        e.code.toLowerCase() === `key${targetViewerKey}`)
+    ) {
+      e.stopPropagation();
+      e.preventDefault();
+      closeSlideViewer({ closeSidebar: true });
+      showShortcutBanner('Slide Closed');
       return;
     }
 
@@ -1053,8 +1132,54 @@ function unbindModalEventListeners(): void {
   }
 }
 
+// Check if Slide Viewer is currently active
+export function isSlideViewerOpen(): boolean {
+  return Boolean((activeModal && activeModal.isConnected) || document.getElementById(MODAL_ID));
+}
+
+// Close the native timeline sidebar if currently open
+export function closeTimelineSidebar(): boolean {
+  const wrapper = document.getElementById('timeline-wrapper');
+  if (!wrapper || !wrapper.isConnected) {
+    return false;
+  }
+
+  // 1. Try to find the close button within the timeline sidebar container
+  const drawer =
+    wrapper.closest<HTMLElement>(
+      'aside, [role="dialog"], [aria-modal="true"], [class*="drawer" i], [class*="slide-in" i], div[class*="sidebar" i]',
+    ) || wrapper.parentElement;
+
+  if (drawer) {
+    const closeBtn = drawer.querySelector<HTMLElement>(
+      '#close-poll-wrapperIcon, [data-drawer-close], button[aria-label*="close" i], button[title*="close" i], [aria-label*="close" i][role="button"], [title*="close" i][role="button"]',
+    );
+    if (closeBtn && typeof closeBtn.click === 'function') {
+      closeBtn.click();
+      return true;
+    }
+
+    // Look for any header button with an SVG or X icon
+    const headerBtns = drawer.querySelectorAll<HTMLElement>(
+      'header button, [class*="header" i] button, [data-drawer-heading] ~ button, header [role="button"], [class*="header" i] [role="button"]',
+    );
+    for (let i = 0; i < headerBtns.length; i++) {
+      const btn = headerBtns[i];
+      const text = (btn.textContent || '').trim();
+      if (btn.querySelector('svg, path') || text === '✕' || text === '×' || text === 'X') {
+        btn.click();
+        return true;
+      }
+    }
+  }
+
+  // 2. Fallback: Trigger toolbar slot for timeline
+  return triggerPlayerSlot('notetimeline');
+}
+
 // Close Slide Viewer
-export function closeSlideViewer(): void {
+export function closeSlideViewer(options?: { closeSidebar?: boolean }): void {
+  cancelPendingSlideLoad();
   cleanupDragListeners();
   unbindModalEventListeners();
   resetAllTransform();
@@ -1067,5 +1192,9 @@ export function closeSlideViewer(): void {
   const existing = document.getElementById(MODAL_ID);
   if (existing) {
     existing.remove();
+  }
+
+  if (options?.closeSidebar) {
+    closeTimelineSidebar();
   }
 }
