@@ -1,0 +1,239 @@
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 6px 0 0 0;
+}
+
+.description {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.codeArea {
+  width: 100%;
+  height: 180px;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm, 8px);
+  background-color: var(--bg-control);
+  color: var(--text-primary);
+  border: 1px solid var(--divider-color);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.45;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.codeArea:focus {
+  border-color: var(--accent-primary);
+}
+
+.uploadZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  background-color: var(--bg-control);
+  border: 1px dashed var(--divider-color);
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.uploadZone:hover {
+  background-color: var(--bg-control-hover);
+  border-color: var(--accent-primary);
+}
+
+.uploadIcon {
+  color: var(--accent-primary);
+  flex-shrink: 0;
+}
+
+.uploadText {
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--text-primary);
+}
+
+.fileInputHidden {
+  display: none;
+}
+
+.orDivider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.orDivider::before,
+.orDivider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.orDivider:not(:empty)::before {
+  margin-right: 12px;
+}
+
+.orDivider:not(:empty)::after {
+  margin-left: 12px;
+}
+
+.infoBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.infoValid {
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.infoError {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.infoWarning {
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.actionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.leftActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+}
+
+.btnSecondary {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--bg-control);
+  color: var(--text-primary);
+  border: none;
+  font-size: 12.5px;
+  font-weight: 550;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.btnSecondary:hover {
+  background-color: var(--bg-control-hover);
+}
+
+.btnPrimary {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--text-primary);
+  color: var(--bg-card);
+  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s ease;
+}
+
+.btnPrimary:hover {
+  opacity: 0.92;
+}
+
+.btnPrimary:disabled,
+.btnSecondary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnDanger {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm, 6px);
+  background-color: #ef4444;
+  color: #ffffff;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s ease;
+}
+
+.btnDanger:hover {
+  opacity: 0.92;
+}
+
+.successBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 10px;
+  gap: 12px;
+}
+
+.successIconWrap {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.successSubtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}

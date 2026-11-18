@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Import / Export Popup Settings**: Added configuration backup and restore controls in Dashboard settings to export or import popup settings via 1-click clipboard copy or `.json` files, complete with format validation, error safeguards, and factory reset with two-step confirmation ([#51](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/51)).
 - **Scrollbar Visibility Controls**: Added options in dashboard settings to show or hide slim vertical scrollbars in task columns and the popup.
 - **Timeline Slide Viewer (Fullscreen)**: Upgraded timeline slides into a fullscreen study canvas with smooth zoom & pan whiteboard controls, direct slide-to-video sync, and 1-click high-res PNG downloads ([#15](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/15)).
 - **On-Screen Shortcut Alerts**: Added YouTube-style top-center frosted-glass popups when pressing keyboard shortcuts (speed adjustments, fullscreen, quick exit, and player drawer toggles) with an on/off toggle in the popup Focus tab ([#28](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/28)).

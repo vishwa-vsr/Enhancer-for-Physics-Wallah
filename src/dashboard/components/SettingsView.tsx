@@ -21,6 +21,7 @@ import {
   toggleDashboardScrollbars,
   togglePopupScrollbar,
 } from '@shared/scrollbars';
+import { ExportModal, ImportModal, ResetModal } from './BackupModal';
 
 import pwLogoImg from '../../icons/icon48.png';
 import chromeImg from '../../icons/chrome.png';
@@ -147,6 +148,56 @@ const ExternalArrowIcon = () => (
   </svg>
 );
 
+const ExportActionIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="13"
+    height="13"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" />
+    <line x1="12" y1="15" x2="12" y2="3" />
+  </svg>
+);
+
+const ImportActionIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="13"
+    height="13"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="17 8 12 3 7 8" />
+    <line x1="12" y1="3" x2="12" y2="15" />
+  </svg>
+);
+
+const ResetActionIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="13"
+    height="13"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+  </svg>
+);
+
 // ----------------- Link Item Definition -----------------
 
 interface LinkItem {
@@ -211,6 +262,9 @@ export const SettingsView = () => {
   const [editingTag, setEditingTag] = useState<{ name: string; color: string } | null>(null);
   const [storageBytes, setStorageBytes] = useState<number | null>(null);
   const [storageQuota, setStorageQuota] = useState<number>(10 * 1024 * 1024);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -526,6 +580,45 @@ export const SettingsView = () => {
                 <span class={styles.storageStatLabel}>Study Labels</span>
               </div>
             </div>
+
+            {/* Extension Configuration & Backup */}
+            <div class={styles.backupSection}>
+              <div class={styles.backupHeader}>
+                <div class={styles.backupHeaderLeft}>
+                  <span class={styles.backupTitle}>Configuration Popup Settings</span>
+                </div>
+              </div>
+
+              <div class={styles.backupActionsRow}>
+                <button
+                  type="button"
+                  class={styles.backupActionBtn}
+                  onClick={() => setShowExportModal(true)}
+                  title="Export your extension settings"
+                >
+                  <ExportActionIcon />
+                  Export Popup Settings
+                </button>
+                <button
+                  type="button"
+                  class={styles.backupActionBtn}
+                  onClick={() => setShowImportModal(true)}
+                  title="Import extension settings from backup"
+                >
+                  <ImportActionIcon />
+                  Import Popup Settings
+                </button>
+                <button
+                  type="button"
+                  class={styles.backupResetBtn}
+                  onClick={() => setShowResetModal(true)}
+                  title="Reset extension settings to default"
+                >
+                  <ResetActionIcon />
+                  Reset Defaults
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Community & Stores Card */}
@@ -580,6 +673,10 @@ export const SettingsView = () => {
           </div>
         </div>
       </div>
+
+      <ExportModal open={showExportModal} onClose={() => setShowExportModal(false)} />
+      <ImportModal open={showImportModal} onClose={() => setShowImportModal(false)} />
+      <ResetModal open={showResetModal} onClose={() => setShowResetModal(false)} />
     </div>
   );
 };

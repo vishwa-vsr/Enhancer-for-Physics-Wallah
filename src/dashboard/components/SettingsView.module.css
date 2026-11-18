@@ -431,3 +431,87 @@
   opacity: 1;
   color: var(--accent-primary);
 }
+
+/* Configuration & Backup Section inside Storage & Data */
+.backupSection {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--divider-color);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.backupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.backupHeaderLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.backupTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.backupActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.backupActionBtn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--bg-control);
+  color: var(--text-primary);
+  border: none;
+  font-size: 12px;
+  font-weight: 550;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+  user-select: none;
+}
+
+.backupActionBtn:hover {
+  background-color: var(--bg-control-hover);
+}
+
+.backupResetBtn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--bg-control);
+  color: var(--text-secondary);
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+  user-select: none;
+}
+
+.backupResetBtn:hover {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
