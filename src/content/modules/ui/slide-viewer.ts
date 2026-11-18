@@ -16,6 +16,7 @@ export interface SlideItem {
 }
 
 let activeModal: HTMLElement | null = null;
+let openedViaShortcut = false;
 let currentSlideIndex = 0;
 let cachedSlides: SlideItem[] = [];
 let keydownListener: ((e: KeyboardEvent) => void) | null = null;
@@ -476,7 +477,8 @@ function handleRotate(): void {
 }
 
 // Open the Enlarged Pop-up Modal at a given slide index
-export function openSlideViewer(targetIndex: number): void {
+export function openSlideViewer(targetIndex: number, options?: { viaShortcut?: boolean }): void {
+  openedViaShortcut = Boolean(options?.viaShortcut);
   cachedSlides = queryAllSlideCards();
   if (cachedSlides.length === 0) return;
 
@@ -527,7 +529,7 @@ export function openActiveSlideViewer(): void {
   const cards = queryAllSlideCards();
   if (cards.length > 0) {
     const activeIdx = findActiveSlideIndex(cards);
-    openSlideViewer(activeIdx);
+    openSlideViewer(activeIdx, { viaShortcut: true });
     return;
   }
 
@@ -551,7 +553,7 @@ export function openActiveSlideViewer(): void {
     if (updatedCards.length > 0) {
       cancelPendingSlideLoad();
       const activeIdx = findActiveSlideIndex(updatedCards);
-      openSlideViewer(activeIdx);
+      openSlideViewer(activeIdx, { viaShortcut: true });
       return;
     }
 
@@ -1030,7 +1032,7 @@ function bindModalEventListeners(): void {
     if (e.key === 'Escape') {
       e.stopPropagation();
       e.preventDefault();
-      closeSlideViewer({ closeSidebar: true });
+      closeSlideViewer({ closeSidebar: openedViaShortcut });
       showShortcutBanner('Slide Closed');
       return;
     }
@@ -1179,6 +1181,8 @@ export function closeTimelineSidebar(): boolean {
 
 // Close Slide Viewer
 export function closeSlideViewer(options?: { closeSidebar?: boolean }): void {
+  const shouldCloseSidebar = options?.closeSidebar ?? openedViaShortcut;
+
   cancelPendingSlideLoad();
   cleanupDragListeners();
   unbindModalEventListeners();
@@ -1194,7 +1198,9 @@ export function closeSlideViewer(options?: { closeSidebar?: boolean }): void {
     existing.remove();
   }
 
-  if (options?.closeSidebar) {
+  if (shouldCloseSidebar) {
     closeTimelineSidebar();
   }
+
+  openedViaShortcut = false;
 }
