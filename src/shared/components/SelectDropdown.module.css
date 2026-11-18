@@ -109,17 +109,13 @@
 }
 
 .menuContainer {
-  position: absolute;
-  top: calc(100% + 5px);
-  left: 0;
-  right: 0;
-  width: 100%;
+  position: fixed;
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md, 12px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   padding: 5px;
-  z-index: 999;
+  z-index: 99999;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -154,14 +150,7 @@
     0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.alignRight {
-  left: auto !important;
-  right: 0 !important;
-}
-
 .menuTop {
-  top: auto !important;
-  bottom: calc(100% + 5px) !important;
   transform-origin: bottom center;
   animation: menuEnterTop 0.15s ease-out;
 }

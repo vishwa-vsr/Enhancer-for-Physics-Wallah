@@ -19,6 +19,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **Settings View Redesign**: Reorganized settings into a balanced 2-column layout with compact scrollbar toggles, full-width dynamic sizing, flat cards, and clean click-to-edit study labels with safe 2-step deletion.
 
+### Fixed
+
+- **Dropdown Menu Clipping in Task Dialog**: Upgraded dropdown menus to float freely outside modal window boundaries, preventing options (like Study Labels, Subjects, and Chapters) from getting clipped by the dialog bottom edge regardless of window size.
+
 ## [1.1.0.8] - 2026-11-12
 
 ### Changed
