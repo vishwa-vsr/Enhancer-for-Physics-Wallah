@@ -1,11 +1,12 @@
 {
   "name": "enhancer-for-physics-wallah",
-  "version": "1.1.0.9",
+  "version": "1.1.0.10",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "test": "node scripts/test-player-safety.mjs",
+    "build": "npm test && tsc --noEmit && vite build",
     "build:fast": "vite build",
     "zip": "node scripts/zip.js",
     "package": "npm run build && npm run zip",

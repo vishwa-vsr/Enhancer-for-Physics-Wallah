@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.1.0.10] - 2026-11-18
+
+### Fixed
+
+- **Infinite Buffering on Lecture Load**: Fixed a critical issue where opening a lecture video would get stuck on a black loading screen. The background DOM watcher was firing repeatedly on native video player animations and re-triggering itself in an infinite loop; silenced attribute watching across the document and prioritized self-injected element guards so lectures load instantly.
+
+### Added
+
+- **Automated Player Safety Tests**: Added an automated pre-build test suite (`npm test`) that scans source code for unsafe DOM watcher patterns and simulates lecture video loading in JSDOM to automatically catch and block any future runaway loops before packaging.
+
 ## [1.1.0.9] - 2026-11-17
 
 ### Added

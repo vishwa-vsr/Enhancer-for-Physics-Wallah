@@ -164,16 +164,16 @@ export function initWakeupTriggers(): void {
 
   const onInteractionOrPlay = (e?: Event) => {
     checkUrlChange();
-    if (state.enableSlideViewer) {
-      const target = e && e.target instanceof Element ? e.target : null;
+    if (state.enableSlideViewer && e) {
+      const target = e.target instanceof Element ? e.target : null;
       if (
-        !target ||
-        target.closest('#timeline-wrapper') ||
-        target.closest('[aria-label*="timeline" i]') ||
-        target.closest('[title*="timeline" i]') ||
-        target.closest('#footer-right-section') ||
-        target.closest('[class*="slide-in" i]') ||
-        target.closest('[data-drawer-close]')
+        target &&
+        (target.closest('#timeline-wrapper') ||
+          target.closest('[aria-label*="timeline" i]') ||
+          target.closest('[title*="timeline" i]') ||
+          target.closest('#footer-right-section') ||
+          target.closest('[class*="slide-in" i]') ||
+          target.closest('[data-drawer-close]'))
       ) {
         syncTimelineSlideActions();
         setTimeout(syncTimelineSlideActions, 120);
@@ -289,6 +289,20 @@ export function startDomObserver(): void {
       const mut = mutations[i];
       const target = mut.target as HTMLElement;
 
+      // Skip mutations where only pwc elements were added
+      if (mut.addedNodes.length > 0) {
+        let onlySelf = true;
+        for (let j = 0; j < mut.addedNodes.length; j++) {
+          const node = mut.addedNodes[j] as HTMLElement;
+          const id = node.id || '';
+          const cls = typeof node.className === 'string' ? node.className : '';
+          if (id.startsWith('pwc-') || cls.includes('pwc-')) continue;
+          onlySelf = false;
+          break;
+        }
+        if (onlySelf) continue;
+      }
+
       // Always treat timeline drawer mounts and slide card additions as relevant
       if (
         state.enableSlideViewer &&
@@ -332,20 +346,6 @@ export function startDomObserver(): void {
         continue;
       }
 
-      // Skip mutations where only pwc elements were added
-      if (mut.addedNodes.length > 0) {
-        let onlySelf = true;
-        for (let j = 0; j < mut.addedNodes.length; j++) {
-          const node = mut.addedNodes[j] as HTMLElement;
-          const id = node.id || '';
-          const cls = typeof node.className === 'string' ? node.className : '';
-          if (id.startsWith('pwc-') || cls.includes('pwc-')) continue;
-          onlySelf = false;
-          break;
-        }
-        if (onlySelf) continue;
-      }
-
       hasRelevantMutation = true;
       break;
     }
@@ -358,8 +358,6 @@ export function startDomObserver(): void {
   observer.observe(document.documentElement, {
     childList: true,
     subtree: true,
-    attributes: true,
-    attributeFilter: ['class', 'style', 'aria-expanded'],
   });
 
   // Initial execution
