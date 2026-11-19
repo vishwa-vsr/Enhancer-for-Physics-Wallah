@@ -6,8 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.1.0.11] - 2026-11-19
+
 ### Fixed
 
+- **Rounded Card Corners & Bottom Dividers in Popup**: Fixed sharp rectangular bottom corners and stray horizontal separator lines on collapsible setting cards (such as Constant Video Quality and Skip Silence in the Media tab, and Auto-Hide in the Focus tab) when turned off, restoring smooth rounded bubble shapes across the popup.
 - **Timeline Slide Fullscreen Toggle**: The shortcut to view the current slide (`Shift + T`) now acts as a two-way toggle—opening the active slide in fullscreen, and pressing it again (or clicking the top-right `✕` cross icon / hitting `Escape`) cleanly closes the slide and automatically shuts the background timeline sidebar to restore full-width video.
 - **Slide Loading on Large Lectures**: Replaced the fixed 120ms timeout with a smart polling retry (up to 2.5s) and a "Loading slide..." indicator, ensuring lectures with dozens or hundreds of slides open reliably without getting stuck with an orphaned timeline sidebar.
 

@@ -32,7 +32,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
   border: var(--card-border, none);
-  overflow: visible;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -40,6 +40,10 @@
 .settingsGroupCard > :first-child {
   border-top-left-radius: var(--radius-lg);
   border-top-right-radius: var(--radius-lg);
+}
+
+.settingsGroupCard > :first-child:is(:last-child, :has(+ [aria-hidden='true']:last-child)) {
+  border-radius: var(--radius-lg);
 }
 
 .settingsGroupCard > :last-child {

@@ -9,8 +9,16 @@
   border-bottom: 1px solid var(--divider-color);
 }
 
-.featureRow:last-child {
+.featureRow:first-child {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+.featureRow:last-child,
+.featureRow:has(+ [aria-hidden='true']:last-child) {
   border-bottom: none;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
 }
 
 .featureRow:hover {
