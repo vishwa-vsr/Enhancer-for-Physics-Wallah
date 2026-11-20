@@ -15,11 +15,6 @@ export interface HideSettings {
   hideSpeed: boolean;
   hideQuality: boolean;
   hideSetting: boolean;
-  hideTimeLine: boolean;
-  hideTimeText: boolean;
-  hideNextLecture: boolean;
-  hideNextChapter: boolean;
-  hideAttemptDPP: boolean;
 }
 
 // ===== Full Content Script State =====

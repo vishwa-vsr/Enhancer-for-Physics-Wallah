@@ -177,3 +177,20 @@
     opacity: 1;
   }
 }
+
+.removedNotice {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: help;
+  user-select: none;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color var(--transition-fast, 0.15s ease);
+}
+
+.removedNotice:hover,
+.removedNotice:focus-visible {
+  color: var(--text-secondary);
+  outline: none;
+}

@@ -30,11 +30,6 @@ export const hideNoteTimeline = signal(false);
 export const hideSpeed = signal(false);
 export const hideQuality = signal(true);
 export const hideSetting = signal(false);
-export const hideTimeLine = signal(false);
-export const hideTimeText = signal(false);
-export const hideNextLecture = signal(false);
-export const hideNextChapter = signal(false);
-export const hideAttemptDPP = signal(false);
 export const enableInstantHide = signal(false);
 export const autoSkipPromoAds = signal(false);
 export const blockRecordedPolls = signal(false);
@@ -167,11 +162,6 @@ export async function initStore() {
   hideSpeed.value = !!s.hideSpeed;
   hideQuality.value = s.hideQuality !== undefined ? !!s.hideQuality : true;
   hideSetting.value = !!s.hideSetting;
-  hideTimeLine.value = !!s.hideTimeLine;
-  hideTimeText.value = !!s.hideTimeText;
-  hideNextLecture.value = !!s.hideNextLecture;
-  hideNextChapter.value = !!s.hideNextChapter;
-  hideAttemptDPP.value = !!s.hideAttemptDPP;
   enableInstantHide.value = !!s.enableInstantHide;
   autoSkipPromoAds.value = !!s.autoSkipPromoAds;
   blockRecordedPolls.value = !!s.blockRecordedPolls;
@@ -308,9 +298,6 @@ export async function initStore() {
     if (changes.keyDoubt !== undefined) keyDoubt.value = changes.keyDoubt;
     if (changes.keyFullscreen !== undefined) keyFullscreen.value = changes.keyFullscreen;
     if (changes.keyExit !== undefined) keyExit.value = changes.keyExit;
-    if (changes.hideNextLecture !== undefined) hideNextLecture.value = !!changes.hideNextLecture;
-    if (changes.hideNextChapter !== undefined) hideNextChapter.value = !!changes.hideNextChapter;
-    if (changes.hideAttemptDPP !== undefined) hideAttemptDPP.value = !!changes.hideAttemptDPP;
     if (changes.autoSkipPromoAds !== undefined) autoSkipPromoAds.value = !!changes.autoSkipPromoAds;
     if (changes.blockRecordedPolls !== undefined)
       blockRecordedPolls.value = !!changes.blockRecordedPolls;

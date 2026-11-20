@@ -10,11 +10,6 @@ export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideSpeed: false,
   hideQuality: true,
   hideSetting: false,
-  hideTimeLine: false,
-  hideTimeText: false,
-  hideNextLecture: false,
-  hideNextChapter: false,
-  hideAttemptDPP: false,
 };
 
 export const DEFAULT_CONTENT_STATE: ContentState = {
@@ -159,11 +154,6 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'hideSpeed',
         'hideQuality',
         'hideSetting',
-        'hideTimeLine',
-        'hideTimeText',
-        'hideNextLecture',
-        'hideNextChapter',
-        'hideAttemptDPP',
         'enableInstantHide',
         'autoSkipPromoAds',
         'blockRecordedPolls',

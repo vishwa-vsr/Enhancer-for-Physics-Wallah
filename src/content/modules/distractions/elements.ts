@@ -2,25 +2,13 @@ import { getActiveVideo } from '../video/detector';
 import { clearPollSuppressionNow } from './poll-blocker';
 
 let cachedSettingsBtn: Element | null = null;
-let cachedTimeline: Element | null = null;
-let cachedTimeTexts: Element[] | null = null;
 let cachedNativeSpeedBadges: Element[] | null = null;
 let cachedToolbar: Element | null = null;
-let cachedNextLectureBtn: Element | null = null;
-let cachedNextChapterBtn: Element | null = null;
-let cachedAttemptDPPBtn: Element | null = null;
-let cachedNextDppWrapper: Element | null = null;
 
 export function resetDistractionCaches(): void {
   cachedSettingsBtn = null;
-  cachedTimeline = null;
-  cachedTimeTexts = null;
   cachedNativeSpeedBadges = null;
   cachedToolbar = null;
-  cachedNextLectureBtn = null;
-  cachedNextChapterBtn = null;
-  cachedAttemptDPPBtn = null;
-  cachedNextDppWrapper = null;
 }
 
 // Helper to check if an element is a major player layout container that must never be mistaken for a single toolbar button
@@ -629,77 +617,27 @@ export function findPWToolbar(): Element | null {
   return null;
 }
 
-// Helper to find the video timeline progress bar
-export function findTimeline(): Element | null {
-  const exactProgress = document.getElementById('progress-control');
-  if (exactProgress && exactProgress.isConnected) {
-    cachedTimeline = exactProgress;
-    return exactProgress;
-  }
-
-  if (cachedTimeline && cachedTimeline.isConnected) {
-    return cachedTimeline;
-  }
-  const video = getActiveVideo();
-  if (!video) return null;
-  const playerContainer = getOuterPlayerContainer();
-  if (!playerContainer) return null;
-  const el = playerContainer.querySelector(
-    '#progress-control, .vjs-progress-control, .vjs-progress-holder, ' +
-      '[class*="progress-control" i], [class*="progress-bar" i], ' +
-      '[class*="seekbar" i], [class*="seek-bar" i]',
-  );
-  if (el) {
-    const className = el.getAttribute('class') || '';
-    if (className.includes('pwc-')) return null;
-    cachedTimeline = el;
-    return el;
-  }
-  return null;
-}
-
-// Synchronize video timeline visibility and prevent duplicate progress bars on AI-chapter lectures
-export function syncTimelineVisibility(shouldHide: boolean): void {
+// Prevent duplicate progress bars on PW AI-chapter lectures
+export function syncTimelineVisibility(): void {
   const placeholder = document.getElementById('progress-placeholder');
   const exactProgress = document.getElementById('progress-control');
+  if (!exactProgress || !placeholder) return;
 
   // Identify any custom AI chapter progress bar rendered inside #progress-placeholder alongside #progress-control
   const customChapterBars: Element[] = [];
-  if (placeholder) {
-    Array.from(placeholder.children).forEach((child) => {
-      if (child === exactProgress || child.id === 'progress-control') return;
-      if (
-        child.querySelector('#current-time-placeholder, #total-time-placeholder, .vjs-current-time')
-      ) {
-        return;
-      }
-      customChapterBars.push(child);
-    });
-  }
-
-  if (shouldHide) {
-    if (exactProgress) {
-      setHidden(exactProgress, true, true);
-    } else {
-      const fallback = findTimeline();
-      if (fallback) setHidden(fallback, true, true);
+  Array.from(placeholder.children).forEach((child) => {
+    if (child === exactProgress || child.id === 'progress-control') return;
+    if (
+      child.querySelector('#current-time-placeholder, #total-time-placeholder, .vjs-current-time')
+    ) {
+      return;
     }
-    customChapterBars.forEach((bar) => setHidden(bar, true, true));
-    return;
-  }
-
-  // Restore any bars that our extension previously hid via "Hide Timeline Line"
-  if (exactProgress) {
-    setHidden(exactProgress, false, true);
-  } else {
-    const fallback = findTimeline();
-    if (fallback) setHidden(fallback, false, true);
-  }
-  customChapterBars.forEach((bar) => setHidden(bar, false, true));
+    customChapterBars.push(child);
+  });
 
   // If PW's segmented AI chapter bar is visibly rendered full-width inside #progress-placeholder,
   // ensure the fallback #progress-control bar (at bottom: -15px) stays hidden so two bars never stack.
-  if (exactProgress && placeholder && customChapterBars.length > 0) {
+  if (customChapterBars.length > 0) {
     const minBarWidth = Math.max(100, placeholder.offsetWidth * 0.75);
     const hasVisibleChapterBar = customChapterBars.some((bar) => {
       const htmlBar = bar as HTMLElement;
@@ -715,113 +653,6 @@ export function syncTimelineVisibility(shouldHide: boolean): void {
       exactProgress.style.removeProperty('display');
     }
   }
-}
-
-// Helper to find video time and duration texts
-export function findTimeTexts(): Element[] {
-  if (
-    cachedTimeTexts &&
-    cachedTimeTexts.length > 0 &&
-    cachedTimeTexts.every((el) => el.isConnected)
-  ) {
-    return cachedTimeTexts;
-  }
-  const video = getActiveVideo();
-  if (!video) return [];
-  const playerContainer = getOuterPlayerContainer();
-  if (!playerContainer) return [];
-
-  const elements = playerContainer.querySelectorAll(
-    '.vjs-current-time, .vjs-duration, .vjs-time-divider, .vjs-remaining-time, .vjs-time-control, ' +
-      '[class*="time-display" i], [class*="time-text" i], ' +
-      '[class*="current-time" i], [class*="duration" i], [class*="video-time" i], ' +
-      '.current-time, .duration, .time-display, .time-text',
-  );
-
-  const list = Array.from(elements).filter((el) => {
-    // 1. Exclude our own extension's speedometer UI elements
-    const className = el.getAttribute('class') || '';
-    const id = el.id || '';
-    if (className.includes('pwc-') || id.includes('pwc-')) {
-      return false;
-    }
-
-    // 2. Exclude elements that contain interactive buttons or SVGs
-    if (
-      el.querySelector('button') ||
-      el.querySelector('svg') ||
-      el.querySelector('[role="button"]')
-    ) {
-      return false;
-    }
-
-    // 3. Exclude major layout/wrapper sections (we only want the leaf labels)
-    if (el.querySelectorAll('div').length > 5) {
-      return false;
-    }
-
-    // 4. Ensure it contains actual time numbers (e.g. "0:00", "2:31", "/ 2:06:36")
-    const text = (el.textContent || '').trim();
-    const isVjsTime =
-      className.includes('vjs-current-time') ||
-      className.includes('vjs-duration') ||
-      className.includes('vjs-time-divider') ||
-      className.includes('vjs-remaining-time') ||
-      className.includes('vjs-time-control');
-
-    if (isVjsTime) {
-      return true;
-    }
-
-    const hasTimePattern = /^\s*[\d\s:\-/|]+\s*$/.test(text) && /\d+:\d+/.test(text);
-    const isDivider = text === '/' || text === '|' || text === '-';
-
-    return hasTimePattern || isDivider;
-  });
-
-  cachedTimeTexts = list;
-  return list;
-}
-
-const originalSeparatorTextMap = new WeakMap<Node, string>();
-
-// Helper to hide separators (like "/" text nodes or span dividers) next to time elements
-export function hideTimeSeparators(timeElement: Element, shouldHide: boolean): void {
-  if (!timeElement) return;
-  const parent = timeElement.parentElement;
-  if (!parent) return;
-
-  const childNodes = Array.from(parent.childNodes);
-  childNodes.forEach((node) => {
-    if (node.nodeType === 3) {
-      // Text Node
-      const text = (node.textContent || '').trim();
-      if (text === '/' || text === '|' || text === '-' || originalSeparatorTextMap.has(node)) {
-        if (shouldHide) {
-          if (!originalSeparatorTextMap.has(node) && node.textContent !== null) {
-            originalSeparatorTextMap.set(node, node.textContent);
-          }
-          node.textContent = '';
-        } else {
-          const orig = originalSeparatorTextMap.get(node);
-          if (orig !== undefined) {
-            node.textContent = orig;
-          }
-        }
-      }
-    } else if (node.nodeType === 1) {
-      // Element Node
-      const elNode = node as Element;
-      const text = (elNode.textContent || '').trim();
-      const className = elNode.getAttribute('class') || '';
-      const id = elNode.id || '';
-      const isSelf = className.includes('pwc-') || id.includes('pwc-');
-
-      if (!isSelf && (text === '/' || text === '|' || text === '-')) {
-        setHidden(elNode, shouldHide);
-      }
-    }
-  });
 }
 
 // ===== Unified Player Toolbar Slot Resolver & Action Trigger (Issue #14 / Candidate #2) =====
@@ -1080,126 +911,6 @@ export function triggerPlayerSlot(
   return triggerToolbarElement(target);
 }
 
-// Locate the floating "Next Lecture" card button
-export function findNextLectureButton(): HTMLElement | null {
-  if (cachedNextLectureBtn && cachedNextLectureBtn.isConnected) {
-    return cachedNextLectureBtn as HTMLElement;
-  }
-  const player = getOuterPlayerContainer() || document.body;
-  if (!player) return null;
-
-  const candidates = player.querySelectorAll('button, [role="button"], a');
-  for (let i = 0; i < candidates.length; i++) {
-    const el = candidates[i];
-    const text = (el.textContent || '').trim().toLowerCase();
-    if (text.includes('next lecture') || (text.includes('next') && text.includes('lecture'))) {
-      const btn = (el.closest('button, [role="button"], a') || el) as HTMLElement;
-      if (!isProtectedPlayerStructure(btn)) {
-        cachedNextLectureBtn = btn;
-        return btn;
-      }
-    }
-  }
-  return null;
-}
-
-// Locate the floating "Next Chapter" card button
-export function findNextChapterButton(): HTMLElement | null {
-  if (cachedNextChapterBtn && cachedNextChapterBtn.isConnected) {
-    return cachedNextChapterBtn as HTMLElement;
-  }
-  const player = getOuterPlayerContainer() || document.body;
-  if (!player) return null;
-
-  const candidates = player.querySelectorAll('button, [role="button"], a');
-  for (let i = 0; i < candidates.length; i++) {
-    const el = candidates[i];
-    const text = (el.textContent || '').trim().toLowerCase();
-    if (text.includes('next chapter') || (text.includes('next') && text.includes('chapter'))) {
-      const btn = (el.closest('button, [role="button"], a') || el) as HTMLElement;
-      if (!isProtectedPlayerStructure(btn)) {
-        cachedNextChapterBtn = btn;
-        return btn;
-      }
-    }
-  }
-  return null;
-}
-
-// Locate the floating "Attempt DPP" card button
-export function findAttemptDPPButton(): HTMLElement | null {
-  if (cachedAttemptDPPBtn && cachedAttemptDPPBtn.isConnected) {
-    return cachedAttemptDPPBtn as HTMLElement;
-  }
-  const player = getOuterPlayerContainer() || document.body;
-  if (!player) return null;
-
-  const candidates = player.querySelectorAll('button, [role="button"], a');
-  for (let i = 0; i < candidates.length; i++) {
-    const el = candidates[i];
-    const text = (el.textContent || '').trim().toLowerCase();
-    if (
-      text.includes('attempt dpp') ||
-      (text.includes('dpp') && (text.includes('attempt') || text.includes('solve')))
-    ) {
-      const btn = (el.closest('button, [role="button"], a') || el) as HTMLElement;
-      if (!isProtectedPlayerStructure(btn)) {
-        cachedAttemptDPPBtn = btn;
-        return btn;
-      }
-    }
-  }
-  return null;
-}
-
-// Locate the floating container wrapping Next Lecture / Next Chapter and Attempt DPP
-export function findNextDppWrapper(
-  nextBtn?: Element | null,
-  dppBtn?: Element | null,
-  chapterBtn?: Element | null,
-): HTMLElement | null {
-  if (cachedNextDppWrapper && cachedNextDppWrapper.isConnected) {
-    return cachedNextDppWrapper as HTMLElement;
-  }
-  const next = nextBtn || findNextLectureButton();
-  const chapter = chapterBtn || findNextChapterButton();
-  const dpp = dppBtn || findAttemptDPPButton();
-
-  const primary = next || chapter;
-  let found: HTMLElement | null = null;
-  if (primary && dpp) {
-    let parent = primary.parentElement;
-    while (parent && parent !== document.body && parent !== document.documentElement) {
-      if (parent.contains(dpp)) {
-        if (!isProtectedPlayerStructure(parent)) {
-          found = parent as HTMLElement;
-        }
-        break;
-      }
-      parent = parent.parentElement;
-    }
-  } else if (
-    primary &&
-    primary.parentElement &&
-    !isProtectedPlayerStructure(primary.parentElement)
-  ) {
-    const cls = (primary.parentElement.getAttribute('class') || '').toLowerCase();
-    if (cls.includes('absolute') && (cls.includes('bottom') || cls.includes('right'))) {
-      found = primary.parentElement as HTMLElement;
-    }
-  } else if (dpp && dpp.parentElement && !isProtectedPlayerStructure(dpp.parentElement)) {
-    const cls = (dpp.parentElement.getAttribute('class') || '').toLowerCase();
-    if (cls.includes('absolute') && (cls.includes('bottom') || cls.includes('right'))) {
-      found = dpp.parentElement as HTMLElement;
-    }
-  }
-
-  if (found) {
-    cachedNextDppWrapper = found;
-  }
-  return found;
-}
-
 // Prevent an injected toolbar button from stealing keyboard focus away from the video player
 export function preventFocusSteal(el: HTMLElement): void {
   el.tabIndex = -1;
@@ -1225,7 +936,9 @@ export function resolvePollDrawerContainer(closeBtn: Element): HTMLElement | nul
   return (
     closeBtn.closest<HTMLElement>('.player > div') ||
     closeBtn.closest<HTMLElement>('[class*="slide-in" i]') ||
-    closeBtn.closest<HTMLElement>('aside, [role="dialog"], [aria-modal="true"], [class*="drawer" i]') ||
+    closeBtn.closest<HTMLElement>(
+      'aside, [role="dialog"], [aria-modal="true"], [class*="drawer" i]',
+    ) ||
     closeBtn.closest<HTMLElement>('div[class*="fixed"][class*="bottom-0"]') ||
     closeBtn.closest<HTMLElement>('div:not(:has(video, iframe, .video-player-app))') ||
     closeBtn.parentElement

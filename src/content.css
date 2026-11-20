@@ -356,54 +356,6 @@ html.pwc-hide-setting [class*='gear-icon'] {
   display: none !important;
 }
 
-/* --- Hide Time Line: VideoJS progress control / seek bar --- */
-html.pwc-hide-timeline .vjs-progress-control,
-html.pwc-hide-timeline .vjs-progress-holder,
-html.pwc-hide-timeline .vjs-play-progress,
-html.pwc-hide-timeline [class*='progress-control'],
-html.pwc-hide-timeline
-  [class*='progress-bar']:not(.pwc-speed-container):not(.pwc-speed-slider-container),
-html.pwc-hide-timeline [class*='seekbar'],
-html.pwc-hide-timeline [class*='seek-bar'] {
-  display: none !important;
-}
-
-/* --- Hide Time Text: VideoJS current time, duration, divider, remaining time --- */
-html.pwc-hide-timetext .vjs-current-time,
-html.pwc-hide-timetext .vjs-duration,
-html.pwc-hide-timetext .vjs-time-divider,
-html.pwc-hide-timetext .vjs-remaining-time,
-html.pwc-hide-timetext .vjs-time-control {
-  display: none !important;
-}
-
-/* --- Hide Next Lecture Card / Button --- */
-html.pwc-hide-nextlecture [data-pwc-next-lecture] {
-  display: none !important;
-}
-
-/* --- Hide Next Chapter Card / Button --- */
-html.pwc-hide-nextchapter [data-pwc-next-chapter] {
-  display: none !important;
-}
-
-/* --- Hide Attempt DPP Card / Button --- */
-html.pwc-hide-attemptdpp [data-pwc-attempt-dpp] {
-  display: none !important;
-}
-
-/* --- Hide Next Lecture & DPP floating container if both are hidden and no unhidden chapter button --- */
-html.pwc-hide-nextlecture.pwc-hide-attemptdpp
-  [data-pwc-next-dpp-wrapper]:not(:has([data-pwc-next-chapter])) {
-  display: none !important;
-}
-
-/* --- Hide Next Chapter & DPP floating container if both are hidden and no unhidden lecture button --- */
-html.pwc-hide-nextchapter.pwc-hide-attemptdpp
-  [data-pwc-next-dpp-wrapper]:not(:has([data-pwc-next-lecture])) {
-  display: none !important;
-}
-
 /* --- Hide Chat / Comments toolbar icon, drawer & SVG fallback --- */
 html.pwc-hide-chat #footer-right-section > button[aria-label*='chat' i],
 html.pwc-hide-chat #footer-right-section > button[aria-label*='comment' i],
@@ -499,7 +451,13 @@ html.pwc-block-recorded-polls
     [data-drawer-close][aria-label*='quiz' i]
   ),
 html.pwc-block-recorded-polls
-  :is([role='dialog'], [aria-modal='true'], aside, [class*='drawer' i], [class*='bottom-0'][class*='fixed']):has(
+  :is(
+    [role='dialog'],
+    [aria-modal='true'],
+    aside,
+    [class*='drawer' i],
+    [class*='bottom-0'][class*='fixed']
+  ):has(
     button[aria-label*='close poll' i],
     button[aria-label*='close quiz' i],
     #close-poll-wrapperIcon[aria-label*='poll' i],
@@ -547,10 +505,6 @@ html.pwc-block-recorded-polls #player-body > div:has(.bg-customDarkGray),
 html.pwc-block-recorded-polls #player-body .bg-customDarkGray {
   display: none !important;
   pointer-events: none !important;
-}
-
-html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-next-dpp-wrapper] {
-  display: none !important;
 }
 
 /* ==========================================================================
@@ -612,9 +566,7 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
 .pwc-controls-tray.pwc-tray-compact
   .pwc-speed-container:not(.pwc-escape-collapsed):hover
   .pwc-speed-slider-container,
-.pwc-controls-tray.pwc-tray-compact
-  .pwc-speed-container.pwc-expanded
-  .pwc-speed-slider-container,
+.pwc-controls-tray.pwc-tray-compact .pwc-speed-container.pwc-expanded .pwc-speed-slider-container,
 .pwc-controls-tray.pwc-tray-compact
   .pwc-speed-container.pwc-always-expanded
   .pwc-speed-slider-container {
@@ -648,9 +600,7 @@ html.pwc-hide-nextlecture.pwc-hide-nextchapter.pwc-hide-attemptdpp [data-pwc-nex
 .pwc-controls-tray.pwc-tray-tight
   .pwc-speed-container:not(.pwc-escape-collapsed):hover
   .pwc-speed-slider-container,
-.pwc-controls-tray.pwc-tray-tight
-  .pwc-speed-container.pwc-expanded
-  .pwc-speed-slider-container,
+.pwc-controls-tray.pwc-tray-tight .pwc-speed-container.pwc-expanded .pwc-speed-slider-container,
 .pwc-controls-tray.pwc-tray-tight
   .pwc-speed-container.pwc-always-expanded
   .pwc-speed-slider-container {
@@ -1653,7 +1603,6 @@ video.vjs-tech:focus-visible {
   box-shadow: none !important;
 }
 
-
 /* ==========================================================================
    Timeline Slide Viewer & 1-Click Download (Issue #15)
    ========================================================================== */
@@ -1670,7 +1619,9 @@ video.vjs-tech:focus-visible {
   border-radius: 6px !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18) !important;
   z-index: 3 !important;
-  transition: background-color 0.15s ease, color 0.15s ease !important;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease !important;
 }
 
 /* Inactive slide (matching default bg-primary text-white) */
@@ -1713,7 +1664,9 @@ video.vjs-tech:focus-visible {
   border-radius: 4px !important;
   background: transparent !important;
   cursor: pointer !important;
-  transition: background-color 0.15s ease, opacity 0.15s ease !important;
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease !important;
 }
 
 .pwc-slide-card-action-btn:active {
@@ -1728,7 +1681,13 @@ video.vjs-tech:focus-visible {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif !important;
   animation: pwc-slide-fade-in 0.2s ease-out !important;
   border: none !important;
   outline: none !important;
@@ -1875,7 +1834,9 @@ video.vjs-tech:focus-visible {
   font-size: 13px !important;
   font-weight: 500 !important;
   cursor: pointer !important;
-  transition: background-color 0.15s ease, opacity 0.15s ease !important;
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease !important;
   outline: none !important;
   box-shadow: none !important;
 }

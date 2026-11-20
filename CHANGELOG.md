@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Removed
+
+- **Outdated Focus Cleaners**: Removed unused toggles for Attempt DPP, Next Lecture, Next Chapter, Timeline Line, and Time Display, and replaced them with 'Removed! Why?' explanation tags.
+
 ## [1.1.0.11] - 2026-11-19
 
 ### Fixed

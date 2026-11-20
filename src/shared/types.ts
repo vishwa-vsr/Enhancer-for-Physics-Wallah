@@ -22,11 +22,6 @@ export interface PopupSettings {
   hideSpeed: boolean;
   hideQuality: boolean;
   hideSetting: boolean;
-  hideTimeLine: boolean;
-  hideTimeText: boolean;
-  hideNextLecture: boolean;
-  hideNextChapter: boolean;
-  hideAttemptDPP: boolean;
   enableInstantHide: boolean;
   autoSkipPromoAds: boolean;
   blockRecordedPolls: boolean;
@@ -119,11 +114,6 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   hideSpeed: false,
   hideQuality: true,
   hideSetting: false,
-  hideTimeLine: false,
-  hideTimeText: false,
-  hideNextLecture: false,
-  hideNextChapter: false,
-  hideAttemptDPP: false,
   enableInstantHide: false,
   autoSkipPromoAds: false,
   blockRecordedPolls: false,

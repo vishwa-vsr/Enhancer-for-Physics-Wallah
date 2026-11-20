@@ -5,15 +5,9 @@ import {
   findSettingsButton,
   setHidden,
   findNativeSpeedBadges,
-  findTimeTexts,
-  hideTimeSeparators,
   isProtectedPlayerStructure,
   resolvePlayerToolbarSlots,
   syncTimelineVisibility,
-  findNextLectureButton,
-  findNextChapterButton,
-  findAttemptDPPButton,
-  findNextDppWrapper,
   findDoubtButton,
   findChatButton,
   findAskAIButton,
@@ -33,11 +27,6 @@ export const classMap: Record<keyof HideSettings, string> = {
   hideSpeed: 'pwc-hide-speed',
   hideQuality: 'pwc-hide-quality',
   hideSetting: 'pwc-hide-setting',
-  hideTimeLine: 'pwc-hide-timeline',
-  hideTimeText: 'pwc-hide-timetext',
-  hideNextLecture: 'pwc-hide-nextlecture',
-  hideNextChapter: 'pwc-hide-nextchapter',
-  hideAttemptDPP: 'pwc-hide-attemptdpp',
 };
 
 // Apply layout class tags to documentElement for zero-flicker hiding
@@ -105,42 +94,6 @@ export function applyDistractorsState(): void {
     applySlotOrFallback(slots.askai, findAskAIButton, 'askai', activeSettings.hideAskAI);
   }
 
-  // Handle floating Next Lecture, Next Chapter & Attempt DPP cards
-  const nextLectureBtn = findNextLectureButton();
-  if (nextLectureBtn) {
-    nextLectureBtn.setAttribute('data-pwc-next-lecture', '');
-    setHidden(nextLectureBtn, activeSettings.hideNextLecture);
-  }
-
-  const nextChapterBtn = findNextChapterButton();
-  if (nextChapterBtn) {
-    nextChapterBtn.setAttribute('data-pwc-next-chapter', '');
-    setHidden(nextChapterBtn, activeSettings.hideNextChapter);
-  }
-
-  const attemptDPPBtn = findAttemptDPPButton();
-  if (attemptDPPBtn) {
-    attemptDPPBtn.setAttribute('data-pwc-attempt-dpp', '');
-    setHidden(attemptDPPBtn, activeSettings.hideAttemptDPP);
-  }
-
-  const nextDppWrapper = findNextDppWrapper(nextLectureBtn, attemptDPPBtn, nextChapterBtn);
-  if (nextDppWrapper) {
-    nextDppWrapper.setAttribute('data-pwc-next-dpp-wrapper', '');
-
-    const hasNextLecture = !!nextLectureBtn && nextDppWrapper.contains(nextLectureBtn);
-    const hasNextChapter = !!nextChapterBtn && nextDppWrapper.contains(nextChapterBtn);
-    const hasAttemptDPP = !!attemptDPPBtn && nextDppWrapper.contains(attemptDPPBtn);
-
-    const anyPresent = hasNextLecture || hasNextChapter || hasAttemptDPP;
-    const allPresentHidden =
-      (!hasNextLecture || activeSettings.hideNextLecture) &&
-      (!hasNextChapter || activeSettings.hideNextChapter) &&
-      (!hasAttemptDPP || activeSettings.hideAttemptDPP);
-
-    setHidden(nextDppWrapper, anyPresent && allPresentHidden);
-  }
-
   // Handle native Speed Badges next to the timer (dynamic — CSS can't target)
   const container = document.getElementById('pwc-speed-control');
   const nativeBadges = findNativeSpeedBadges();
@@ -185,13 +138,6 @@ export function applyDistractorsState(): void {
     setHidden(ssContainer, !state.extensionEnabled || !state.skipSilenceEnabled);
   }
 
-  // Handle timeline hiding and prevent duplicate progress bars on AI-chapter lectures
-  syncTimelineVisibility(activeSettings.hideTimeLine);
-
-  // Handle time display texts hiding
-  const timeTexts = findTimeTexts();
-  timeTexts.forEach((el) => {
-    setHidden(el, activeSettings.hideTimeText);
-    hideTimeSeparators(el, activeSettings.hideTimeText);
-  });
+  // Ensure fallback progress bar stays deduplicated on AI-chapter lectures
+  syncTimelineVisibility();
 }
