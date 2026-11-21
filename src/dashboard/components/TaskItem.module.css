@@ -2,14 +2,14 @@
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 13px;
-  border-radius: var(--radius-xl);
+  gap: 12px;
+  border-radius: var(--radius-lg);
   background-color: var(--bg-card);
-  padding: 16px 17px;
+  padding: 16px;
   box-shadow: var(--card-shadow);
   border: var(--card-border, none);
   outline: none;
-  margin-bottom: 13px;
+  margin-bottom: 12px;
   transition:
     border-color var(--transition-fast),
     background-color var(--transition-fast);
@@ -28,7 +28,7 @@
   height: 20px;
   min-width: 20px;
   margin-top: 2px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1.5px solid var(--text-muted);
   background-color: transparent;
   cursor: pointer;
@@ -149,8 +149,8 @@
 .taskMeta {
   display: flex;
   align-items: center;
-  gap: 7px;
-  margin-top: 9px;
+  gap: 8px;
+  margin-top: 8px;
   flex-wrap: wrap;
 }
 
@@ -159,8 +159,8 @@
   font-weight: 600;
   height: 20px;
   box-sizing: border-box;
-  padding: 0 7px;
-  border-radius: 6px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
   background-color: var(--accent-dim);
   color: var(--accent-primary);
   display: inline-flex;
@@ -176,8 +176,8 @@
   font-weight: 600;
   height: 20px;
   box-sizing: border-box;
-  padding: 0 7px;
-  border-radius: 6px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
   background-color: rgba(239, 68, 68, 0.12);
   color: #ef4444;
   display: inline-flex;
@@ -193,8 +193,8 @@
   font-weight: 600;
   height: 20px;
   box-sizing: border-box;
-  padding: 0 7px;
-  border-radius: 6px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
   border: none;
   display: inline-flex;
   align-items: center;
@@ -215,9 +215,9 @@
   font-size: 11.5px;
   font-family: inherit;
   cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 6px;
-  transition: all var(--transition-fast);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
   line-height: 1;
   white-space: nowrap;
 }

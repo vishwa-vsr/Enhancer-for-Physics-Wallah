@@ -21,7 +21,7 @@
   width: calc(33.333% - 4px);
   background: var(--tab-indicator-bg);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   box-shadow: var(--tab-indicator-shadow);
   transition: transform var(--transition-normal);
   z-index: 1;
@@ -39,7 +39,7 @@
   font-size: var(--font-size-sm);
   font-weight: 600;
   padding: 7px 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -65,9 +65,7 @@
   stroke: currentColor;
   fill: none;
   flex-shrink: 0;
-  transition:
-    color var(--transition-fast),
-    transform var(--transition-fast);
+  transition: color var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,5 +73,4 @@
 
 .tabBtn.active .tabIcon {
   color: var(--tab-btn-fg-active);
-  transform: scale(1.05);
 }

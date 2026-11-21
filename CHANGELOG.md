@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **Borderless Cards & Contrast**: Removed border lines and slightly brightened dark cards to a sleek charcoal gray so shapes stand out cleanly against pure black.
+- **Unified Rounded Corners**: Aligned corners across cards (12px), buttons and inputs (8px), and tags and badges (6px).
+- **Smooth Button Feedback**: Replaced button shrinking on click with smooth background color highlights and even spacing rhythm.
 - **Calendar Shadow**: Removed drop shadows from the date picker popup and selected dates for a clean, flat look.
 - **Empty Subject View**: Replaced the large card with simple centered text when a subject has no chapters.
 - **Action Buttons**: Removed movement animations when hovering over create and add buttons.

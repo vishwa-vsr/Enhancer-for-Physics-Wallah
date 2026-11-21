@@ -17,7 +17,7 @@
   height: 180px;
   box-sizing: border-box;
   padding: 12px 14px;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-md, 8px);
   background-color: var(--bg-control);
   color: var(--text-primary);
   border: 1px solid var(--divider-color);
@@ -41,7 +41,7 @@
   padding: 14px;
   background-color: var(--bg-control);
   border: 1px dashed var(--divider-color);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-md, 8px);
   cursor: pointer;
   transition:
     background-color 0.15s ease,
@@ -142,7 +142,7 @@
 .btnSecondary {
   height: 36px;
   padding: 0 14px;
-  border-radius: var(--radius-sm, 6px);
+  border-radius: var(--radius-md, 8px);
   background-color: var(--bg-control);
   color: var(--text-primary);
   border: none;
@@ -162,7 +162,7 @@
 .btnPrimary {
   height: 36px;
   padding: 0 16px;
-  border-radius: var(--radius-sm, 6px);
+  border-radius: var(--radius-md, 8px);
   background-color: var(--text-primary);
   color: var(--bg-card);
   border: none;
@@ -188,7 +188,7 @@
 .btnDanger {
   height: 36px;
   padding: 0 16px;
-  border-radius: var(--radius-sm, 6px);
+  border-radius: var(--radius-md, 8px);
   background-color: #ef4444;
   color: #ffffff;
   border: none;

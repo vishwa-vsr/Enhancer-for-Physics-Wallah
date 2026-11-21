@@ -350,7 +350,7 @@
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: none;
   outline: none;
   background: var(--accent-primary, #6366f1);
@@ -367,5 +367,5 @@
 }
 
 .addTaskBtn:active {
-  transform: scale(0.97);
+  filter: brightness(0.95);
 }

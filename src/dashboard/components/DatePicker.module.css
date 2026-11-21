@@ -80,10 +80,10 @@
   width: 290px;
   box-sizing: border-box;
   background-color: var(--bg-card, #191e28);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border: var(--card-border, none);
   outline: none;
-  border-radius: var(--radius-xl, 16px);
-  padding: 14px;
+  border-radius: var(--radius-lg, 12px);
+  padding: 12px;
   box-shadow: none;
   z-index: 99999;
   font-family: var(--font-sans);

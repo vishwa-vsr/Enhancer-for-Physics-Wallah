@@ -42,7 +42,7 @@
 .themeBtn {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background-color: var(--bg-card);
   border: none;
   outline: none;
@@ -53,8 +53,7 @@
   justify-content: center;
   transition:
     background-color var(--transition-fast),
-    color var(--transition-fast),
-    transform var(--transition-fast);
+    color var(--transition-fast);
   user-select: none;
   padding: 0;
 }
@@ -67,5 +66,5 @@
 
 .actionBtn:active,
 .themeBtn:active {
-  transform: scale(0.95);
+  background-color: var(--bg-control-hover);
 }

@@ -27,7 +27,7 @@
   width: 100%;
   height: 40px;
   padding: 0 14px;
-  border-radius: var(--radius-md, 10px);
+  border-radius: var(--radius-md, 8px);
   border: none;
   background-color: var(--bg-control);
   color: var(--text-primary);
@@ -72,8 +72,8 @@
 .cancelBtn {
   height: 30px;
   box-sizing: border-box;
-  padding: 0 13px;
-  border-radius: var(--radius-sm, 6px);
+  padding: 0 14px;
+  border-radius: var(--radius-md, 8px);
   border: none;
   outline: none;
   background-color: var(--bg-control);
@@ -85,7 +85,7 @@
   line-height: 1;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast, 0.15s ease);
+  transition: background-color var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease);
 }
 
 .cancelBtn:hover {
@@ -97,7 +97,7 @@
   height: 30px;
   box-sizing: border-box;
   padding: 0 14px;
-  border-radius: var(--radius-sm, 6px);
+  border-radius: var(--radius-md, 8px);
   border: none;
   background: var(--accent-primary, #6366f1);
   color: #ffffff;

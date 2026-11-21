@@ -86,7 +86,7 @@
   background-color: var(--bg-control);
   border: none;
   outline: none;
-  border-radius: var(--radius-md, 10px);
+  border-radius: var(--radius-md, 8px);
   box-sizing: border-box;
 }
 
@@ -101,7 +101,7 @@
 
 .iconBtn {
   height: 36px;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm, 6px);
   border: none;
   outline: none;
   background: transparent;
@@ -110,13 +110,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast, 0.12s ease);
+  transition: background-color var(--transition-fast, 0.12s ease), color var(--transition-fast, 0.12s ease);
 }
 
 .iconBtn:hover {
   background-color: var(--bg-control-hover);
   color: var(--text-primary);
-  transform: scale(1.05);
 }
 
 .iconBtnSelected {

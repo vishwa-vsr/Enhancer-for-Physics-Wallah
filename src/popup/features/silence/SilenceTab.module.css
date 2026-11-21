@@ -204,7 +204,8 @@
 }
 
 .settingsToggleBtn:active {
-  transform: scale(0.92);
+  background: var(--bg-control-hover);
+  color: var(--accent-primary);
 }
 
 .resetSpeedBtn {
@@ -228,7 +229,7 @@
 }
 
 .resetSpeedBtn:active .resetIcon {
-  transform: rotate(-180deg) scale(0.9);
+  transform: rotate(-180deg);
 }
 
 .ssConflictTip {

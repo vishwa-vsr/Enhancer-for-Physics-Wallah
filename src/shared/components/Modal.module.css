@@ -34,9 +34,9 @@
 
 .modalContent {
   background-color: var(--bg-card);
-  border: var(--card-border, 1px solid var(--border-subtle));
+  border: var(--card-border, none);
   outline: none;
-  border-radius: var(--radius-xl, 16px);
+  border-radius: var(--radius-lg, 12px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   animation: scaleUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
@@ -74,7 +74,7 @@
   width: 900px;
   max-width: 94vw;
   max-height: 90vh;
-  padding: 26px 28px;
+  padding: 24px;
 }
 
 .modalHeader {
@@ -104,11 +104,11 @@
   color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
-  border-radius: var(--radius-sm, 6px);
+  border-radius: var(--radius-md, 8px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
   line-height: 1;
 }
 

@@ -29,8 +29,8 @@
 /* Base Card (Flat surface: No border, no drop shadow per dashboard design) */
 .card {
   background-color: var(--bg-card);
-  border-radius: var(--radius-lg, 14px);
-  padding: 20px 22px;
+  border-radius: var(--radius-lg, 12px);
+  padding: 20px;
   box-shadow: none;
   border: none;
   display: flex;
@@ -39,7 +39,7 @@
 
 /* Appearance Card (Compact layout) */
 .appearanceCard {
-  padding: 16px 18px;
+  padding: 16px;
 }
 
 .appearanceCard .cardHeader {

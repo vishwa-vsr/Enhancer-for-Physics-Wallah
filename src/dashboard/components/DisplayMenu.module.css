@@ -52,13 +52,13 @@
   right: 0;
   width: 268px;
   background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: var(--card-border, none);
   outline: none;
-  border-radius: 14px;
+  border-radius: var(--radius-lg, 12px);
   box-shadow:
     0 14px 36px rgba(0, 0, 0, 0.4),
     0 2px 8px rgba(0, 0, 0, 0.2);
-  padding: 14px;
+  padding: 12px;
   z-index: 120;
   animation: popoverFadeIn 140ms cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -105,7 +105,7 @@
   gap: 6px;
   background-color: var(--bg-main);
   padding: 4px;
-  border-radius: 10px;
+  border-radius: var(--radius-md, 8px);
   border: none;
   outline: none;
 }
@@ -117,7 +117,7 @@
   justify-content: center;
   gap: 6px;
   padding: 10px 8px;
-  border-radius: 7px;
+  border-radius: var(--radius-sm, 6px);
   border: none;
   outline: none;
   background: transparent;
