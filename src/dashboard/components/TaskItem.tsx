@@ -198,7 +198,6 @@ export const TaskItem = ({ task, onEditRequest }: TaskItemProps) => {
                   style={{
                     color: color,
                     backgroundColor: getAlphaColor(color, 0.12),
-                    borderColor: getAlphaColor(color, 0.25),
                   }}
                 >
                   {tag}

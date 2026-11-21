@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **Calendar Shadow**: Removed drop shadows from the date picker popup and selected dates for a clean, flat look.
+- **Empty Subject View**: Replaced the large card with simple centered text when a subject has no chapters.
+- **Action Buttons**: Removed movement animations when hovering over create and add buttons.
+- **Study Labels**: Removed outlines from label tags on task cards and in settings, and centered label text.
+
 ### Removed
 
 - **Outdated Focus Cleaners**: Removed unused toggles for Attempt DPP, Next Lecture, Next Chapter, Timeline Line, and Time Display, and replaced them with 'Removed! Why?' explanation tags.

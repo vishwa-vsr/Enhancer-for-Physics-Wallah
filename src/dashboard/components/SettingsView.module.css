@@ -141,6 +141,7 @@
 .labelChip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 6px 12px;
   border-radius: var(--radius-sm, 6px);
@@ -153,7 +154,7 @@
   transition:
     filter 0.15s ease,
     box-shadow 0.15s ease;
-  border: 1px solid;
+  border: none;
 }
 
 .labelChip:hover {

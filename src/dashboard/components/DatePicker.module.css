@@ -84,9 +84,7 @@
   outline: none;
   border-radius: var(--radius-xl, 16px);
   padding: 14px;
-  box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.6),
-    0 4px 16px rgba(0, 0, 0, 0.35);
+  box-shadow: none;
   z-index: 99999;
   font-family: var(--font-sans);
   user-select: none;
@@ -237,7 +235,7 @@
   background-color: var(--accent-primary, #6c63ff) !important;
   color: #ffffff !important;
   font-weight: 700;
-  box-shadow: 0 2px 8px var(--accent-dim, rgba(108, 99, 255, 0.4));
+  box-shadow: none;
   border-radius: 8px;
 }
 

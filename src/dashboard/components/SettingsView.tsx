@@ -446,7 +446,6 @@ export const SettingsView = () => {
                     class={`${styles.labelChip} ${isEditing ? styles.labelChipEditing : ''}`}
                     style={{
                       backgroundColor: getAlphaColor(tag.color, 0.14),
-                      borderColor: `${tag.color}45`,
                     }}
                     onClick={() => handleStartEdit(tag)}
                     title={`Click to edit or delete "${tag.name}"`}

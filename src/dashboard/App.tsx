@@ -330,44 +330,8 @@ export const App = () => {
               <>
                 {/* If in chapter view and no chapters exist yet in subject */}
                 {currentView.type === 'chapter' && !currentView.chapterId ? (
-                  <div class={styles.emptyChapterCard}>
-                    <div class={styles.emptyChapterIcon}>
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        width="24"
-                        height="24"
-                      >
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                      </svg>
-                    </div>
-                    <h3 class={styles.emptyChapterTitle}>No chapters in this subject yet</h3>
-                    <p class={styles.emptyChapterDesc}>
-                      Add your first chapter to begin adding study tasks.
-                    </p>
-                    {activeSubject && (
-                      <button
-                        type="button"
-                        class={styles.primaryActionBtn}
-                        onClick={() => handleOpenAddChapter(activeSubject.id)}
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2.5}
-                          width="14"
-                          height="14"
-                        >
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        Add Chapter
-                      </button>
-                    )}
+                  <div class={styles.emptyTasksState}>
+                    <p class={styles.emptyTasksText}>No chapters in this subject yet.</p>
                   </div>
                 ) : taskList.length === 0 ? (
                   <div class={styles.emptyTasksState}>
