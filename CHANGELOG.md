@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.1.0.12] - 2026-11-23
+
 ### Changed
 
 - **Borderless Cards & Contrast**: Removed border lines and slightly brightened dark cards to a sleek charcoal gray so shapes stand out cleanly against pure black.
@@ -15,6 +17,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Empty Subject View**: Replaced the large card with simple centered text when a subject has no chapters.
 - **Action Buttons**: Removed movement animations when hovering over create and add buttons.
 - **Study Labels**: Removed outlines from label tags on task cards and in settings, and centered label text.
+
+### Fixed
+
+- **Player Auto-Hide Override ([#56](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/56))**: Fixed an issue where turning off 'Auto-Hide Controls & Cursor' permanently froze the video player timeline, footer controls, and header buttons on screen.
+- **Popup Card Alignment on Scrollbar**: Fixed cards shifting left when expanding collapsible settings (like Volume Scroll in Playback) by locking the card width to match the top tabs with a dedicated scrollbar lane, keeping cards centered with even 14px margins.
 
 ### Removed
 

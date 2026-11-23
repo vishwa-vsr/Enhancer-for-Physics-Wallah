@@ -143,11 +143,12 @@ function isPlayerPaused(video: HTMLVideoElement | null, container: HTMLElement |
   );
 }
 
-// Keep our Auto-Hide as the single authority when extensionEnabled is true so PW's 5s React timer cannot override Auto-Hide OFF or delays > 5s
+// Keep our Auto-Hide as the single authority only when Auto-Hide is ENABLED so PW's 5s React timer cannot override custom delays
 export function syncAutoHideBossClass(): void {
   const container = getPlayerContainer();
   const shouldKeepVisible =
     Boolean(state.extensionEnabled) &&
+    Boolean(state.autoHideControls) &&
     Boolean(container) &&
     !container!.classList.contains('pwc-autohide-inactive') &&
     !container!.classList.contains('pwc-collapsed-state');
@@ -238,7 +239,7 @@ function isConsistentShortcutKey(e: KeyboardEvent): boolean {
 
 function onUserActivity(e: Event): void {
   if (!e.isTrusted) return;
-  if (!state.extensionEnabled) return;
+  if (!state.extensionEnabled || !state.autoHideControls) return;
   const container = getPlayerContainer();
   if (container?.classList.contains('pwc-collapsed-state')) return;
   if (!isEventInsidePlayer(e)) return;
@@ -255,7 +256,9 @@ function onUserActivity(e: Event): void {
 
 export function wakeAutoHide(): void {
   wakeUp();
-  scheduleNextCheck();
+  if (state.extensionEnabled && state.autoHideControls) {
+    scheduleNextCheck();
+  }
 }
 
 export function syncAutoHide(): void {
@@ -288,7 +291,7 @@ export function initAutoHide(): void {
   window.addEventListener(
     'click',
     (e: MouseEvent) => {
-      if (!state.extensionEnabled) return;
+      if (!state.extensionEnabled || !state.autoHideControls) return;
       if (!isValidPlayerWakeClick(e)) return;
       if (isPointerHolding() || isPointerReleasing()) return;
       const container = getPlayerContainer();
@@ -404,6 +407,7 @@ export function initAutoHide(): void {
   document.addEventListener(
     'play',
     () => {
+      if (!state.extensionEnabled || !state.autoHideControls) return;
       scheduleNextCheck();
     },
     true,
@@ -412,6 +416,7 @@ export function initAutoHide(): void {
   document.addEventListener(
     'pause',
     () => {
+      if (!state.extensionEnabled || !state.autoHideControls) return;
       const video = getActiveVideo();
       const isLive = video ? isLiveVideo(video) : false;
       const isProgrammaticPollPause =
