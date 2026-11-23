@@ -126,7 +126,9 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
-  transition: background-color var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease);
+  transition:
+    background-color var(--transition-fast, 0.15s ease),
+    color var(--transition-fast, 0.15s ease);
   white-space: nowrap;
 }
 
@@ -151,7 +153,9 @@
   justify-content: center;
   line-height: 1;
   box-shadow: none;
-  transition: opacity var(--transition-fast, 0.15s ease), filter var(--transition-fast, 0.15s ease);
+  transition:
+    opacity var(--transition-fast, 0.15s ease),
+    filter var(--transition-fast, 0.15s ease);
   white-space: nowrap;
 }
 

@@ -92,7 +92,9 @@
   border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
   outline: none;
   width: 100%;
 }

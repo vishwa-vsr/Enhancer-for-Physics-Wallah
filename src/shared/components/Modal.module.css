@@ -108,7 +108,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
   line-height: 1;
 }
 

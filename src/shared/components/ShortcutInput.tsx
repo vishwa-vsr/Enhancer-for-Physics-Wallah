@@ -111,7 +111,10 @@ export const ShortcutInput = ({
       onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
-      title={title || (value ? `Shortcut: ${value.toUpperCase()} (Click to change)` : 'Click to set shortcut')}
+      title={
+        title ||
+        (value ? `Shortcut: ${value.toUpperCase()} (Click to change)` : 'Click to set shortcut')
+      }
       aria-label={ariaLabel || 'Keyboard Shortcut Key'}
     />
   );

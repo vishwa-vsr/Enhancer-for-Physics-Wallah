@@ -1,4 +1,11 @@
-import { ContentState, HideSettings, StateChangeListener, ThemeMode, VideoQuality } from './types';
+import {
+  ContentState,
+  HideSettings,
+  StateChangeListener,
+  ThemeMode,
+  VideoQuality,
+  VolumeBalancerMode,
+} from './types';
 import { resolveSafeSpeedShortcuts, sanitizeSpeedShortcut } from '../shared/shortcuts';
 
 export const DEFAULT_HIDE_SETTINGS: HideSettings = {
@@ -105,12 +112,12 @@ function notifyListeners(changedKeys: string[]): void {
 }
 
 // Sanitize 4 snap points array
-export function sanitizeSnapPoints(points: any): number[] {
+export function sanitizeSnapPoints(points: unknown): number[] {
   if (!points || !Array.isArray(points) || points.length !== 4) {
     return [1.0, 1.5, 2.0, 2.5];
   }
   const raw = points.map((v) => {
-    let n = parseFloat(v);
+    let n = parseFloat(String(v));
     if (isNaN(n) || n < 0.5) n = 0.5;
     if (n > 4.0) n = 4.0;
     return Math.round(n * 10) / 10;
@@ -130,6 +137,7 @@ export function sanitizeSnapPoints(points: any): number[] {
 }
 
 // Helper to safely access chrome storage without throwing context invalidated exceptions
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function safeGetSettings(callback: (result: Record<string, any>) => void): void {
   if (
     typeof chrome === 'undefined' ||
@@ -225,6 +233,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
 }
 
 // Helper to safely write chrome storage without throwing context invalidated exceptions
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function safeSetSettings(data: Record<string, any>): void {
   if (
     typeof chrome === 'undefined' ||
@@ -363,7 +372,7 @@ export function initState(onLoaded?: () => void): void {
     state.skipSilenceLowCpu = !!result.skipSilenceLowCpu;
 
     state.volumeBalancerEnabled = !!result.volumeBalancerEnabled;
-    state.volumeBalancerMode = (result.volumeBalancerMode as any) || 'balanced';
+    state.volumeBalancerMode = (result.volumeBalancerMode as VolumeBalancerMode) || 'balanced';
 
     state.lectureTimeEnabled = result.lectureTimeEnabled !== false;
     state.showFinishTime = result.showFinishTime !== false;
@@ -580,7 +589,9 @@ export function initState(onLoaded?: () => void): void {
               changedKeys.push('volumeBalancerEnabled');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'volumeBalancerMode')) {
-              state.volumeBalancerMode = (changes.volumeBalancerMode.newValue as any) || 'balanced';
+              state.volumeBalancerMode =
+                (changes.volumeBalancerMode as { newValue?: VolumeBalancerMode })?.newValue ||
+                'balanced';
               changedKeys.push('volumeBalancerMode');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'snapPoints')) {

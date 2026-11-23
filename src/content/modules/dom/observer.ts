@@ -238,8 +238,7 @@ export function monitor(): void {
       }
       if (
         video &&
-        ((state.skipSilenceEnabled && state.skipSilenceActive) ||
-          state.volumeBalancerEnabled) &&
+        ((state.skipSilenceEnabled && state.skipSilenceActive) || state.volumeBalancerEnabled) &&
         !video.paused
       ) {
         ensureAudioPipelineRunning();
@@ -268,8 +267,7 @@ export function monitor(): void {
     }
     if (
       video &&
-      ((state.skipSilenceEnabled && state.skipSilenceActive) ||
-        state.volumeBalancerEnabled) &&
+      ((state.skipSilenceEnabled && state.skipSilenceActive) || state.volumeBalancerEnabled) &&
       !video.paused
     ) {
       ensureAudioPipelineRunning();

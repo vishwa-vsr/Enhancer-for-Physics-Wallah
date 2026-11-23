@@ -59,11 +59,10 @@ export function getLiveStreamLag(video: HTMLVideoElement): number | null {
 export function hasGoLiveButton(): boolean {
   const outer = getOuterPlayerContainer();
   const progressScope =
-    outer?.querySelector('#progress-placeholder') || document.getElementById('progress-placeholder');
+    outer?.querySelector('#progress-placeholder') ||
+    document.getElementById('progress-placeholder');
   const scope =
-    progressScope ||
-    outer?.querySelector('#player-footer-controls, .vjs-control-bar') ||
-    outer;
+    progressScope || outer?.querySelector('#player-footer-controls, .vjs-control-bar') || outer;
   if (!scope) return false;
 
   const livePoll = scope.querySelector('#live-poll');

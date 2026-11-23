@@ -85,7 +85,9 @@
   line-height: 1;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease);
+  transition:
+    background-color var(--transition-fast, 0.15s ease),
+    color var(--transition-fast, 0.15s ease);
 }
 
 .cancelBtn:hover {

@@ -137,7 +137,10 @@ export function getSanitizedLectureTitle(): string {
   if (titleEl && titleEl.textContent?.trim()) {
     raw = titleEl.textContent.trim();
   } else if (document.title && !document.title.toLowerCase().includes('pw video player')) {
-    raw = document.title.replace(/\|.*$/, '').replace(/- Physics Wallah.*$/i, '').trim();
+    raw = document.title
+      .replace(/\|.*$/, '')
+      .replace(/- Physics Wallah.*$/i, '')
+      .trim();
   }
 
   if (!raw || raw.toLowerCase().includes('video player')) {
@@ -488,8 +491,7 @@ export function openSlideViewer(targetIndex: number, options?: { viaShortcut?: b
   let modal = document.getElementById(MODAL_ID);
   if (!modal) {
     modal = createSlideViewerModal();
-    const host =
-      document.fullscreenElement || getOuterPlayerContainer() || document.body;
+    const host = document.fullscreenElement || getOuterPlayerContainer() || document.body;
     host.appendChild(modal);
     activeModal = modal;
   }
@@ -1046,8 +1048,7 @@ function bindModalEventListeners(): void {
       !e.ctrlKey &&
       !e.altKey &&
       !e.metaKey &&
-      (e.key.toLowerCase() === targetViewerKey ||
-        e.code.toLowerCase() === `key${targetViewerKey}`)
+      (e.key.toLowerCase() === targetViewerKey || e.code.toLowerCase() === `key${targetViewerKey}`)
     ) {
       e.stopPropagation();
       e.preventDefault();

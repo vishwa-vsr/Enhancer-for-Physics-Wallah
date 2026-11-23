@@ -153,7 +153,9 @@
   let isQuickExiting = false;
   let quickExitResetTimer: ReturnType<typeof setTimeout> | undefined;
 
-  function getCaptureFlag(options?: boolean | AddEventListenerOptions | EventListenerOptions): boolean {
+  function getCaptureFlag(
+    options?: boolean | AddEventListenerOptions | EventListenerOptions,
+  ): boolean {
     return typeof options === 'boolean' ? options : Boolean(options?.capture);
   }
 
@@ -195,10 +197,7 @@
 
       const capture = getCaptureFlag(options);
       const alreadyTracked = registeredBeforeUnloadRecords.some(
-        (r) =>
-          r.target === this &&
-          r.orig === listener &&
-          getCaptureFlag(r.options) === capture,
+        (r) => r.target === this && r.orig === listener && getCaptureFlag(r.options) === capture,
       );
       if (!alreadyTracked) {
         registeredBeforeUnloadRecords.push({
@@ -283,12 +282,16 @@
   let isConstantQualityEnabled: boolean = false;
   try {
     isConstantQualityEnabled = localStorage.getItem('pwc_constant_quality') === 'true';
-  } catch (_e) {}
+  } catch {
+    // Ignored: localStorage unavailable
+  }
 
   let isBlockRecordedPollsEnabled: boolean = false;
   try {
     isBlockRecordedPollsEnabled = localStorage.getItem('pwc_block_recorded_polls') === 'true';
-  } catch (_e) {}
+  } catch {
+    // Ignored: localStorage unavailable
+  }
 
   // Path A: Neutralize recorded poll cuepoints/text tracks if scheduled via Video.js / HTMLMediaElement
   try {
@@ -306,14 +309,9 @@
         return origAddCue.call(this, cue);
       };
     }
-  } catch (_e) {}
-
-  console.log(
-    '[PWC-QUALITY] Engine Bridge initialized at document_start. Constant quality active:',
-    isConstantQualityEnabled,
-    'Default target:',
-    targetQuality,
-  );
+  } catch {
+    // Ignored: TextTrack API unavailable
+  }
 
   // 1. Pre-seed localStorage bandwidth for VHS before player boots (only if constant quality is active)
   if (isConstantQualityEnabled) {
@@ -322,7 +320,9 @@
       const data = existing ? JSON.parse(existing) : {};
       data.bandwidth = 100000000; // 100 Mbps
       localStorage.setItem('videojs-vhs', JSON.stringify(data));
-    } catch (_e) {}
+    } catch {
+      // Ignored: localStorage unavailable
+    }
   }
 
   // Helper to configure high bandwidth options on VHS instances
@@ -344,8 +344,9 @@
         vjs.options.html5.vhs = vjs.options.html5.vhs || {};
         applyHighBandwidthProfile(vjs.options.html5.vhs);
       }
-      console.log('[PWC-QUALITY] Seeded Video.js global VHS options (100 Mbps)');
-    } catch (_e) {}
+    } catch {
+      // Ignored: VHS options not configurable
+    }
   }
 
   if (pwcWin.videojs) {
@@ -364,7 +365,9 @@
           seedVideoJsOptions(val);
         },
       });
-    } catch (_e) {}
+    } catch {
+      // Ignored: window.videojs property already sealed
+    }
   }
 
   function getPlayer(): VideoJsPlayer | null {
@@ -408,7 +411,9 @@
         const p = (elements[i] as HTMLElement & { player?: VideoJsPlayer }).player;
         if (p) return p;
       }
-    } catch (_e) {}
+    } catch {
+      // Ignored: DOM query error
+    }
     return null;
   }
 
@@ -523,9 +528,9 @@
         const origSelectPlaylist = vhs.selectPlaylist;
         let initialChunkSelected = false;
 
-        vhs.selectPlaylist = function () {
+        vhs.selectPlaylist = function (...args: unknown[]) {
           if (!isConstantQualityEnabled) {
-            return origSelectPlaylist.apply(this, arguments as any);
+            return origSelectPlaylist.apply(this, args as Parameters<typeof origSelectPlaylist>);
           }
           if (!initialChunkSelected && targetQuality && targetQuality !== 'auto') {
             initialChunkSelected = true;
@@ -533,8 +538,8 @@
             const targetHeight = parseInt(clean, 10);
             const master = vhs.playlists?.master;
             const playlists =
-              arguments && arguments[0] && Array.isArray(arguments[0])
-                ? (arguments[0] as PlaylistEntry[])
+              args && args[0] && Array.isArray(args[0])
+                ? (args[0] as PlaylistEntry[])
                 : master && Array.isArray(master.playlists)
                   ? master.playlists
                   : null;
@@ -543,23 +548,21 @@
               const bestIdx = findClosestIndexByHeight(heights, targetHeight);
               if (bestIdx >= 0 && playlists[bestIdx]) {
                 const chosen = playlists[bestIdx];
-                console.log(
-                  `[PWC-QUALITY] selectPlaylist picked initial ${chosen.attributes?.RESOLUTION?.height}p rendition`,
-                );
                 return chosen;
               }
             }
           }
-          return origSelectPlaylist.apply(this, arguments as any);
+          return origSelectPlaylist.apply(this, args as Parameters<typeof origSelectPlaylist>);
         };
         if (typeof player.on === 'function') {
           player.on('loadstart', () => {
             initialChunkSelected = false;
           });
         }
-        console.log('[PWC-QUALITY] Successfully hooked VHS selectPlaylist');
       }
-    } catch (_e) {}
+    } catch {
+      // Ignored: VHS ABR hook not supported on this player
+    }
   }
 
   function attachLevelsListeners(levels: QualityLevelList | null) {
@@ -567,7 +570,6 @@
     levels.__pwc_attached = true;
 
     const onAdd = () => {
-      console.log('[PWC-QUALITY] addqualitylevel fired, re-applying target:', targetQuality);
       if (targetQuality) applyQuality(targetQuality);
       broadcastState(levels);
     };
@@ -584,7 +586,9 @@
         levels.addEventListener('addqualitylevel', onAdd);
         levels.addEventListener('change', onChange);
       }
-    } catch (_e) {}
+    } catch {
+      // Ignored: quality level listeners failed
+    }
   }
 
   function applyQuality(quality: string): boolean {
@@ -624,11 +628,6 @@
             levels[i].enabled = i === matchIdx;
           }
         }
-        if (matchIdx >= 0 && levels[matchIdx]) {
-          console.log(
-            `[PWC-QUALITY] Locked qualityLevels[${matchIdx}] (${levels[matchIdx].height}p) enabled=true`,
-          );
-        }
         applied = matchIdx !== -1;
       }
       broadcastState(levels);
@@ -661,13 +660,14 @@
                   r.enabled(r === matchRep);
                 }
               });
-              console.log(`[PWC-QUALITY] Locked via vhs.representations: ${matchRep.height}p`);
               applied = true;
             }
           }
           broadcastState();
         }
-      } catch (_e) {}
+      } catch {
+        // Ignored: VHS representations API not accessible
+      }
     }
 
     return applied;
@@ -709,7 +709,6 @@
   window.addEventListener('PWC_SET_QUALITY', (event: Event) => {
     const customEvt = event as CustomEvent<{ quality?: string }>;
     if (customEvt && customEvt.detail && customEvt.detail.quality) {
-      console.log('[PWC-QUALITY] Received PWC_SET_QUALITY:', customEvt.detail.quality);
       applyQuality(customEvt.detail.quality);
     }
   });
@@ -718,10 +717,11 @@
     const customEvt = event as CustomEvent<{ enabled?: boolean }>;
     if (customEvt && customEvt.detail !== undefined) {
       isConstantQualityEnabled = !!customEvt.detail.enabled;
-      console.log('[PWC-QUALITY] Constant quality enabled changed to:', isConstantQualityEnabled);
       try {
         localStorage.setItem('pwc_constant_quality', isConstantQualityEnabled ? 'true' : 'false');
-      } catch (_e) {}
+      } catch {
+        // Ignored: localStorage not writable
+      }
 
       if (isConstantQualityEnabled) {
         if (pwcWin.videojs) {
@@ -752,7 +752,9 @@
           'pwc_block_recorded_polls',
           isBlockRecordedPollsEnabled ? 'true' : 'false',
         );
-      } catch (_e) {}
+      } catch {
+        // Ignored: localStorage not writable
+      }
     }
   });
 
@@ -768,7 +770,6 @@
     'loadstart',
     (e: Event) => {
       if (isConstantQualityEnabled && e.target instanceof HTMLVideoElement) {
-        console.log('[PWC-QUALITY] Video loadstart detected');
         startQualityEnforcementLoop();
       }
     },
@@ -779,7 +780,6 @@
     'loadedmetadata',
     (e: Event) => {
       if (isConstantQualityEnabled && e.target instanceof HTMLVideoElement) {
-        console.log('[PWC-QUALITY] Video loadedmetadata detected -> enforcing quality');
         const player = getPlayer();
         if (player) hookPlayerABR(player);
         applyQuality(targetQuality);

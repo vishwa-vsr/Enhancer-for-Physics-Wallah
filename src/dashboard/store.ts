@@ -122,7 +122,7 @@ export async function loadPlannerData(): Promise<void> {
         await persistData();
       }
 
-      if ((activeView.value as any)?.type === 'upcoming') {
+      if ((activeView.value as { type?: string })?.type === 'upcoming') {
         activeView.value = { type: 'today' };
       }
     }

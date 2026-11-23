@@ -25,7 +25,11 @@ let isLifecycleBound = false;
 
 function isEventInsidePlayerContainer(e: Event, player: HTMLElement): boolean {
   const target = e.target;
-  if (document.fullscreenElement && target instanceof Node && document.fullscreenElement.contains(target)) {
+  if (
+    document.fullscreenElement &&
+    target instanceof Node &&
+    document.fullscreenElement.contains(target)
+  ) {
     return true;
   }
   if (target instanceof Node && player.contains(target)) {
@@ -225,12 +229,16 @@ function resolveInstantHidePlacement(): { parent: Element; anchor: Element | nul
   }
 
   const footerRight =
-    outer?.querySelector('#footer-right-section') || document.getElementById('footer-right-section');
+    outer?.querySelector('#footer-right-section') ||
+    document.getElementById('footer-right-section');
   if (footerRight?.parentElement) {
     const parent = footerRight.parentElement;
     return {
       parent,
-      anchor: parent.firstElementChild?.id === 'pwc-instant-hide-btn' ? parent.firstElementChild.nextElementSibling : parent.firstElementChild,
+      anchor:
+        parent.firstElementChild?.id === 'pwc-instant-hide-btn'
+          ? parent.firstElementChild.nextElementSibling
+          : parent.firstElementChild,
     };
   }
 

@@ -335,6 +335,7 @@ export function findFullscreenButton(): Element | null {
   // Always exclude Video.js's internal .vjs-fullscreen-control so we never fullscreen .video-js alone without PW's overlay
   const selector =
     '[id*="fullscreen" i]:not(.vjs-fullscreen-control), [title*="fullscreen" i]:not(.vjs-fullscreen-control), ' +
+    '[aria-label*="fullscreen" i]:not(.vjs-fullscreen-control), [aria-label*="full screen" i]:not(.vjs-fullscreen-control), ' +
     '[id*="full-screen" i]:not(.vjs-fullscreen-control), [title*="full-screen" i]:not(.vjs-fullscreen-control), ' +
     '[class*="fullscreen" i]:not(.vjs-fullscreen-control), [class*="full-screen" i]:not(.vjs-fullscreen-control)';
 

@@ -110,7 +110,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color var(--transition-fast, 0.12s ease), color var(--transition-fast, 0.12s ease);
+  transition:
+    background-color var(--transition-fast, 0.12s ease),
+    color var(--transition-fast, 0.12s ease);
 }
 
 .iconBtn:hover {

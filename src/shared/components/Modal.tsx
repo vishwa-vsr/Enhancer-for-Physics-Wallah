@@ -57,8 +57,7 @@ export const Modal = ({
     isOverlayMouseDownRef.current = false;
   };
 
-  const sizeClass =
-    size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd;
+  const sizeClass = size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd;
 
   return (
     <div

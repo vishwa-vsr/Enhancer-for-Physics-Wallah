@@ -348,9 +348,7 @@ export function initPollBlocker(): void {
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      const pollBtn = target.closest<HTMLElement>(
-        '#record-poll-icon, button[aria-label="Poll" i]',
-      );
+      const pollBtn = target.closest<HTMLElement>('#record-poll-icon, button[aria-label="Poll" i]');
       if (pollBtn) {
         pollBtn.blur();
       }
@@ -408,67 +406,67 @@ export function handleRecordedPolls(): void {
       drawer.setAttribute('data-pwc-poll-suppressed', 'true');
     }
 
-  // CSS rules handle instant zero-flicker suppression as long as #close-poll-wrapperIcon is present
+    // CSS rules handle instant zero-flicker suppression as long as #close-poll-wrapperIcon is present
 
-  // Release typing focus only if the student isn't actively typing and focus is on the close button
-  if (!isUserTyping()) {
-    const active = document.activeElement;
-    if (active && (active === closeBtn || (drawer && drawer.contains(active)))) {
-      (active as HTMLElement).blur();
+    // Release typing focus only if the student isn't actively typing and focus is on the close button
+    if (!isUserTyping()) {
+      const active = document.activeElement;
+      if (active && (active === closeBtn || (drawer && drawer.contains(active)))) {
+        (active as HTMLElement).blur();
+      }
     }
-  }
 
-  // Dismiss poll via native close button click (fire only once per button instance)
-  if (!dismissedButtons.has(closeBtn)) {
-    dismissedButtons.add(closeBtn);
-    if (!closeBtn.disabled) {
-      lastAutoDismissTime = Date.now();
+    // Dismiss poll via native close button click (fire only once per button instance)
+    if (!dismissedButtons.has(closeBtn)) {
+      dismissedButtons.add(closeBtn);
+      if (!closeBtn.disabled) {
+        lastAutoDismissTime = Date.now();
+        try {
+          closeBtn.click();
+        } catch {
+          // Ignored
+        }
+        schedulePollButtonBlur();
+      }
+    }
+
+    // If focus is still on the poll icon after an automatic dismissal, ensure poll button is blurred
+    if (!userOpenedPoll && !isUserTyping()) {
+      const active = document.activeElement;
+      const pollBtn = document.querySelector<HTMLElement>(
+        '#record-poll-icon, button[aria-label="Poll" i]',
+      );
+      if (active && pollBtn && (active === pollBtn || pollBtn.contains(active))) {
+        pollBtn.blur();
+      }
+    }
+
+    // Ensure PW's bottom player controls remain unhidden and interactive
+    const footerControls = document.getElementById('player-footer-controls');
+    if (footerControls) {
+      footerControls.classList.remove('!hidden', 'sf-hidden');
+      footerControls.style.removeProperty('display');
+    }
+
+    // Neutralize PW's "All controls are disabled during Poll!" blocking overlay visually via CSS
+    // (We NEVER call .remove() on React-managed DOM elements to avoid React reconciliation crashes)
+
+    // Smart Resume: If the video was playing right before PW paused for the poll, resume playback
+    if (wasPlayingBeforePoll && video && video.paused) {
+      // Guard: Do not resume if user switched tabs and autoPauseOnHide is enabled
+      if (document.hidden && state.autoPauseOnHide) {
+        return;
+      }
+
       try {
-        closeBtn.click();
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
       } catch {
         // Ignored
       }
-      schedulePollButtonBlur();
     }
-  }
-
-  // If focus is still on the poll icon after an automatic dismissal, ensure poll button is blurred
-  if (!userOpenedPoll && !isUserTyping()) {
-    const active = document.activeElement;
-    const pollBtn = document.querySelector<HTMLElement>(
-      '#record-poll-icon, button[aria-label="Poll" i]',
-    );
-    if (active && pollBtn && (active === pollBtn || pollBtn.contains(active))) {
-      pollBtn.blur();
-    }
-  }
-
-  // Ensure PW's bottom player controls remain unhidden and interactive
-  const footerControls = document.getElementById('player-footer-controls');
-  if (footerControls) {
-    footerControls.classList.remove('!hidden', 'sf-hidden');
-    footerControls.style.removeProperty('display');
-  }
-
-  // Neutralize PW's "All controls are disabled during Poll!" blocking overlay visually via CSS
-  // (We NEVER call .remove() on React-managed DOM elements to avoid React reconciliation crashes)
-
-  // Smart Resume: If the video was playing right before PW paused for the poll, resume playback
-  if (wasPlayingBeforePoll && video && video.paused) {
-    // Guard: Do not resume if user switched tabs and autoPauseOnHide is enabled
-    if (document.hidden && state.autoPauseOnHide) {
-      return;
-    }
-
-    try {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {});
-      }
-    } catch {
-      // Ignored
-    }
-  }
   } finally {
     isHandlingPoll = false;
   }

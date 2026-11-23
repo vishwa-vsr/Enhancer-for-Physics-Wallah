@@ -217,7 +217,9 @@
   cursor: pointer;
   padding: 2px 8px;
   border-radius: var(--radius-sm);
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
   line-height: 1;
   white-space: nowrap;
 }

@@ -170,11 +170,7 @@ export function initKeyboardShortcuts(): void {
           showShortcutBanner('Slide Closed');
           return;
         }
-        if (
-          document.fullscreenElement &&
-          state.enableFocusShortcuts &&
-          state.enableKeyFullscreen
-        ) {
+        if (document.fullscreenElement && state.enableFocusShortcuts && state.enableKeyFullscreen) {
           setPendingFullscreenShortcut();
         }
       }

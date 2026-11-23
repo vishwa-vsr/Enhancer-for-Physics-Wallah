@@ -63,22 +63,18 @@ registerProcessor('pwc-volume-processor', VolumeProcessor);
 
 // Engine state
 let ssAudioContext: AudioContext | null = null;
-let ssSourceNode: MediaElementAudioSourceNode | MediaStreamAudioSourceNode | null = null;
 let ssWorkletNode: AudioWorkletNode | null = null;
 let ssAnalyserNode: AnalyserNode | null = null;
 let ssAnalyserInterval: ReturnType<typeof setInterval> | null = null;
-let ssDelayNode: DelayNode | null = null;
 let ssGainNode: GainNode | null = null;
 let ssConnectedVideo: HTMLVideoElement | null = null;
 let ssCurrentState: SilenceState = 'idle';
 let ssIsSilentNow = false;
-let ssSilenceStartTime = 0;
 let ssSilentMsAccumulated = 0;
 const ssVolumeHistory: number[] = [];
 let ssCalculatedNoiseFloorDb = -45;
 let ssSamplesSinceCalc = 0;
 let ssLastVolumeLevel = 0;
-let ssLastVolumeDb = -100;
 let ssEngineRunning = false;
 let ssInitializing = false;
 let skipSilenceSessionSaved = 0;
@@ -196,7 +192,9 @@ export function wakeUpSSEngine(): void {
     if (ctx && ctx.state === 'suspended') {
       ctx.resume().catch(() => {});
     }
-  } catch (_e) {}
+  } catch {
+    // Ignored: AudioContext resume failed
+  }
 
   if (state.skipSilenceEnabled && state.skipSilenceActive && !isSSEngineRunning()) {
     const vid = getActiveVideo();
@@ -249,7 +247,6 @@ export function startAnalyserLoop(analyser: AnalyserNode): void {
     const rms = Math.sqrt(sum / buffer.length);
     ssLastVolumeLevel = rms;
     const db = rmsToDb(rms);
-    ssLastVolumeDb = db;
     ssProcessVolume(db);
   }, intervalMs);
 }
@@ -462,8 +459,6 @@ export async function ssInit(): Promise<void> {
 
     // Point current engine references to this active video's graph
     ssAudioContext = graph.context;
-    ssSourceNode = graph.sourceNode;
-    ssDelayNode = graph.delayNode || null;
     ssGainNode = graph.gainNode || null;
     ssWorkletNode = graph.workletNode || null;
     ssAnalyserNode = graph.analyserNode || null;
@@ -476,7 +471,6 @@ export async function ssInit(): Promise<void> {
         if (!ssEngineRunning || isUserHoldingSpace()) return;
         ssLastVolumeLevel = event.data;
         const db = rmsToDb(event.data);
-        ssLastVolumeDb = db;
         ssProcessVolume(db);
       };
     } else if (ssAnalyserNode) {
@@ -603,7 +597,6 @@ export function ssProcessVolume(db: number): void {
     if (ssSilentMsAccumulated >= minSilenceMs) {
       if (ssCurrentState !== 'silence') {
         ssCurrentState = 'silence';
-        ssSilenceStartTime = Date.now();
         ssEnterSilence();
         updateSkipSilenceUI();
       }

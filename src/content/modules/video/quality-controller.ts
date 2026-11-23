@@ -68,7 +68,9 @@ export function ensureBridgeInjected(): void {
 export function syncConstantQuality(enabled: boolean): void {
   try {
     localStorage.setItem('pwc_constant_quality', enabled ? 'true' : 'false');
-  } catch (_e) {}
+  } catch {
+    // Ignored: localStorage not writable
+  }
 
   window.dispatchEvent(
     new CustomEvent('PWC_SET_CONSTANT_QUALITY_ENABLED', {
