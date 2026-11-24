@@ -14,6 +14,8 @@ export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideChat: false,
   hideNotes: false,
   hideNoteTimeline: false,
+  hideTimeLine: false,
+  hideTimeText: false,
   hideSpeed: false,
   hideQuality: true,
   hideSetting: false,

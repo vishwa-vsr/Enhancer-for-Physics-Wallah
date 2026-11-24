@@ -27,6 +27,8 @@ export const hideDoubt = signal(false);
 export const hideChat = signal(false);
 export const hideNotes = signal(false);
 export const hideNoteTimeline = signal(false);
+export const hideTimeLine = signal(false);
+export const hideTimeText = signal(false);
 export const hideSpeed = signal(false);
 export const hideQuality = signal(true);
 export const hideSetting = signal(false);
@@ -159,6 +161,8 @@ export async function initStore() {
   hideChat.value = !!s.hideChat;
   hideNotes.value = !!s.hideNotes;
   hideNoteTimeline.value = !!s.hideNoteTimeline;
+  hideTimeLine.value = !!s.hideTimeLine;
+  hideTimeText.value = !!s.hideTimeText;
   hideSpeed.value = !!s.hideSpeed;
   hideQuality.value = s.hideQuality !== undefined ? !!s.hideQuality : true;
   hideSetting.value = !!s.hideSetting;

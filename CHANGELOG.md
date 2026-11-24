@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **Focus Toggles**: Re-added 'Hide Timeline Line' and 'Hide Time Display'.
+
+### Removed
+
+- **Focus Menu**: Removed retired placeholders (Attempt DPP, Next Lecture, Next Chapter).
+
 ## [1.1.0.12] - 2026-11-23
 
 ### Changed

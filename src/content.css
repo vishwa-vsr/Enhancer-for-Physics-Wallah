@@ -356,6 +356,27 @@ html.pwc-hide-setting [class*='gear-icon'] {
   display: none !important;
 }
 
+/* --- Hide Time Line: VideoJS progress control / seek bar --- */
+html.pwc-hide-timeline .vjs-progress-control,
+html.pwc-hide-timeline .vjs-progress-holder,
+html.pwc-hide-timeline .vjs-play-progress,
+html.pwc-hide-timeline [class*='progress-control'],
+html.pwc-hide-timeline
+  [class*='progress-bar']:not(.pwc-speed-container):not(.pwc-speed-slider-container),
+html.pwc-hide-timeline [class*='seekbar'],
+html.pwc-hide-timeline [class*='seek-bar'] {
+  display: none !important;
+}
+
+/* --- Hide Time Text: VideoJS current time, duration, divider, remaining time --- */
+html.pwc-hide-timetext .vjs-current-time,
+html.pwc-hide-timetext .vjs-duration,
+html.pwc-hide-timetext .vjs-time-divider,
+html.pwc-hide-timetext .vjs-remaining-time,
+html.pwc-hide-timetext .vjs-time-control {
+  display: none !important;
+}
+
 /* --- Hide Chat / Comments toolbar icon, drawer & SVG fallback --- */
 html.pwc-hide-chat #footer-right-section > button[aria-label*='chat' i],
 html.pwc-hide-chat #footer-right-section > button[aria-label*='comment' i],

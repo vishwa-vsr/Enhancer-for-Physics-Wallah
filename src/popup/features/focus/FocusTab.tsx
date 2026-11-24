@@ -13,6 +13,8 @@ import {
   hideChat,
   hideNotes,
   hideNoteTimeline,
+  hideTimeLine,
+  hideTimeText,
   hideSetting,
   enableInstantHide,
   autoSkipPromoAds,
@@ -223,11 +225,6 @@ function AutoHideSection() {
    3. DISTRACTION CLEANERS SECTION
    ========================================================================= */
 function DistractionsSection() {
-  const [showTimelineRemovedReason, setShowTimelineRemovedReason] = useState(false);
-  const [showTimeDisplayRemovedReason, setShowTimeDisplayRemovedReason] = useState(false);
-  const [showAttemptDppRemovedReason, setShowAttemptDppRemovedReason] = useState(false);
-  const [showNextLectureRemovedReason, setShowNextLectureRemovedReason] = useState(false);
-  const [showNextChapterRemovedReason, setShowNextChapterRemovedReason] = useState(false);
   return (
     <section aria-label="Distraction Cleaners">
       <h2 class={styles.sectionTitle}>Distraction Cleaners</h2>
@@ -282,81 +279,6 @@ function DistractionsSection() {
             ariaLabel="Toggle Hide Study Notes"
           />
         </FeatureRow>
-        <FeatureRow
-          label="Hide Attempt DPP"
-          sublabel={
-            showAttemptDppRemovedReason
-              ? 'This feature was removed because PW removed this button from their player.'
-              : undefined
-          }
-        >
-          <span
-            class={styles.removedNotice}
-            title="This feature was removed because PW removed this button from their player."
-            tabIndex={0}
-            role="button"
-            aria-label="Hide Attempt DPP - Removed! Why? This feature was removed because PW removed this button from their player."
-            onClick={() => setShowAttemptDppRemovedReason((prev) => !prev)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setShowAttemptDppRemovedReason((prev) => !prev);
-              }
-            }}
-          >
-            Removed! Why?
-          </span>
-        </FeatureRow>
-        <FeatureRow
-          label="Hide Next Lecture"
-          sublabel={
-            showNextLectureRemovedReason
-              ? 'This feature was removed because PW removed this button from their player.'
-              : undefined
-          }
-        >
-          <span
-            class={styles.removedNotice}
-            title="This feature was removed because PW removed this button from their player."
-            tabIndex={0}
-            role="button"
-            aria-label="Hide Next Lecture - Removed! Why? This feature was removed because PW removed this button from their player."
-            onClick={() => setShowNextLectureRemovedReason((prev) => !prev)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setShowNextLectureRemovedReason((prev) => !prev);
-              }
-            }}
-          >
-            Removed! Why?
-          </span>
-        </FeatureRow>
-        <FeatureRow
-          label="Hide Next Chapter"
-          sublabel={
-            showNextChapterRemovedReason
-              ? 'This feature was removed because PW removed this button from their player.'
-              : undefined
-          }
-        >
-          <span
-            class={styles.removedNotice}
-            title="This feature was removed because PW removed this button from their player."
-            tabIndex={0}
-            role="button"
-            aria-label="Hide Next Chapter - Removed! Why? This feature was removed because PW removed this button from their player."
-            onClick={() => setShowNextChapterRemovedReason((prev) => !prev)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setShowNextChapterRemovedReason((prev) => !prev);
-              }
-            }}
-          >
-            Removed! Why?
-          </span>
-        </FeatureRow>
         <FeatureRow label="Hide Note Timeline">
           <Toggle
             checked={hideNoteTimeline.value}
@@ -367,55 +289,25 @@ function DistractionsSection() {
             ariaLabel="Toggle Hide Note Timeline"
           />
         </FeatureRow>
-        <FeatureRow
-          label="Hide Timeline Line"
-          sublabel={
-            showTimelineRemovedReason
-              ? 'This feature was removed because it was rarely used by students.'
-              : undefined
-          }
-        >
-          <span
-            class={styles.removedNotice}
-            title="This feature was removed because it was rarely used by students."
-            tabIndex={0}
-            role="button"
-            aria-label="Removed! Why? This feature was removed because it was rarely used by students."
-            onClick={() => setShowTimelineRemovedReason((prev) => !prev)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setShowTimelineRemovedReason((prev) => !prev);
-              }
+        <FeatureRow label="Hide Timeline Line">
+          <Toggle
+            checked={hideTimeLine.value}
+            onChange={(v) => {
+              hideTimeLine.value = v;
+              saveSetting('hideTimeLine', v);
             }}
-          >
-            Removed! Why?
-          </span>
+            ariaLabel="Toggle Hide Timeline Line"
+          />
         </FeatureRow>
-        <FeatureRow
-          label="Hide Time Display"
-          sublabel={
-            showTimeDisplayRemovedReason
-              ? 'This feature was removed because it was rarely used by students.'
-              : undefined
-          }
-        >
-          <span
-            class={styles.removedNotice}
-            title="This feature was removed because it was rarely used by students."
-            tabIndex={0}
-            role="button"
-            aria-label="Hide Time Display - Removed! Why? This feature was removed because it was rarely used by students."
-            onClick={() => setShowTimeDisplayRemovedReason((prev) => !prev)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setShowTimeDisplayRemovedReason((prev) => !prev);
-              }
+        <FeatureRow label="Hide Time Display">
+          <Toggle
+            checked={hideTimeText.value}
+            onChange={(v) => {
+              hideTimeText.value = v;
+              saveSetting('hideTimeText', v);
             }}
-          >
-            Removed! Why?
-          </span>
+            ariaLabel="Toggle Hide Time Display"
+          />
         </FeatureRow>
         <FeatureRow label="Hide Settings Icon">
           <Toggle

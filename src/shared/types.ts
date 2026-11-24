@@ -19,6 +19,8 @@ export interface PopupSettings {
   hideChat: boolean;
   hideNotes: boolean;
   hideNoteTimeline: boolean;
+  hideTimeLine: boolean;
+  hideTimeText: boolean;
   hideSpeed: boolean;
   hideQuality: boolean;
   hideSetting: boolean;
@@ -111,6 +113,8 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   hideChat: false,
   hideNotes: false,
   hideNoteTimeline: false,
+  hideTimeLine: false,
+  hideTimeText: false,
   hideSpeed: false,
   hideQuality: true,
   hideSetting: false,

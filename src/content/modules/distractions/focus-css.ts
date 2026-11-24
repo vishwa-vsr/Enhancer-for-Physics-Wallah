@@ -8,6 +8,8 @@ import {
   isProtectedPlayerStructure,
   resolvePlayerToolbarSlots,
   syncTimelineVisibility,
+  findTimeTexts,
+  hideTimeSeparators,
   findDoubtButton,
   findChatButton,
   findAskAIButton,
@@ -24,6 +26,8 @@ export const classMap: Record<keyof HideSettings, string> = {
   hideChat: 'pwc-hide-chat',
   hideNotes: 'pwc-hide-notes',
   hideNoteTimeline: 'pwc-hide-notetimeline',
+  hideTimeLine: 'pwc-hide-timeline',
+  hideTimeText: 'pwc-hide-timetext',
   hideSpeed: 'pwc-hide-speed',
   hideQuality: 'pwc-hide-quality',
   hideSetting: 'pwc-hide-setting',
@@ -138,6 +142,13 @@ export function applyDistractorsState(): void {
     setHidden(ssContainer, !state.extensionEnabled || !state.skipSilenceEnabled);
   }
 
-  // Ensure fallback progress bar stays deduplicated on AI-chapter lectures
-  syncTimelineVisibility();
+  // Handle timeline hiding and prevent duplicate progress bars on AI-chapter lectures
+  syncTimelineVisibility(activeSettings.hideTimeLine);
+
+  // Handle time display texts hiding
+  const timeTexts = findTimeTexts();
+  timeTexts.forEach((el) => {
+    setHidden(el, activeSettings.hideTimeText);
+    hideTimeSeparators(el, activeSettings.hideTimeText);
+  });
 }

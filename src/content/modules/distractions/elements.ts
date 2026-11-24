@@ -2,11 +2,15 @@ import { getActiveVideo } from '../video/detector';
 import { clearPollSuppressionNow } from './poll-blocker';
 
 let cachedSettingsBtn: Element | null = null;
+let cachedTimeline: Element | null = null;
+let cachedTimeTexts: Element[] | null = null;
 let cachedNativeSpeedBadges: Element[] | null = null;
 let cachedToolbar: Element | null = null;
 
 export function resetDistractionCaches(): void {
   cachedSettingsBtn = null;
+  cachedTimeline = null;
+  cachedTimeTexts = null;
   cachedNativeSpeedBadges = null;
   cachedToolbar = null;
 }
@@ -618,27 +622,77 @@ export function findPWToolbar(): Element | null {
   return null;
 }
 
-// Prevent duplicate progress bars on PW AI-chapter lectures
-export function syncTimelineVisibility(): void {
+// Helper to find the video timeline progress bar
+export function findTimeline(): Element | null {
+  const exactProgress = document.getElementById('progress-control');
+  if (exactProgress && exactProgress.isConnected) {
+    cachedTimeline = exactProgress;
+    return exactProgress;
+  }
+
+  if (cachedTimeline && cachedTimeline.isConnected) {
+    return cachedTimeline;
+  }
+  const video = getActiveVideo();
+  if (!video) return null;
+  const playerContainer = getOuterPlayerContainer();
+  if (!playerContainer) return null;
+  const el = playerContainer.querySelector(
+    '#progress-control, .vjs-progress-control, .vjs-progress-holder, ' +
+      '[class*="progress-control" i], [class*="progress-bar" i], ' +
+      '[class*="seekbar" i], [class*="seek-bar" i]',
+  );
+  if (el) {
+    const className = el.getAttribute('class') || '';
+    if (className.includes('pwc-')) return null;
+    cachedTimeline = el;
+    return el;
+  }
+  return null;
+}
+
+// Synchronize video timeline visibility and prevent duplicate progress bars on AI-chapter lectures
+export function syncTimelineVisibility(shouldHide?: boolean): void {
   const placeholder = document.getElementById('progress-placeholder');
   const exactProgress = document.getElementById('progress-control');
-  if (!exactProgress || !placeholder) return;
 
   // Identify any custom AI chapter progress bar rendered inside #progress-placeholder alongside #progress-control
   const customChapterBars: Element[] = [];
-  Array.from(placeholder.children).forEach((child) => {
-    if (child === exactProgress || child.id === 'progress-control') return;
-    if (
-      child.querySelector('#current-time-placeholder, #total-time-placeholder, .vjs-current-time')
-    ) {
-      return;
+  if (placeholder) {
+    Array.from(placeholder.children).forEach((child) => {
+      if (child === exactProgress || child.id === 'progress-control') return;
+      if (
+        child.querySelector('#current-time-placeholder, #total-time-placeholder, .vjs-current-time')
+      ) {
+        return;
+      }
+      customChapterBars.push(child);
+    });
+  }
+
+  if (shouldHide) {
+    if (exactProgress) {
+      setHidden(exactProgress, true, true);
+    } else {
+      const fallback = findTimeline();
+      if (fallback) setHidden(fallback, true, true);
     }
-    customChapterBars.push(child);
-  });
+    customChapterBars.forEach((bar) => setHidden(bar, true, true));
+    return;
+  }
+
+  // Restore any bars that our extension previously hid via "Hide Timeline Line"
+  if (exactProgress) {
+    setHidden(exactProgress, false, true);
+  } else {
+    const fallback = findTimeline();
+    if (fallback) setHidden(fallback, false, true);
+  }
+  customChapterBars.forEach((bar) => setHidden(bar, false, true));
 
   // If PW's segmented AI chapter bar is visibly rendered full-width inside #progress-placeholder,
   // ensure the fallback #progress-control bar (at bottom: -15px) stays hidden so two bars never stack.
-  if (customChapterBars.length > 0) {
+  if (exactProgress && placeholder && customChapterBars.length > 0) {
     const minBarWidth = Math.max(100, placeholder.offsetWidth * 0.75);
     const hasVisibleChapterBar = customChapterBars.some((bar) => {
       const htmlBar = bar as HTMLElement;
@@ -654,6 +708,103 @@ export function syncTimelineVisibility(): void {
       exactProgress.style.removeProperty('display');
     }
   }
+}
+
+// Helper to find video time and duration texts
+export function findTimeTexts(): Element[] {
+  if (
+    cachedTimeTexts &&
+    cachedTimeTexts.length > 0 &&
+    cachedTimeTexts.every((el) => el.isConnected)
+  ) {
+    return cachedTimeTexts;
+  }
+  const video = getActiveVideo();
+  if (!video) return [];
+  const playerContainer = getOuterPlayerContainer();
+  if (!playerContainer) return [];
+
+  const elements = playerContainer.querySelectorAll(
+    '.vjs-current-time, .vjs-duration, .vjs-time-divider, .vjs-remaining-time, .vjs-time-control, ' +
+      '[class*="time-display" i], [class*="time-text" i], ' +
+      '[class*="current-time" i], [class*="duration" i], [class*="video-time" i], ' +
+      '.current-time, .duration, .time-display, .time-text',
+  );
+
+  const list = Array.from(elements).filter((el) => {
+    // 1. Exclude our own extension's speedometer / finish-time UI elements
+    const className = el.getAttribute('class') || '';
+    const id = el.id || '';
+    if (className.includes('pwc-') || id.includes('pwc-')) {
+      return false;
+    }
+
+    // 2. Exclude elements that contain interactive buttons or SVGs
+    if (
+      el.querySelector('button') ||
+      el.querySelector('svg') ||
+      el.querySelector('[role="button"]')
+    ) {
+      return false;
+    }
+
+    // 3. Exclude major layout/wrapper sections (we only want the leaf labels)
+    if (el.querySelectorAll('div').length > 5) {
+      return false;
+    }
+
+    const text = (el.textContent || '').trim();
+    if (!text) return false;
+
+    const hasTimePattern = /^\s*[\d\s:\-/|]+\s*$/.test(text) && /\d+:\d+/.test(text);
+    const isDivider = text === '/' || text === '|' || text === '-';
+
+    return hasTimePattern || isDivider;
+  });
+
+  cachedTimeTexts = list;
+  return list;
+}
+
+const originalSeparatorTextMap = new WeakMap<Node, string>();
+
+// Helper to hide separators (like "/" text nodes or span dividers) next to time elements
+export function hideTimeSeparators(timeElement: Element, shouldHide: boolean): void {
+  if (!timeElement) return;
+  const parent = timeElement.parentElement;
+  if (!parent) return;
+
+  const childNodes = Array.from(parent.childNodes);
+  childNodes.forEach((node) => {
+    if (node.nodeType === 3) {
+      // Text Node
+      const text = (node.textContent || '').trim();
+      if (text === '/' || text === '|' || text === '-' || originalSeparatorTextMap.has(node)) {
+        if (shouldHide) {
+          if (!originalSeparatorTextMap.has(node) && node.textContent !== null) {
+            originalSeparatorTextMap.set(node, node.textContent);
+          }
+          node.textContent = '';
+        } else {
+          const orig = originalSeparatorTextMap.get(node);
+          if (orig !== undefined) {
+            node.textContent = orig;
+          }
+        }
+      }
+    } else if (node.nodeType === 1) {
+      // Element Node
+      const elNode = node as Element;
+      const text = (elNode.textContent || '').trim();
+      const className = elNode.getAttribute('class') || '';
+      const id = elNode.id || '';
+      const isSelf = className.includes('pwc-') || id.includes('pwc-');
+
+      if (!isSelf && (text === '/' || text === '|' || text === '-')) {
+        setHidden(elNode, shouldHide);
+      }
+    }
+  });
 }
 
 // ===== Unified Player Toolbar Slot Resolver & Action Trigger (Issue #14 / Candidate #2) =====
