@@ -11,6 +11,7 @@ import {
   hideSpeed,
   alwaysExpandWidget,
   enableHotkeys,
+  speedScrollEnabled,
   volumeScrollEnabled,
   volumeScrollMouseStep,
   volumeScrollTrackpadStep,
@@ -394,6 +395,26 @@ export function SpeedTab() {
                 saveSetting('alwaysExpandWidget', v);
               }}
               ariaLabel="Toggle Always Expand Speed Bar"
+            />
+          </div>
+          <div class={styles.hudSubRow}>
+            <label
+              class={styles.configLabel}
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => {
+                speedScrollEnabled.value = !speedScrollEnabled.value;
+                saveSetting('speedScrollEnabled', speedScrollEnabled.value);
+              }}
+            >
+              Scroll to Adjust Speed
+            </label>
+            <Toggle
+              checked={speedScrollEnabled.value}
+              onChange={(v) => {
+                speedScrollEnabled.value = v;
+                saveSetting('speedScrollEnabled', v);
+              }}
+              ariaLabel="Toggle Scroll to Adjust Speed"
             />
           </div>
         </CollapsibleSubOption>

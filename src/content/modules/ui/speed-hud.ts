@@ -1,6 +1,6 @@
 import { state, sanitizeSnapPoints } from '../../state';
 import { applyDistractorsState } from '../distractions/focus-css';
-import { saveSpeed, togglePlayPause } from '../video/controller';
+import { saveSpeed, stepSpeed, togglePlayPause } from '../video/controller';
 import { updateFinishTime } from './finish-time';
 import { getSSCurrentState } from '../audio/skip-silence';
 import {
@@ -390,6 +390,32 @@ export function setupUIEventListeners(container: HTMLElement): void {
       }
     }
   });
+
+  container.addEventListener(
+    'wheel',
+    (e: WheelEvent) => {
+      if (
+        !state.extensionEnabled ||
+        !state.speedScrollEnabled ||
+        (state.skipSilenceEnabled && getSSCurrentState() === 'silence')
+      ) {
+        return;
+      }
+      if (e.target === speedInput) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const val = stepSpeed(e.deltaY < 0 ? 1 : -1);
+      slider.value = String(Math.round(speedToSliderPercent(val, state.snapPoints) * 10));
+      slider.setAttribute('aria-valuetext', `${formatSpeed(val)}x`);
+      badge.textContent = `${formatSpeed(val)}x`;
+      if (document.activeElement !== speedInput) {
+        speedInput.value = formatSpeed(val);
+      }
+      updateSliderBackground(slider, val);
+      saveSpeed(val);
+    },
+    { passive: false },
+  );
 }
 
 // Programmatically construct the speedometer control without innerHTML

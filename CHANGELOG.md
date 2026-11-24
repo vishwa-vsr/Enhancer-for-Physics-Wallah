@@ -6,9 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.1.0.13] - 2026-11-24
+
 ### Added
 
 - **Focus Toggles**: Re-added 'Hide Timeline Line' and 'Hide Time Display'.
+- **Speed Scroll ([#54](https://github.com/vishwa-vsr/Enhancer-for-Physics-Wallah/issues/54))**: Re-added 'Scroll to Adjust Speed' as a sub-option in the Video Speed card.
 
 ### Removed
 

@@ -378,8 +378,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px 12px 14px;
+  padding: 10px 14px;
   background: var(--card-sub-bg, var(--bg-control));
+}
+
+.hudSubRow:last-child {
+  padding-bottom: 12px;
+}
+
+.hudSubRow + .hudSubRow {
+  border-top: 1px solid var(--divider-color);
 }
 
 /* === Shortcuts & Controls Card === */

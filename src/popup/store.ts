@@ -41,6 +41,7 @@ export const autoPauseOnHide = signal(false);
 
 // ===== Shortcut signals =====
 export const enableHotkeys = signal(false);
+export const speedScrollEnabled = signal(true);
 export const volumeScrollEnabled = signal(false);
 export const volumeScrollMouseStep = signal(5);
 export const volumeScrollTrackpadStep = signal(2);
@@ -174,6 +175,7 @@ export async function initStore() {
   autoPauseOnHide.value = !!s.autoPauseOnHide;
 
   enableHotkeys.value = !!s.enableHotkeys;
+  speedScrollEnabled.value = s.speedScrollEnabled !== false;
   volumeScrollEnabled.value = !!s.volumeScrollEnabled;
   volumeScrollMouseStep.value = s.volumeScrollMouseStep ?? 5;
   volumeScrollTrackpadStep.value = s.volumeScrollTrackpadStep ?? 2;
@@ -318,6 +320,9 @@ export async function initStore() {
       showShortcutAlerts.value = changes.showShortcutAlerts !== false;
     }
     if (changes.autoHideControls !== undefined) autoHideControls.value = !!changes.autoHideControls;
+    if (changes.speedScrollEnabled !== undefined) {
+      speedScrollEnabled.value = changes.speedScrollEnabled !== false;
+    }
     if (changes.volumeScrollEnabled !== undefined) {
       volumeScrollEnabled.value = !!changes.volumeScrollEnabled;
     }

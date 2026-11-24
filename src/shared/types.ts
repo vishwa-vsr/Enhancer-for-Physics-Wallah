@@ -32,6 +32,7 @@ export interface PopupSettings {
 
   // Shortcut & control settings
   enableHotkeys: boolean;
+  speedScrollEnabled: boolean;
   volumeScrollEnabled: boolean;
   volumeScrollMouseStep: number;
   volumeScrollTrackpadStep: number;
@@ -125,6 +126,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   keySlideViewer: 't',
 
   enableHotkeys: false,
+  speedScrollEnabled: true,
   volumeScrollEnabled: false,
   volumeScrollMouseStep: 5,
   volumeScrollTrackpadStep: 2,

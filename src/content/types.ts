@@ -37,6 +37,7 @@ export interface ContentState {
 
   // Shortcuts & UI settings
   enableHotkeys: boolean;
+  speedScrollEnabled: boolean;
   volumeScrollEnabled: boolean;
   volumeScrollMouseStep: number;
   volumeScrollTrackpadStep: number;

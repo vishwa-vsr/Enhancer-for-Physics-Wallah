@@ -35,6 +35,7 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
   keySlideViewer: 't',
 
   enableHotkeys: false,
+  speedScrollEnabled: true,
   volumeScrollEnabled: false,
   volumeScrollMouseStep: 5,
   volumeScrollTrackpadStep: 2,
@@ -170,6 +171,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'enableSlideViewer',
         'keySlideViewer',
         'enableHotkeys',
+        'speedScrollEnabled',
         'volumeScrollEnabled',
         'volumeScrollMouseStep',
         'volumeScrollTrackpadStep',
@@ -290,6 +292,7 @@ export function initState(onLoaded?: () => void): void {
     state.enableSlideViewer = result.enableSlideViewer !== false;
     state.keySlideViewer = readShortcutKey(result.keySlideViewer, 't');
     state.enableHotkeys = !!result.enableHotkeys;
+    state.speedScrollEnabled = result.speedScrollEnabled !== false;
     state.volumeScrollEnabled = !!result.volumeScrollEnabled;
     state.volumeScrollMouseStep =
       result.volumeScrollMouseStep !== undefined
@@ -463,6 +466,10 @@ export function initState(onLoaded?: () => void): void {
             if (Object.prototype.hasOwnProperty.call(changes, 'enableHotkeys')) {
               state.enableHotkeys = !!changes.enableHotkeys.newValue;
               changedKeys.push('enableHotkeys');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'speedScrollEnabled')) {
+              state.speedScrollEnabled = changes.speedScrollEnabled.newValue !== false;
+              changedKeys.push('speedScrollEnabled');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollEnabled')) {
               state.volumeScrollEnabled = !!changes.volumeScrollEnabled.newValue;
