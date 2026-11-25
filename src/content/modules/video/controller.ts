@@ -86,6 +86,15 @@ export function restoreSpeedAfterPointerHold(): void {
   updateUI();
 }
 
+// Return true when temporary boost/hold modes should block manual speed adjustments
+export function isSpeedAdjustmentBlocked(): boolean {
+  return (
+    isPointerHolding() ||
+    isUserHoldingSpace() ||
+    (state.skipSilenceEnabled && state.skipSilenceActive && getSSCurrentState() === 'silence')
+  );
+}
+
 // Helper to step speed up or down by 0.1, clamped to 0.5–4.0
 export function stepSpeed(direction: number): number {
   const val =

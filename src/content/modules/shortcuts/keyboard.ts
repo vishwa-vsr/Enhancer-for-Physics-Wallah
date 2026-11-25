@@ -1,7 +1,5 @@
 import { state } from '../../state';
-import { stepSpeed, saveSpeed } from '../video/controller';
-import { getSSCurrentState } from '../audio/skip-silence';
-import { isPointerHolding, isUserHoldingSpace } from './space-hold';
+import { stepSpeed, saveSpeed, isSpeedAdjustmentBlocked } from '../video/controller';
 import { getOuterPlayerContainer, triggerPlayerSlot } from '../distractions/elements';
 import { applyDistractorsState } from '../distractions/focus-css';
 import { getActiveVideo } from '../video/detector';
@@ -176,12 +174,7 @@ export function initKeyboardShortcuts(): void {
       }
 
       // 1. Video Speed Hotkeys (controlled by state.enableHotkeys master switch)
-      if (
-        state.enableHotkeys &&
-        !isPointerHolding() &&
-        !isUserHoldingSpace() &&
-        !(state.skipSilenceEnabled && state.skipSilenceActive && getSSCurrentState() === 'silence')
-      ) {
+      if (state.enableHotkeys && !isSpeedAdjustmentBlocked()) {
         if (matchKey(e, state.keySpeedUp)) {
           consumeHandledShortcut(e);
           const next = stepSpeed(1);

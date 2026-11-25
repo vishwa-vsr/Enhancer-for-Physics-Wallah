@@ -357,6 +357,7 @@ html.pwc-hide-setting [class*='gear-icon'] {
 }
 
 /* --- Hide Time Line: VideoJS progress control / seek bar --- */
+html.pwc-hide-timeline #progress-control,
 html.pwc-hide-timeline .vjs-progress-control,
 html.pwc-hide-timeline .vjs-progress-holder,
 html.pwc-hide-timeline .vjs-play-progress,
@@ -368,7 +369,9 @@ html.pwc-hide-timeline [class*='seek-bar'] {
   display: none !important;
 }
 
-/* --- Hide Time Text: VideoJS current time, duration, divider, remaining time --- */
+/* --- Hide Time Text: PW placeholders + VideoJS current time, duration, divider, remaining time --- */
+html.pwc-hide-timetext #current-time-placeholder,
+html.pwc-hide-timetext #total-time-placeholder,
 html.pwc-hide-timetext .vjs-current-time,
 html.pwc-hide-timetext .vjs-duration,
 html.pwc-hide-timetext .vjs-time-divider,

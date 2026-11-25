@@ -162,6 +162,8 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'hideChat',
         'hideNotes',
         'hideNoteTimeline',
+        'hideTimeLine',
+        'hideTimeText',
         'hideSpeed',
         'hideQuality',
         'hideSetting',

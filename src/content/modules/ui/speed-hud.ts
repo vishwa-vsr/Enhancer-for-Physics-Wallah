@@ -1,8 +1,12 @@
 import { state, sanitizeSnapPoints } from '../../state';
 import { applyDistractorsState } from '../distractions/focus-css';
-import { saveSpeed, stepSpeed, togglePlayPause } from '../video/controller';
+import {
+  isSpeedAdjustmentBlocked,
+  saveSpeed,
+  stepSpeed,
+  togglePlayPause,
+} from '../video/controller';
 import { updateFinishTime } from './finish-time';
-import { getSSCurrentState } from '../audio/skip-silence';
 import {
   findControlsToolbar,
   isInsideControlsTray,
@@ -150,6 +154,8 @@ export function setupUIEventListeners(container: HTMLElement): void {
   updateSliderBackground(slider, state.currentSpeed);
 
   let mouseLeaveTimer: ReturnType<typeof setTimeout> | null = null;
+  let wheelDeltaAccumulator = 0;
+  let wheelResetTimer: ReturnType<typeof setTimeout> | null = null;
 
   const releaseSliderFocus = () => {
     if (document.activeElement === slider) {
@@ -279,7 +285,7 @@ export function setupUIEventListeners(container: HTMLElement): void {
 
   slider.addEventListener('input', (e: Event) => {
     const target = e.target as HTMLInputElement;
-    if (state.skipSilenceEnabled && state.skipSilenceActive && getSSCurrentState() === 'silence') {
+    if (isSpeedAdjustmentBlocked()) {
       const pct = speedToSliderPercent(state.currentSpeed, state.snapPoints);
       target.value = String(Math.round(pct * 10));
       releaseSliderFocus();
@@ -394,24 +400,44 @@ export function setupUIEventListeners(container: HTMLElement): void {
   container.addEventListener(
     'wheel',
     (e: WheelEvent) => {
-      if (
-        !state.extensionEnabled ||
-        !state.speedScrollEnabled ||
-        (state.skipSilenceEnabled && getSSCurrentState() === 'silence')
-      ) {
+      if (!state.extensionEnabled || !state.speedScrollEnabled || isSpeedAdjustmentBlocked()) {
         return;
       }
-      if (e.target === speedInput) return;
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (e.target === speedInput || container.classList.contains('pwc-speed-editing')) return;
+      if (e.deltaY === 0) return;
+
       e.preventDefault();
       e.stopPropagation();
-      const val = stepSpeed(e.deltaY < 0 ? 1 : -1);
-      slider.value = String(Math.round(speedToSliderPercent(val, state.snapPoints) * 10));
-      slider.setAttribute('aria-valuetext', `${formatSpeed(val)}x`);
-      badge.textContent = `${formatSpeed(val)}x`;
-      if (document.activeElement !== speedInput) {
-        speedInput.value = formatSpeed(val);
+
+      const absDelta = Math.abs(e.deltaY);
+      const isMouseWheel =
+        e.deltaMode !== 0 ||
+        (Number.isInteger(e.deltaY) &&
+          absDelta >= 100 &&
+          (absDelta % 100 === 0 || absDelta % 120 === 0));
+
+      let direction = 0;
+      if (isMouseWheel) {
+        wheelDeltaAccumulator = 0;
+        direction = e.deltaY < 0 ? 1 : -1;
+      } else {
+        const TRACKPAD_STEP_THRESHOLD = 28;
+        wheelDeltaAccumulator += e.deltaY;
+        if (wheelResetTimer) clearTimeout(wheelResetTimer);
+        wheelResetTimer = setTimeout(() => {
+          wheelDeltaAccumulator = 0;
+        }, 150);
+
+        if (Math.abs(wheelDeltaAccumulator) >= TRACKPAD_STEP_THRESHOLD) {
+          const rawSteps = Math.trunc(wheelDeltaAccumulator / TRACKPAD_STEP_THRESHOLD);
+          wheelDeltaAccumulator -= rawSteps * TRACKPAD_STEP_THRESHOLD;
+          direction = rawSteps < 0 ? 1 : -1;
+        }
       }
-      updateSliderBackground(slider, val);
+
+      if (direction === 0) return;
+      const val = stepSpeed(direction);
       saveSpeed(val);
     },
     { passive: false },

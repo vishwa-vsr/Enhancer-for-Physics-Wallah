@@ -274,6 +274,13 @@ export function scanShadowForSettings(root: Document | Element | ShadowRoot): El
   return null;
 }
 
+// Always exclude Video.js's internal .vjs-fullscreen-control so we never fullscreen .video-js alone without PW's overlay
+const FULLSCREEN_SELECTOR =
+  '[id*="fullscreen" i]:not(.vjs-fullscreen-control), [title*="fullscreen" i]:not(.vjs-fullscreen-control), ' +
+  '[aria-label*="fullscreen" i]:not(.vjs-fullscreen-control), [aria-label*="full screen" i]:not(.vjs-fullscreen-control), ' +
+  '[id*="full-screen" i]:not(.vjs-fullscreen-control), [title*="full-screen" i]:not(.vjs-fullscreen-control), ' +
+  '[class*="fullscreen" i]:not(.vjs-fullscreen-control), [class*="full-screen" i]:not(.vjs-fullscreen-control)';
+
 // Find fullscreen button recursively, piercing Shadow DOMs and ignoring drawing boards
 export function findFullscreenButton(): Element | null {
   const video = getActiveVideo();
@@ -336,14 +343,7 @@ export function findFullscreenButton(): Element | null {
     }
   }
 
-  // Always exclude Video.js's internal .vjs-fullscreen-control so we never fullscreen .video-js alone without PW's overlay
-  const selector =
-    '[id*="fullscreen" i]:not(.vjs-fullscreen-control), [title*="fullscreen" i]:not(.vjs-fullscreen-control), ' +
-    '[aria-label*="fullscreen" i]:not(.vjs-fullscreen-control), [aria-label*="full screen" i]:not(.vjs-fullscreen-control), ' +
-    '[id*="full-screen" i]:not(.vjs-fullscreen-control), [title*="full-screen" i]:not(.vjs-fullscreen-control), ' +
-    '[class*="fullscreen" i]:not(.vjs-fullscreen-control), [class*="full-screen" i]:not(.vjs-fullscreen-control)';
-
-  const el = playerContainer.querySelector(selector);
+  const el = playerContainer.querySelector(FULLSCREEN_SELECTOR);
   if (el && !el.closest('.vjs-control-bar')) {
     const btn = getControlButton(el);
     if (
@@ -365,10 +365,7 @@ export function scanShadowForFullscreen(root: Document | Element | ShadowRoot): 
   for (let i = 0; i < allElements.length; i++) {
     const item = allElements[i];
     if (item.shadowRoot) {
-      const el = item.shadowRoot.querySelector(
-        '[class*="fullscreen" i]:not(.vjs-fullscreen-control), [id*="fullscreen" i]:not(.vjs-fullscreen-control), [title*="fullscreen" i]:not(.vjs-fullscreen-control), ' +
-          '[class*="full-screen" i]:not(.vjs-fullscreen-control), [id*="full-screen" i]:not(.vjs-fullscreen-control), [title*="full-screen" i]:not(.vjs-fullscreen-control)',
-      );
+      const el = item.shadowRoot.querySelector(FULLSCREEN_SELECTOR);
       if (el && !isDrawingToolbarElement(el)) {
         const btn = getControlButton(el);
         if (btn && !isProtectedPlayerStructure(btn)) return btn;
@@ -670,25 +667,16 @@ export function syncTimelineVisibility(shouldHide?: boolean): void {
     });
   }
 
-  if (shouldHide) {
-    if (exactProgress) {
-      setHidden(exactProgress, true, true);
-    } else {
-      const fallback = findTimeline();
-      if (fallback) setHidden(fallback, true, true);
-    }
-    customChapterBars.forEach((bar) => setHidden(bar, true, true));
-    return;
-  }
-
-  // Restore any bars that our extension previously hid via "Hide Timeline Line"
+  const hide = Boolean(shouldHide);
   if (exactProgress) {
-    setHidden(exactProgress, false, true);
+    setHidden(exactProgress, hide, true);
   } else {
     const fallback = findTimeline();
-    if (fallback) setHidden(fallback, false, true);
+    if (fallback) setHidden(fallback, hide, true);
   }
-  customChapterBars.forEach((bar) => setHidden(bar, false, true));
+  customChapterBars.forEach((bar) => setHidden(bar, hide, true));
+
+  if (hide) return;
 
   // If PW's segmented AI chapter bar is visibly rendered full-width inside #progress-placeholder,
   // ensure the fallback #progress-control bar (at bottom: -15px) stays hidden so two bars never stack.
@@ -714,7 +702,7 @@ export function syncTimelineVisibility(shouldHide?: boolean): void {
 export function findTimeTexts(): Element[] {
   if (
     cachedTimeTexts &&
-    cachedTimeTexts.length > 0 &&
+    cachedTimeTexts.length >= 2 &&
     cachedTimeTexts.every((el) => el.isConnected)
   ) {
     return cachedTimeTexts;
@@ -725,7 +713,8 @@ export function findTimeTexts(): Element[] {
   if (!playerContainer) return [];
 
   const elements = playerContainer.querySelectorAll(
-    '.vjs-current-time, .vjs-duration, .vjs-time-divider, .vjs-remaining-time, .vjs-time-control, ' +
+    '#current-time-placeholder, #total-time-placeholder, ' +
+      '.vjs-current-time, .vjs-duration, .vjs-time-divider, .vjs-remaining-time, .vjs-time-control, ' +
       '[class*="time-display" i], [class*="time-text" i], ' +
       '[class*="current-time" i], [class*="duration" i], [class*="video-time" i], ' +
       '.current-time, .duration, .time-display, .time-text',
@@ -748,8 +737,18 @@ export function findTimeTexts(): Element[] {
       return false;
     }
 
-    // 3. Exclude major layout/wrapper sections (we only want the leaf labels)
+    // 3. Exclude major layout/wrapper sections (we only want time placeholders or leaf labels)
     if (el.querySelectorAll('div').length > 5) {
+      return false;
+    }
+
+    // PW wraps current time and "/" + duration inside dedicated placeholder containers
+    if (id === 'current-time-placeholder' || id === 'total-time-placeholder') {
+      return true;
+    }
+
+    // Avoid duplicating child labels when PW's outer time placeholder already handles the whole group
+    if (el.closest('#current-time-placeholder, #total-time-placeholder')) {
       return false;
     }
 
@@ -762,7 +761,9 @@ export function findTimeTexts(): Element[] {
     return hasTimePattern || isDivider;
   });
 
-  cachedTimeTexts = list;
+  if (list.length >= 2) {
+    cachedTimeTexts = list;
+  }
   return list;
 }
 

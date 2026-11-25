@@ -148,6 +148,19 @@ export const hasSeenRefreshPrompt = signal(false);
 export const activeTab = signal('speed-tab');
 export const isLoading = signal(true);
 
+// Focus toggle signals that map 1:1 to boolean PopupSettings keys (except hideQuality which defaults to true)
+const BOOLEAN_HIDE_SIGNALS: Array<[keyof PopupSettings, { value: boolean }]> = [
+  ['hideAskAI', hideAskAI],
+  ['hideDoubt', hideDoubt],
+  ['hideChat', hideChat],
+  ['hideNotes', hideNotes],
+  ['hideNoteTimeline', hideNoteTimeline],
+  ['hideTimeLine', hideTimeLine],
+  ['hideTimeText', hideTimeText],
+  ['hideSpeed', hideSpeed],
+  ['hideSetting', hideSetting],
+];
+
 // Load all settings from chrome.storage into signals
 export async function initStore() {
   const s = await loadSettings();
@@ -157,16 +170,10 @@ export async function initStore() {
   preferredQuality.value = s.preferredQuality || '720p';
   snapPoints.value = Array.isArray(s.snapPoints) ? s.snapPoints : [1.0, 1.5, 2.0, 2.5];
 
-  hideAskAI.value = !!s.hideAskAI;
-  hideDoubt.value = !!s.hideDoubt;
-  hideChat.value = !!s.hideChat;
-  hideNotes.value = !!s.hideNotes;
-  hideNoteTimeline.value = !!s.hideNoteTimeline;
-  hideTimeLine.value = !!s.hideTimeLine;
-  hideTimeText.value = !!s.hideTimeText;
-  hideSpeed.value = !!s.hideSpeed;
+  for (const [key, sig] of BOOLEAN_HIDE_SIGNALS) {
+    sig.value = !!s[key];
+  }
   hideQuality.value = s.hideQuality !== undefined ? !!s.hideQuality : true;
-  hideSetting.value = !!s.hideSetting;
   enableInstantHide.value = !!s.enableInstantHide;
   autoSkipPromoAds.value = !!s.autoSkipPromoAds;
   blockRecordedPolls.value = !!s.blockRecordedPolls;
@@ -355,6 +362,11 @@ export async function initStore() {
     }
     if (changes.constantVideoQuality !== undefined) {
       constantVideoQuality.value = !!changes.constantVideoQuality;
+    }
+    for (const [key, sig] of BOOLEAN_HIDE_SIGNALS) {
+      if (changes[key] !== undefined) {
+        sig.value = !!changes[key];
+      }
     }
     if (changes.hideQuality !== undefined) {
       hideQuality.value = !!changes.hideQuality;
