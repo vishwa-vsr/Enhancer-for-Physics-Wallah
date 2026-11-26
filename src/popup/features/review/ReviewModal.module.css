@@ -113,8 +113,3 @@
 .btnSecondary:hover {
   background: var(--bg-control-hover);
 }
-.btnIcon {
-  width: 15px;
-  height: 15px;
-  color: #fef08a;
-}

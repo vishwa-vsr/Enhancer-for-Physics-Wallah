@@ -1,64 +1,27 @@
-.sectionTitle {
+.focusSectionTitle {
   font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
   margin: 0 0 6px 4px;
 }
 
-.settingsGroupCard {
-  background: var(--card-main-bg, var(--bg-card));
-  border: var(--card-border, none);
+.focusSettingsCard {
   border-radius: 14px;
-  box-shadow: var(--card-shadow);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
 }
 
-.settingsGroupCard > :first-child {
+.focusSettingsCard > :first-child {
   border-top-left-radius: 14px;
   border-top-right-radius: 14px;
 }
 
-.settingsGroupCard > :first-child:is(:last-child, :has(+ [aria-hidden='true']:last-child)) {
+.focusSettingsCard > :first-child:is(:last-child, :has(+ [aria-hidden='true']:last-child)) {
   border-radius: 14px;
 }
 
-.settingsGroupCard > :last-child {
+.focusSettingsCard > :last-child {
   border-bottom-left-radius: 14px;
   border-bottom-right-radius: 14px;
 }
 
-.finishTimeControls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.finishTimeFormatSelect {
-  background: var(--bg-control);
-  border: none;
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 6px;
-  outline: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.finishTimeFormatSelect:hover {
-  background: var(--bg-control-hover);
-}
-
-.finishTimeFormatSelect:focus {
-  box-shadow: 0 0 0 2px var(--accent-primary);
-}
-
+.finishTimeControls,
 .rowControls {
   display: flex;
   align-items: center;
@@ -86,55 +49,13 @@
   width: 82px;
 }
 
-.hotkeyNotice {
-  background: var(--card-sub-bg, var(--bg-control));
-  color: var(--warning-text);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.35;
-  text-align: center;
+.focusHotkeyNotice {
   padding: 6px 14px 8px 14px;
   border-bottom: 1px solid var(--divider-color);
 }
 
-.hotkeyNotice:last-child {
+.focusHotkeyNotice:last-child {
   border-bottom: none;
-}
-
-.featureConfigRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 14px;
-  background: var(--card-sub-bg, var(--bg-control));
-  border: none;
-}
-
-.configLabel {
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.stepperCard {
-  background: var(--card-sub-control-bg, var(--bg-card));
-  box-shadow: none;
-}
-
-.settingRowGroup {
-  overflow: visible;
-  border-radius: inherit;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.settingRowGroup:not(:last-child) {
-  border-bottom: 1px solid var(--divider-color);
-}
-
-.featureConfigRow + .featureConfigRow {
-  border-top: 1px solid var(--divider-color);
 }
 
 .shortcutsExpandBox {
@@ -151,22 +72,12 @@
   background: var(--card-sub-bg, var(--bg-control));
 }
 
-.shortcutsExpandBox > div:not(.hotkeyNotice):hover {
+.shortcutsExpandBox > div:not(.focusHotkeyNotice):hover {
   background: var(--card-sub-bg-hover, var(--bg-control-hover));
 }
 
-.shortcutsExpandBox > .featureConfigRow:first-child {
+.shortcutsExpandBox > :first-child {
   border-top: 1px solid var(--divider-color);
-}
-
-.configRowDisabled {
-  opacity: 0.5;
-}
-
-.settingsGroupCard:has([role='listbox']),
-.featureRow:has([role='listbox']) {
-  position: relative;
-  z-index: 100;
 }
 
 @keyframes subBoxFadeIn {

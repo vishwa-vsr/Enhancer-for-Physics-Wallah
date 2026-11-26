@@ -1,4 +1,5 @@
 import { state } from '../../state';
+import { formatTimeSaved } from '../../../shared/utils';
 import { preventFocusSteal, setHidden } from '../distractions/elements';
 import { getActiveVideo } from '../video/detector';
 import {
@@ -17,16 +18,6 @@ import {
 } from '../audio/skip-silence';
 
 let ssVisualizerInterval: ReturnType<typeof setInterval> | null = null;
-
-// Format milliseconds to compact human-readable time saved string for the player toolbar
-export function formatTimeSaved(ms: number): string {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  if (totalSeconds < 60) return totalSeconds + 's';
-  const minutes = Math.floor(totalSeconds / 60);
-  if (minutes < 100) return minutes + 'm';
-  const hours = Math.floor(minutes / 60);
-  return hours + 'h';
-}
 
 // Build and inject the Skip Silence toggle button + visualizer + status into the player toolbar
 export function injectSkipSilenceButton(): void {
@@ -219,7 +210,7 @@ export function updateSkipSilenceUI(): void {
       status.textContent = 'Skipping';
       status.style.color = '#fb923c';
     } else {
-      status.textContent = 'Saved ' + formatTimeSaved(sessionSaved);
+      status.textContent = 'Saved ' + formatTimeSaved(sessionSaved, true);
       status.style.color = '#4ade80';
     }
   }

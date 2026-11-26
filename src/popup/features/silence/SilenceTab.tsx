@@ -4,7 +4,8 @@ import { Stepper } from '@shared/components/Stepper';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
 import { CollapsibleSubOption } from '@shared/components/CollapsibleSubOption';
 import { saveSetting } from '@shared/storage';
-import type { VideoQuality } from '@shared/types';
+import type { PopupSettings, VideoQuality } from '@shared/types';
+import { clamp, formatTimeSaved } from '@shared/utils';
 import {
   skipSilenceEnabled,
   skipSilenceSilenceSpeed,
@@ -20,18 +21,8 @@ import {
   skipSilenceActive,
   volumeBalancerEnabled,
 } from '@popup/store';
+import shared from '../../popupShared.module.css';
 import styles from './SilenceTab.module.css';
-
-function formatTimeSaved(ms: number): string {
-  const totalSeconds = Math.floor(ms / 1000);
-  if (totalSeconds < 60) return totalSeconds + 's';
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  if (minutes < 60) return minutes + 'm ' + seconds + 's';
-  const hours = Math.floor(minutes / 60);
-  const remMinutes = minutes % 60;
-  return hours + 'h ' + remMinutes + 'm';
-}
 
 const VIDEO_QUALITY_OPTIONS = [
   { value: '720p', label: '720p (High)' },
@@ -40,6 +31,42 @@ const VIDEO_QUALITY_OPTIONS = [
   { value: '240p', label: '240p (Data Saver)' },
   { value: 'auto', label: 'Auto (PW Default)' },
 ];
+
+function SubToggleRow({
+  label,
+  sig,
+  settingKey,
+  ariaLabel,
+}: {
+  label: string;
+  sig: { value: boolean };
+  settingKey: keyof PopupSettings;
+  ariaLabel: string;
+}) {
+  return (
+    <div class={shared.featureConfigRow}>
+      <label
+        class={shared.configLabel}
+        style={{ cursor: 'pointer', userSelect: 'none' }}
+        onClick={() => {
+          const nextVal = !sig.value;
+          sig.value = nextVal;
+          saveSetting(settingKey, nextVal);
+        }}
+      >
+        {label}
+      </label>
+      <Toggle
+        checked={sig.value}
+        onChange={(val) => {
+          sig.value = val;
+          saveSetting(settingKey, val);
+        }}
+        ariaLabel={ariaLabel}
+      />
+    </div>
+  );
+}
 
 export function SilenceTab() {
   const handleResetTimeSaved = () => {
@@ -51,8 +78,8 @@ export function SilenceTab() {
     <div class={styles.mediaContainer}>
       {/* Video Quality Card */}
       <section class={styles.qualitySection} aria-label="Video Quality Settings">
-        <h2 class={styles.sectionTitle}>Video Quality</h2>
-        <div class={styles.settingsGroupCard}>
+        <h2 class={shared.sectionTitle}>Video Quality</h2>
+        <div class={shared.settingsGroupCard}>
           <FeatureRow label="Constant Video Quality">
             <Toggle
               checked={constantVideoQuality.value}
@@ -65,8 +92,8 @@ export function SilenceTab() {
           </FeatureRow>
 
           <CollapsibleSubOption isOpen={constantVideoQuality.value}>
-            <div class={styles.featureConfigRow}>
-              <span class={styles.configLabel}>Default Video Quality</span>
+            <div class={shared.featureConfigRow}>
+              <span class={shared.configLabel}>Default Video Quality</span>
               <SelectDropdown
                 size="sm"
                 options={VIDEO_QUALITY_OPTIONS}
@@ -80,35 +107,20 @@ export function SilenceTab() {
               />
             </div>
 
-            <div class={styles.featureConfigRow}>
-              <label
-                class={styles.configLabel}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-                onClick={() => {
-                  const nextVal = !hideQuality.value;
-                  hideQuality.value = nextVal;
-                  saveSetting('hideQuality', nextVal);
-                }}
-              >
-                Hide Quality Widget
-              </label>
-              <Toggle
-                checked={hideQuality.value}
-                onChange={(val) => {
-                  hideQuality.value = val;
-                  saveSetting('hideQuality', val);
-                }}
-                ariaLabel="Toggle Hide Quality Widget"
-              />
-            </div>
+            <SubToggleRow
+              label="Hide Quality Widget"
+              sig={hideQuality}
+              settingKey="hideQuality"
+              ariaLabel="Toggle Hide Quality Widget"
+            />
           </CollapsibleSubOption>
         </div>
       </section>
 
       {/* Ear Protection Card (Issue #6) */}
       <section class={styles.qualitySection} aria-label="Ear Protection Settings">
-        <h2 class={styles.sectionTitle}>Ear Protection</h2>
-        <div class={styles.settingsGroupCard}>
+        <h2 class={shared.sectionTitle}>Ear Protection</h2>
+        <div class={shared.settingsGroupCard}>
           <FeatureRow label="Enable Ear Protection" sublabel="Stops sudden loud shouting">
             <Toggle
               checked={volumeBalancerEnabled.value}
@@ -124,10 +136,9 @@ export function SilenceTab() {
 
       {/* Skip Silence Card */}
       <section class={styles.silenceSection} aria-label="Skip Silence Settings">
-        <h2 class={styles.sectionTitle}>Skip Silence</h2>
+        <h2 class={shared.sectionTitle}>Skip Silence</h2>
 
-        <div class={styles.settingsGroupCard}>
-          {/* Master Toggle */}
+        <div class={shared.settingsGroupCard}>
           <FeatureRow label="Enable Skip Silence" htmlFor="ss-enable-toggle">
             <Toggle
               checked={skipSilenceEnabled.value}
@@ -142,11 +153,10 @@ export function SilenceTab() {
           </FeatureRow>
 
           <CollapsibleSubOption isOpen={skipSilenceEnabled.value}>
-            {/* Silence Speed Stepper */}
-            <div class={styles.featureConfigRow}>
-              <span class={styles.configLabel}>Silence Speed</span>
+            <div class={shared.featureConfigRow}>
+              <span class={shared.configLabel}>Silence Speed</span>
               <Stepper
-                className={styles.stepperCard}
+                className={shared.stepperCard}
                 value={skipSilenceSilenceSpeed.value}
                 min={1.5}
                 max={16.0}
@@ -159,34 +169,20 @@ export function SilenceTab() {
               />
             </div>
 
-            {/* Auto Noise Calibration */}
-            <div class={styles.featureConfigRow}>
-              <label
-                class={styles.configLabel}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-                onClick={() => {
-                  const nextVal = !skipSilenceDynamicThreshold.value;
-                  skipSilenceDynamicThreshold.value = nextVal;
-                  saveSetting('skipSilenceDynamicThreshold', nextVal);
-                }}
-              >
-                Auto Noise Calibration
-              </label>
-              <Toggle
-                checked={skipSilenceDynamicThreshold.value}
-                onChange={(val) => {
-                  skipSilenceDynamicThreshold.value = val;
-                  saveSetting('skipSilenceDynamicThreshold', val);
-                }}
-                ariaLabel="Toggle Auto Noise Calibration"
-              />
-            </div>
+            <SubToggleRow
+              label="Auto Noise Calibration"
+              sig={skipSilenceDynamicThreshold}
+              settingKey="skipSilenceDynamicThreshold"
+              ariaLabel="Toggle Auto Noise Calibration"
+            />
 
-            {/* Silence Threshold Slider (Manual) */}
             <CollapsibleSubOption isOpen={!skipSilenceDynamicThreshold.value}>
-              <div class={styles.settingRowGroup} id="ss-manual-sensitivity-card">
-                <div class={styles.featureConfigRow}>
-                  <span class={styles.configLabel}>Silence Threshold</span>
+              <div
+                class={`${shared.settingRowGroup} ${styles.settingRowGroup}`}
+                id="ss-manual-sensitivity-card"
+              >
+                <div class={shared.featureConfigRow}>
+                  <span class={shared.configLabel}>Silence Threshold</span>
                   <span class={styles.ssSensitivityValue} id="ss-sensitivity-value">
                     {skipSilenceThreshold.value} dB
                   </span>
@@ -202,7 +198,7 @@ export function SilenceTab() {
                     step="1"
                     value={skipSilenceThreshold.value}
                     style={{
-                      '--percent': `${Math.max(0, Math.min(100, ((skipSilenceThreshold.value - -60) / 40) * 100))}%`,
+                      '--percent': `${clamp(((skipSilenceThreshold.value - -60) / 40) * 100, 0, 100)}%`,
                     }}
                     onInput={(e) => {
                       const val = Number((e.target as HTMLInputElement).value);
@@ -216,87 +212,52 @@ export function SilenceTab() {
               </div>
             </CollapsibleSubOption>
 
-            {/* Minimum Silence Duration */}
-            <div class={styles.featureConfigRow}>
-              <span class={styles.configLabel}>Min. Silence</span>
+            <div class={shared.featureConfigRow}>
+              <span class={shared.configLabel}>Min. Silence</span>
               <Stepper
-                className={styles.stepperCard}
+                className={shared.stepperCard}
                 value={skipSilenceMinDuration.value}
                 min={0.3}
                 max={3.0}
                 step={0.1}
                 unit="s"
                 onChange={(val) => {
-                  const clamped = Math.round(val * 10) / 10;
-                  skipSilenceMinDuration.value = clamped;
-                  saveSetting('skipSilenceMinDuration', clamped);
+                  const rounded = Math.round(val * 10) / 10;
+                  skipSilenceMinDuration.value = rounded;
+                  saveSetting('skipSilenceMinDuration', rounded);
                 }}
               />
             </div>
 
-            {/* Mute During Silence */}
-            <div class={styles.featureConfigRow}>
-              <label
-                class={styles.configLabel}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-                onClick={() => {
-                  const nextVal = !skipSilenceMute.value;
-                  skipSilenceMute.value = nextVal;
-                  saveSetting('skipSilenceMute', nextVal);
-                }}
-              >
-                Mute During Silence
-              </label>
-              <Toggle
-                checked={skipSilenceMute.value}
-                onChange={(val) => {
-                  skipSilenceMute.value = val;
-                  saveSetting('skipSilenceMute', val);
-                }}
-                ariaLabel="Toggle Mute During Silence"
-              />
-            </div>
+            <SubToggleRow
+              label="Mute During Silence"
+              sig={skipSilenceMute}
+              settingKey="skipSilenceMute"
+              ariaLabel="Toggle Mute During Silence"
+            />
+            <SubToggleRow
+              label="Low CPU / Battery Saver"
+              sig={skipSilenceLowCpu}
+              settingKey="skipSilenceLowCpu"
+              ariaLabel="Toggle Low CPU Battery Saver"
+            />
 
-            {/* Low CPU / Battery Saver Mode */}
-            <div class={styles.featureConfigRow}>
-              <label
-                class={styles.configLabel}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-                onClick={() => {
-                  const nextVal = !skipSilenceLowCpu.value;
-                  skipSilenceLowCpu.value = nextVal;
-                  saveSetting('skipSilenceLowCpu', nextVal);
-                }}
-              >
-                Low CPU / Battery Saver
-              </label>
-              <Toggle
-                checked={skipSilenceLowCpu.value}
-                onChange={(val) => {
-                  skipSilenceLowCpu.value = val;
-                  saveSetting('skipSilenceLowCpu', val);
-                }}
-                ariaLabel="Toggle Low CPU Battery Saver"
-              />
-            </div>
-
-            {/* Time Saved Display */}
-            <div class={`${styles.featureConfigRow} ${styles.ssTimeSavedCard}`}>
-              <span class={styles.configLabel}>Time Saved</span>
+            <div class={`${shared.featureConfigRow} ${styles.ssTimeSavedCard}`}>
+              <span class={shared.configLabel}>Time Saved</span>
               <div class={styles.ssTimeSavedGroup}>
                 <span class={styles.ssTimeSavedValue} id="ss-time-saved">
                   {formatTimeSaved(skipSilenceTimeSaved.value)}
                 </span>
                 <button
                   type="button"
-                  class={`${styles.settingsToggleBtn} ${styles.resetSpeedBtn}`}
+                  class={shared.resetSpeedBtn}
                   id="ss-reset-btn"
                   onClick={handleResetTimeSaved}
                   title="Reset Time Saved"
                   aria-label="Reset Time Saved"
                 >
                   <svg
-                    class={styles.resetIcon}
+                    class={shared.resetIcon}
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"

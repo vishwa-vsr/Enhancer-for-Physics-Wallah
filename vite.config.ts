@@ -166,7 +166,7 @@ export default defineConfig({
   base: './',
   build: {
     outDir: 'dist',
-    emptyDirOnBuild: true,
+    emptyOutDir: true,
     target: 'chrome90',
     rollupOptions: {
       input: {

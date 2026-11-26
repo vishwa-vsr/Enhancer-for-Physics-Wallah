@@ -1,3 +1,5 @@
+import type { FunctionComponent } from 'preact';
+
 export interface StudyIconProps {
   name: string;
   size?: number;
@@ -12,2773 +14,350 @@ export interface IconDefinition {
   category: 'Math' | 'Physics' | 'Chemistry & Biology' | 'Study & General';
 }
 
-export const STUDY_ICONS_LIST: IconDefinition[] = [
-  // ----------------- MATH -----------------
-  { id: 'equal-sign', label: 'Equal Sign (=)', category: 'Math' },
-  { id: 'not-equal-sign', label: 'Not Equal (≠)', category: 'Math' },
-  { id: 'less-than', label: 'Less Than (<)', category: 'Math' },
-  { id: 'greater-than', label: 'Greater Than (>)', category: 'Math' },
-  { id: 'inequality-01', label: 'Less or Equal (≤)', category: 'Math' },
-  { id: 'inequality-02', label: 'Greater or Equal (≥)', category: 'Math' },
-  { id: '1st-brecket', label: 'Parentheses ()', category: 'Math' },
-  { id: '2nd-brecket', label: 'Square Brackets []', category: 'Math' },
-  { id: '3rd-brecket', label: 'Curly Braces {}', category: 'Math' },
-  { id: 'plus-minus-01', label: 'Plus-Minus (±)', category: 'Math' },
-  { id: 'minus-plus-01', label: 'Minus-Plus (∓)', category: 'Math' },
-  { id: 'plus-minus-02', label: 'Plus-Minus Diagonal', category: 'Math' },
-  { id: 'minus-plus-02', label: 'Minus-Plus Diagonal', category: 'Math' },
-  { id: 'plus-sign', label: 'Addition (+)', category: 'Math' },
-  { id: 'minus-sign', label: 'Subtraction (−)', category: 'Math' },
-  { id: 'multiplication-sign', label: 'Multiplication (×)', category: 'Math' },
-  { id: 'divide-sign', label: 'Division (÷)', category: 'Math' },
-  { id: 'percent', label: 'Percentage (%)', category: 'Math' },
-  { id: 'triangle-01', label: 'Equilateral Triangle', category: 'Math' },
-  { id: 'triangle-02', label: 'Delta Triangle', category: 'Math' },
-  { id: 'left-triangle', label: 'Left Right Triangle', category: 'Math' },
-  { id: 'right-triangle', label: 'Right Triangle', category: 'Math' },
-  { id: 'parabola-01', label: 'Parabola Up', category: 'Math' },
-  { id: 'parabola-02', label: 'Parabola Axis', category: 'Math' },
-  { id: 'parabola-03', label: 'Parabola Curve', category: 'Math' },
-  { id: 'compass', label: 'Geometry Compass', category: 'Math' },
-  { id: 'angle', label: 'Angle', category: 'Math' },
-  { id: 'acute', label: 'Acute Angle', category: 'Math' },
-  { id: 'left-angle', label: 'Left Angle', category: 'Math' },
-  { id: 'right-angle', label: 'Right Angle', category: 'Math' },
-  { id: 'hyperbole', label: 'Hyperbola', category: 'Math' },
-  { id: 'coordinate-01', label: '2D Coordinates', category: 'Math' },
-  { id: 'reflex', label: 'Reflex Angle', category: 'Math' },
-  { id: 'angle-02', label: 'Angle Ray', category: 'Math' },
-  { id: 'obtuse', label: 'Obtuse Angle', category: 'Math' },
-  { id: 'calculator', label: 'Calculator', category: 'Math' },
-  { id: 'cordinate-02', label: '3D Coordinates', category: 'Math' },
-  { id: 'tan', label: 'Tangent (tan)', category: 'Math' },
-  { id: 'sin', label: 'Sine (sin)', category: 'Math' },
-  { id: 'cos', label: 'Cosine (cos)', category: 'Math' },
-  { id: 'beta', label: 'Beta Symbol (β)', category: 'Math' },
-  { id: 'pi', label: 'Pi Symbol (π)', category: 'Math' },
-  { id: 'insert-pi', label: 'Insert Pi', category: 'Math' },
-  { id: 'remove-pi', label: 'Remove Pi', category: 'Math' },
-  { id: 'alpha', label: 'Alpha Symbol (α)', category: 'Math' },
-  { id: 'infinity-01', label: 'Infinity (∞)', category: 'Math' },
-  { id: 'approximately-equal', label: 'Approx Equal (≈)', category: 'Math' },
-  { id: 'congruent-to', label: 'Congruent (≅)', category: 'Math' },
-  { id: 'function-of-x', label: 'Function f(x)', category: 'Math' },
-  { id: 'function', label: 'Function f', category: 'Math' },
-  { id: 'x-variable', label: 'Variable x', category: 'Math' },
-  { id: 'square-01', label: 'Square Power (x²)', category: 'Math' },
-  { id: 'root-01', label: 'Square Root (√x)', category: 'Math' },
-  { id: 'n-th-root', label: 'Nth Root (ⁿ√x)', category: 'Math' },
-  { id: 'summation-01', label: 'Summation (Σ)', category: 'Math' },
-  { id: 'more-or-less', label: 'More or Less (≷)', category: 'Math' },
-  { id: 'sine-01', label: 'Sine Wave 1', category: 'Math' },
-  { id: 'sine-02', label: 'Sine Wave 2', category: 'Math' },
-  { id: 'cosine-01', label: 'Cosine Wave 1', category: 'Math' },
-  { id: 'cosine-02', label: 'Cosine Wave 2', category: 'Math' },
-  { id: 'prism', label: 'Prism 3D (Geometry)', category: 'Math' },
-  { id: 'cube', label: 'Cube 3D', category: 'Math' },
-  { id: 'rectangular', label: 'Cuboid 3D', category: 'Math' },
-  { id: 'pyramid', label: 'Pyramid 3D', category: 'Math' },
-  { id: 'sphere', label: 'Sphere 3D', category: 'Math' },
-  { id: 'cylinder-01', label: 'Cylinder Vertical', category: 'Math' },
-  { id: 'cylinder-02', label: 'Truncated Cone', category: 'Math' },
-  { id: 'cylinder-03', label: 'Cylinder 3D', category: 'Math' },
-  { id: 'cone-01', label: 'Cone 3D', category: 'Math' },
-  { id: 'cylinder-04', label: 'Hemisphere Cylinder', category: 'Math' },
-  { id: 'cone-02', label: 'Inverted Cone', category: 'Math' },
-  { id: 'infinity-02', label: 'Infinity Variant', category: 'Math' },
-  { id: 'absolute', label: 'Absolute Value (|x|)', category: 'Math' },
-  { id: 'matrix', label: 'Matrix Grid', category: 'Math' },
-  { id: 'root-02', label: 'Root Variant', category: 'Math' },
-  { id: 'summation-02', label: 'Summation Bracket', category: 'Math' },
-  { id: 'abacus', label: 'Abacus', category: 'Math' },
-  { id: 'equal-sign-square', label: 'Equal (Square)', category: 'Math' },
-  { id: 'not-equal-sign-square', label: 'Not Equal (Square)', category: 'Math' },
-  { id: 'less-than-square', label: 'Less Than (Square)', category: 'Math' },
-  { id: 'greater-than-square', label: 'Greater Than (Square)', category: 'Math' },
-  { id: 'inequality-square-01', label: 'Inequality (Square 1)', category: 'Math' },
-  { id: 'inequality-square-02', label: 'Inequality (Square 2)', category: 'Math' },
-  { id: '1st-brecket-square', label: 'Parentheses (Square)', category: 'Math' },
-  { id: '2nd-brecket-square', label: 'Brackets (Square)', category: 'Math' },
-  { id: '3rd-brecket-square', label: 'Braces (Square)', category: 'Math' },
-  { id: 'plus-minus-square-01', label: 'Plus-Minus (Square 1)', category: 'Math' },
-  { id: 'minus-plus-square-01', label: 'Minus-Plus (Square 1)', category: 'Math' },
-  { id: 'plus-minus-square-02', label: 'Plus-Minus (Square 2)', category: 'Math' },
-  { id: 'minus-plus-square-02', label: 'Minus-Plus (Square 2)', category: 'Math' },
-  { id: 'plus-sign-square', label: 'Plus (Square)', category: 'Math' },
-  { id: 'minus-sign-square', label: 'Minus (Square)', category: 'Math' },
-  { id: 'multiplication-sign-square', label: 'Multiply (Square)', category: 'Math' },
-  { id: 'divide-sign-square', label: 'Divide (Square)', category: 'Math' },
-  { id: 'percent-square', label: 'Percent (Square)', category: 'Math' },
-  { id: 'pi-square', label: 'Pi (Square)', category: 'Math' },
-  { id: 'alpha-square', label: 'Alpha (Square)', category: 'Math' },
-  { id: 'infinity-square', label: 'Infinity (Square)', category: 'Math' },
-  { id: 'approximately-equal-square', label: 'Approx Equal (Square)', category: 'Math' },
-  { id: 'congruent-to-square', label: 'Congruent (Square)', category: 'Math' },
-  { id: 'function-square', label: 'Function f (Square)', category: 'Math' },
-  { id: 'x-variable-square', label: 'Variable x (Square)', category: 'Math' },
-  { id: 'square-square', label: 'x² (Square)', category: 'Math' },
-  { id: 'square-root-square', label: 'Square Root (Square)', category: 'Math' },
-  { id: 'n-th-root-square', label: 'Nth Root (Square)', category: 'Math' },
-  { id: 'summation-square', label: 'Summation (Square)', category: 'Math' },
-  { id: 'more-or-less-square', label: 'More or Less (Square)', category: 'Math' },
-  { id: 'equal-sign-circle', label: 'Equal (Circle)', category: 'Math' },
-  { id: 'not-equal-sign-circle', label: 'Not Equal (Circle)', category: 'Math' },
-  { id: 'less-than-circle', label: 'Less Than (Circle)', category: 'Math' },
-  { id: 'greater-than-circle', label: 'Greater Than (Circle)', category: 'Math' },
-  { id: 'inequality-circle-01', label: 'Inequality (Circle 1)', category: 'Math' },
-  { id: 'inequality-circle-02', label: 'Inequality (Circle 2)', category: 'Math' },
-  { id: '1st-brecket-circle', label: 'Parentheses (Circle)', category: 'Math' },
-  { id: '2nd-brecket-circle', label: 'Brackets (Circle)', category: 'Math' },
-  { id: '3rd-brecket-circle', label: 'Braces (Circle)', category: 'Math' },
-  { id: 'plus-minus-circle-01', label: 'Plus-Minus (Circle 1)', category: 'Math' },
-  { id: 'minus-plus-circle-01', label: 'Minus-Plus (Circle 1)', category: 'Math' },
-  { id: 'plus-minus-circle-02', label: 'Plus-Minus (Circle 2)', category: 'Math' },
-  { id: 'minus-plus-circle-02', label: 'Minus-Plus (Circle 2)', category: 'Math' },
-  { id: 'plus-sign-circle', label: 'Plus (Circle)', category: 'Math' },
-  { id: 'minus-sign-circle', label: 'Minus (Circle)', category: 'Math' },
-  { id: 'multiplication-sign-circle', label: 'Multiply (Circle)', category: 'Math' },
-  { id: 'divide-sign-circle', label: 'Divide (Circle)', category: 'Math' },
-  { id: 'percent-circle', label: 'Percent (Circle)', category: 'Math' },
-  { id: 'pi-circle', label: 'Pi (Circle)', category: 'Math' },
-  { id: 'alpha-circle', label: 'Alpha (Circle)', category: 'Math' },
-  { id: 'infinity-circle', label: 'Infinity (Circle)', category: 'Math' },
-  { id: 'approximately-equal-circle', label: 'Approx Equal (Circle)', category: 'Math' },
-  { id: 'congruent-to-circle', label: 'Congruent (Circle)', category: 'Math' },
-  { id: 'function-circle', label: 'Function f (Circle)', category: 'Math' },
-  { id: 'x-variable-circle', label: 'Variable x (Circle)', category: 'Math' },
-  { id: 'square-circle', label: 'x² (Circle)', category: 'Math' },
-  { id: 'root-circle', label: 'Square Root (Circle)', category: 'Math' },
-  { id: 'n-th-root-circle', label: 'Nth Root (Circle)', category: 'Math' },
-  { id: 'summation-circle', label: 'Summation (Circle)', category: 'Math' },
-  { id: 'more-or-less-circle', label: 'More or Less (Circle)', category: 'Math' },
-  { id: 'root-1st-brecket', label: 'Root Parentheses', category: 'Math' },
-  { id: 'root-2nd-brecket', label: 'Root Brackets', category: 'Math' },
-  { id: 'root-3rd-brecket', label: 'Root Braces', category: 'Math' },
-  { id: 'rhombus', label: 'Rhombus', category: 'Math' },
-  { id: 'pentagon', label: 'Pentagon', category: 'Math' },
-  { id: 'hexagon', label: 'Hexagon', category: 'Math' },
-  { id: 'octagon', label: 'Octagon', category: 'Math' },
-  { id: 'parallelogram', label: 'Parallelogram', category: 'Math' },
-  { id: 'segment', label: 'Line Segment AB', category: 'Math' },
-  { id: 'radius', label: 'Radius', category: 'Math' },
-  { id: 'diameter', label: 'Diameter', category: 'Math' },
-  { id: 'triangle', label: 'Trigonometric Triangle', category: 'Math' },
-  // ----------------- PHYSICS -----------------
-  { id: 'acceleration', label: 'Acceleration Velocity', category: 'Physics' },
-  { id: 'atom-01', label: 'Atomic Orbitals', category: 'Physics' },
-  { id: 'atom-02', label: 'Atom Nucleus', category: 'Physics' },
-  { id: 'bounding-box', label: 'Bounding Matrix', category: 'Physics' },
-  { id: 'black-hole', label: 'Singularity / Black Hole', category: 'Physics' },
-  { id: 'gravity', label: 'Gravitational Field', category: 'Physics' },
-  { id: 'magnet', label: 'Horseshoe Magnet', category: 'Physics' },
-  { id: 'pendulum', label: "Newton's Pendulum", category: 'Physics' },
-  { id: 'optical-prism', label: 'Optical Prism (Light Spectrum)', category: 'Physics' },
-  { id: 'pulley', label: 'Mechanical Pulley', category: 'Physics' },
-  { id: 'solar-system', label: 'Planetary Solar System', category: 'Physics' },
-  { id: 'submerge', label: 'Hydrostatic Buoyancy', category: 'Physics' },
-  { id: 'ufo', label: 'Spacecraft Module', category: 'Physics' },
-  { id: 'wind-turbine', label: 'Aerodynamic Turbine', category: 'Physics' },
-  { id: 'lightning', label: 'Lightning / Electricity', category: 'Physics' },
-  { id: 'rocket', label: 'Rocket', category: 'Physics' },
-  { id: 'telescope', label: 'Telescope', category: 'Physics' },
-  { id: 'satellite', label: 'Satellite', category: 'Physics' },
-  { id: 'battery', label: 'Battery / Energy', category: 'Physics' },
-  { id: 'sparkles', label: 'Quantum Sparkles', category: 'Physics' },
-  { id: 'wave', label: 'Sine Wave', category: 'Physics' },
-  // ----------------- CHEMISTRY & BIOLOGY -----------------
-  { id: 'aids', label: 'Ribbon / Awareness', category: 'Chemistry & Biology' },
-  { id: 'ampoule', label: 'Medical Ampoule', category: 'Chemistry & Biology' },
-  { id: 'bandage', label: 'Adhesive Bandage', category: 'Chemistry & Biology' },
-  { id: 'blood', label: 'Blood Drops', category: 'Chemistry & Biology' },
-  { id: 'blood-type', label: 'Blood Type', category: 'Chemistry & Biology' },
-  { id: 'blood-pressure', label: 'Blood Pressure', category: 'Chemistry & Biology' },
-  { id: 'blood-bag', label: 'Blood / IV Bag', category: 'Chemistry & Biology' },
-  { id: 'blood-bottle', label: 'Blood Bottle', category: 'Chemistry & Biology' },
-  { id: 'brain-01', label: 'Brain Profile', category: 'Chemistry & Biology' },
-  { id: 'brain-02', label: 'Brain Top View', category: 'Chemistry & Biology' },
-  { id: 'bone-01', label: 'Bone', category: 'Chemistry & Biology' },
-  { id: 'bone-02', label: 'Bone Joint', category: 'Chemistry & Biology' },
-  { id: 'broken-bone', label: 'Fractured Bone', category: 'Chemistry & Biology' },
-  { id: 'caduceus', label: 'Caduceus Medical Staff', category: 'Chemistry & Biology' },
-  { id: 'cardiogram-01', label: 'ECG Screen', category: 'Chemistry & Biology' },
-  { id: 'cardiogram-02', label: 'Heart ECG', category: 'Chemistry & Biology' },
-  { id: 'covid-info', label: 'Virus / Covid', category: 'Chemistry & Biology' },
-  { id: 'patient', label: 'Patient Care', category: 'Chemistry & Biology' },
-  { id: 'pulse-01', label: 'Pulse Beat', category: 'Chemistry & Biology' },
-  { id: 'pulse-02', label: 'Pulse Wave', category: 'Chemistry & Biology' },
-  { id: 'pulse-rectangle-01', label: 'ECG Monitor 1', category: 'Chemistry & Biology' },
-  { id: 'pulse-rectangle-02', label: 'ECG Monitor 2', category: 'Chemistry & Biology' },
-  { id: 'clinic', label: 'Clinic / Medical Cross', category: 'Chemistry & Biology' },
-  { id: 'dental-tooth', label: 'Molar Tooth', category: 'Chemistry & Biology' },
-  { id: 'dental-braces', label: 'Dental Braces', category: 'Chemistry & Biology' },
-  { id: 'dental-care', label: 'Dental Care Shield', category: 'Chemistry & Biology' },
-  { id: 'dental-broken-tooth', label: 'Broken Tooth', category: 'Chemistry & Biology' },
-  { id: 'digestion', label: 'Stomach / Digestion', category: 'Chemistry & Biology' },
-  { id: 'dna', label: 'DNA Molecule', category: 'Chemistry & Biology' },
-  { id: 'disability-01', label: 'Accessibility Wheelchair', category: 'Chemistry & Biology' },
-  { id: 'disability-02', label: 'Accessibility Sitting', category: 'Chemistry & Biology' },
-  { id: 'dropper', label: 'Pipette Dropper', category: 'Chemistry & Biology' },
-  { id: 'ear', label: 'Ear / Auditory', category: 'Chemistry & Biology' },
-  { id: 'eye', label: 'Eye / Vision', category: 'Chemistry & Biology' },
-  { id: 'first-aid-kit', label: 'First Aid Kit', category: 'Chemistry & Biology' },
-  { id: 'give-pill', label: 'Handing Pill', category: 'Chemistry & Biology' },
-  { id: 'give-blood', label: 'Blood Donation', category: 'Chemistry & Biology' },
-  { id: 'hand-sanitizer', label: 'Hand Sanitizer', category: 'Chemistry & Biology' },
-  { id: 'health', label: 'Heart Health', category: 'Chemistry & Biology' },
-  { id: 'doctor-01', label: 'Doctor Male', category: 'Chemistry & Biology' },
-  { id: 'doctor-02', label: 'Doctor Female', category: 'Chemistry & Biology' },
-  { id: 'doctor-03', label: 'Physician', category: 'Chemistry & Biology' },
-  { id: 'stethoscope-02', label: 'Stethoscope Chest', category: 'Chemistry & Biology' },
-  { id: 'thread', label: 'Suture Spool', category: 'Chemistry & Biology' },
-  { id: 'healthcare', label: 'Healthcare Hand', category: 'Chemistry & Biology' },
-  { id: 'hospital-01', label: 'Hospital Building', category: 'Chemistry & Biology' },
-  { id: 'hospital-02', label: 'Hospital Clinic', category: 'Chemistry & Biology' },
-  { id: 'hospital-bed-01', label: 'Hospital Bed Standard', category: 'Chemistry & Biology' },
-  { id: 'hospital-bed-02', label: 'Hospital Bed ICU', category: 'Chemistry & Biology' },
-  { id: 'hospital-location', label: 'Hospital Location Pin', category: 'Chemistry & Biology' },
-  { id: 'injection', label: 'Syringe Injection', category: 'Chemistry & Biology' },
-  { id: 'kidneys', label: 'Kidneys System', category: 'Chemistry & Biology' },
-  { id: 'labs', label: 'Laboratory Vials', category: 'Chemistry & Biology' },
-  { id: 'liver', label: 'Liver Organ', category: 'Chemistry & Biology' },
-  { id: 'lungs', label: 'Lungs Respiratory', category: 'Chemistry & Biology' },
-  { id: 'mask', label: 'Surgical Mask', category: 'Chemistry & Biology' },
-  { id: 'mask-love', label: 'Care Mask', category: 'Chemistry & Biology' },
-  { id: 'medicine-01', label: 'Pills Blister Pack', category: 'Chemistry & Biology' },
-  { id: 'medicine-02', label: 'Medicine Capsules', category: 'Chemistry & Biology' },
-  { id: 'medicine-syrup', label: 'Syrup Bottle', category: 'Chemistry & Biology' },
-  { id: 'medicine-bottle-01', label: 'Pill Bottle Standard', category: 'Chemistry & Biology' },
-  { id: 'medicine-bottle-02', label: 'Pill Bottle Dropper', category: 'Chemistry & Biology' },
-  { id: 'medical-file', label: 'Medical Records File', category: 'Chemistry & Biology' },
-  { id: 'mortar', label: 'Mortar & Pestle', category: 'Chemistry & Biology' },
-  { id: 'nose', label: 'Nose / Olfactory', category: 'Chemistry & Biology' },
-  { id: 'prescription', label: 'Rx Prescription Pad', category: 'Chemistry & Biology' },
-  { id: 'protection-mask', label: 'N95 Respirator', category: 'Chemistry & Biology' },
-  { id: 'safe', label: 'Protection Shield', category: 'Chemistry & Biology' },
-  { id: 'skull', label: 'Cranium / Skull', category: 'Chemistry & Biology' },
-  { id: 'sperm', label: 'Gamete / Reproductive', category: 'Chemistry & Biology' },
-  { id: 'stethoscope', label: 'Stethoscope Standard', category: 'Chemistry & Biology' },
-  { id: 'thermometer', label: 'Clinical Thermometer', category: 'Chemistry & Biology' },
-  { id: 'tissue-paper', label: 'Sanitary Tissue', category: 'Chemistry & Biology' },
-  { id: 'tongue', label: 'Oral / Tongue', category: 'Chemistry & Biology' },
-  { id: 'treatment', label: 'Medical Treatment', category: 'Chemistry & Biology' },
-  { id: 'vaccine', label: 'Vaccine Bottle', category: 'Chemistry & Biology' },
-  { id: 'wheelchair', label: 'Wheelchair Mobility', category: 'Chemistry & Biology' },
-  { id: 'x-ray', label: 'Chest X-Ray Plate', category: 'Chemistry & Biology' },
-  { id: 'bacteria', label: 'Bacteria Colony', category: 'Chemistry & Biology' },
-  { id: 'cells', label: 'Cellular Structure', category: 'Chemistry & Biology' },
-  { id: 'molecules', label: 'Chemical Molecule', category: 'Chemistry & Biology' },
-  { id: 'test-tube', label: 'Laboratory Test Tube', category: 'Chemistry & Biology' },
-  { id: 'flask', label: 'Conical Flask', category: 'Chemistry & Biology' },
-  { id: 'beaker', label: 'Beaker', category: 'Chemistry & Biology' },
-  { id: 'microscope', label: 'Microscope', category: 'Chemistry & Biology' },
-  { id: 'leaf', label: 'Biology Leaf', category: 'Chemistry & Biology' },
-  { id: 'plant', label: 'Sprout / Botany', category: 'Chemistry & Biology' },
-  { id: 'droplet', label: 'Solution Droplet', category: 'Chemistry & Biology' },
-  { id: 'flame', label: 'Bunsen Flame', category: 'Chemistry & Biology' },
-  // ----------------- STUDY & GENERAL -----------------
-  { id: 'book', label: 'Textbook', category: 'Study & General' },
-  { id: 'notebook', label: 'Notebook', category: 'Study & General' },
-  { id: 'file-text', label: 'Document', category: 'Study & General' },
-  { id: 'graduation-cap', label: 'Graduation Cap', category: 'Study & General' },
-  { id: 'diploma', label: 'Diploma / Scroll', category: 'Study & General' },
-  { id: 'lightbulb', label: 'Idea / Lightbulb', category: 'Study & General' },
-  { id: 'pencil', label: 'Pencil', category: 'Study & General' },
-  { id: 'target', label: 'Target / Goal', category: 'Study & General' },
-  { id: 'star', label: 'Star Rating', category: 'Study & General' },
-  { id: 'trophy', label: 'Trophy Award', category: 'Study & General' },
-  { id: 'globe', label: 'World Globe', category: 'Study & General' },
-  { id: 'clock', label: 'Timer / Clock', category: 'Study & General' },
-  { id: 'bookmark', label: 'Bookmark', category: 'Study & General' },
+type CategoryName = IconDefinition['category'];
+// Extra non-path shapes: circle ['c', cx, cy, r] or rounded rect ['r', x, y, w, h, rx?, ry?]
+type ShapeSpec =
+  | readonly ['c', number, number, number]
+  | readonly ['r', number, number, number, number, number?, number?];
+// Tuple: [id, label, categoryIndex, frame (0=none, 1=square, 2=circle), strokePathD, fillPathDs?, extraShapes?]
+type IconTuple = readonly [
+  string,
+  string,
+  0 | 1 | 2 | 3,
+  0 | 1 | 2,
+  string,
+  (readonly string[] | 0)?,
+  (readonly ShapeSpec[])?,
 ];
 
-export const StudyIcon = ({
+const CATEGORIES: readonly CategoryName[] = [
+  'Math',
+  'Physics',
+  'Chemistry & Biology',
+  'Study & General',
+];
+
+// Shared outer squircle border for boxed Math icons
+const SQUARE_FRAME_D = 'M2.5 12C2.5 7.522 2.5 5.282 3.891 3.891C5.282 2.5 7.522 2.5 12 2.5C16.478 2.5 18.718 2.5 20.109 3.891C21.5 5.282 21.5 7.522 21.5 12C21.5 16.478 21.5 18.718 20.109 20.109C18.718 21.5 16.478 21.5 12 21.5C7.522 21.5 5.282 21.5 3.891 20.109C2.5 18.718 2.5 16.478 2.5 12Z';
+
+const ICONS_DATA: readonly IconTuple[] = [
+  ["equal-sign","Equal Sign (=)",0,0,"M4 8H20M4 16H20"],
+  ["not-equal-sign","Not Equal (≠)",0,0,"M4 8H20M4 16H20M6 20L18 4"],
+  ["less-than","Less Than (<)",0,0,"M17 4L8.67 10.04C6.44 11.65 6.44 12.35 8.67 13.96L17 20"],
+  ["greater-than","Greater Than (>)",0,0,"M7 4L15.33 10.04C17.56 11.65 17.56 12.35 15.33 13.96L7 20"],
+  ["inequality-01","Less or Equal (≤)",0,0,"M3 20H21M21 16H6.84C4.46 16 3.27 16 3.03 15.37C2.8 14.75 3.74 14.05 5.61 12.67L17.3 4"],
+  ["inequality-02","Greater or Equal (≥)",0,0,"M21 20H3M3 16H17.16C19.54 16 20.73 16 20.97 15.37C21.2 14.75 20.26 14.05 18.39 12.67L6.7 4"],
+  ["1st-brecket","Parentheses ()",0,0,"M6 3C3.59 4.94 2 8.24 2 12C2 15.76 3.59 19.06 6 21M18 3C20.41 4.94 22 8.24 22 12C22 15.76 20.41 19.06 18 21"],
+  ["2nd-brecket","Square Brackets []",0,0,"M17.22 3C18.61 3.15 19.55 3.5 20.25 4.29C21.5 5.7 21.5 7.96 21.5 12.5C21.5 17.04 21.5 19.3 20.25 20.71C19.55 21.5 18.61 21.85 17.22 22M6.77 22C5.39 21.85 4.45 21.5 3.75 20.71C2.5 19.3 2.5 17.04 2.5 12.5C2.5 7.96 2.5 5.7 3.75 4.29C4.45 3.5 5.39 3.15 6.77 3"],
+  ["3rd-brecket","Curly Braces {}",0,0,"M18 21C19.23 21 20.23 19.85 20.23 18.43C20.23 16.18 20.13 14.69 21.67 12.91C22.11 12.41 22.11 11.59 21.67 11.09C20.13 9.31 20.23 7.82 20.23 5.57C20.23 4.15 19.23 3 18 3M6 21C4.77 21 3.77 19.85 3.77 18.43C3.77 16.18 3.87 14.69 2.33 12.91C1.89 12.41 1.89 11.59 2.33 11.09C3.84 9.35 3.77 7.84 3.77 5.57C3.77 4.15 4.77 3 6 3"],
+  ["plus-minus-01","Plus-Minus (±)",0,0,"M12 3V17M19 10H5M19 21H5"],
+  ["minus-plus-01","Minus-Plus (∓)",0,0,"M12 7V21M19 14H5M19 3H5"],
+  ["plus-minus-02","Plus-Minus Diagonal",0,0,"M3 21L21 3M7 3V11M11 7L3 7M21 18L13 18"],
+  ["minus-plus-02","Minus-Plus Diagonal",0,0,"M3 21L21 3M17 13V21M21 17L13 17M11 7L3 7"],
+  ["plus-sign","Addition (+)",0,0,"M12 4V20M20 12H4"],
+  ["minus-sign","Subtraction (−)",0,0,"M20 12H4"],
+  ["multiplication-sign","Multiplication (×)",0,0,"M18 6L12 12M12 12L6 18M12 12L18 18M12 12L6 6"],
+  ["divide-sign","Division (÷)",0,0,"M3 12H21M14.5 5.5C14.5 6.88 13.38 8 12 8C10.62 8 9.5 6.88 9.5 5.5C9.5 4.12 10.62 3 12 3C13.38 3 14.5 4.12 14.5 5.5ZM14.5 18.5C14.5 19.88 13.38 21 12 21C10.62 21 9.5 19.88 9.5 18.5C9.5 17.12 10.62 16 12 16C13.38 16 14.5 17.12 14.5 18.5Z"],
+  ["percent","Percentage (%)",0,0,"M4 20L20 4M8.27 4.73C9.24 5.71 9.24 7.29 8.27 8.27C7.29 9.24 5.71 9.24 4.73 8.27C3.76 7.29 3.76 5.71 4.73 4.73C5.71 3.76 7.29 3.76 8.27 4.73ZM19.27 15.73C20.24 16.71 20.24 18.29 19.27 19.27C18.29 20.24 16.71 20.24 15.73 19.27C14.76 18.29 14.76 16.71 15.73 15.73C16.71 14.76 18.29 14.76 19.27 15.73Z"],
+  ["triangle-01","Equilateral Triangle",0,0,"M7.9 6.73C9.71 3.58 10.62 2 12 2C13.38 2 14.29 3.58 16.1 6.73L19.86 13.26C21.58 16.27 22.45 17.77 21.77 18.88C21.09 20 19.31 20 15.76 20H8.24C4.69 20 2.91 20 2.23 18.88C1.55 17.77 2.42 16.27 4.14 13.26L7.9 6.73ZM12 20V22M20 9L18 10M4 9L6 10M4 14.41C5.89 15.05 7.25 16.88 7.25 19.03C7.25 19.36 7.22 19.69 7.16 20M16.84 20C16.78 19.69 16.75 19.36 16.75 19.03C16.75 16.88 18.11 15.05 20 14.41M15.28 6C14.43 6.84 13.27 7.35 12 7.35C10.73 7.35 9.57 6.84 8.72 6"],
+  ["triangle-02","Delta Triangle",0,0,"M19.5 12.63L19.86 13.26C21.58 16.27 22.45 17.77 21.77 18.88C21.09 20 19.31 20 15.76 20H15M4.5 12.63L4.14 13.26C2.42 16.27 1.55 17.77 2.23 18.88C2.91 20 4.69 20 8.24 20H9M7.53 7.37L7.9 6.73C9.71 3.58 10.62 2 12 2C13.38 2 14.29 3.58 16.1 6.73L16.47 7.37M12 18V22M19.66 9L16.2 11M4.34 9L7.8 11"],
+  ["left-triangle","Left Right Triangle",0,0,"M11 20V22M20 8V6.48C20 3.78 20 2.42 19.21 2.07C18.42 1.72 17.48 2.66 15.59 4.53L4.72 15.34C2.73 17.31 1.73 18.3 2.06 19.15C2.39 20 3.77 20 6.52 20H8M11 20H17.39C18.62 20 19.24 20 19.62 19.6C20 19.21 20 18.57 20 17.29V13C20 12.06 20 11.59 20.29 11.29C20.59 11 21.06 11 22 11M20 15H19C17.11 15 16.17 15 15.59 15.59C15 16.17 15 17.11 15 19V20"],
+  ["right-triangle","Right Triangle",0,0,"M4 8V6.48C4 3.78 4 2.42 4.79 2.07C5.58 1.72 6.52 2.66 8.41 4.53L19.28 15.34C21.27 17.31 22.27 18.3 21.94 19.15C21.61 20 20.23 20 17.48 20H16M13 22C13 21.06 13 20.59 12.71 20.29C12.41 20 11.94 20 11 20H6.61C5.38 20 4.76 20 4.38 19.6C4 19.21 4 18.57 4 17.29V13C4 12.06 4 11.59 3.71 11.29C3.41 11 2.94 11 2 11M4 15H5C6.89 15 7.83 15 8.41 15.59C9 16.17 9 17.11 9 19V20"],
+  ["parabola-01","Parabola Up",0,0,"M21 3C21 11.28 16.97 18 12 18C7.03 18 3 11.28 3 3M3 21H4.06M15.71 21H16.76M19.94 21H21M7.24 21H8.29M11.47 21H12.53"],
+  ["parabola-02","Parabola Axis",0,0,"M20.95 2C20.95 10.28 16.92 17 11.95 17C6.98 17 2.95 10.28 2.95 2M2.95 20H4.01M15.66 20H16.72M19.89 20H20.95M7.19 20H8.25M9.45 4.5C11.05 2.69 11.4 2 11.95 2M14.45 4.5C12.85 2.69 12.5 2 11.95 2M11.95 2V22"],
+  ["parabola-03","Parabola Curve",0,0,"M21 2C21 10.28 16.97 17 12 17C7.03 17 3 10.28 3 2M2 20H22M9.5 4.5C11.1 2.69 11.45 2 12 2M14.5 4.5C12.9 2.69 12.55 2 12 2M12 2V22"],
+  ["compass","Geometry Compass",0,0,"M10 10L5 22M14 10L19 22M12 4L12 2M3 13C4.99 16.02 8.28 18 12 18C15.72 18 19.01 16.02 21 13M12 17V19",0,[["c",12,7,3]]],
+  ["angle","Angle",0,0,"M12 22V2M2 17L12 2L22 17M16 8C14.86 9.26 13.48 10 12 10C10.52 10 9.14 9.26 8 8M12 14C9.78 14 7.72 13.26 6 12"],
+  ["acute","Acute Angle",0,0,"M14.56 4.87C14.41 4.15 14.31 2.4 13.78 2.07C13.28 1.82 11.4 2.3 10.6 2.52M13.78 2.07L3.83 18.17C3.83 18.17 3.3 19.02 3.6 19.5C3.83 20.02 5.13 20 5.13 20H20.51M20.51 20C20.51 19.4 18.71 18.2 18.53 18M20.51 20C20.51 20.6 19.06 21.45 18.53 22M7.5 12.5C9.38 12.83 10.81 13.72 11.66 15.05C12.61 16.4 12.73 18.28 12.15 19.8"],
+  ["left-angle","Left Angle",0,0,"M21 5C20.61 4.6 19.56 3 19 3C18.44 3 17.39 4.6 17 5M5 17C4.6 17.39 3 18.44 3 19C3 19.56 4.6 20.61 5 21M19 12H18C15.17 12 13.76 12 12.88 12.88C12 13.76 12 15.17 12 18V19M3 19H13C15.83 19 17.24 19 18.12 18.15C19 17.3 19 15.92 19 13.18V3"],
+  ["right-angle","Right Angle",0,0,"M3 5C3.39 4.6 4.44 3 5 3C5.56 3 6.61 4.6 7 5M19 17C19.4 17.39 21 18.44 21 19C21 19.56 19.4 20.61 19 21M5 12H6C8.83 12 10.24 12 11.12 12.88C12 13.76 12 15.17 12 18V19M21 19H11C8.17 19 6.76 19 5.88 18.12C5 17.24 5 15.83 5 13L5 3"],
+  ["hyperbole","Hyperbola",0,0,"M2 12H22M12 22L12 2M21 8C18.24 8 16 5.76 16 3M3 16C5.76 16 8 18.24 8 21"],
+  ["coordinate-01","2D Coordinates",0,0,"M4 5C4.59 4.39 6.16 2 7 2C7.84 2 9.41 4.39 10 5M19 14C19.61 14.59 22 16.16 22 17C22 17.84 19.61 19.41 19 20",["M6.25 22C6.25 22.41 6.59 22.75 7 22.75C7.41 22.75 7.75 22.41 7.75 22L7 22L6.25 22ZM7.75 2C7.75 1.59 7.41 1.25 7 1.25C6.59 1.25 6.25 1.59 6.25 2L7 2L7.75 2ZM7 22L7.75 22L7.75 2L7 2L6.25 2L6.25 22L7 22Z","M2 16.25C1.59 16.25 1.25 16.59 1.25 17C1.25 17.41 1.59 17.75 2 17.75L2 17L2 16.25ZM22 17.75C22.41 17.75 22.75 17.41 22.75 17C22.75 16.59 22.41 16.25 22 16.25L22 17L22 17.75ZM2 17L2 17.75L22 17.75L22 17L22 16.25L2 16.25L2 17Z"]],
+  ["reflex","Reflex Angle",0,0,"M22 10.5H11.83C10.69 10.5 10.12 10.5 9.66 10.77C9.19 11.04 8.91 11.54 8.35 12.52L3.71 21.45M22 10.5C22 9.94 20 8.5 20 8.5M22 10.5C22 11.06 20 12.5 20 12.5M6.35 20.74C6.35 20.74 4.18 21.72 3.71 21.45C3.24 21.18 3 18.79 3 18.79M15.94 10.5C15.98 10.19 16 9.87 16 9.55C16 5.66 12.87 2.5 9 2.5C5.13 2.5 2 5.66 2 9.55C2 12.36 3.64 14.87 6 16"],
+  ["angle-02","Angle Ray",0,0,"M21 20H6.47C4.37 20 3.31 20 3.05 19.38C2.79 18.77 3.53 18.04 5.02 16.59L17.92 4M11 20C11 17.35 9.77 15.07 8 14"],
+  ["obtuse","Obtuse Angle",0,0,"M22 17C22 17.56 20 19 20 19M22 17C22 16.44 20 15 20 15M22 17H11.5C10.29 17 9.68 17 9.19 16.7C8.7 16.39 8.44 15.84 7.91 14.75L2.71 4.05M2.71 4.05C2.24 4.32 2 6.71 2 6.71M2.71 4.05C3.18 3.78 5.35 4.76 5.35 4.76M6 10.8C6.88 10.29 7.91 10 9 10C12.31 10 15 12.69 15 16C15 16.34 14.97 16.67 14.92 17"],
+  ["calculator","Calculator",0,0,"M5.5 3V8M8 5.5L3 5.5M8 16L6 18M6 18L4 20M6 18L8 20M6 18L4 16M20 6L16 6M20 18.5L16 18.5M20 15.5L16 15.5M22 12L2 12M12 22L12 2"],
+  ["cordinate-02","3D Coordinates",0,0,"M13.5 2L12 3.5M12 3.5V5M12 3.5L10.5 2M2 14H5L2 17H5M19 14L22 17M22 14L19 17M12 8V16M12 16L3 22M12 16L21 22"],
+  ["tan","Tangent (tan)",0,0,"M9.5 17L10.7 13M10.7 13L12.5 7L14.3 13L15.5 17M10.7 13H14.3M23 7V17L18 7V17M3 7H5.5M8 7H5.5M5.5 17V7"],
+  ["sin","Sine (sin)",0,0,"M11 7H13M15 7H13M15 17H13M11 17H13M13 7V17M23 7V17L18 7V17M7.69 8.62C7.26 7.65 6.44 7 5.5 7H5C3.89 7 3 8.12 3 9.5C3 10.88 3.89 12 5 12H6C7.11 12 8 13.12 8 14.5C8 15.88 7.11 17 6 17H5.5C4.48 17 3.59 16.23 3.21 15.13"],
+  ["cos","Cosine (cos)",0,0,"M10.5 9.5C10.5 8.12 11.62 7 13 7C14.38 7 15.5 8.12 15.5 9.5V14.5C15.5 15.88 14.38 17 13 17C11.62 17 10.5 15.88 10.5 14.5V9.5ZM22.69 8.62C22.26 7.65 21.44 7 20.5 7H20C18.89 7 18 8.12 18 9.5C18 10.88 18.89 12 20 12H21C22.11 12 23 13.12 23 14.5C23 15.88 22.11 17 21 17H20.5C19.48 17 18.59 16.23 18.21 15.13M8 8.31C7.55 7.53 6.67 7 5.66 7C4.19 7 3 8.12 3 9.5V14.5C3 15.88 4.19 17 5.66 17C6.67 17 7.55 16.47 8 15.69"],
+  ["beta","Beta Symbol (β)",0,0,"M13.88 10.2C16.13 10.2 17.96 8.59 17.96 6.6C17.96 4.61 16.13 3 13.88 3C11.63 3 9.81 4.61 9.81 6.6V19.2C9.81 20.19 8.89 21 7.77 21C7.01 21 6.35 20.64 6 20.1M9.81 14.7C9.81 17.19 12.09 19.2 14.9 19.2C17.72 19.2 20 17.19 20 14.7C20 12.21 17.72 10.09 14.9 10.09"],
+  ["pi","Pi Symbol (π)",0,0,"M4 9.3C4 7.5 6.06 5.7 8.69 5.7L17.96 5.7C20.2 5.7 22 4.35 22 3M17.5 6L16.61 18.31C16.52 19.76 17.51 21 18.76 21C19.7 21 20.52 20.31 20.82 19.29L21.1 18.3M11 6C10.87 9.06 10.6 14.75 10.2 16.5C9.8 18.25 9 20 7 20"],
+  ["insert-pi","Insert Pi",0,0,"M4 8.8C4 7 6.06 5.2 8.69 5.2L17.96 5.2C20.2 5.2 22 3.85 22 2.5M17.5 5.5L17 11M11 5.5C10.87 8.56 10.6 14.25 10.2 16C9.8 17.75 9 19.5 7 19.5M18 16.17V17.5M18 17.5V18.83M18 17.5H19.33M18 17.5H16.67M22 17.5C22 19.71 20.21 21.5 18 21.5C15.79 21.5 14 19.71 14 17.5C14 15.29 15.79 13.5 18 13.5C20.21 13.5 22 15.29 22 17.5Z"],
+  ["remove-pi","Remove Pi",0,0,"M4 8.8C4 7 6.06 5.2 8.69 5.2L17.96 5.2C20.2 5.2 22 3.85 22 2.5M17.5 5.5L17 11M11 5.5C10.87 8.56 10.6 14.25 10.2 16C9.8 17.75 9 19.5 7 19.5M19.33 17.5H16.67M22 17.5C22 19.71 20.21 21.5 18 21.5C15.79 21.5 14 19.71 14 17.5C14 15.29 15.79 13.5 18 13.5C20.21 13.5 22 15.29 22 17.5Z"],
+  ["alpha","Alpha Symbol (α)",0,0,"M18.39 4C18.59 5.85 18.34 10 17.17 13.27C15.77 17.5 13.67 19.35 12 19.8C8.75 20.67 6.03 18.45 4.88 15.98C3.41 12.8 3.81 9.13 5.86 6.48C7.9 3.83 11.78 2.67 14.65 6.25C15.75 7.92 16.22 9.73 16.45 11.17C16.9 12.77 17.12 16.77 18.29 18.73C19.22 20.17 20.64 20.1 21.17 19.88C21.52 19.7 22 19.32 22 18.22"],
+  ["infinity-01","Infinity (∞)",0,0,"M13 12C13 12 10.26 17 7.5 17C4.74 17 3 14.76 3 12C3 9.24 4.74 7 7.5 7C10.26 7 13 12 13 12ZM13 12C13 12 15.74 17 18.5 17C21.26 17 23 14.76 23 12C23 9.24 21.26 7 18.5 7C15.74 7 13 12 13 12Z"],
+  ["approximately-equal","Approx Equal (≈)",0,0,"M5 7.93C7.67 4.93 10.33 5.81 13 8C15.67 10.19 18.33 11.07 21 8.07M5 15.93C7.67 12.93 10.33 13.81 13 16C15.67 18.19 18.33 19.07 21 16.07"],
+  ["congruent-to","Congruent (≅)",0,0,"M5 13H21M5 19H21M5 6.93C7.67 3.93 10.33 4.81 13 7C15.67 9.19 18.33 10.07 21 7.07"],
+  ["function-of-x","Function f(x)",0,0,"M3 18.22C3.19 19.07 3.57 20 4.56 20C6.28 20 6.71 18.22 8 12C9.29 5.78 9.72 4 11.44 4C12.43 4 12.81 4.93 13 5.78M5.92 9.78H11.44M22 12C23.38 15.25 23.29 16.98 22 20M13 12C11.62 15.25 11.71 16.98 13 20M15.29 14C16.09 13.97 16.55 14.06 16.82 14.55C17.15 15.22 17.98 17.07 18.18 17.47C18.31 17.65 18.47 17.9 19 17.99L19.71 18M20 14C18.88 14 18.09 15.29 17.56 15.94C16.79 16.94 15.93 18.05 15 18"],
+  ["function","Function f",0,0,"M6 19C6.26 19.96 6.8 21 8.19 21C10.59 21 11.19 19 13 12C14.81 5 15.41 3 17.81 3C19.2 3 19.74 4.04 20 5M10 10H18"],
+  ["x-variable","Variable x",0,0,"M21 3.5C14.63 3.5 11.37 20.5 5 20.5M20 20.5C18.38 20.5 17.57 20.5 16.89 20.16C16.5 19.96 16.15 19.69 15.85 19.36C15.32 18.77 15.03 17.92 14.45 16.23L11.55 7.77C10.97 6.08 10.68 5.23 10.15 4.64C9.85 4.31 9.5 4.04 9.11 3.84C8.43 3.5 7.62 3.5 6 3.5"],
+  ["square-01","Square Power (x²)",0,0,"M3.71 7.02C5.71 6.92 6.95 7.08 7.74 8.91C8.56 11.11 10.59 17.24 11.09 18.65C11.64 20.17 12.34 21.22 15.23 20.96M16 7.01C13.14 6.98 10.8 11.72 9.49 13.99C8.06 16.61 5.6 21.15 3 20.98M23 9H19L22.2 6.6C22.7 6.22 23 5.63 23 5C23 3.89 22.11 3 21 3C19.9 3 19 3.89 19 5"],
+  ["root-01","Square Root (√x)",0,0,"M23 5H14.61C13.38 5 12.96 5.14 12.66 6.36L10.34 15.64C9.79 17.84 9.51 18.94 8.79 19C8.06 19.06 7.55 18.02 6.54 15.95L5.97 14.77C5.54 13.88 5.32 13.44 4.88 13.32C4.22 13.13 3.51 13.67 3 14M15.4 11C16.18 10.92 17.13 11.04 17.44 11.64C18.05 12.84 19.06 15.36 19.42 16.14C19.6 16.44 19.78 16.8 20.5 16.98C20.98 17.04 21.6 17 21.6 17M22 11C20.5 11 19.54 12.66 18.7 13.68C17.62 15.24 16.42 17.1 14.98 16.98"],
+  ["n-th-root","Nth Root (ⁿ√x)",0,0,"M23 7H14.61C13.38 7 12.96 7.14 12.66 8.36L10.34 17.64C9.79 19.84 9.51 20.94 8.79 21C8.06 21.06 7.55 20.02 6.54 17.95L5.97 16.77C5.54 15.88 5.32 15.44 4.88 15.32C4.22 15.13 3.51 15.67 3 16M4 9V5.57M4 5.57C4 4.15 5.12 3 6.5 3C7.88 3 9 4.15 9 5.57V9M4 5.57V3"],
+  ["summation-01","Summation (Σ)",0,0,"M20 17.14C20 18.65 20 19.4 19.65 19.95C19.47 20.23 19.22 20.48 18.93 20.65C18.38 21 17.61 21 16.09 21H10.2C7.61 21 6.32 21 6.05 20.26C5.77 19.53 6.75 18.7 8.71 17.04L12.66 13.71C13.6 12.91 14.06 12.52 14.06 12C14.06 11.48 13.6 11.09 12.66 10.29L8.71 6.96C6.75 5.3 5.77 4.47 6.05 3.74C6.32 3 7.61 3 10.2 3H16.09C17.61 3 18.38 3 18.93 3.35C19.22 3.52 19.47 3.77 19.65 4.05C20 4.6 20 5.35 20 6.86"],
+  ["more-or-less","More or Less (≷)",0,0,"M5 12H21M21 7L8 7C6.18 7 5.27 7 5.05 6.38C4.82 5.76 5.46 5.04 6.75 3.59L7.27 3M5 17L18 17C19.82 17 20.73 17 20.95 17.62C21.18 18.23 20.54 18.96 19.25 20.41L18.73 21"],
+  ["sine-01","Sine Wave 1",0,0,"M6 14C6 11.78 5.82 4 9.5 4C11.43 4 13 7.58 13 12C13 16.42 14.57 20 16.5 20C20.19 20 20 12.22 20 10M3 12H6M20 12H23M9 12H17M21.92 2.83C21.71 2.35 21.15 2 20.5 2C19.67 2 19 2.56 19 3.25C19 3.94 19.67 4.5 20.5 4.5C21.33 4.5 22 5.06 22 5.75C22 6.44 21.33 7 20.5 7C19.85 7 19.29 6.65 19.08 6.17M6.54 17C5.69 17 5 17.67 5 18.5V20.5C5 21.33 5.69 22 6.54 22M6.54 17C7.22 17 7.79 17.42 8 18M6.54 17C5.87 17 5.3 17.42 5.09 18M6.54 22C5.87 22 5.3 21.58 5.09 21M6.54 22C7.22 22 7.79 21.58 8 21"],
+  ["sine-02","Sine Wave 2",0,0,"M22 9.01C22 12 21.09 21 17.18 21C15.13 21 13.83 17.38 13 12C12.17 6.62 10.87 3 8.82 3C4.91 3 4 12 4 14.99M3 12H6M9 12H11M15 12H17M20 12H23"],
+  ["cosine-01","Cosine Wave 1",0,0,"M23 20.73C19 22.67 17.59 13.65 17.33 12.05C16.47 6.64 15.12 3 13 3C10.88 3 9.53 6.64 8.67 12.05C8.41 13.65 7 22.67 3 20.73M3 12H5.5M20.5 12H23M11.5 12H14.5"],
+  ["cosine-02","Cosine Wave 2",0,0,"M23 3.27C19 1.33 17.59 10.35 17.33 11.95C16.47 17.36 15.12 21 13 21C10.88 21 9.53 17.36 8.67 11.95C8.41 10.35 7 1.33 3 3.27M3 12H6M20 12H23M11 12H15"],
+  ["prism","Prism 3D (Geometry)",0,0,"M13 15C13.32 15 13.61 15.2 14.18 15.6L17.92 18.24C20.1 19.78 21.2 20.56 20.97 21.28M13 15C12.68 15 12.39 15.2 11.82 15.6L8.08 18.24C5.9 19.78 4.8 20.56 5.03 21.28M13 15V11.5M20.97 21.28C20.75 22 19.41 22 16.74 22H9.26C6.59 22 5.25 22 5.03 21.28M20.97 21.28V8M5.03 21.28V8M13 2C13.32 2 13.61 2.2 14.18 2.6L17.92 5.24C20.1 6.78 21.2 7.56 20.97 8.28C20.75 9 19.41 9 16.74 9H9.26C6.59 9 5.25 9 5.03 8.28C4.8 7.56 5.9 6.78 8.08 5.24L11.82 2.6C12.39 2.2 12.68 2 13 2ZM13 2V6.5"],
+  ["cube","Cube 3D",0,0,"M3.79 21.21C4.09 21.5 4.56 21.5 5.5 21.5H15.5C16.44 21.5 16.91 21.5 17.21 21.21M3.79 21.21C3.5 20.91 3.5 20.44 3.5 19.5V9.5C3.5 8.56 3.5 8.09 3.79 7.79M3.79 21.21L9.79 15.21M17.21 21.21C17.5 20.91 17.5 20.44 17.5 19.5V9.5C17.5 8.56 17.5 8.09 17.21 7.79M17.21 21.21L22.21 16.21C22.5 15.91 22.5 15.44 22.5 14.5V4.5C22.5 3.56 22.5 3.09 22.21 2.79M17.21 7.79C16.91 7.5 16.44 7.5 15.5 7.5H5.5C4.56 7.5 4.09 7.5 3.79 7.79M17.21 7.79L22.21 2.79M3.79 7.79L8.79 2.79C9.09 2.5 9.56 2.5 10.5 2.5H20.5C21.44 2.5 21.91 2.5 22.21 2.79M9.79 15.21C10.09 15.5 10.56 15.5 11.5 15.5H15M9.79 15.21C9.5 14.91 9.5 14.44 9.5 13.5V10.5"],
+  ["rectangular","Cuboid 3D",0,0,"M8.69 2.44L6.35 4.22C5.38 4.96 4.9 5.33 5.02 5.67C5.14 6 5.76 6 7.01 6H17C17.36 6 17.55 6 17.71 5.94C17.88 5.89 18.03 5.78 18.31 5.56L20.65 3.78C21.62 3.04 22.1 2.67 21.98 2.33C21.86 2 21.24 2 19.99 2H10C9.64 2 9.45 2 9.29 2.06C9.12 2.11 8.97 2.22 8.69 2.44ZM5.02 21.67C5.14 22 5.76 22 7.01 22H17C17.36 22 17.55 22 17.71 21.94M5.02 21.67C4.9 21.33 5.38 20.96 6.35 20.22L8.69 18.44C8.97 18.22 9.12 18.11 9.29 18.06M5.02 21.67V5.67M9.29 18.06C9.45 18 9.64 18 10 18H15M9.29 18.06V9M17.71 21.94C17.88 21.89 18.03 21.78 18.31 21.56L20.65 19.78C21.62 19.04 22.1 18.67 21.98 18.33V2.33M17.71 21.94V5.94"],
+  ["pyramid","Pyramid 3D",0,0,"M13 2V22M15.87 13.68L22.99 17.59M22.99 17.59L22.99 17.59M22.99 17.59C23.06 17.15 22.76 16.66 22.19 15.75L14.78 3.92C13.98 2.64 13.58 2 13 2C12.42 2 12.02 2.64 11.22 3.92L3.81 15.75C3.24 16.66 2.94 17.15 3.01 17.59M22.99 17.59C22.98 17.62 22.97 17.66 22.96 17.7C22.81 18.16 22.27 18.38 21.18 18.81L13.78 21.77C13.4 21.92 13.2 22 13 22C12.8 22 12.6 21.92 12.22 21.77L4.82 18.81C3.73 18.38 3.19 18.16 3.04 17.7C3.03 17.66 3.02 17.62 3.01 17.59M3.01 17.59L3.01 17.59M3.01 17.59L10.13 13.68"],
+  ["sphere","Sphere 3D",0,0,"M13 10.5C12.17 10.5 11.5 11.17 11.5 12C11.5 12.83 12.17 13.5 13 13.5C13.83 13.5 14.5 12.83 14.5 12C14.5 11.17 13.83 10.5 13 10.5ZM13 10.5V2M16 8C20.06 8.52 23 10.07 23 11.91C23 14.17 18.52 16 13 16C7.48 16 3 14.17 3 11.91C3 10.07 5.94 8.52 10 8",0,[["c",13,12,10]]],
+  ["cylinder-01","Cylinder Vertical",0,0,"M21 5.5C21 7.43 17.42 9 13 9C8.58 9 5 7.43 5 5.5C5 3.57 8.58 2 13 2C17.42 2 21 3.57 21 5.5ZM21 18.5C21 20.43 17.42 22 13 22C8.58 22 5 20.43 5 18.5C5 16.57 8.58 15 13 15C17.42 15 21 16.57 21 18.5ZM21 18.5V5.5M5 18.5V5.5"],
+  ["cylinder-02","Truncated Cone",0,0,"M18 4C18 5.1 15.76 6 13 6C10.24 6 8 5.1 8 4C8 2.9 10.24 2 13 2C15.76 2 18 2.9 18 4ZM22 18C22 20.21 17.97 22 13 22C8.03 22 4 20.21 4 18C4 15.79 8.03 14 13 14C17.97 14 22 15.79 22 18ZM4.5 16.5L8 4M21.5 16.5L18 4"],
+  ["cylinder-03","Cylinder 3D",0,0,"M23 19C23 20.66 18.52 22 13 22C7.48 22 3 20.66 3 19C3 17.34 7.48 16 13 16C18.52 16 23 17.34 23 19ZM23 5C23 6.66 18.52 8 13 8C7.48 8 3 6.66 3 5C3 3.34 7.48 2 13 2C18.52 2 23 3.34 23 5ZM23 5V19M3 5V19"],
+  ["cone-01","Cone 3D",0,0,"M22 18C22 15.79 17.97 14 13 14C8.03 14 4 15.79 4 18C4 20.21 8.03 22 13 22C17.97 22 22 20.21 22 18ZM21.5 16.5L17.16 7.39C15.34 3.8 14.44 2 13 2C11.56 2 10.66 3.8 8.84 7.39L4.5 16.5"],
+  ["cylinder-04","Hemisphere Cylinder",0,0,"M13 19L10.88 21.12M10.88 21.12C11.42 21.66 12.17 22 13 22C14.66 22 16 20.66 16 19C16 17.34 14.66 16 13 16C11.34 16 10 17.34 10 19C10 19.83 10.34 20.58 10.88 21.12ZM11 16H15C17.81 16 19.21 16 20.22 15.33C20.66 15.03 21.03 14.66 21.33 14.22C22 13.21 22 11.81 22 9C22 6.19 22 4.79 21.33 3.78C21.03 3.34 20.66 2.97 20.22 2.67C19.21 2 17.81 2 15 2H11C8.19 2 6.79 2 5.78 2.67C5.34 2.97 4.97 3.34 4.67 3.78C4 4.79 4 6.19 4 9C4 11.81 4 13.21 4.67 14.22C4.97 14.66 5.34 15.03 5.78 15.33C6.79 16 8.19 16 11 16Z"],
+  ["cone-02","Inverted Cone",0,0,"M13 19H16M16 19C16 18.23 15.71 17.46 15.12 16.88C13.95 15.71 12.05 15.71 10.88 16.88C9.71 18.05 9.71 19.95 10.88 21.12C12.05 22.29 13.95 22.29 15.12 21.12C15.71 20.54 16 19.77 16 19ZM13 3L13 6M13 12H13.01M13 9H13.01M3.95 11.5C5.92 14.22 9.24 16 13 16C16.76 16 20.08 14.22 22.05 11.5C22.76 10.52 23.11 10.03 22.97 9.18C22.82 8.33 22.18 7.89 20.91 7.01L15.4 3.2C14.24 2.4 13.66 2 13 2C12.34 2 11.76 2.4 10.6 3.2L5.09 7.01C3.82 7.89 3.18 8.33 3.03 9.18C2.89 10.03 3.24 10.52 3.95 11.5Z"],
+  ["infinity-02","Infinity Variant",0,0,"M13 12C13 12 11.36 15 9.7 15C8.04 15 7 13.66 7 12C7 10.34 8.04 9 9.7 9C11.36 9 13 12 13 12ZM13 12C13 12 14.64 15 16.3 15C17.96 15 19 13.66 19 12C19 10.34 17.96 9 16.3 9C14.64 9 13 12 13 12ZM18.73 2.5C20.11 2.65 21.05 3 21.75 3.79C23 5.2 23 7.46 23 12C23 16.54 23 18.8 21.75 20.21C21.05 21 20.11 21.35 18.73 21.5M7.27 21.5C5.89 21.35 4.95 21 4.25 20.21C3 18.8 3 16.54 3 12C3 7.46 3 5.2 4.25 3.79C4.95 3 5.89 2.65 7.27 2.5"],
+  ["absolute","Absolute Value (|x|)",0,0,"M18.73 2.5C20.11 2.65 21.05 3 21.75 3.79C23 5.2 23 7.46 23 12C23 16.54 23 18.8 21.75 20.21C21.05 21 20.11 21.35 18.73 21.5M7.27 21.5C5.89 21.35 4.95 21 4.25 20.21C3 18.8 3 16.54 3 12C3 7.46 3 5.2 4.25 3.79C4.95 3 5.89 2.65 7.27 2.5",["M8 15.25C7.59 15.25 7.25 15.59 7.25 16C7.25 16.41 7.59 16.75 8 16.75V16V15.25ZM18 8.75C18.41 8.75 18.75 8.41 18.75 8C18.75 7.59 18.41 7.25 18 7.25V8V8.75ZM12.09 10.01L12.77 9.7V9.7L12.09 10.01ZM13.91 13.99L14.6 13.68V13.68L13.91 13.99ZM14.8 15.46L15.28 14.89L15.28 14.89L14.8 15.46ZM17.41 16.75C17.83 16.75 18.16 16.41 18.16 16C18.16 15.59 17.83 15.25 17.41 15.25V16V16.75ZM15.45 15.84L15.19 16.54H15.19L15.45 15.84ZM8.59 7.25C8.17 7.25 7.84 7.59 7.84 8C7.84 8.41 8.17 8.75 8.59 8.75V8V7.25ZM10.55 8.16L10.28 8.86V8.86L10.55 8.16ZM11.2 8.54L10.72 9.11L10.72 9.11L11.2 8.54ZM8 16V16.75C9.26 16.75 10.31 16.11 11.19 15.3C12.06 14.5 12.86 13.44 13.6 12.45C14.36 11.44 15.07 10.5 15.83 9.8C16.58 9.11 17.27 8.75 18 8.75V8V7.25C16.74 7.25 15.69 7.89 14.81 8.7C13.94 9.5 13.14 10.56 12.4 11.55C11.64 12.56 10.93 13.5 10.17 14.2C9.42 14.89 8.73 15.25 8 15.25V16ZM12.09 10.01L11.4 10.32L13.23 14.3L13.91 13.99L14.6 13.68L12.77 9.7L12.09 10.01ZM13.91 13.99L13.23 14.3C13.57 15.04 13.82 15.63 14.32 16.04L14.8 15.46L15.28 14.89C15.1 14.74 14.99 14.54 14.6 13.68L13.91 13.99ZM17.41 16V15.25C16.33 15.25 15.99 15.24 15.72 15.14L15.45 15.84L15.19 16.54C15.78 16.76 16.45 16.75 17.41 16.75V16ZM14.8 15.46L14.32 16.04C14.57 16.25 14.87 16.42 15.19 16.54L15.45 15.84L15.72 15.14C15.55 15.07 15.4 14.99 15.28 14.89L14.8 15.46ZM8.59 8V8.75C9.67 8.75 10.01 8.76 10.28 8.86L10.55 8.16L10.81 7.46C10.22 7.24 9.55 7.25 8.59 7.25V8ZM12.09 10.01L12.77 9.7C12.43 8.96 12.18 8.37 11.68 7.96L11.2 8.54L10.72 9.11C10.9 9.26 11.01 9.46 11.4 10.32L12.09 10.01ZM10.55 8.16L10.28 8.86C10.45 8.93 10.6 9.01 10.72 9.11L11.2 8.54L11.68 7.96C11.43 7.75 11.13 7.58 10.81 7.46L10.55 8.16Z"]],
+  ["matrix","Matrix Grid",0,0,"M18.73 2.5C20.11 2.65 21.05 3 21.75 3.79C23 5.2 23 7.46 23 12C23 16.54 23 18.8 21.75 20.21C21.05 21 20.11 21.35 18.73 21.5M7.27 21.5C5.89 21.35 4.95 21 4.25 20.21C3 18.8 3 16.54 3 12C3 7.46 3 5.2 4.25 3.79C4.95 3 5.89 2.65 7.27 2.5M8 8H8.01M13 8H13M17.99 8H18M8 12H8.01M8 16H8.01M13 12H13M13 16H13M17.99 12H18M17.99 16H18"],
+  ["root-02","Root Variant",0,0,"M17.73 2.5C19.11 2.65 20.05 3 20.75 3.79C22 5.2 22 7.46 22 12C22 16.54 22 18.8 20.75 20.21C20.05 21 19.11 21.35 17.73 21.5M6.27 21.5C4.89 21.35 3.95 21 3.25 20.21C2 18.8 2 16.54 2 12C2 7.46 2 5.2 3.25 3.79C3.95 3 4.89 2.65 6.27 2.5",["M7.63 13.59L6.95 13.9L6.95 13.9L7.63 13.59ZM7.95 14.26L7.27 14.57L7.95 14.26ZM10.04 14.08L9.31 13.91V13.91L10.04 14.08ZM11.31 8.78L12.04 8.96V8.96L11.31 8.78ZM12.39 8V8.75V8ZM18 8.75C18.41 8.75 18.75 8.41 18.75 8C18.75 7.59 18.41 7.25 18 7.25V8V8.75ZM9.18 16L9.12 15.25L9.12 15.25L9.18 16ZM7.03 12.75L6.83 13.47L6.83 13.47L7.03 12.75ZM5.58 12.52C5.24 12.75 5.15 13.22 5.38 13.56C5.61 13.91 6.08 14 6.42 13.76L6 13.14L5.58 12.52ZM12.88 14.11C12.46 14.11 12.13 14.44 12.13 14.86C12.13 15.27 12.46 15.61 12.88 15.61V14.86V14.11ZM16.73 12.18C17.14 12.18 17.48 11.84 17.48 11.43C17.48 11.01 17.14 10.68 16.73 10.68V11.43V12.18ZM14.45 12.29L13.76 12.58V12.58L14.45 12.29ZM15.15 14L15.85 13.71V13.71L15.15 14ZM15.49 14.63L16 14.08L16 14.08L15.49 14.63ZM16.5 15.61C16.91 15.61 17.25 15.27 17.25 14.86C17.25 14.44 16.91 14.11 16.5 14.11V14.86V15.61ZM15.75 14.79L16.03 14.1V14.1L15.75 14.79ZM13.1 10.68C12.69 10.68 12.35 11.01 12.35 11.43C12.35 11.84 12.69 12.18 13.1 12.18V11.43V10.68ZM13.86 11.5L13.57 12.19V12.19L13.86 11.5ZM14.11 11.66L14.62 11.11H14.62L14.11 11.66ZM7.63 13.59L6.95 13.9L7.27 14.57L7.95 14.26L8.63 13.94L8.31 13.27L7.63 13.59ZM10.04 14.08L10.77 14.26L12.04 8.96L11.31 8.78L10.58 8.6L9.31 13.91L10.04 14.08ZM12.39 8V8.75H18V8V7.25H12.39V8ZM7.95 14.26L7.27 14.57C7.54 15.14 7.77 15.65 7.99 15.99C8.19 16.3 8.58 16.8 9.24 16.75L9.18 16L9.12 15.25C9.38 15.23 9.43 15.46 9.25 15.18C9.1 14.94 8.91 14.55 8.63 13.94L7.95 14.26ZM10.04 14.08L9.31 13.91C9.15 14.56 9.05 14.97 8.95 15.22C8.83 15.52 8.84 15.27 9.12 15.25L9.18 16L9.24 16.75C9.92 16.69 10.21 16.11 10.34 15.77C10.49 15.39 10.62 14.86 10.77 14.26L10.04 14.08ZM7.63 13.59L8.31 13.27C8.2 13.03 8.09 12.78 7.96 12.59C7.82 12.37 7.6 12.13 7.24 12.03L7.03 12.75L6.83 13.47C6.78 13.46 6.74 13.43 6.71 13.41C6.69 13.39 6.69 13.38 6.71 13.42C6.73 13.45 6.76 13.5 6.8 13.59C6.85 13.67 6.89 13.77 6.95 13.9L7.63 13.59ZM11.31 8.78L12.04 8.96C12.08 8.81 12.11 8.74 12.12 8.71C12.13 8.69 12.12 8.72 12.07 8.75C12.03 8.78 12.02 8.77 12.07 8.76C12.13 8.75 12.22 8.75 12.39 8.75V8V7.25C12.08 7.25 11.62 7.25 11.25 7.5C10.83 7.78 10.67 8.22 10.58 8.6L11.31 8.78ZM6 13.14L6.42 13.76C6.46 13.74 6.5 13.71 6.53 13.69C6.57 13.66 6.61 13.64 6.64 13.61C6.71 13.57 6.77 13.53 6.82 13.51C6.93 13.46 6.91 13.5 6.83 13.47L7.03 12.75L7.24 12.03C6.79 11.9 6.4 12.04 6.15 12.16C5.92 12.28 5.68 12.45 5.58 12.52L6 13.14ZM12.88 14.86V15.61C13.56 15.61 14.08 15.22 14.45 14.85C14.82 14.47 15.14 13.98 15.42 13.56L14.8 13.14L14.18 12.72C13.88 13.17 13.63 13.53 13.37 13.8C13.11 14.06 12.96 14.11 12.88 14.11V14.86ZM14.8 13.14L15.42 13.56C15.72 13.12 15.97 12.75 16.23 12.49C16.49 12.22 16.64 12.18 16.73 12.18V11.43V10.68C16.04 10.68 15.52 11.06 15.16 11.44C14.79 11.82 14.46 12.31 14.18 12.72L14.8 13.14ZM14.45 12.29L13.76 12.58L14.11 13.43L14.8 13.14L15.5 12.86L15.14 12L14.45 12.29ZM14.8 13.14L14.11 13.43L14.46 14.28L15.15 14L15.85 13.71L15.5 12.86L14.8 13.14ZM15.15 14L14.46 14.28C14.57 14.56 14.71 14.92 14.98 15.18L15.49 14.63L16 14.08C16.03 14.1 16.02 14.11 16 14.05C15.96 13.99 15.92 13.89 15.85 13.71L15.15 14ZM16.5 14.86V14.11C16.29 14.11 16.18 14.11 16.09 14.1C16.02 14.1 16.01 14.09 16.03 14.1L15.75 14.79L15.46 15.48C15.79 15.62 16.17 15.61 16.5 15.61V14.86ZM15.49 14.63L14.98 15.18C15.12 15.31 15.28 15.41 15.46 15.48L15.75 14.79L16.03 14.1C16.02 14.09 16.01 14.08 16 14.08L15.49 14.63ZM13.1 11.43V12.18C13.31 12.18 13.43 12.18 13.51 12.19C13.59 12.19 13.59 12.2 13.57 12.19L13.86 11.5L14.15 10.81C13.81 10.66 13.43 10.68 13.1 10.68V11.43ZM14.45 12.29L15.14 12C15.03 11.73 14.9 11.37 14.62 11.11L14.11 11.66L13.6 12.21C13.58 12.19 13.58 12.18 13.61 12.23C13.64 12.3 13.68 12.4 13.76 12.58L14.45 12.29ZM13.86 11.5L13.57 12.19C13.58 12.2 13.59 12.2 13.6 12.21L14.11 11.66L14.62 11.11C14.48 10.98 14.32 10.88 14.15 10.81L13.86 11.5Z"]],
+  ["summation-02","Summation Bracket",0,0,"M17.73 2.5C19.11 2.65 20.05 3 20.75 3.79C22 5.2 22 7.46 22 12C22 16.54 22 18.8 20.75 20.21C20.05 21 19.11 21.35 17.73 21.5M6.27 21.5C4.89 21.35 3.95 21 3.25 20.21C2 18.8 2 16.54 2 12C2 7.46 2 5.2 3.25 3.79C3.95 3 4.89 2.65 6.27 2.5M15 14.5C15 15.03 14.98 15.31 14.85 15.53C14.52 16.06 13.87 16 13.32 16H10.8C9.69 16 9.14 16 9.02 15.67C8.9 15.35 9.32 14.98 10.16 14.24L11.85 12.76C12.25 12.41 12.46 12.23 12.46 12C12.46 11.77 12.25 11.59 11.85 11.24L10.16 9.76C9.32 9.02 8.9 8.66 9.02 8.33C9.14 8 9.69 8 10.8 8H13.32C13.87 8 14.52 7.94 14.85 8.47C14.98 8.69 15 8.97 15 9.5"],
+  ["abacus","Abacus",0,1,"M6 9H9.5M17 9H18M12 8V10M14.5 8V10M18 15H12M7 15H6M9.5 14V16"],
+  ["equal-sign-square","Equal (Square)",0,1,"M8 9H16M8 15H16"],
+  ["not-equal-sign-square","Not Equal (Square)",0,1,"M7 9.78H17M7 14.22H17M8.67 17L15.33 7"],
+  ["less-than-square","Less Than (Square)",0,1,"M14 8L10.67 11.02C9.78 11.83 9.78 12.17 10.67 12.98L14 16"],
+  ["greater-than-square","Greater Than (Square)",0,1,"M10 8L13.33 11.02C14.22 11.83 14.22 12.17 13.33 12.98L10 16"],
+  ["inequality-square-01","Inequality (Square 1)",0,1,"M14 7.5L8.14 12.67C7.8 13.08 8.13 13.5 8.58 13.5H16.02M8 16.5H16.02"],
+  ["inequality-square-02","Inequality (Square 2)",0,1,"M10.02 7.5L15.87 12.67C16.2 13.08 15.87 13.5 15.42 13.5H8.01M16.02 16.5H8"],
+  ["1st-brecket-square","Parentheses (Square)",0,1,"M9 8C7.79 8.86 7 10.33 7 12C7 13.67 7.79 15.14 9 16M15 8C16.21 8.86 17 10.33 17 12C17 13.67 16.21 15.14 15 16"],
+  ["2nd-brecket-square","Brackets (Square)",0,1,"M15 8C15.65 8.07 16.09 8.21 16.41 8.54C17 9.13 17 10.09 17 12C17 13.91 17 14.87 16.41 15.46C16.09 15.79 15.65 15.93 15 16M9 16C8.35 15.93 7.91 15.79 7.59 15.46C7 14.87 7 13.91 7 12C7 10.09 7 9.13 7.59 8.54C7.91 8.21 8.35 8.07 9 8"],
+  ["3rd-brecket-square","Braces (Square)",0,1,"M14 16C14.92 16 15.67 15.49 15.67 14.86C15.67 13.64 15.69 13.13 16.75 12.4C17.08 12.18 17.08 11.82 16.75 11.6C15.69 10.87 15.67 10.36 15.67 9.14C15.67 8.51 14.92 8 14 8M10 16C9.08 16 8.33 15.49 8.33 14.86C8.33 13.64 8.31 13.13 7.25 12.4C6.92 12.18 6.92 11.82 7.25 11.6C8.31 10.87 8.33 10.36 8.33 9.14C8.33 8.51 9.08 8 10 8"],
+  ["plus-minus-square-01","Plus-Minus (Square 1)",0,1,"M12 7.5V13.86M15.5 10.68H8.5M15.5 16.5H8.5"],
+  ["minus-plus-square-01","Minus-Plus (Square 1)",0,1,"M12 16.5V10.14M15.5 13.32H8.5M15.5 7.5H8.5"],
+  ["plus-minus-square-02","Plus-Minus (Square 2)",0,1,"M7 17L17 7M9 7V9M9 9V11M9 9L11 9M9 9L7 9M17 15L13 15"],
+  ["minus-plus-square-02","Minus-Plus (Square 2)",0,1,"M17 7L7 17M15 17V15M15 15V13M15 15L13 15M15 15H17M7 9L11 9"],
+  ["plus-sign-square","Plus (Square)",0,1,"M12 8V16M16 12H8"],
+  ["minus-sign-square","Minus (Square)",0,1,"M16 12H8"],
+  ["multiplication-sign-square","Multiply (Square)",0,1,"M16 8L12 12M12 12L8 16M12 12L16 16M12 12L8 8"],
+  ["divide-sign-square","Divide (Square)",0,1,"M7 12H17M13 8C13 8.55 12.55 9 12 9C11.45 9 11 8.55 11 8C11 7.45 11.45 7 12 7C12.55 7 13 7.45 13 8ZM13 16C13 16.55 12.55 17 12 17C11.45 17 11 16.55 11 16C11 15.45 11.45 15 12 15C12.55 15 13 15.45 13 16Z"],
+  ["percent-square","Percent (Square)",0,1,"M8 16L16 8M10 9C10 9.55 9.55 10 9 10C8.45 10 8 9.55 8 9C8 8.45 8.45 8 9 8C9.55 8 10 8.45 10 9ZM16 14.83C16 15.38 15.55 15.83 15 15.83C14.45 15.83 14 15.38 14 14.83C14 14.28 14.45 13.83 15 13.83C15.55 13.83 16 14.28 16 14.83Z"],
+  ["pi-square","Pi (Square)",0,1,"M17 8H9.22C8 8 7 8.9 7 10M10.33 8L9.37 14.91C9.29 15.51 8.68 15.93 8.01 15.84C7.56 15.79 7.19 15.5 7.04 15.12L7 15M13.67 16L14.78 8"],
+  ["alpha-square","Alpha (Square)",0,1,"M15 8C15.11 8.86 15 10.23 14.6 11.83C14.25 12.97 13.16 16.26 10.32 15.98C7.87 15.66 6.85 13.26 7.02 11.68C7.09 10.36 8.07 8.04 10.7 8C13.05 8.2 13.65 10.21 13.99 11.9C14.35 13.46 14.31 14.23 14.91 15.3C15.27 15.88 15.95 16.1 16.49 15.96C16.93 15.78 17 15.39 17 15.1"],
+  ["infinity-square","Infinity (Square)",0,1,"M12 12C12 12 10.36 14.5 8.7 14.5C7.04 14.5 6 13.38 6 12C6 10.62 7.04 9.5 8.7 9.5C10.36 9.5 12 12 12 12ZM12 12C12 12 13.64 14.5 15.3 14.5C16.96 14.5 18 13.38 18 12C18 10.62 16.96 9.5 15.3 9.5C13.64 9.5 12 12 12 12Z"],
+  ["approximately-equal-square","Approx Equal (Square)",0,1,"M7 9.28C8.67 7.29 10.33 7.87 12 9.33C13.67 10.8 15.33 11.38 17 9.38M7 14.62C8.67 12.62 10.33 13.2 12 14.67C13.67 16.13 15.33 16.71 17 14.72"],
+  ["congruent-to-square","Congruent (Square)",0,1,"M7 12.5H17M7 16H17M7 9.5C8 7.64 10.33 7.54 12 9M17 8.5C16 10.36 13.67 10.45 12 9"],
+  ["function-square","Function f (Square)",0,1,"M8 15.89C8.15 16.42 8.46 17 9.25 17C10.63 17 10.97 15.89 12 12C13.03 8.11 13.38 7 14.75 7C15.54 7 15.85 7.58 16 8.11M10.33 10.61H14.75"],
+  ["x-variable-square","Variable x (Square)",0,1,"M16 9C12.82 9 11.18 15.02 8 15.02M15.54 15.02C14.73 15.02 14.29 15.02 13.95 14.9C13.75 14.83 13.58 14.73 13.43 14.62C13.16 14.41 13.02 14.11 12.73 13.51L11.28 10.51C10.99 9.91 10.84 9.61 10.58 9.4C10.42 9.29 10.25 9.19 10.05 9.12C9.71 9 9.27 9 8.46 9"],
+  ["square-square","x² (Square)",0,1,"M6.36 11C6.72 11 7.71 10.85 8.07 11.61C8.49 12.49 9.53 15.47 9.78 16.07C10.07 16.76 10.51 17.1 11.65 16.98M12.01 10.98C10.62 10.98 9.6 13.07 9.05 13.91C8.39 14.96 7.32 17.03 6 16.98M18 11H15C15 11 17 9.68 17.22 9.53C17.44 9.38 18 9.05 18 8.33C18 7.6 17.27 7 16.51 7C15.74 7 15 7.53 15 8.34"],
+  ["square-root-square","Square Root (Square)",0,1,"M18 7.99H12.52C11.7 7.99 11.46 8.03 11.3 8.85L9.95 14.46C9.62 15.79 9.45 15.98 9.12 16.01C8.76 15.89 8.59 15.58 7.98 14.33L7.63 13.57C7.37 13.03 7.29 12.8 7.02 12.73C6.62 12.62 6.31 12.93 6 13.13M13.1 11.42C13.52 11.41 13.98 11.39 14.23 11.81C14.57 12.5 15.12 13.92 15.32 14.37C15.42 14.54 15.48 14.69 15.84 14.81C16.11 14.84 16.5 14.85 16.5 14.85M16.74 11.41C15.89 11.41 15.39 12.36 14.92 12.95C14.31 13.86 13.68 14.87 12.89 14.84"],
+  ["n-th-root-square","Nth Root (Square)",0,1,"M7 10.52V8.55M7 8.55C7.06 7.73 7.68 7 8.51 7C9.49 7 9.94 7.93 10.01 8.55V10.52M7 8.55V7M6.99 14.51C7.45 14.26 7.86 14.17 8.06 14.34C8.26 14.51 8.69 15.31 8.86 15.61C9.13 16.08 9.44 17.02 9.97 17.02C10.33 17.02 10.63 16.04 11.1 14.88C11.82 13.1 12.62 10.86 12.74 10.66C12.94 10.32 13.14 9.99 13.68 9.99C14.28 9.99 17.03 9.99 17.03 9.99"],
+  ["summation-square","Summation (Square)",0,1,"M15 14.5C15 15.03 14.98 15.31 14.85 15.53C14.52 16.06 13.87 16 13.32 16H10.8C9.69 16 9.14 16 9.02 15.67C8.9 15.34 9.32 14.98 10.16 14.24L11.85 12.76C12.25 12.41 12.46 12.23 12.46 12C12.46 11.77 12.25 11.59 11.85 11.24L10.16 9.76C9.32 9.02 8.9 8.66 9.02 8.33C9.14 8 9.69 8 10.8 8H13.32C13.87 8 14.52 7.94 14.85 8.47C14.98 8.69 15 8.97 15 9.5"],
+  ["more-or-less-square","More or Less (Square)",0,1,"M7 12H17M17.01 9H9C8.01 9 7.14 9.01 7.02 8.68C6.93 8.42 7.53 7.6 8.01 7M7.01 15L15.01 15C16 15 16.87 14.99 16.99 15.32C17.09 15.58 16.49 16.4 16.01 17"],
+  ["equal-sign-circle","Equal (Circle)",0,2,"M8 9H16M8 15H16"],
+  ["not-equal-sign-circle","Not Equal (Circle)",0,2,"M7 9.78H17M7 14.22H17M8.67 17L15.33 7"],
+  ["less-than-circle","Less Than (Circle)",0,2,"M14 8L10.67 11.02C9.78 11.83 9.78 12.17 10.67 12.98L14 16"],
+  ["greater-than-circle","Greater Than (Circle)",0,2,"M10 8L13.33 11.02C14.22 11.83 14.22 12.17 13.33 12.98L10 16"],
+  ["inequality-circle-01","Inequality (Circle 1)",0,0,"M12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22ZM13.98 7.5L8.14 12.67C7.8 13.08 8.13 13.5 8.58 13.5H16M7.98 16.5H16"],
+  ["inequality-circle-02","Inequality (Circle 2)",0,0,"M12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22ZM10.02 7.5L15.86 12.67C16.2 13.08 15.87 13.5 15.42 13.5H8M16.02 16.5H8"],
+  ["1st-brecket-circle","Parentheses (Circle)",0,2,"M9 8C7.79 8.86 7 10.33 7 12C7 13.67 7.79 15.14 9 16M15 8C16.21 8.86 17 10.33 17 12C17 13.67 16.21 15.14 15 16"],
+  ["2nd-brecket-circle","Brackets (Circle)",0,2,"M15 8C15.65 8.06 16.09 8.21 16.41 8.54C17 9.13 17 10.09 17 12C17 13.91 17 14.87 16.41 15.46C16.09 15.79 15.65 15.94 15 16M9 16C8.35 15.94 7.91 15.79 7.59 15.46C7 14.87 7 13.91 7 12C7 10.09 7 9.13 7.59 8.54C7.91 8.21 8.35 8.06 9 8"],
+  ["3rd-brecket-circle","Braces (Circle)",0,2,"M14 16C14.92 16 15.67 15.49 15.67 14.86C15.67 13.64 15.69 13.13 16.75 12.4C17.08 12.18 17.08 11.82 16.75 11.6C15.69 10.87 15.67 10.36 15.67 9.14C15.67 8.51 14.92 8 14 8M10 16C9.08 16 8.33 15.49 8.33 14.86C8.33 13.64 8.31 13.13 7.25 12.4C6.92 12.18 6.92 11.82 7.25 11.6C8.31 10.87 8.33 10.36 8.33 9.14C8.33 8.51 9.08 8 10 8"],
+  ["plus-minus-circle-01","Plus-Minus (Circle 1)",0,2,"M12 7.5V13.86M15.5 10.68H8.5M15.5 16.5H8.5"],
+  ["minus-plus-circle-01","Minus-Plus (Circle 1)",0,2,"M12 16.5V10.14M15.5 13.32H8.5M15.5 7.5H8.5"],
+  ["plus-minus-circle-02","Plus-Minus (Circle 2)",0,2,"M8 16L16 8M9.5 8L9.5 9.5M9.5 9.5L9.5 11M9.5 9.5L11 9.5M9.5 9.5L8 9.5M16 14.5L13 14.5"],
+  ["minus-plus-circle-02","Minus-Plus (Circle 2)",0,2,"M16 8L8 16M14.5 16V14.5M14.5 14.5V13M14.5 14.5H13M14.5 14.5H16M8 9.5H11"],
+  ["plus-sign-circle","Plus (Circle)",0,2,"M12 8V16M16 12H8"],
+  ["minus-sign-circle","Minus (Circle)",0,2,"M16 12H8"],
+  ["multiplication-sign-circle","Multiply (Circle)",0,2,"M15.5 8.5L12 12M12 12L8.5 15.5M12 12L15.5 15.5M12 12L8.5 8.5"],
+  ["divide-sign-circle","Divide (Circle)",0,2,"M7 12H17M13 8C13 8.55 12.55 9 12 9C11.45 9 11 8.55 11 8C11 7.45 11.45 7 12 7C12.55 7 13 7.45 13 8ZM13 16C13 16.55 12.55 17 12 17C11.45 17 11 16.55 11 16C11 15.45 11.45 15 12 15C12.55 15 13 15.45 13 16Z"],
+  ["percent-circle","Percent (Circle)",0,2,"M8 16L16 8M10 9C10 9.55 9.55 10 9 10C8.45 10 8 9.55 8 9C8 8.45 8.45 8 9 8C9.55 8 10 8.45 10 9ZM16 14.83C16 15.38 15.55 15.83 15 15.83C14.45 15.83 14 15.38 14 14.83C14 14.28 14.45 13.83 15 13.83C15.55 13.83 16 14.28 16 14.83Z"],
+  ["pi-circle","Pi (Circle)",0,2,"M17 8H9.22C8 8 7 8.89 7 10M10.33 8L9.37 14.91C9.29 15.51 8.68 15.93 8.01 15.84C7.56 15.79 7.19 15.5 7.04 15.12L7 15M13.67 16L14.78 8"],
+  ["alpha-circle","Alpha (Circle)",0,0,"M12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22ZM16.99 14.11C16.99 14.7 16.82 15.27 16.7 15.53C16.28 16.55 14.91 15.79 14.61 14.69C14.53 14.4 14.37 13.72 14.2 12.98M14.2 12.98C13.99 12.07 13.77 11.07 13.66 10.57C13.15 8.82 11.77 7.95 10.42 8.02C9.23 8.07 7.98 8.84 7.34 10.32C6.98 11.14 6.95 11.95 7.06 12.67C7.2 13.64 7.64 14.45 8.21 14.98C9.27 16 10.71 16.2 11.78 15.77C12.63 15.44 13.22 14.78 13.66 14.05C13.87 13.7 14.05 13.34 14.2 12.98ZM14.2 12.98C14.98 11.13 15.11 9.13 15 8.02"],
+  ["infinity-circle","Infinity (Circle)",0,2,"M12 12C12 12 10.36 14.5 8.7 14.5C7.04 14.5 6 13.38 6 12C6 10.62 7.04 9.5 8.7 9.5C10.36 9.5 12 12 12 12ZM12 12C12 12 13.64 14.5 15.3 14.5C16.96 14.5 18 13.38 18 12C18 10.62 16.96 9.5 15.3 9.5C13.64 9.5 12 12 12 12Z"],
+  ["approximately-equal-circle","Approx Equal (Circle)",0,2,"M7 9.28C8.67 7.28 10.33 7.87 12 9.33C13.67 10.8 15.33 11.38 17 9.38M7 14.62C8.67 12.62 10.33 13.2 12 14.67C13.67 16.13 15.33 16.72 17 14.72"],
+  ["congruent-to-circle","Congruent (Circle)",0,2,"M7.5 12.5H16.5M7.5 16H16.5M7.5 9.5C8.4 7.64 10.5 7.55 12 9M16.5 8.5C15.6 10.36 13.5 10.45 12 9"],
+  ["function-circle","Function f (Circle)",0,2,"M8.5 15.5C8.63 15.98 8.9 16.5 9.59 16.5C10.8 16.5 11.1 15.5 12 12C12.9 8.5 13.2 7.5 14.41 7.5C15.1 7.5 15.37 8.02 15.5 8.5M10.54 10.75H14.41"],
+  ["x-variable-circle","Variable x (Circle)",0,0,"M16 8.99C12.82 8.99 11.18 15.01 8 15.01M15.54 15.01C14.73 15.01 14.29 15.01 13.95 14.89C13.75 14.82 13.58 14.72 13.43 14.61C13.16 14.4 13.02 14.1 12.73 13.5L11.28 10.5C10.99 9.9 10.84 9.6 10.58 9.39C10.42 9.28 10.25 9.18 10.05 9.11C9.71 8.99 9.27 8.99 8.46 8.99M12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22Z"],
+  ["square-circle","x² (Circle)",0,0,"M12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22ZM7.29 11.21C7.96 11.17 8.5 11.21 8.76 11.82C9.06 12.52 9.9 14.76 10.08 15.24C10.29 15.79 10.62 16.08 11.63 16M11.91 11.21C10.83 11.15 9.9 12.86 9.46 13.62C8.92 14.46 8.04 16.02 7 16M17.5 11H14.5C14.5 11 16.5 9.68 16.72 9.53C16.94 9.38 17.5 9.05 17.5 8.33C17.5 7.6 16.77 7 16.01 7C15.24 7 14.5 7.53 14.5 8.34"],
+  ["root-circle","Square Root (Circle)",0,0,"M12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22ZM17.52 8.5H12.56C11.74 8.5 11.5 8.54 11.34 9.36L10.18 13.97C9.85 15.3 9.68 15.49 9.35 15.52C8.99 15.4 8.82 15.09 8.21 13.84L8.05 13.5C7.79 12.96 7.71 12.73 7.44 12.66C7.1 12.57 6.81 12.8 6.5 13M12.97 11.5C13.39 11.48 13.85 11.46 14.1 11.88C14.34 12.54 14.81 13.58 15.02 14.03C15.12 14.21 15.24 14.43 15.54 14.48C15.84 14.52 16.14 14.5 16.14 14.5M16.33 11.51C15.49 11.51 15 12.48 14.52 13.02C14.35 13.29 13.62 14.52 12.78 14.5"],
+  ["n-th-root-circle","Nth Root (Circle)",0,0,"M12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22ZM19 9.99H14C14 9.99 13.99 9.99 13.99 9.99L10.5 17C10.5 17.01 10.49 17.01 10.48 17L8.51 13.01C8.5 13.01 8.5 13.01 8.49 13.01L7 14.5M11 10.5V8.65C11 7.73 10.31 7 9.49 7C8.82 7.01 8.16 7.58 8 8.46M8 10.49V8.46M8 8.46V6.26"],
+  ["summation-circle","Summation (Circle)",0,2,"M15 14.5C15 15.03 14.98 15.31 14.85 15.53C14.52 16.06 13.87 16 13.32 16H10.8C9.69 16 9.14 16 9.02 15.67C8.9 15.34 9.32 14.98 10.16 14.24L11.85 12.76C12.25 12.41 12.46 12.23 12.46 12C12.46 11.77 12.25 11.59 11.85 11.24L10.16 9.76C9.32 9.02 8.9 8.66 9.02 8.33C9.14 8 9.69 8 10.8 8H13.32C13.87 8 14.52 7.94 14.85 8.47C14.98 8.69 15 8.97 15 9.5"],
+  ["more-or-less-circle","More or Less (Circle)",0,0,"M12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22ZM7.5 12H16.5M16.5 9.3L9.46 9.3C8.48 9.3 7.64 9.35 7.52 9.01C7.42 8.75 7.92 8.1 8.4 7.5M7.5 14.7L14.54 14.7C15.53 14.7 16.37 14.65 16.49 14.99C16.58 15.25 16.09 15.9 15.61 16.5"],
+  ["root-1st-brecket","Root Parentheses",0,0,"M18 8H12.52C11.7 8 11.46 8.04 11.3 8.86L9.95 14.47C9.62 15.8 9.45 15.99 9.12 16.02C8.76 15.9 8.59 15.59 7.98 14.34L7.63 13.58C7.37 13.04 7.29 12.81 7.02 12.74C6.62 12.63 6.31 12.94 6 13.14M13.11 11.43C13.52 11.42 13.98 11.4 14.23 11.82C14.57 12.51 15.12 13.93 15.32 14.38C15.42 14.55 15.48 14.7 15.84 14.82C16.11 14.85 16.5 14.86 16.5 14.86M16.74 11.42C15.89 11.42 15.39 12.37 14.91 12.96C14.3 13.87 13.68 14.88 12.89 14.85M6 3C3.59 4.93 2 8.24 2 12C2 15.76 3.59 19.07 6 21M18 3C20.41 4.93 22 8.24 22 12C22 15.76 20.41 19.07 18 21"],
+  ["root-2nd-brecket","Root Brackets",0,0,"M17.73 2.5C19.12 2.65 20.05 3 20.75 3.79C22 5.2 22 7.46 22 12C22 16.54 22 18.8 20.75 20.21C20.05 21 19.12 21.35 17.73 21.5M6.27 21.5C4.89 21.35 3.95 21 3.25 20.21C2 18.8 2 16.54 2 12C2 7.46 2 5.2 3.25 3.79C3.95 3 4.89 2.65 6.27 2.5M18 8H12.52C11.7 8 11.46 8.04 11.3 8.86L9.95 14.47C9.62 15.8 9.45 15.99 9.12 16.02C8.76 15.9 8.59 15.59 7.98 14.34L7.63 13.58C7.37 13.04 7.29 12.81 7.02 12.74C6.62 12.63 6.31 12.94 6 13.14M13.11 11.43C13.52 11.42 13.98 11.4 14.23 11.82C14.57 12.51 15.12 13.93 15.32 14.38C15.42 14.55 15.48 14.7 15.84 14.82C16.11 14.85 16.5 14.86 16.5 14.86M16.74 11.42C15.89 11.42 15.39 12.37 14.91 12.96C14.3 13.87 13.68 14.88 12.89 14.85"],
+  ["root-3rd-brecket","Root Braces",0,0,"M18 8H12.52C11.7 8 11.46 8.04 11.3 8.86L9.95 14.47C9.62 15.8 9.45 15.99 9.12 16.02C8.76 15.9 8.59 15.59 7.98 14.34L7.63 13.58C7.37 13.04 7.29 12.81 7.02 12.74C6.62 12.63 6.31 12.94 6 13.14M13.11 11.43C13.52 11.42 13.98 11.4 14.23 11.82C14.57 12.51 15.12 13.93 15.32 14.38C15.42 14.55 15.48 14.7 15.84 14.82C16.11 14.85 16.5 14.86 16.5 14.86M16.74 11.42C15.89 11.42 15.39 12.37 14.91 12.96C14.3 13.87 13.68 14.88 12.89 14.85M18 21C19.23 21 20.23 19.85 20.23 18.43C20.23 16.18 20.13 14.69 21.67 12.91C22.11 12.41 22.11 11.59 21.67 11.09C20.13 9.31 20.23 7.82 20.23 5.57C20.23 4.15 19.23 3 18 3M6 21C4.77 21 3.77 19.85 3.77 18.43C3.77 16.18 3.87 14.69 2.33 12.91C1.89 12.41 1.89 11.59 2.33 11.09C3.84 9.35 3.77 7.84 3.77 5.57C3.77 4.15 4.77 3 6 3"],
+  ["rhombus","Rhombus",0,0,"M8.06 4.79C9.91 2.93 10.85 2 12 2C13.15 2 14.09 2.93 15.94 4.79L19.21 8.06C21.07 9.92 22 10.84 22 12C22 13.16 21.07 14.08 19.21 15.94L15.94 19.21C14.09 21.07 13.15 22 12 22C10.85 22 9.91 21.07 8.06 19.21L4.79 15.94C2.93 14.08 2 13.16 2 12C2 10.84 2.93 9.92 4.79 8.06L8.06 4.79Z"],
+  ["pentagon","Pentagon",0,0,"M8.44 3.93C10.16 2.64 11.02 2 12 2C12.98 2 13.84 2.64 15.56 3.93L19 6.51C20.72 7.8 21.58 8.45 21.89 9.41C22.19 10.38 21.86 11.42 21.21 13.5L19.89 17.68C19.23 19.76 18.91 20.81 18.11 21.4C17.31 22 16.25 22 14.13 22H9.87C7.75 22 6.69 22 5.89 21.4C5.09 20.81 4.77 19.76 4.11 17.68L2.79 13.5C2.14 11.42 1.81 10.38 2.11 9.41C2.42 8.45 3.28 7.8 5 6.51L8.44 3.93Z"],
+  ["hexagon","Hexagon",0,0,"M8.88 3.33C10.4 2.44 11.16 2 12 2C12.84 2 13.6 2.44 15.12 3.33L17.88 4.94C19.4 5.83 20.16 6.27 20.58 7C21 7.73 21 8.62 21 10.39V13.61C21 15.38 21 16.27 20.58 17C20.16 17.73 19.4 18.17 17.88 19.06L15.12 20.67C13.6 21.56 12.84 22 12 22C11.16 22 10.4 21.56 8.88 20.67L6.12 19.06C4.6 18.17 3.84 17.73 3.42 17C3 16.27 3 15.38 3 13.61V10.39C3 8.62 3 7.73 3.42 7C3.84 6.27 4.6 5.83 6.12 4.94L8.88 3.33Z"],
+  ["octagon","Octagon",0,0,"M13.51 2C14.74 2 15.35 2 15.9 2.23C16.46 2.46 16.89 2.89 17.76 3.76L20.24 6.24C21.11 7.11 21.54 7.54 21.77 8.09C22 8.65 22 9.26 22 10.49V13.51C22 14.74 22 15.35 21.77 15.91C21.54 16.46 21.11 16.89 20.24 17.76L17.76 20.24C16.89 21.11 16.46 21.54 15.9 21.77C15.35 22 14.74 22 13.51 22H10.49C9.26 22 8.65 22 8.09 21.77C7.54 21.54 7.11 21.11 6.24 20.24L3.76 17.76C2.89 16.89 2.46 16.46 2.23 15.91C2 15.35 2 14.74 2 13.51V10.49C2 9.26 2 8.65 2.23 8.09C2.46 7.54 2.89 7.11 3.76 6.24L6.24 3.76C7.11 2.89 7.54 2.46 8.09 2.23C8.65 2 9.26 2 10.49 2H13.51Z"],
+  ["parallelogram","Parallelogram",0,0,"M4.09 8.54C4.7 6.36 5 5.27 5.9 4.64C6.8 4 8.05 4 10.54 4H14.57C18.49 4 20.45 4 21.45 5.15C22.44 6.31 21.97 8.02 21.02 11.46L19.91 15.46C19.3 17.64 19 18.73 18.1 19.36C17.2 20 15.95 20 13.46 20H9.43C5.51 20 3.55 20 2.55 18.85C1.56 17.69 2.03 15.98 2.98 12.54L4.09 8.54Z"],
+  ["segment","Line Segment AB",0,0,"M11 14L9.07 8.5M9.07 8.5L7.38 3.67C7.33 3.54 7.31 3.47 7.28 3.42C7.16 3.2 6.97 3.05 6.75 3.01C6.69 3 6.63 3 6.5 3C6.37 3 6.31 3 6.25 3.01C6.03 3.05 5.84 3.2 5.72 3.42C5.69 3.47 5.67 3.54 5.62 3.67L3.93 8.5M9.07 8.5L3.93 8.5M3.93 8.5L2 14M20 19C20 20.1 19.11 21 18 21C16.89 21 16 20.1 16 19M20 19C20 17.9 19.11 17 18 17C16.89 17 16 17.9 16 19M20 19H22M16 19H8M8 19C8 20.1 7.11 21 6 21C4.89 21 4 20.1 4 19M8 19C8 17.9 7.11 17 6 17C4.89 17 4 17.9 4 19M4 19H2M15 8.5V5C15 4.06 15 3.59 15.29 3.29C15.59 3 16.06 3 17 3H18.25C19.77 3 21 4.23 21 5.75C21 7.27 19.77 8.5 18.25 8.5H15ZM15 8.5H19.25C20.77 8.5 22 9.73 22 11.25C22 12.77 20.77 14 19.25 14H17C16.06 14 15.59 14 15.29 13.71C15 13.41 15 12.94 15 12V8.5Z"],
+  ["radius","Radius",0,0,"M12 13.5C11.17 13.5 10.5 12.83 10.5 12C10.5 11.17 11.17 10.5 12 10.5C12.83 10.5 13.5 11.17 13.5 12C13.5 12.83 12.83 13.5 12 13.5ZM12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22ZM19 12H14M19 12C19 11.44 17 10 17 10M19 12C19 12.56 17 14 17 14"],
+  ["diameter","Diameter",0,0,"M13.5 12H19M10.5 12H5M12 13.5C11.17 13.5 10.5 12.83 10.5 12C10.5 11.17 11.17 10.5 12 10.5C12.83 10.5 13.5 11.17 13.5 12C13.5 12.83 12.83 13.5 12 13.5ZM12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22ZM7.01 14C6.49 13.48 5 12.5 5 12C5 11.5 6.51 10.5 7.01 10M17 10C17.52 10.52 19.01 11.5 19.01 12C19.01 12.5 17.5 13.5 17 14"],
+  ["triangle","Trigonometric Triangle",0,0,"M2 21V3L20 21H2ZM16.02 9.07L19.99 12.99M16.99 12.99L19.99 12.99L19.99 10M13.92 6.99L10.01 3M10 6L10.01 3L13 3.01M16.04 6.97L19.98 3.01M16.98 3.04L19.98 3.01L20 6M16.37 8C16.37 8.76 15.75 9.37 15 9.37C14.24 9.37 13.63 8.76 13.63 8C13.63 7.24 14.24 6.63 15 6.63C15.75 6.63 16.37 7.24 16.37 8Z"],
+  ["acceleration","Acceleration Velocity",1,0,"M2.5 18.41V11.19C2.5 9.86 2.5 9.2 3.1 9.03C3.7 8.87 4.4 9.34 5.81 10.28L18.59 18.79C19.99 19.73 20.7 20.2 20.45 20.6C20.2 21 19.21 21 17.21 21H6.38C4.55 21 3.64 21 3.07 20.62C2.5 20.24 2.5 19.63 2.5 18.41ZM8.5 11C10.71 11 12.5 9.21 12.5 7C12.5 4.79 10.71 3 8.5 3C6.29 3 4.5 4.79 4.5 7C4.5 9.21 6.29 11 8.5 11ZM15.5 10L21.41 13.38M21.41 13.38C21.73 13.04 21.19 12.06 20.73 10.73M21.41 13.38C21.19 13.62 20.47 13.68 18.77 14"],
+  ["atom-01","Atomic Orbitals",1,0,"M22 9H21.99M2.01 9H2M12.01 22H11.99M7.56 21C4.47 19.5 2.38 16.53 2 13.13M16.44 21C19.53 19.5 21.62 16.53 22 13.13M5.56 4.26C9.24 1.25 14.54 1.25 18.22 4.26",0,[["c",12,12,4]]],
+  ["atom-02","Atom Nucleus",1,0,"M20.35 3.65C18.51 1.8 13.27 4.05 8.66 8.66C4.04 13.27 1.8 18.51 3.65 20.35C5.49 22.2 10.73 19.95 15.34 15.34C19.96 10.73 22.2 5.49 20.35 3.65ZM3.65 3.65C1.8 5.49 4.04 10.73 8.66 15.34C13.27 19.95 18.51 22.2 20.35 20.35C22.2 18.51 19.96 13.27 15.34 8.66C10.73 4.05 5.49 1.8 3.65 3.65ZM12.01 12H12"],
+  ["bounding-box","Bounding Matrix",1,0,"M6 4H10M4 10V6M12 6V10M6 12H10M14 12H18M20 14V18M12 14V18M14 20H18",0,[["c",4,4,2],["c",4,12,2],["c",12,4,2],["c",12,12,2],["c",20,12,2],["c",12,20,2],["c",20,20,2]]],
+  ["black-hole","Singularity / Black Hole",1,0,"M18.6 12C17.64 13.16 15.05 14 12 14C8.95 14 6.36 13.16 5.4 12M10.06 13.5C10.02 13.34 10 13.17 10 13C10 11.9 10.89 11 12 11C13.11 11 14 11.9 14 13C14 13.17 13.98 13.34 13.94 13.5M6 4L9 13.5M7 20L9 18M17 6L15 13.5M17 20L15 18M12 2V11M12 22V18"],
+  ["gravity","Gravitational Field",1,0,"M12 22C15.31 22 18 19.31 18 16C18 12.69 15.31 10 12 10C8.69 10 6 12.69 6 16C6 19.31 8.69 22 12 22ZM7 2V4M17 2V4M12 2V7.5M10.06 5.5C11.19 6.81 11.5 7.49 12 7.5C12.5 7.49 13.13 6.56 14.06 5.5"],
+  ["magnet","Horseshoe Magnet",1,0,"M3.93 2.5H9.15C9.15 2.5 8.2 7.7 8.2 10.1C8.2 13.1 10.1 15.5 12 15.5C13.9 15.5 15.8 13.1 15.8 10.1C15.8 7.7 14.85 2.5 14.85 2.5H20.07C20.07 2.5 21.5 7.14 21.5 11.5C21.5 17 17.7 21.5 12 21.5C6.3 21.5 2.5 17 2.5 11.5C2.5 7.14 3.93 2.5 3.93 2.5ZM2.97 7.25H8.2M15.8 7.25L21.02 7.25"],
+  ["pendulum","Newton's Pendulum",1,0,"M2 3L20 3M6.5 3V16M11.5 3V16M19.5 16L17 3",0,[["c",6.5,18.5,2.5],["c",11.5,18.5,2.5],["c",19.5,18.5,2.5]]],
+  ["optical-prism","Optical Prism (Light Spectrum)",1,0,"M15.58 8L14.99 6.85C13.66 4.28 13 3 12 3C11 3 10.34 4.28 9.01 6.85L4.59 15.43C3.31 17.91 2.67 19.15 3.17 20.07C3.66 21 4.97 21 7.58 21H16.42C19.03 21 20.34 21 20.83 20.07C21.33 19.15 20.69 17.91 19.41 15.43L19.06 14.75M22 16L8 10L22 7M8 10L21.46 11.5M8 10L2 11"],
+  ["pulley","Mechanical Pulley",1,0,"M3 3H21M5 17.5V3M12 17.5L12 10.5M15.5 7L15.5 3M19 17L19 10.5M19 17C18.29 17 17.9 17.2 17.62 17.9C17.25 18.8 16.79 20.15 17.11 20.7C17.27 21 17.66 21 18.43 21H19.57C20.34 21 20.73 21 20.89 20.7C21.21 20.15 20.75 18.8 20.38 17.9C20.11 17.23 19.74 17 19 17Z",0,[["c",15.5,10.5,3.5],["c",8.5,17.5,3.5]]],
+  ["solar-system","Planetary Solar System",1,0,"M3.5 6.73C2.55 8.26 2 10.07 2 12C2 17.52 6.48 22 12 22C13.04 22 14.05 21.84 15 21.54M20.35 17.5C21.39 15.92 22 14.03 22 12C22 6.48 17.52 2 12 2C10.96 2 9.95 2.16 9 2.46M12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7C9.24 7 7 9.24 7 12C7 12.34 7.03 12.68 7.1 13M12.01 12H12",0,[["c",5,5,2],["c",19,19,2],["c",8,15,2]]],
+  ["submerge","Hydrostatic Buoyancy",1,0,"M7 2V3M7 5.5V6.5M7 9V10M17 2V3M17 5.5V6.5M17 9V10M12 2V3M12 5.5V6.5M2 12V16C2 18.83 2 20.24 2.88 21.12C3.76 22 5.17 22 8 22H16C18.83 22 20.24 22 21.12 21.12C22 20.24 22 18.83 22 16V12M2 14.87C4.26 16.79 6.17 15.73 8.02 14.83C9.6 14.07 11.13 13.42 12.79 14.83C16.05 17.55 18.91 14.75 22 14.2",0,[["c",12,14,4]]],
+  ["ufo","Spacecraft Module",1,0,"M3.05 11.59L4.1 10.59C4.4 10.3 4.55 10.15 4.74 10.08C4.94 10 5.15 10 5.58 10H16.42C16.85 10 17.06 10 17.26 10.08C17.45 10.15 17.6 10.3 17.9 10.59L18.95 11.59C19.65 12.25 20 12.59 20 13C20 13.41 19.65 13.75 18.95 14.41L17.9 15.41C17.6 15.7 17.45 15.85 17.26 15.92C17.06 16 16.85 16 16.42 16H5.58C5.15 16 4.94 16 4.74 15.92C4.55 15.85 4.4 15.7 4.1 15.41L3.05 14.41C2.35 13.75 2 13.41 2 13C2 12.59 2.35 12.25 3.05 11.59ZM7.01 13H7M11.01 13H10.99M15 13H14.99M17 10C17 6.69 14.31 4 11 4C7.69 4 5 6.69 5 10M5 16L4.32 18.05C4.23 18.31 4.19 18.43 4.13 18.53C3.99 18.75 3.77 18.91 3.52 18.97C3.4 19 3.27 19 3 19M17 16L17.68 18.05C17.77 18.31 17.81 18.43 17.88 18.53C18.01 18.75 18.23 18.91 18.48 18.97C18.6 19 18.73 19 19 19"],
+  ["wind-turbine","Aerodynamic Turbine",1,0,"M12.5 11C12.5 11.83 11.83 12.5 11 12.5C10.17 12.5 9.5 11.83 9.5 11C9.5 10.17 10.17 9.5 11 9.5C11.83 9.5 12.5 10.17 12.5 11ZM20 10.5C19.99 10.31 19.97 10.12 19.95 9.93C19.62 7.26 18.16 4.94 16.07 3.5M5.93 3.5C3.84 4.94 2.38 7.26 2.05 9.93C2.03 10.12 2.01 10.31 2 10.5M11 9.5V7M9.2 3.99L9.35 5.51C9.41 6.07 9.43 6.35 9.57 6.55C9.66 6.69 9.79 6.81 9.94 6.88C10.16 7 10.44 7 11 7C11.56 7 11.84 7 12.06 6.88C12.21 6.81 12.34 6.69 12.43 6.55C12.57 6.35 12.59 6.07 12.65 5.51L12.8 3.99C12.88 3.16 12.92 2.75 12.73 2.45C12.67 2.37 12.6 2.29 12.52 2.22C12.25 2 11.83 2 11 2C10.17 2 9.75 2 9.48 2.22C9.4 2.29 9.33 2.37 9.27 2.45C9.08 2.75 9.12 3.16 9.2 3.99ZM9.7 11.75L7.53 13M5.83 16.06L7.07 15.18C7.52 14.85 7.75 14.68 7.86 14.46C7.94 14.31 7.98 14.14 7.97 13.98C7.96 13.73 7.82 13.49 7.54 13C7.26 12.51 7.12 12.27 6.91 12.14C6.76 12.05 6.6 12 6.43 11.99C6.19 11.97 5.93 12.09 5.42 12.32L4.03 12.94C3.27 13.29 2.89 13.46 2.73 13.77C2.69 13.87 2.65 13.97 2.64 14.07C2.58 14.42 2.79 14.78 3.21 15.5C3.62 16.22 3.83 16.58 4.16 16.71C4.26 16.75 4.36 16.77 4.47 16.77C4.82 16.79 5.16 16.55 5.83 16.06ZM12.3 11.75L14.47 13M17.97 12.94L16.58 12.32C16.07 12.09 15.81 11.97 15.57 11.99C15.4 12 15.24 12.05 15.09 12.14C14.88 12.27 14.74 12.51 14.46 13C14.18 13.49 14.04 13.73 14.03 13.97C14.02 14.14 14.06 14.31 14.14 14.46C14.25 14.68 14.48 14.85 14.93 15.17L16.17 16.06C16.84 16.55 17.18 16.79 17.53 16.77C17.64 16.77 17.74 16.75 17.84 16.71C18.17 16.58 18.38 16.22 18.79 15.5C19.21 14.78 19.42 14.42 19.36 14.07C19.35 13.97 19.31 13.87 19.27 13.77C19.11 13.46 18.73 13.29 17.97 12.94ZM11 12.5V22M17 22H5"],
+  ["lightning","Lightning / Electricity",1,0,"M13 2L3 14L12 14L11 22L21 10L12 10L13 2Z"],
+  ["rocket","Rocket",1,0,"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-0.5 5-2c0.71-0.84 0.7-2.13-0.09-2.91a2.18 2.18 0 0 0-2.91-0.09zM12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-0.78 7.5-6 11a22.35 22.35 0 0 1-4 2zM9 12H4s0.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-0.55 4-2c1.08-1.62 0-5 0-5"],
+  ["telescope","Telescope",1,0,"M10 11 11-6a1 1 0 0 1 1.4 0.9v2.2a1 1 0 0 1-0.5 0.9l-11 6M2 15 8-4.5v5L2 20ZM8 17.5L6 22M12 15L14 22"],
+  ["satellite","Satellite",1,0,"M13 7 9 3 5 7l4 4M17 11 4 4-4 4-4-4M8 12 4 4 6-6-4-4ZM16 8 3-3M9 21a6 6 0 0 0-6-6"],
+  ["battery","Battery / Energy",1,0,"M22 11L22 13M6 10L6 14M10 10L10 14",0,[["r",2,7,16,10,2,2]]],
+  ["sparkles","Quantum Sparkles",1,0,"M12 3 2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5ZM19 3v4M21 5h-4"],
+  ["wave","Sine Wave",1,0,"M2 12c2.5-6 4.5-6 7 0s4.5 6 7 0 4.5-6 6 0"],
+  ["aids","Ribbon / Awareness",2,0,"M12 2C9.93 2 6.88 2.57 6.29 4.89C5.77 6.95 5.89 8.42 7.19 10.17L14.89 20.46C15.66 21.49 16.05 22.01 16.57 22C17.1 21.99 17.46 21.45 18.19 20.39L18.71 19.61C19.62 18.27 20.08 17.6 19.99 16.88C19.9 16.16 19.3 15.62 18.1 14.52L6.8 4M12 2C14.07 2 17.12 2.57 17.71 4.89C18.23 6.95 18.11 8.42 16.81 10.17L15.44 12M17.2 4L12 8.84M12 16.6L9.11 20.46C8.34 21.49 7.95 22.01 7.43 22C6.9 21.99 6.54 21.45 5.81 20.39L5.29 19.61C4.38 18.27 3.92 17.6 4.01 16.88C4.1 16.16 4.7 15.62 5.9 14.52L8.61 12"],
+  ["ampoule","Medical Ampoule",2,0,"M5.45 3C5.13 5.88 3.58 7.07 4.94 9.6C5.02 9.77 5.07 9.85 5.08 9.89C5.27 10.31 5.19 10.69 4.85 11.01C4.82 11.04 4.77 11.08 4.67 11.16C4.51 11.3 4.42 11.36 4.34 11.43C3.54 12.14 3.06 13.15 3.01 14.21C3 14.32 3 14.43 3 14.64V18.5C3 19.9 3 20.61 3.34 21.11C3.48 21.33 3.67 21.52 3.89 21.66C4.39 22 5.1 22 6.5 22C7.9 22 8.61 22 9.11 21.66C9.33 21.52 9.52 21.33 9.66 21.11C10 20.61 10 19.9 10 18.5V14.64C10 14.43 10 14.32 9.99 14.21C9.94 13.15 9.46 12.14 8.66 11.43C8.58 11.36 8.49 11.3 8.33 11.16C8.23 11.08 8.18 11.04 8.15 11.01C7.81 10.69 7.73 10.31 7.92 9.89C7.93 9.85 7.98 9.77 8.06 9.6C9.42 7.07 7.87 5.88 7.55 3C7.49 2.45 7.05 2 6.5 2C5.95 2 5.51 2.45 5.45 3ZM10 16H3M16.45 3C16.13 5.88 14.58 7.07 15.94 9.6C16.02 9.77 16.07 9.85 16.08 9.89C16.27 10.31 16.19 10.69 15.85 11.01C15.82 11.04 15.77 11.08 15.67 11.16C15.51 11.3 15.42 11.36 15.34 11.43C14.54 12.14 14.06 13.15 14.01 14.21C14 14.32 14 14.43 14 14.64V18.5C14 19.9 14 20.61 14.34 21.11C14.48 21.33 14.67 21.52 14.89 21.66C15.39 22 16.1 22 17.5 22C18.9 22 19.61 22 20.11 21.66C20.33 21.52 20.52 21.33 20.66 21.11C21 20.61 21 19.9 21 18.5V14.64C21 14.43 21 14.32 20.99 14.21C20.94 13.15 20.46 12.14 19.66 11.43C19.58 11.36 19.49 11.3 19.33 11.16C19.23 11.08 19.18 11.04 19.15 11.01C18.81 10.69 18.73 10.31 18.92 9.89C18.93 9.85 18.98 9.77 19.06 9.6C20.42 7.07 18.87 5.88 18.55 3C18.49 2.45 18.05 2 17.5 2C16.95 2 16.51 2.45 16.45 3ZM21 16H14"],
+  ["bandage","Adhesive Bandage",2,0,"M13.95 4.84C15.18 3.61 15.79 3 16.56 3C17.32 3 17.93 3.61 19.16 4.84C20.39 6.07 21 6.68 21 7.44C21 8.21 20.39 8.82 19.16 10.05M10.05 19.16C8.82 20.39 8.21 21 7.44 21C6.68 21 6.07 20.39 4.84 19.16C3.61 17.93 3 17.32 3 16.56C3 15.79 3.61 15.18 4.84 13.95M17.21 12L19.16 13.95C20.39 15.18 21 15.79 21 16.56C21 17.32 20.39 17.93 19.16 19.16C17.93 20.39 17.32 21 16.56 21C15.79 21 15.18 20.39 13.95 19.16L12 17.21L6.79 12L4.84 10.05C3.61 8.82 3 8.21 3 7.44C3 6.68 3.61 6.07 4.84 4.84C6.07 3.61 6.68 3 7.44 3C8.21 3 8.82 3.61 10.05 4.84L12 6.79M6.79 12L12 6.79M12 6.79L17.21 12M17.21 12L12 17.21"],
+  ["blood","Blood Drops",2,0,"M5.5 15.5C3.29 14.62 2 12.43 2 10.18C2 7.25 4.32 4.35 5.94 2.68C6.83 1.77 8.17 1.77 9.06 2.68C9.55 3.19 9.96 3.8 10.5 4.5M8 14.93C8 11.37 10.95 7.86 13.02 5.83C14.14 4.73 15.86 4.73 16.98 5.83C19.05 7.86 22 11.37 22 14.93C22 18.41 19.35 22 15 22C10.65 22 8 18.41 8 14.93ZM18.5 15.5C18.5 17.71 17 18.5 15.5 18.5"],
+  ["blood-type","Blood Type",2,0,"M3.5 13.68C3.5 9.49 7.08 5.36 9.59 2.97C10.96 1.68 13.04 1.68 14.41 2.97C16.92 5.36 20.5 9.49 20.5 13.68C20.5 17.78 17.28 22 12 22C6.72 22 3.5 17.78 3.5 13.68ZM9 15C9 15 9.36 14.26 9.84 13.3M9.84 13.3C10.72 11.53 11.98 9 12 9C12.02 9 13.28 11.53 14.16 13.3C14.64 14.26 15 15 15 15M9.84 13.3H14.16"],
+  ["blood-pressure","Blood Pressure",2,0,"M9 13H9.8C10.43 13 10.75 13 11 13.15C11.25 13.3 11.39 13.57 11.67 14.11L13.19 17L15.29 11L16.8 13.89C17.08 14.43 17.22 14.7 17.48 14.85C17.73 15 18.05 15 18.68 15H20M20.5 12C19.73 8.42 16.72 5.04 14.52 2.97C13.14 1.68 11.04 1.68 9.66 2.97C7.12 5.36 3.5 9.49 3.5 13.68C3.5 17.78 6.75 22 12.09 22C15.49 22 18.04 20.3 19.44 18"],
+  ["blood-bag","Blood / IV Bag",2,0,"M5 7.37C13 3.24 11.5 10 19 7.37M5 9C5 6.19 5 4.79 5.67 3.78C5.97 3.34 6.34 2.97 6.78 2.67C7.79 2 9.19 2 12 2C14.81 2 16.21 2 17.22 2.67C17.66 2.97 18.03 3.34 18.33 3.78C19 4.79 19 6.19 19 9V11C19 13.81 19 15.21 18.33 16.22C18.03 16.66 17.66 17.03 17.22 17.33C16.21 18 14.81 18 12 18C9.19 18 7.79 18 6.78 17.33C6.34 17.03 5.97 16.66 5.67 16.22C5 15.21 5 13.81 5 11V9ZM12.01 10L10.57 11.49C9.8 12.3 9.81 13.61 10.59 14.41C11.37 15.21 12.64 15.19 13.41 14.39C14.2 13.58 14.19 12.27 13.41 11.47L12.01 10ZM8 22C10.21 22 12 20.21 12 18"],
+  ["blood-bottle","Blood Bottle",2,0,"M14 5V2M17 2H9C6.64 2 5.46 2 4.73 2.73C4 3.46 4 4.64 4 7V22M8 11.13C8 8.67 8 7.44 8.58 6.56C8.83 6.17 9.15 5.85 9.52 5.59C10.39 5 11.59 5 14 5C16.41 5 17.61 5 18.48 5.59C18.85 5.85 19.17 6.17 19.42 6.56C20 7.44 20 8.67 20 11.13V12.88C20 15.33 20 16.56 19.42 17.44C19.17 17.83 18.85 18.15 18.48 18.41C17.61 19 16.41 19 14 19C11.59 19 10.39 19 9.52 18.41C9.15 18.15 8.83 17.83 8.58 17.44C8 16.56 8 15.33 8 12.88V11.13ZM8 10.37C14.86 6.24 13.57 13 20 10.37M11 22C12.66 22 14 20.66 14 19"],
+  ["brain-01","Brain Profile",2,0,"M15.14 5.21C14.5 4.47 13.56 4 12.5 4C11 4 9.73 4.94 9.23 6.26C8.85 6.09 8.44 6 8 6C6.34 6 5 7.34 5 9C5 9.02 5 9.03 5 9.05M15.14 5.21C15.57 5.07 16.03 5 16.5 5C18.99 5 21 7.01 21 9.5C21 10.13 20.87 10.73 20.64 11.27M15.14 5.21C13.8 5.63 12.72 6.67 12.26 8C12.14 8.32 12.07 8.65 12.03 9M10 11.5C9.39 11.96 9 12.68 9 13.5C9 13.67 9.02 13.84 9.05 14C9.28 15.14 10.29 16 11.5 16C11.75 16 11.88 16 12 16.01C12.59 16.08 13.11 16.41 13.43 16.9C13.5 17 13.56 17.11 13.67 17.34L15 20M9.05 14H4.5C3.12 14 2 12.88 2 11.5C2 10.12 3.12 9 4.5 9C4.67 9 4.84 9.02 5 9.05M18.5 20L17.88 18.34C17.45 17.21 18.29 16 19.5 16C20.88 16 22 14.88 22 13.5C22 12.53 21.45 11.69 20.64 11.27C20.3 11.1 19.91 11 19.5 11C18.29 11 17.28 11.86 17.05 13M5 9.05C5.01 9.8 5.3 10.48 5.76 11"],
+  ["brain-02","Brain Top View",2,0,"M4.22 22V18.45C4.22 17.17 3.89 16.51 3.23 15.41C2.45 14.08 2 12.54 2 10.89C2 5.98 5.98 2 10.89 2C15.8 2 19.78 5.98 19.78 10.89C19.78 11.47 19.78 11.76 19.8 11.92C19.86 12.31 20.04 12.64 20.22 12.99L22 16.44L20.6 17.14C20.19 17.34 19.99 17.44 19.85 17.63C19.71 17.82 19.67 18.03 19.59 18.45L19.58 18.49C19.4 19.46 19.2 20.53 18.63 21.2C18.43 21.44 18.19 21.63 17.91 21.77C17.44 22 16.88 22 15.74 22C15.22 22 14.69 22.01 14.17 21.99C12.92 21.96 12 20.92 12 19.7M14.39 10.53C13.96 10.53 13.57 10.37 13.28 10.11M14.39 10.53C14.39 11.68 13.72 12.77 12.45 12.77C11.17 12.77 10.5 13.85 10.5 15M14.39 10.53C16.54 10.53 16.54 7.18 14.39 7.18C14.19 7.18 14.01 7.21 13.83 7.28C13.94 4.78 10.33 4.1 9.52 6.44M7.98 12.05C7.68 12.48 7.18 12.77 6.62 12.77C4.61 12.77 4.4 9.73 6.37 9.43C5.2 7.43 7.67 5.19 9.52 6.44C10.11 6.84 10.5 7.52 10.5 8.3"],
+  ["bone-01","Bone",2,0,"M17.4 5.84C17.83 5.41 18.37 5.15 18.92 5.08M18.92 5.08C19.73 4.96 20.59 5.22 21.21 5.84C22.26 6.89 22.26 8.6 21.21 9.65C20.36 10.5 19.09 10.66 18.08 10.14C17.66 9.93 17.13 9.92 16.8 10.25L10.24 16.8C9.92 17.13 9.93 17.66 10.14 18.08C10.66 19.09 10.5 20.36 9.65 21.21C8.6 22.26 6.89 22.26 5.84 21.21C5.21 20.59 4.96 19.74 5.08 18.92M6.6 18.16C6.17 18.59 5.63 18.85 5.08 18.92C4.27 19.04 3.41 18.78 2.79 18.16C1.74 17.11 1.74 15.4 2.79 14.35C3.64 13.5 4.91 13.34 5.92 13.86C6.34 14.07 6.87 14.08 7.2 13.75L13.76 7.2C14.08 6.87 14.07 6.34 13.86 5.92C13.34 4.91 13.5 3.64 14.35 2.79C15.4 1.74 17.11 1.74 18.16 2.79C18.79 3.41 19.04 4.26 18.92 5.08"],
+  ["bone-02","Bone Joint",2,0,"M4.74 22L8.29 18.45C8.61 18.14 9.11 18.15 9.51 18.35C10.41 18.79 11.54 18.64 12.29 17.88C13.24 16.94 13.24 15.4 12.29 14.45C11.73 13.89 10.96 13.66 10.23 13.77C9.73 13.84 9.25 14.07 8.86 14.45M10.23 13.77C10.23 13.77 10.23 13.77 10.23 13.77ZM10.23 13.77C10.34 13.04 10.11 12.27 9.55 11.71C8.6 10.76 7.06 10.76 6.12 11.71C5.36 12.46 5.21 13.59 5.65 14.49C5.85 14.89 5.86 15.39 5.55 15.71L2 19.26M19.26 2L15.71 5.55C15.39 5.86 14.89 5.85 14.49 5.65C13.59 5.21 12.46 5.36 11.71 6.12C10.76 7.06 10.76 8.6 11.71 9.55C12.27 10.11 13.04 10.34 13.77 10.23C14.27 10.16 14.75 9.93 15.14 9.55M13.77 10.23C13.66 10.96 13.89 11.73 14.45 12.29C15.4 13.24 16.94 13.24 17.88 12.29C18.64 11.54 18.79 10.41 18.35 9.51C18.15 9.11 18.14 8.61 18.45 8.29L22 4.74M16 18V20M18 16H20M8 6V4M6 8H4"],
+  ["broken-bone","Fractured Bone",2,0,"M6.28 19.23C6.12 19.73 5.81 20.13 5.43 20.41M5.43 20.41C4.88 20.81 4.16 20.94 3.48 20.7C2.33 20.29 1.72 18.98 2.12 17.76C2.43 16.83 3.24 16.22 4.13 16.17C4.57 16.15 5.05 15.94 5.19 15.51L6.67 11L8 13L10 12L8.49 16.73C8.36 17.14 8.6 17.58 8.92 17.85C9.62 18.45 9.92 19.46 9.61 20.41C9.21 21.63 7.95 22.29 6.8 21.88C6.12 21.64 5.63 21.08 5.43 20.41ZM18.54 5.32C19 5.07 19.5 4.98 19.98 5.03M19.98 5.03C20.68 5.11 21.33 5.48 21.7 6.1C22.33 7.14 21.94 8.48 20.82 9.1C19.95 9.58 18.9 9.47 18.18 8.91C17.84 8.64 17.36 8.5 16.99 8.72L13 11V9L11 7.98L15.11 5.71C15.51 5.49 15.63 4.98 15.56 4.53C15.44 3.67 15.87 2.77 16.72 2.3C17.84 1.69 19.25 2.03 19.88 3.08C20.25 3.7 20.26 4.42 19.98 5.03ZM7 8L5 8M9 6L9 4M13 16L13 18M15 14L17 14"],
+  ["caduceus","Caduceus Medical Staff",2,0,"M13.5 3.5C13.5 4.33 12.83 5 12 5C11.17 5 10.5 4.33 10.5 3.5C10.5 2.67 11.17 2 12 2C12.83 2 13.5 2.67 13.5 3.5ZM16 17.5C16 16.67 14.21 16 12 16C9.79 16 8 16.67 8 17.5C8 18.33 9.79 19 12 19C13.66 19 15 19.67 15 20.5C15 21.33 13.66 22 12 22C10.72 22 9.62 21.6 9.19 21.03M12 5V16M6.8 11.95C4.78 13.65 2.83 10.74 2 8.73C2.88 8.73 4.72 8.17 6.43 6.23C7.17 5.38 7.55 4.95 7.76 5C7.97 5.06 8.26 5.69 8.83 6.96C9.73 8.93 11.07 9.96 12 10.34C9.6 14.21 7.53 13.02 6.8 11.95ZM6.8 11.95C7.09 11.7 7.39 11.35 7.68 10.89M17.2 11.95C19.22 13.65 21.17 10.74 22 8.73C21.12 8.73 19.28 8.17 17.57 6.23C16.83 5.38 16.45 4.95 16.24 5C16.03 5.06 15.74 5.69 15.17 6.96C14.27 8.93 12.93 9.96 12 10.34C14.4 14.21 16.47 13.02 17.2 11.95ZM17.2 11.95C16.91 11.7 16.61 11.35 16.32 10.89"],
+  ["cardiogram-01","ECG Screen",2,0,"M11 21.5C7.25 21.5 5.38 21.5 4.06 20.49C3.64 20.17 3.26 19.77 2.95 19.32C2 17.94 2 15.96 2 12C2 8.04 2 6.06 2.95 4.68C3.26 4.23 3.64 3.83 4.06 3.51C5.38 2.5 7.25 2.5 11 2.5L13 2.5C16.75 2.5 18.62 2.5 19.94 3.51C20.36 3.83 20.74 4.23 21.05 4.68C22 6.06 22 8.04 22 12C22 15.96 22 17.94 21.05 19.32C20.74 19.77 20.36 20.17 19.94 20.49C18.62 21.5 16.75 21.5 13 21.5H11ZM2.5 15H21.5M7.01 18H7M11 18H10.99M17 10.2C16.54 10.2 16.07 10.23 15.66 9.98C15.5 9.88 15.4 9.75 15.19 9.48L13.25 7L10.75 11L8.94 9.27C8.69 9.02 8.44 8.77 8.1 8.67C7.85 8.6 7.57 8.6 7 8.6",["M7.01 18H7H7.01Z","M11 18H10.99H11Z"]],
+  ["cardiogram-02","Heart ECG",2,0,"M19.46 3.99C16.78 2.35 14.44 3.01 13.03 4.07C12.46 4.5 12.17 4.72 12 4.72C11.83 4.72 11.54 4.5 10.97 4.07C9.56 3.01 7.22 2.35 4.54 3.99C1.02 6.15 0.22 13.27 8.34 19.28C9.89 20.43 10.66 21 12 21C13.34 21 14.11 20.43 15.66 19.28C23.78 13.27 22.98 6.15 19.46 3.99ZM16 13H15C14.54 13 14.07 13.03 13.66 12.72C13.5 12.6 13.4 12.44 13.19 12.11L11.5 9L8.5 14L6.94 11.83C6.69 11.52 6.44 11.21 6.1 11.09C5.85 11 5.57 11 5 11H3"],
+  ["covid-info","Virus / Covid",2,2,"M14.53 15.08C18.53 12.01 17.89 8.61 16.04 7.52C14.59 6.66 13.32 7.01 12.56 7.56C12.25 7.78 12.09 7.9 12 7.9C11.91 7.9 11.75 7.78 11.44 7.56C10.68 7.01 9.41 6.66 7.96 7.52C6.11 8.61 5.65 12.11 9.61 15.18C10.37 15.77 11.17 16.29 12 16.77C13.78 17.8 16.42 19 19 19M5 19C6.55 19 8.12 18.57 9.51 18"],
+  ["patient","Patient Care",2,0,"M20 22V19C20 16.17 20 14.76 19.12 13.88C18.24 13 16.83 13 14 13H10C7.17 13 5.76 13 4.88 13.88C4 14.76 4 16.17 4 19C4 19.93 4 20.4 4.15 20.76C4.36 21.25 4.74 21.64 5.23 21.85C5.6 22 6.07 22 7 22M9.5 13L12.5 22M7 13.5V22M12 19H14.5C15.33 19 16 19.67 16 20.5C16 21.33 15.33 22 14.5 22H12.5M15.5 6.5V5.5C15.5 3.57 13.93 2 12 2C10.07 2 8.5 3.57 8.5 5.5V6.5C8.5 8.43 10.07 10 12 10C13.93 10 15.5 8.43 15.5 6.5Z"],
+  ["pulse-01","Pulse Beat",2,0,"M2 12H6L7.5 8L9.5 15L13 6L15.5 18L18 12H22"],
+  ["pulse-02","Pulse Wave",2,0,"M2 12H5L6.5 8L9 15L10.5 12H12.5L14.5 7L16.5 17L19 12H22"],
+  ["pulse-rectangle-01","ECG Monitor 1",2,0,"M4.32 19.68C3 18.36 3 16.24 3 12C3 7.76 3 5.64 4.32 4.32C5.64 3 7.76 3 12 3C16.24 3 18.36 3 19.68 4.32C21 5.64 21 7.76 21 12C21 16.24 21 18.36 19.68 19.68C18.36 21 16.24 21 12 21C7.76 21 5.64 21 4.32 19.68ZM5.5 12H7.5L9 9.5L10.5 14L12.5 8L14.5 16L16.5 12H18.5"],
+  ["pulse-rectangle-02","ECG Monitor 2",2,0,"M4.32 19.68C3 18.36 3 16.24 3 12C3 7.76 3 5.64 4.32 4.32C5.64 3 7.76 3 12 3C16.24 3 18.36 3 19.68 4.32C21 5.64 21 7.76 21 12C21 16.24 21 18.36 19.68 19.68C18.36 21 16.24 21 12 21C7.76 21 5.64 21 4.32 19.68ZM6 13H7.5L9 9L10.5 16L12 13H13.5L15 8L16.5 13H18"],
+  ["clinic","Clinic / Medical Cross",2,0,"M-1.65 13.21C-2 10.92-2.18 9.77-1.74 8.75C-1.31 7.73-0.35 7.03 1.58 5.64L3.02 4.6C5.42 2.87 6.62 2 8 2C9.38 2 10.58 2.87 12.98 4.6L14.42 5.64C16.35 7.03 17.31 7.73 17.74 8.75C18.18 9.77 18 10.92 17.65 13.21L17.35 15.17C16.85 18.43 16.6 20.06 15.43 21.03C14.26 22 12.55 22 9.14 22H6.86C3.45 22 1.74 22 0.57 21.03C-0.6 20.06-0.85 18.43-1.35 15.17L-1.65 13.21ZM8 10V16M5 13L11 13"],
+  ["dental-tooth","Molar Tooth",2,0,"M5 6C5.5 6.5 6.5 6.41 8 5.18M8 5.18C7.78 4.99 7.55 4.79 7.31 4.55C5 2.27 1.87 2.71 0.39 4.55C-0.62 5.82-3.22 8.98 3.14 20.24C3.41 20.71 3.93 21 4.5 21C5.4 21 6.1 20.28 6.13 19.44C6.19 17.66 6.54 15.6 8 15.6C9.46 15.6 9.81 17.66 9.87 19.44C9.9 20.28 10.6 21 11.5 21C12.07 21 12.59 20.71 12.86 20.24C19.22 8.98 16.62 5.82 15.61 4.55C14.13 2.71 11 2.27 8.69 4.55C8.45 4.79 8.22 4.99 8 5.18Z"],
+  ["dental-braces","Dental Braces",2,0,"M5 6C5.5 6.5 6.5 6.41 8 5.18M8 5.18C7.78 4.99 7.55 4.79 7.31 4.55C5 2.27 1.87 2.71 0.39 4.55C-0.62 5.82-3.22 8.98 3.14 20.24C3.41 20.71 3.93 21 4.5 21C5.4 21 6.1 20.28 6.13 19.44C6.19 17.66 6.54 15.6 8 15.6C9.46 15.6 9.81 17.66 9.87 19.44C9.9 20.28 10.6 21 11.5 21C12.07 21 12.59 20.71 12.86 20.24C19.22 8.98 16.62 5.82 15.61 4.55C14.13 2.71 11 2.27 8.69 4.55C8.45 4.79 8.22 4.99 8 5.18ZM6.39 9.39C5.87 9.9 5.87 12.1 6.39 12.61C6.9 13.13 9.1 13.13 9.61 12.61C10.13 12.1 10.13 9.9 9.61 9.39C9.1 8.87 6.9 8.87 6.39 9.39ZM6 11H0M16 11H10"],
+  ["dental-care","Dental Care Shield",2,0,"M10 5C9.5 5.5 8.5 5.41 7 4.18M7 4.18C7.22 3.99 7.45 3.79 7.69 3.55C10 1.27 13.13 1.71 14.61 3.55C15.23 4.33 16.46 5.83 15.82 9.5M7 4.18C6.78 3.99 6.55 3.79 6.31 3.55C4 1.27 0.87 1.71-0.61 3.55C-1.62 4.82-4.22 7.98 2.14 19.24C2.41 19.71 2.93 20 3.5 20C4.4 20 5.1 19.28 5.13 18.44C5.18 17.14 5.43 15.69 6.13 15M12 17L12.68 17.68C12.83 17.83 12.9 17.9 12.99 17.9C13.08 17.89 13.15 17.81 13.28 17.65L15 15.5M9 15.45V15.84C9 17.04 9 17.64 9.15 18.19C9.33 18.87 9.68 19.5 10.16 20.02C10.55 20.44 11.07 20.77 12.1 21.43C12.56 21.72 12.79 21.87 13.04 21.94C13.34 22.02 13.66 22.02 13.96 21.94C14.21 21.87 14.44 21.72 14.9 21.43C15.93 20.77 16.45 20.44 16.84 20.02C17.32 19.5 17.67 18.87 17.85 18.19C18 17.64 18 17.04 18 15.84V15.45C18 14.71 18 14.33 17.86 14.02C17.77 13.82 17.64 13.64 17.49 13.5C17.24 13.25 16.88 13.12 16.16 12.86L14.69 12.32C14.1 12.11 13.81 12 13.5 12C13.19 12 12.9 12.11 12.31 12.32L10.84 12.86C10.12 13.12 9.76 13.25 9.51 13.5C9.36 13.64 9.23 13.82 9.14 14.02C9 14.33 9 14.71 9 15.45Z"],
+  ["dental-broken-tooth","Broken Tooth",2,0,"M7.98 5.18C8.2 4.99 8.43 4.79 8.66 4.55C10.96 2.27 14.1 2.71 15.56 4.55C19.17 9.06 15.13 16.14 12.82 20.24C12.56 20.71 12.04 21 11.47 21C10.57 21 9.87 20.28 9.84 19.44C9.78 17.7 9.38 15.6 8 15.5C6.63 15.6 6.17 17.7 6.11 19.44C6.08 20.28 5.38 21 4.48 21C3.92 21 3.39 20.71 3.13 20.24C-0.16 14.41-1.05 10.75-1 8.4C1 8.5 1.99 7.5 1.99 5.7C4 6 5 4.83 5 3C6 3 6.57 3.84 7.29 4.55C7.53 4.79 7.76 4.99 7.98 5.18ZM7.98 5.18C9.47 6.41 10.5 6.5 11 6"],
+  ["digestion","Stomach / Digestion",2,0,"M5.49 2C5.73 3.49 6.44 4.57 8.48 3.87C12.68 2.42 16 6.85 16 10.8C16 14.78 13.35 18 10.09 18H9.02C6.49 18 4.28 19.63 3.45 22M2.01 2V2.78C2.01 6.58 7.43 9.39 5.64 13.2C4.93 14.71 0.89 17.29 0 22M10 7C10.96 7.3 11.71 8.05 12 9"],
+  ["dna","DNA Molecule",2,0,"M4.67 22C5.2 21.47 5.74 20.93 5.24 18M4.67 15.33C3.33 10 4.33 9 4.67 8.67C5 8.33 6 7.33 11.33 8.67M4.67 15.33C-0.67 14-1.33 14.67-2 15.33M4.67 15.33C10 16.67 11 15.67 11.33 15.33C11.67 15 12.67 14 11.33 8.67M18 8.67C17.33 9.33 16.67 10 11.33 8.67M11.33 2C10.8 2.53 10.26 3.07 10.76 6"],
+  ["disability-01","Accessibility Wheelchair",2,0,"M15.5 18H14.18C13.85 18 13.69 18 13.56 17.91C13.43 17.83 13.37 17.68 13.25 17.37L12.75 16.13C12.63 15.82 12.57 15.67 12.44 15.59C12.31 15.5 12.15 15.5 11.82 15.5H9.5C9.03 15.5 8.79 15.5 8.65 15.35C8.5 15.21 8.5 14.97 8.5 14.5V10.5M8.5 8V10.5M8.5 10.5H12.39M8.5 6C7.39 6 6.5 5.11 6.5 4C6.5 2.89 7.39 2 8.5 2C9.61 2 10.5 2.89 10.5 4C10.5 5.11 9.61 6 8.5 6ZM5.56 10C2.69 10.48 0.5 12.97 0.5 15.96C0.5 19.29 3.22 22 6.57 22C8.6 22 10.4 21.01 11.5 19.48"],
+  ["disability-02","Accessibility Sitting",2,0,"M7.5 10L5.5 9L3 12M10 6C8.89 6 8 5.11 8 4C8 2.89 8.89 2 10 2C11.11 2 12 2.89 12 4C12 5.11 11.11 6 10 6ZM11.5 19.48C10.4 21.01 8.6 22 6.57 22C3.22 22 0.5 19.29 0.5 15.96C0.5 15.08 0.66 14.25 1 13.5M8.65 8L7.9 9.85C7.13 11.73 6.75 12.66 7.18 13.33C7.62 14 8.62 14 10.61 14C11.3 14 11.97 13.82 12.36 14.5L15.5 20"],
+  ["dropper","Pipette Dropper",2,0,"M7.29 8L0.68 14.61C0.05 15.23-0.27 16.05-0.29 16.88C-0.32 17.99-0.34 18.54-0.42 18.74C-0.5 18.93-0.7 19.13-1.08 19.51L-1.68 20.1C-2.11 20.54-2.11 21.24-1.68 21.67C-1.24 22.11-0.54 22.11-0.1 21.67L0.49 21.08C0.88 20.7 1.07 20.5 1.26 20.42C1.46 20.34 2.01 20.32 3.12 20.29C3.95 20.27 4.77 19.95 5.39 19.32L7.32 17.39M7.32 17.39L10.43 14.28L12 12.71M10.43 14.28L8.86 12.71M7.32 17.39L5.75 15.82M17.07 7.43L15.5 9C14.67 9.83 14.67 11.17 15.5 12L8 4.5C8.83 5.33 10.17 5.33 11 4.5L12.57 2.93C13.81 1.69 15.82 1.69 17.07 2.93C18.31 4.17 18.31 6.19 17.07 7.43Z"],
+  ["ear","Ear / Auditory",2,0,"M2.08 18C2.08 20.21 3.23 22 5.31 22C7.39 22 9.08 20.5 9.62 18C9.87 16.8 10.4 16.08 11.23 15.5C13.38 14 15 11.69 15 9C15 5.13 11.87 2 8 2C4.13 2 1 5.13 1 9M5 15C6.38 15 7.51 13.99 7.51 12.75C7.51 11.51 6.38 10.5 5 10.5C5 8.48 5.46 6 8.01 6C9.8 6 10.85 7.37 11 9.15"],
+  ["eye","Eye / Vision",2,0,"M-2 8C-2 8 2.48 3 8 3C13.52 3 18 8 18 8M17.54 13.04C17.85 13.47 18 13.68 18 14C18 14.32 17.85 14.53 17.54 14.96C16.18 16.87 12.69 21 8 21C3.31 21-0.18 16.87-1.54 14.96C-1.85 14.53-2 14.32-2 14C-2 13.68-1.85 13.47-1.54 13.04C-0.18 11.13 3.31 7 8 7C12.69 7 16.18 11.13 17.54 13.04ZM11 14C11 12.34 9.66 11 8 11C6.34 11 5 12.34 5 14C5 15.66 6.34 17 8 17C9.66 17 11 15.66 11 14Z"],
+  ["first-aid-kit","First Aid Kit",2,0,"M-2 12.56C-2 9.47-2 7.92-0.98 6.96C0.05 6 1.7 6 5 6H11C14.3 6 15.95 6 16.98 6.96C18 7.92 18 9.47 18 12.56V14.44C18 17.53 18 19.08 16.98 20.04C15.95 21 14.3 21 11 21H5C1.7 21 0.05 21-0.98 20.04C-2 19.08-2 17.53-2 14.44V12.56ZM5 13.5H11M8 10.5L8 16.5M13 6C13 3.52 12.48 3 10 3H6C3.52 3 3 3.52 3 6"],
+  ["give-pill","Handing Pill",2,0,"M7 7H13M7 5V9C7 10.66 8.34 12 10 12C11.66 12 13 10.66 13 9V5C13 3.34 11.66 2 10 2C8.34 2 7 3.34 7 5ZM0 14H2.39C2.69 14 2.98 14.07 3.24 14.19L5.28 15.18C5.55 15.31 5.84 15.38 6.13 15.38H7.17C8.18 15.38 9 16.17 9 17.14C9 17.18 8.97 17.22 8.93 17.23L6.39 17.93C5.94 18.05 5.45 18.01 5.02 17.81L2.84 16.75M9 16.5L13.59 15.09C14.41 14.84 15.29 15.14 15.8 15.84C16.17 16.35 16.02 17.08 15.48 17.39L7.96 21.73C7.49 22.01 6.92 22.07 6.39 21.92L0 20.02"],
+  ["give-blood","Blood Donation",2,0,"M5 7.55C5 5.56 6.69 3.6 7.87 2.46C8.51 1.85 9.49 1.85 10.13 2.46C11.31 3.6 13 5.56 13 7.55C13 9.5 11.49 11.5 9 11.5C6.51 11.5 5 9.5 5 7.55ZM0 14H2.39C2.69 14 2.98 14.07 3.24 14.19L5.28 15.18C5.55 15.31 5.84 15.38 6.13 15.38H7.17C8.18 15.38 9 16.17 9 17.14C9 17.18 8.97 17.22 8.93 17.23L6.39 17.93C5.94 18.05 5.45 18.01 5.02 17.81L2.84 16.75M9 16.5L13.59 15.09C14.41 14.84 15.29 15.14 15.8 15.84C16.17 16.35 16.02 17.08 15.48 17.39L7.96 21.73C7.49 22.01 6.92 22.07 6.39 21.92L0 20.02"],
+  ["hand-sanitizer","Hand Sanitizer",2,0,"M11.66 16.16L11.31 13.94C11.21 13.28 11.16 12.95 11.08 12.67C10.53 10.71 8.84 9.27 6.81 9.03C6.51 9 6.18 9 5.5 9C4.82 9 4.49 9 4.19 9.03C2.16 9.27 0.47 10.71-0.08 12.67C-0.16 12.95-0.21 13.28-0.31 13.94L-0.66 16.16C-1 18.36-1.17 19.45-0.77 20.28C-0.54 20.77-0.18 21.18 0.27 21.49C1.04 22 2.16 22 4.4 22H6.6C8.84 22 9.96 22 10.73 21.49C11.18 21.18 11.54 20.77 11.77 20.28C12.17 19.45 12 18.36 11.66 16.16ZM5.5 13.5V17.5M7.5 15.5L3.5 15.5M8.5 9.5V9C8.5 7.59 8.5 6.88 8.06 6.44C7.62 6 6.91 6 5.5 6C4.09 6 3.38 6 2.94 6.44C2.5 6.88 2.5 7.59 2.5 9V9.5M7 6V3.5C7 2.67 6.33 2 5.5 2C4.67 2 4 2.67 4 3.5V6M7 4.22L9.72 3.5C11.23 3.09 11.99 2.89 12.69 3.06C13.39 3.23 13.83 3.72 14.73 4.7L15 5M17 10.5C17 11.61 16.25 12 15.5 12C14.75 12 14 11.61 14 10.5C14 9.39 15.5 8 15.5 8C15.5 8 17 9.39 17 10.5Z"],
+  ["health","Heart Health",2,0,"M15.46 3.99C12.78 2.35 10.44 3.01 9.03 4.07C8.46 4.5 8.17 4.72 8 4.72C7.83 4.72 7.54 4.5 6.97 4.07C5.56 3.01 3.22 2.35 0.54 3.99C-2.98 6.15-3.78 13.27 4.34 19.28C5.89 20.43 6.66 21 8 21C9.34 21 10.11 20.43 11.66 19.28C19.78 13.27 18.98 6.15 15.46 3.99ZM8 9V15M5 12L11 12"],
+  ["doctor-01","Doctor Male",2,0,"M16 22V19C16 16.17 16 14.76 15.12 13.88C14.24 13 12.83 13 10 13L8 15L6 13C3.17 13 1.76 13 0.88 13.88C0 14.76 0 16.17 0 19V22M12 13V18.5M4.5 13V17M4.5 17C5.61 17 6.5 17.89 6.5 19V20M4.5 17C3.39 17 2.5 17.89 2.5 19V20M11.5 6.5V5.5C11.5 3.57 9.93 2 8 2C6.07 2 4.5 3.57 4.5 5.5V6.5C4.5 8.43 6.07 10 8 10C9.93 10 11.5 8.43 11.5 6.5ZM12.75 19.25C12.75 19.66 12.41 20 12 20C11.59 20 11.25 19.66 11.25 19.25C11.25 18.84 11.59 18.5 12 18.5C12.41 18.5 12.75 18.84 12.75 19.25Z"],
+  ["doctor-02","Doctor Female",2,0,"M0 22V21C0 19.13 0 18.2 0.4 17.5C0.67 17.04 1.04 16.67 1.5 16.4C2.2 16 3.13 16 5 16L8 20L11 16C12.87 16 13.8 16 14.5 16.4C14.96 16.67 15.33 17.04 15.6 17.5C16 18.2 16 19.13 16 21V22M11.94 8L12.95 3.86C13.19 2.92 12.48 2 11.52 2H4.48C3.52 2 2.81 2.92 3.05 3.86L4.06 8M11.94 8V10C11.94 12.21 10.18 14 8 14C5.82 14 4.06 12.21 4.06 10V8M11.94 8H4.06M8 4V6M9 5L7 5"],
+  ["doctor-03","Physician",2,0,"M16 22V19C16 16.17 16 14.76 15.12 13.88C14.24 13 12.83 13 10 13L8 15L6 13C3.17 13 1.76 13 0.88 13.88C0 14.76 0 16.17 0 19V22M11.5 6.5V5.5C11.5 3.57 9.93 2 8 2C6.07 2 4.5 3.57 4.5 5.5V6.5C4.5 8.43 6.07 10 8 10C9.93 10 11.5 8.43 11.5 6.5ZM12 16V19M13.5 17.5L10.5 17.5"],
+  ["stethoscope-02","Stethoscope Chest",2,0,"M2.5 3.5H0.5C-0.05 3.5-0.5 3.95-0.5 4.5V8C-0.5 11.04 1.96 13.5 5 13.5C8.04 13.5 10.5 11.04 10.5 8V4.5C10.5 3.95 10.05 3.5 9.5 3.5H7.5M14.5 15.5V16.75C14.5 19.37 12.37 21.5 9.75 21.5C7.13 21.5 5 19.37 5 16.75V13.5M7.5 2.5V4.5M2.5 2.5V4.5M16.5 13.5C16.5 14.6 15.61 15.5 14.5 15.5C13.39 15.5 12.5 14.6 12.5 13.5C12.5 12.4 13.39 11.5 14.5 11.5C15.61 11.5 16.5 12.4 16.5 13.5Z"],
+  ["thread","Suture Spool",2,0,"M0.5 7.5H12.5C14.39 7.5 15.33 7.5 15.91 8.09C16.5 8.67 16.5 9.61 16.5 11.5V12.5M12.5 10.5H0.5M12.5 13.5H0.5M12.5 16.5H0.5M11.5 19.5H1.5C0.39 19.5-0.5 20.4-0.5 21.5H13.5C13.5 20.4 12.61 19.5 11.5 19.5ZM1.5 4.5L11.5 4.5C12.61 4.5 13.5 3.6 13.5 2.5L-0.5 2.5C-0.5 3.6 0.39 4.5 1.5 4.5Z"],
+  ["healthcare","Healthcare Hand",2,0,"M8.4 2.55C9.87 1.64 11.16 2.01 11.93 2.59C12.25 2.83 12.41 2.95 12.5 2.95C12.59 2.95 12.75 2.83 13.07 2.59C13.84 2.01 15.13 1.64 16.6 2.55C18.54 3.75 18.98 7.71 14.51 11.05C13.66 11.68 13.24 12 12.5 12C11.76 12 11.34 11.68 10.49 11.05C6.02 7.71 6.46 3.75 8.4 2.55ZM4 14H6.39C6.69 14 6.98 14.07 7.24 14.19L9.28 15.18C9.55 15.31 9.84 15.38 10.13 15.38H11.17C12.18 15.38 13 16.17 13 17.14C13 17.18 12.97 17.22 12.93 17.23L10.39 17.93C9.94 18.06 9.45 18.01 9.02 17.81L6.84 16.75M13 16.5L17.59 15.09C18.41 14.84 19.29 15.14 19.8 15.84C20.17 16.35 20.02 17.08 19.48 17.39L11.96 21.73C11.49 22.01 10.92 22.07 10.39 21.92L4 20.02"],
+  ["hospital-01","Hospital Building",2,0,"M14 2V4M14 4V6M14 4H10M10 2V4M10 4V6M3 22V11.38C3 7.88 3 6.13 4.15 5.04C4.89 4.34 5.9 4.09 7.5 4M21 22V11.38C21 7.88 21 6.13 19.85 5.04C19.11 4.34 18.1 4.09 16.5 4M14 10H16M14 14H16M7 14H9M7 10H9M2 22H9.5M22 22H14.5M9.5 22V19.5C9.5 18.56 9.5 18.1 9.7 17.75C9.83 17.52 10.02 17.33 10.25 17.2C10.6 17 11.07 17 12 17C12.93 17 13.4 17 13.75 17.2C13.98 17.33 14.17 17.52 14.3 17.75C14.5 18.1 14.5 18.56 14.5 19.5V22"],
+  ["hospital-02","Hospital Clinic",2,0,"M12 4.5V6M12 6V7.5M12 6H13.5M12 6H10.5M8.59 2.59C8 3.17 8 4.11 8 6C8 7.89 8 8.83 8.59 9.41C9.17 10 10.11 10 12 10C13.89 10 14.83 10 15.41 9.41C16 8.83 16 7.89 16 6C16 4.11 16 3.17 15.41 2.59C14.83 2 13.89 2 12 2C10.11 2 9.17 2 8.59 2.59ZM4 22V11.97C4 8.66 4 7.01 5.02 5.98C5.68 5.32 6.58 5.09 8 5M20 22V11.97C20 8.66 20 7.01 18.98 5.98C18.32 5.32 17.42 5.09 16 5M3 22H21M9.5 22V19.5C9.5 18.56 9.5 18.1 9.7 17.75C9.83 17.52 10.02 17.33 10.25 17.2C10.6 17 11.07 17 12 17C12.93 17 13.4 17 13.75 17.2C13.98 17.33 14.17 17.52 14.3 17.75C14.5 18.1 14.5 18.56 14.5 19.5V22M8.01 13H8M12 13H11.99M16 13H15.99"],
+  ["hospital-bed-01","Hospital Bed Standard",2,0,"M19.59 6H4.41C4.18 6 4.06 6 3.95 6.02C3.45 6.09 2.99 6.43 2.66 6.95C2.59 7.06 2.53 7.19 2.4 7.46C2.2 7.86 2.1 8.06 2.06 8.22C1.86 8.96 2.18 9.77 2.75 9.96C2.87 10 3.04 10 3.4 10H20.6C20.96 10 21.13 10 21.25 9.96C21.82 9.77 22.14 8.96 21.94 8.22C21.9 8.06 21.8 7.86 21.6 7.46C21.47 7.19 21.41 7.06 21.34 6.95C21.01 6.43 20.55 6.09 20.05 6.02C19.94 6 19.82 6 19.59 6ZM6 14H18M4 10L5.25 11.59C5.95 12.48 6.18 13.64 5.86 14.72L5.18 17M20 10L18.75 11.59C18.05 12.48 17.82 13.64 18.14 14.72L18.82 17M7 19C7 20.11 6.11 21 5 21C3.89 21 3 20.11 3 19C3 17.89 3.89 17 5 17C6.11 17 7 17.89 7 19ZM21 19C21 20.11 20.11 21 19 21C17.89 21 17 20.11 17 19C17 17.89 17.89 17 19 17C20.11 17 21 17.89 21 19ZM6 6V4.1C6 3.39 6.61 2.86 7.24 3.03L9.24 3.58C9.69 3.71 10 4.15 10 4.65V6"],
+  ["hospital-bed-02","Hospital Bed ICU",2,0,"M19.59 6H4.41C4.18 6 4.06 6 3.95 6.02C3.45 6.09 2.99 6.43 2.66 6.95C2.59 7.06 2.53 7.19 2.4 7.46C2.2 7.86 2.1 8.06 2.06 8.22C1.86 8.96 2.18 9.77 2.75 9.96C2.87 10 3.04 10 3.4 10H20.6C20.96 10 21.13 10 21.25 9.96C21.82 9.77 22.14 8.96 21.94 8.22C21.9 8.06 21.8 7.86 21.6 7.46C21.47 7.19 21.41 7.06 21.34 6.95C21.01 6.43 20.55 6.09 20.05 6.02C19.94 6 19.82 6 19.59 6ZM7.5 17.5L19 10M16.5 17.5L5 10M8 19C8 20.11 7.11 21 6 21C4.89 21 4 20.11 4 19C4 17.89 4.89 17 6 17C7.11 17 8 17.89 8 19ZM20 19C20 20.11 19.11 21 18 21C16.89 21 16 20.11 16 19C16 17.89 16.89 17 18 17C19.11 17 20 17.89 20 19ZM6 6V4.1C6 3.39 6.61 2.86 7.24 3.03L9.24 3.58C9.69 3.71 10 4.15 10 4.65V6"],
+  ["hospital-location","Hospital Location Pin",2,0,"M12.5 2C7.81 2 4 5.62 4 10.08C4 12.63 5.06 14.62 7.19 16.39C8.68 17.64 10.5 19.71 11.59 21.39C12.11 22.2 12.85 22.2 13.41 21.39C14.55 19.75 16.32 17.64 17.81 16.39C19.94 14.62 21 12.63 21 10.08C21 5.62 17.19 2 12.5 2ZM10.5 7V10M10.5 13V10M14.5 7V10M14.5 13V10M14.5 10H10.5"],
+  ["injection","Syringe Injection",2,0,"M17 2C17 2.51 17 2.76 17.07 3C17.11 3.13 17.16 3.26 17.22 3.38C17.34 3.59 17.52 3.77 17.88 4.13L19.87 6.12C20.23 6.48 20.41 6.66 20.62 6.78C20.74 6.84 20.87 6.89 21 6.93C21.24 7 21.49 7 22 7M11.69 7L6.76 11.93C5.7 12.99 5.17 13.52 5.04 14.16C4.99 14.44 4.99 14.72 5.04 15C5.17 15.64 5.7 16.17 6.76 17.24C7.83 18.3 8.36 18.83 9 18.96C9.28 19.01 9.56 19.01 9.84 18.96C10.48 18.83 11.01 18.3 12.07 17.24L17 12.31M11 6L18 13M8 18.64L6.83 19.47C6.36 19.81 6.13 19.98 5.87 20C5.77 20 5.67 20 5.57 19.97C5.32 19.91 5.11 19.7 4.7 19.3C4.29 18.89 4.09 18.68 4.03 18.43C4 18.33 4 18.23 4 18.13C4.02 17.88 4.19 17.64 4.53 17.17L5.36 16M13.5 8L18.5 4M16 10.5L20 5.5M4.5 19.5L2 22"],
+  ["kidneys","Kidneys System",2,0,"M9.99 6C10.14 4.59 9 3 6.57 3C4.05 3 2 5.46 2 8.5C2 11.54 3.54 14 6.06 14C7.68 14 8.54 12.75 8.36 11.66M7 8C8.5 8 10.5 8.5 10.5 11.64C10.5 15.8 8.5 17.36 10 21M17 8C15.5 8 13.5 8.5 13.5 11.64C13.5 15.8 15.5 17.36 14 21M6.61 6C6.81 6.57 7.16 7.94 6.92 8.86C6.81 9.24 6.49 10 6 10M14.01 6C13.86 4.59 15 3 17.43 3C19.95 3 22 5.46 22 8.5C22 11.54 20.46 14 17.94 14C16.24 14 15.38 12.62 15.68 11.5M17.39 6C17.19 6.57 16.84 7.94 17.08 8.86C17.19 9.24 17.51 10 18 10"],
+  ["labs","Laboratory Vials",2,0,"M17.5 21C15.57 21 14 19.43 14 17.5L14 3L21 3L21 17.5C21 19.43 19.43 21 17.5 21ZM22 3H13M17 7H14M10 16.88C10 19.91 8 21 6 21C4 21 2 19.91 2 16.88C2 13.84 6 10 6 10C6 10 10 13.84 10 16.88ZM14 12C15.08 11.13 16.3 9.88 17.77 10.76C19 11.5 20.03 10.72 21 10"],
+  ["liver","Liver Organ",2,0,"M18 8.03C15.12 8.03 13.13 5.01 10 5.01C5.58 5.01 2 8.62 2 13.07C2 14.51 2.17 16.21 2.87 17.61C3.41 18.71 4.68 19.16 5.88 18.95C10.43 18.13 14 15 15 13M14 6.47C17 5.01 22 3.84 22 7.03C22 10.21 17.83 12.83 15 13C13.23 13.11 11 12.5 9 11.06"],
+  ["lungs","Lungs Respiratory",2,0,"M7.98 11C8.39 11.21 8.72 11.56 8.97 12M8.97 12C9.97 13.66 9.97 16.5 9.97 16.5C9.97 20 8.19 21 5.99 21C4.99 21 2 20.5 2 16C2 9.5 5.49 5 8.48 5C10.87 5 9.97 10 8.97 12ZM16.02 11C15.61 11.21 15.28 11.56 15.02 12M15.02 12C14.03 13.66 14.03 16.5 14.03 16.5C14.03 20 15.81 21 18.01 21C19.01 21 22 20.5 22 16C22 9.5 18.51 5 15.52 5C13.13 5 14.03 10 15.02 12ZM14 7L12 5.67M12 5.67L10 7M12 5.67V3"],
+  ["mask","Surgical Mask",2,0,"M6 9C7.47 8.39 9.61 8 12 8C14.39 8 16.53 8.39 18 9M9 11.5C9.94 11.18 10.95 11 12 11C13.05 11 14.06 11.18 15 11.5M8 15C9.18 15.64 10.54 16 12 16C13.46 16 14.82 15.64 16 15M6 10C6 13.26 4.17 14.94 3.06 15C3.02 15 2.99 14.98 2.97 14.95C2.16 13.5 2 11.79 2 10C2 6.69 2.89 4 4 4C5.11 4 6 6.69 6 10ZM18 10C18 13.26 19.83 14.94 20.94 15C20.98 15 21.01 14.98 21.03 14.95C21.84 13.5 22 11.79 22 10C22 6.69 21.11 4 20 4C18.89 4 18 6.69 18 10ZM21 15C19.2 17.99 15.85 20 12 20C8.15 20 4.8 17.99 3 15"],
+  ["mask-love","Care Mask",2,0,"M14.14 13.44C15.35 12.71 16.4 13 17.03 13.48C17.29 13.67 17.42 13.76 17.5 13.76C17.58 13.76 17.71 13.67 17.97 13.48C18.6 13 19.65 12.71 20.86 13.44C22.44 14.4 22.8 17.57 19.15 20.24C18.45 20.75 18.1 21 17.5 21C16.9 21 16.55 20.75 15.85 20.24C12.2 17.57 12.56 14.4 14.14 13.44ZM6 8C7.47 7.39 9.61 7 12 7C14.39 7 16.53 7.39 18 8M6 9C6 12.26 4.17 13.94 3.06 14C3.02 14 2.99 13.98 2.97 13.95C2.16 12.5 2 10.79 2 9C2 5.69 2.89 3 4 3C5.11 3 6 5.69 6 9ZM18.06 10.02C18.01 9.67 18 9.4 18 9C18 5.69 18.89 3 20 3C21.11 3 22 5.69 22 9C22 9.38 22 10.14 21.95 10.52M11 19C8.04 18.78 4.74 17.04 3 14"],
+  ["medicine-01","Pills Blister Pack",2,0,"M4 14H6.39C6.69 14 6.98 14.07 7.24 14.19L9.28 15.18C9.55 15.31 9.84 15.38 10.13 15.38H11.17C12.18 15.38 13 16.17 13 17.14C13 17.18 12.97 17.22 12.93 17.23L10.39 17.93C9.94 18.05 9.45 18.01 9.02 17.81L6.84 16.75M13 16.5L17.59 15.09C18.41 14.84 19.29 15.14 19.8 15.84C20.17 16.35 20.02 17.08 19.48 17.39L11.96 21.73C11.49 22.01 10.92 22.07 10.39 21.92L4 20.02M17.33 4.5C18.71 6.89 17.89 9.95 15.5 11.33C13.11 12.71 10.05 11.89 8.67 9.5M17.33 4.5C15.95 2.11 12.89 1.29 10.5 2.67C8.11 4.05 7.29 7.11 8.67 9.5M17.33 4.5L8.67 9.5"],
+  ["medicine-02","Medicine Capsules",2,0,"M20.19 13C21.85 15.87 20.87 19.54 18 21.2C15.13 22.85 11.46 21.87 9.8 19M20.19 13C18.54 10.13 14.87 9.15 12 10.8C9.13 12.46 8.14 16.13 9.8 19M20.19 13L9.8 19M6.5 16C5.3 15.87 4.17 15.17 3.52 14.02C2.44 12.1 3.09 9.65 4.96 8.55L10.04 5.54L15.13 2.54C17 1.43 19.39 2.09 20.48 4C21.34 5.54 21.1 7.43 20 8.68M10.04 5.54L11.5 8"],
+  ["medicine-syrup","Syrup Bottle",2,0,"M9.5 15.75C9.5 17.41 10.75 18 12 18C13.25 18 14.5 17.41 14.5 15.75C14.5 14.09 12 12 12 12C12 12 9.5 14.09 9.5 15.75ZM9.07 2H14.93C15.85 2 16.31 2 16.6 2.29C17.13 2.84 17.13 5.16 16.6 5.71C16.31 6 15.85 6 14.93 6H9.07C8.15 6 7.69 6 7.4 5.71C6.87 5.16 6.87 2.84 7.4 2.29C7.69 2 8.15 2 9.07 2ZM8 6C8.16 6.33 8.25 6.5 8.31 6.66C8.61 7.5 8.53 8.43 8.08 9.2C7.99 9.35 7.88 9.49 7.66 9.79L7.25 10.33C6.8 10.93 6.58 11.23 6.42 11.56C6.25 11.89 6.13 12.24 6.07 12.61C6 12.97 6 13.34 6 14.09V16C6 18.83 6 20.24 6.88 21.12C7.76 22 9.17 22 12 22C14.83 22 16.24 22 17.12 21.12C18 20.24 18 18.83 18 16V14.09C18 13.34 18 12.97 17.93 12.61C17.87 12.24 17.75 11.89 17.58 11.56C17.42 11.23 17.2 10.93 16.75 10.33L16.34 9.79C16.12 9.49 16.01 9.35 15.92 9.2C15.47 8.43 15.39 7.5 15.69 6.66C15.75 6.5 15.84 6.33 16 6"],
+  ["medicine-bottle-01","Pill Bottle Standard",2,0,"M9.07 2H14.93C15.85 2 16.31 2 16.6 2.29C17.13 2.84 17.13 5.16 16.6 5.71C16.31 6 15.85 6 14.93 6H9.07C8.15 6 7.69 6 7.4 5.71C6.87 5.16 6.87 2.84 7.4 2.29C7.69 2 8.15 2 9.07 2ZM8 6C8.16 6.33 8.25 6.5 8.31 6.66C8.61 7.5 8.53 8.43 8.08 9.2C7.99 9.35 7.88 9.49 7.66 9.79L7.25 10.33C6.8 10.93 6.58 11.23 6.42 11.56C6.25 11.89 6.13 12.24 6.07 12.61C6 12.97 6 13.34 6 14.09V16C6 18.83 6 20.24 6.88 21.12C7.76 22 9.17 22 12 22C14.83 22 16.24 22 17.12 21.12C18 20.24 18 18.83 18 16V14.09C18 13.34 18 12.97 17.93 12.61C17.87 12.24 17.75 11.89 17.58 11.56C17.42 11.23 17.2 10.93 16.75 10.33L16.34 9.79C16.12 9.49 16.01 9.35 15.92 9.2C15.47 8.43 15.39 7.5 15.69 6.66C15.75 6.5 15.84 6.33 16 6M12 13V18M9.5 15.5L14.5 15.5"],
+  ["medicine-bottle-02","Pill Bottle Dropper",2,0,"M10 22C7.12 22 5.79 22 4.9 21.12C4 20.24 4 18.83 4 16V14.09C4 13.34 4 12.97 4.07 12.61C4.14 12.24 4.26 11.89 4.42 11.56C4.59 11.23 4.82 10.93 5.28 10.33L5.69 9.79C5.92 9.49 6.03 9.35 6.12 9.2C6.58 8.43 6.66 7.5 6.35 6.66C6.29 6.5 6.21 6.33 6.04 6M14.19 6C14.03 6.33 13.94 6.5 13.88 6.66C13.57 7.5 13.66 8.43 14.12 9.2C14.2 9.35 14.32 9.49 14.54 9.79C14.99 10.37 15.65 10.87 16 11.5M7.07 2H12.93C13.85 2 14.31 2 14.6 2.29C15.13 2.84 15.13 5.16 14.6 5.71C14.31 6 13.85 6 12.93 6H7.07C6.15 6 5.69 6 5.4 5.71C4.87 5.16 4.87 2.84 5.4 2.29C5.69 2 6.15 2 7.07 2ZM18.54 14.91C20.25 16.31 20.5 18.83 19.1 20.53C17.7 22.24 15.18 22.49 13.47 21.09M18.54 14.91C16.83 13.51 14.31 13.76 12.91 15.47C11.51 17.17 11.76 19.69 13.47 21.09M18.54 14.91L13.47 21.09"],
+  ["medical-file","Medical Records File",2,0,"M19 9V7.82C19 6.13 19 5.28 18.75 4.6C18.34 3.51 17.49 2.66 16.4 2.25C15.72 2 14.88 2 13.18 2C10.22 2 8.74 2 7.55 2.44C5.65 3.15 4.15 4.65 3.44 6.55C3 7.74 3 9.22 3 12.18L3 14.73C3 17.8 3 19.33 3.8 20.4C4.03 20.7 4.3 20.97 4.6 21.2C5.67 22 7.2 22 10.27 22H11C12.17 22 14.5 22 14.5 22M11 14.33H11.84C12.5 14.33 12.83 14.33 13.1 14.51C13.36 14.68 13.51 15 13.81 15.62L15.4 19L17.6 12L19.19 15.38C19.49 16 19.64 16.32 19.9 16.49C20.17 16.67 20.5 16.67 21.16 16.67H22M3 12C3 10.16 4.49 8.67 6.33 8.67H7.44C7.96 8.67 8.22 8.67 8.43 8.61C9.01 8.46 9.46 8.01 9.61 7.43C9.67 7.22 9.67 6.96 9.67 6.44L9.67 5.33C9.67 3.49 11.16 2 13 2"],
+  ["mortar","Mortar & Pestle",2,0,"M4.96 12H19.04C20.01 12 20.5 12 20.8 12.38C21.11 12.75 21.01 13.16 20.83 13.98C20.29 16.38 18.79 18.41 16.75 19.66C16.36 19.9 16.19 20.4 16.41 20.8C16.69 21.35 16.29 22 15.67 22H8.33C7.71 22 7.31 21.35 7.59 20.8C7.81 20.4 7.64 19.9 7.25 19.66C5.21 18.41 3.71 16.38 3.17 13.98C2.99 13.16 2.89 12.75 3.2 12.38C3.5 12 3.99 12 4.96 12ZM17.46 12L19.01 8.28C19.18 7.86 19.62 7.65 20.05 7.58C20.42 7.52 20.72 7.34 20.88 7.05C21.27 6.33 20.67 5.19 19.52 4.5C18.38 3.81 17.13 3.83 16.73 4.55C16.57 4.84 16.57 5.2 16.71 5.57C16.86 6 16.9 6.49 16.64 6.86L13 12M6.5 5.5L10 9M8.6 3.4C10.15 4.95 9.76 6.44 8.6 7.6C7.44 8.76 5.95 9.15 4.4 7.6C2.86 6.06 3 2 3 2C3 2 7.05 1.86 8.6 3.4Z"],
+  ["nose","Nose / Olfactory",2,0,"M7 17C9 17 9.5 21 12 21C14.5 21 15 17 17 17M8.5 3C8.5 5.28 7.13 10.02 5.74 12.11C4.16 14.47 2.78 18.38 5.74 19.8C7.2 20.51 9 19.09 9 19.09M15.5 3C15.5 5.28 16.87 10.02 18.26 12.11C19.84 14.47 21.22 18.38 18.26 19.8C16.8 20.51 15 19.09 15 19.09"],
+  ["prescription","Rx Prescription Pad",2,0,"M19 21L10 12M5 19V5C5 3.35 5.35 3 7 3H9.5C11.99 3 14 5.01 14 7.5C14 9.99 11.99 12 9.5 12H5M19 15L13 21"],
+  ["protection-mask","N95 Respirator",2,0,"M4.28 22V18.45C4.28 17.17 3.93 16.52 3.26 15.41C2.46 14.09 2 12.54 2 10.89C2 5.98 6.08 2 11.1 2C15.47 2 19.11 5 20 9M15.08 14.85L18.99 12.41C19.08 12.36 19.13 12.33 19.17 12.31C19.22 12.28 19.27 12.26 19.38 12.23C19.93 12.02 20.54 11.81 21.04 12.22C21.3 12.45 21.42 12.83 21.67 13.61C21.87 14.23 22.08 14.83 21.97 15.49C21.91 15.83 21.76 16.15 21.46 16.79L20.03 19.8C19.47 20.97 19.2 21.55 18.28 21.86C17.36 22.17 16.95 21.94 16.13 21.47C12.45 19.37 5.31 13.26 7.36 10.49C8.14 9.44 10.12 9.74 15.08 14.85ZM15.08 14.85L14.01 20.08"],
+  ["safe","Protection Shield",2,0,"M16 17L16.21 17.21C16.58 17.58 16.76 17.76 16.99 17.75C17.21 17.74 17.37 17.54 17.7 17.13L19 15.5M13 15.45V15.84C13 17.04 13 17.64 13.15 18.19C13.33 18.87 13.68 19.5 14.16 20.02C14.55 20.44 15.07 20.77 16.1 21.43C16.56 21.72 16.79 21.87 17.04 21.94C17.34 22.02 17.66 22.02 17.96 21.94C18.21 21.87 18.44 21.72 18.9 21.43C19.93 20.77 20.45 20.44 20.84 20.02C21.32 19.5 21.67 18.87 21.85 18.19C22 17.64 22 17.04 22 15.84V15.45C22 14.71 22 14.33 21.86 14.02C21.77 13.82 21.64 13.64 21.49 13.5C21.24 13.25 20.88 13.12 20.16 12.86L18.68 12.32C18.1 12.11 17.81 12 17.5 12C17.19 12 16.9 12.11 16.32 12.32L14.84 12.86C14.12 13.12 13.76 13.25 13.51 13.5C13.36 13.64 13.23 13.82 13.14 14.02C13 14.33 13 14.71 13 15.45ZM16.17 7.91V9.5M16.17 7.91C16.17 7.16 16.8 6.55 17.59 6.55C18.37 6.55 19 7.16 19 7.91V9.5M16.17 7.91V5.18C16.17 4.43 15.54 3.82 14.76 3.82C13.98 3.82 13.34 4.43 13.34 5.18M13.34 5.18V9.5M13.34 5.18V3.36C13.34 2.61 12.71 2 11.93 2C11.15 2 10.51 2.61 10.51 3.36V6.09M10.51 6.09C10.51 5.34 9.88 4.73 9.1 4.73C8.32 4.73 7.68 5.34 7.68 6.09V12.64C7.68 13.05 7.15 13.25 6.86 12.94L4.57 10.5C4.18 10.04 3.52 9.89 2.96 10.12C1.95 10.54 1.71 12.01 2.37 12.86C3.49 14.31 4.64 16.29 5.57 18.04C6.82 20.41 9.31 22 12.07 22M10.51 6.09V9.5"],
+  ["skull","Cranium / Skull",2,0,"M11.59 14.54C11.14 14.7 10.74 15.03 10.33 15.28C9.49 15.82 8.63 16.41 7.59 16.36C4.47 16.2 2 12.32 2 9.57C2 5.39 6.1 2 11.16 2C15.72 2 19.5 4.75 20.2 8.35C20.42 9.48 19.92 10.16 19.3 11.08L21.37 13.13C21.8 13.55 22.01 13.76 22 13.99C21.99 14.21 21.72 14.42 21.18 14.86C20.71 15.24 20.32 15.69 20.32 16.13C20.53 17.6 21.42 20.02 20.45 21.28C19.27 22.8 16.99 21.51 15.61 20.98C14.18 20.43 13.46 20.15 12.98 19.63C11.85 18.4 11.59 14.54 11.59 14.54ZM11.59 14.54C13.09 13.98 14.31 15.77 15.84 15.1C16.36 14.88 16.81 14.44 17.27 14.11M20.5 19C20.5 19 19 18.5 18.5 17.5M14 9.02C14 9.02 12.14 9.02 11.31 10.33C11.06 10.72 10.67 11.07 10.22 10.99C9.02 10.77 7.65 10 7 8"],
+  ["sperm","Gamete / Reproductive",2,0,"M9.89 14.11C12.13 16.34 15.19 16.9 17.98 14.11C20.77 11.32 22.03 6.02 20 4C17.98 1.97 12.68 3.23 9.89 6.02C7.1 8.81 7.66 11.88 9.89 14.11ZM3 21C3.41 20.45 4.05 19.88 5.18 19.61C6.07 19.39 6.52 19.28 6.69 19.17C7.02 18.94 7.13 18.76 7.14 18.36C7.15 18.17 7.05 17.87 6.84 17.27C6.63 16.66 6.52 16.37 6.53 16.17C6.55 15.78 6.66 15.6 6.99 15.37C7.16 15.25 7.61 15.14 8.5 14.93C9.3 14.73 9.78 14.38 10 14"],
+  ["stethoscope","Stethoscope Standard",2,0,"M13 2C14.11 2 15 2.93 15 4.08C15 5.03 15.04 5.87 14.27 6.57C11.76 8.86 10.5 10 9 10C7.5 10 6.24 8.86 3.73 6.57C2.96 5.87 3 5.03 3 4.08C3 2.93 3.89 2 5 2M9 14V17.5C9 19.99 11.01 22 13.5 22C15.99 22 18 19.99 18 17.5V16M14 7L12.7 10.26C12.35 11.12 12.18 11.55 11.89 11.91C11.6 12.26 11.21 12.52 10.43 13.03L8.97 14L7.53 13.03C6.77 12.52 6.39 12.26 6.11 11.91C5.83 11.56 5.65 11.14 5.31 10.28L4 7M21 13C21 14.66 19.66 16 18 16C16.34 16 15 14.66 15 13C15 11.34 16.34 10 18 10C19.66 10 21 11.34 21 13ZM18.01 13L18 13"],
+  ["thermometer","Clinical Thermometer",2,0,"M13.88 15.94L20.67 8.17C21.42 7.32 21.8 6.89 21.92 6.41C22.04 6 22.02 5.56 21.88 5.15C21.72 4.69 21.32 4.29 20.52 3.48C19.71 2.68 19.31 2.28 18.85 2.12C18.44 1.98 18 1.96 17.59 2.08C17.11 2.2 16.68 2.58 15.83 3.33L8.06 10.12C7.11 10.96 6.63 11.37 6.35 11.93C6.07 12.48 6.01 13.11 5.89 14.37L5.87 14.63C5.81 15.3 5.78 15.63 5.65 15.94C5.52 16.24 5.31 16.5 4.88 17.01L2.27 20.08C1.88 20.55 1.91 21.23 2.34 21.66C2.77 22.09 3.45 22.12 3.92 21.73L6.99 19.13C7.5 18.69 7.76 18.48 8.06 18.35C8.37 18.22 8.7 18.19 9.37 18.13L9.63 18.11C10.89 17.99 11.52 17.93 12.07 17.65C12.63 17.37 13.04 16.89 13.88 15.94ZM7.79 9.89L9.37 10.84C9.74 11.07 9.86 11.55 9.64 11.92L9.35 12.41C8.96 13.05 9.06 13.88 9.59 14.41C10.12 14.94 10.95 15.04 11.59 14.65L12.08 14.36C12.45 14.14 12.93 14.26 13.16 14.63L14.11 16.21M17.26 6.74L14.11 9.89"],
+  ["tissue-paper","Sanitary Tissue",2,0,"M10 9.5C10 12.54 8.21 15 6 15C3.79 15 2 12.54 2 9.5C2 6.46 3.79 4 6 4C8.21 4 10 6.46 10 9.5ZM21.81 10.69C21.93 10.16 22 9.6 22 9C22 6.24 20.58 4 18.82 4H6C9.15 4 10.57 7.96 10.02 10.57C9.46 13.27 7.18 16.37 7.39 19.13C7.43 19.62 7.8 20 8.25 20H18.36C18.85 20 19.24 19.54 19.2 19C18.99 16.31 21.21 13.31 21.81 10.69ZM6.01 9.5L6 9.5"],
+  ["tongue","Oral / Tongue",2,0,"M4.35 12C3.18 10.89 2.42 9.47 2.09 8.76C2.02 8.61 2 8.45 2 8.29C2 8.14 2.02 7.98 2.09 7.83C2.69 6.54 4.65 3 7.96 3C9 3 9.87 3.54 10.53 4.17C11.09 4.71 11.37 4.98 11.44 5.02C11.97 5.4 12.03 5.4 12.56 5.02C12.63 4.98 12.91 4.71 13.47 4.17C14.13 3.54 15 3 16.04 3C19.35 3 21.31 6.54 21.91 7.83C21.98 7.98 22 8.14 22 8.29C22 8.45 21.98 8.61 21.91 8.76C21.58 9.47 20.82 10.89 19.65 12M22 8.29H19M2 8.29H5M12 9L12.27 8.73C12.73 8.26 13.35 8 14 8C15.14 8 16.13 8.8 16.39 9.92L17.36 14.18C18.15 17.67 15.53 21 12 21C8.47 21 5.85 17.67 6.64 14.18L7.61 9.92C7.87 8.8 8.86 8 10 8C10.65 8 11.27 8.26 11.73 8.73L12 9ZM12 9V12"],
+  ["treatment","Medical Treatment",2,0,"M8 7.84C8 5.75 9.9 3.68 11.23 2.49C11.95 1.84 13.05 1.84 13.77 2.49C15.1 3.68 17 5.75 17 7.84C17 9.89 15.3 12 12.5 12C9.7 12 8 9.89 8 7.84ZM4 14H6.39C6.69 14 6.98 14.07 7.24 14.19L9.28 15.18C9.55 15.31 9.84 15.38 10.13 15.38H11.17C12.18 15.38 13 16.17 13 17.14C13 17.18 12.97 17.22 12.93 17.23L10.39 17.93C9.94 18.05 9.45 18.01 9.02 17.81L6.84 16.75M13 16.5L17.59 15.09C18.41 14.84 19.29 15.14 19.8 15.84C20.17 16.35 20.02 17.08 19.48 17.39L11.96 21.73C11.49 22.01 10.92 22.07 10.39 21.92L4 20.02"],
+  ["vaccine","Vaccine Bottle",2,0,"M17 2C17 2.51 17 2.76 17.07 3C17.11 3.13 17.16 3.26 17.22 3.38C17.34 3.59 17.52 3.77 17.88 4.13L19.87 6.12C20.23 6.48 20.41 6.66 20.62 6.78C20.74 6.84 20.87 6.89 21 6.93C21.24 7 21.49 7 22 7M11.69 7L6.76 11.93C5.7 12.99 5.17 13.52 5.04 14.16C4.99 14.44 4.99 14.72 5.04 15C5.17 15.64 5.7 16.17 6.76 17.24C7.83 18.3 8.36 18.83 9 18.96M11 6L17 12M8 18.64L6.83 19.47C6.36 19.81 6.13 19.98 5.87 20C5.77 20 5.67 20 5.57 19.97C5.32 19.91 5.11 19.71 4.7 19.3C4.29 18.89 4.09 18.68 4.03 18.43C4 18.33 4 18.23 4 18.13C4.02 17.88 4.19 17.64 4.53 17.17L5.36 16M13.5 8L18.5 4M16 10.5L20 5.5M4.5 19.5L2 22M13.4 18L13.98 18.58C14.27 18.87 14.41 19.01 14.59 19.01C14.77 19 14.9 18.84 15.16 18.53L16.6 16.8M19 18C19 20.21 17.21 22 15 22C12.79 22 11 20.21 11 18C11 15.79 12.79 14 15 14C17.21 14 19 15.79 19 18Z"],
+  ["wheelchair","Wheelchair Mobility",2,0,"M12 16C12 18.76 9.76 21 7 21C4.24 21 2 18.76 2 16C2 13.24 4.24 11 7 11C9.76 11 12 13.24 12 16ZM18 19.5C18 20.33 17.33 21 16.5 21C15.67 21 15 20.33 15 19.5C15 18.67 15.67 18 16.5 18C17.33 18 18 18.67 18 19.5ZM7.01 16L7 16M6 11L5.37 5.98C5.23 4.82 5.15 4.24 4.85 3.82C4.68 3.59 4.46 3.39 4.2 3.25C3.75 3 3.17 3 2 3M6 7H11.5C13.86 7 15.04 7 15.77 7.73C16.5 8.46 16.5 9.64 16.5 12V18M12 14H16.02C16.91 14 17.35 14 17.74 14.19C17.83 14.23 17.92 14.29 18 14.35C18.36 14.6 18.61 15.01 19.1 15.82C19.49 16.48 19.69 16.8 19.98 16.93C20.05 16.96 20.12 16.98 20.2 16.99C20.51 17.04 20.82 16.87 21.46 16.52L22 16.22"],
+  ["x-ray","Chest X-Ray Plate",2,0,"M12 5L12 14M12 14.33C11.05 14.33 10.14 14.23 9.33 14.04C8.45 13.84 7.5 14.48 7.5 15.4C7.5 15.89 7.77 16.34 8.21 16.5C8.53 16.62 8.88 16.73 9.24 16.82C9.84 16.96 10.36 17.35 10.61 17.92L10.72 18.15C10.95 18.67 11.45 19 12 19C12.55 19 13.05 18.67 13.28 18.15L13.39 17.92C13.64 17.35 14.16 16.96 14.76 16.82C15.12 16.73 15.47 16.62 15.79 16.5C16.23 16.34 16.5 15.89 16.5 15.4C16.5 14.48 15.55 13.84 14.67 14.04C13.86 14.23 12.95 14.33 12 14.33ZM15 7C14.61 7.62 14.08 8 13.5 8C12.92 8 12.39 7.62 12 7C11.61 7.62 11.08 8 10.5 8C9.92 8 9.39 7.62 9 7M7 10C7.64 10.62 8.53 11 9.5 11C10.47 11 11.36 10.62 12 10C12.64 10.62 13.53 11 14.5 11C15.47 11 16.36 10.62 17 10",0,[["r",3,2,18,20,5]]],
+  ["bacteria","Bacteria Colony",2,2,"M6 12.5L6.21 12.74C6.6 13.17 7.25 13.05 7.5 12.5C7.75 11.95 8.4 11.83 8.79 12.26L9 12.5M15.84 18L15.95 17.65C16.16 17.01 15.67 16.43 15 16.5C14.33 16.57 13.84 15.99 14.05 15.35L14.16 15M19.01 13H19M9.01 17H9M8.01 8H8",0,[["c",15,8,2]]],
+  ["cells","Cellular Structure",2,0,"M11.11 5.58C11.37 6.03 11.5 6.25 11.5 6.5C11.5 6.75 11.37 6.97 11.11 7.42L9.86 9.58C9.6 10.03 9.47 10.25 9.25 10.38C9.03 10.5 8.77 10.5 8.25 10.5H5.75C5.23 10.5 4.97 10.5 4.75 10.38C4.53 10.25 4.4 10.03 4.14 9.58L2.89 7.42C2.63 6.97 2.5 6.75 2.5 6.5C2.5 6.25 2.63 6.03 2.89 5.58L4.14 3.42C4.4 2.97 4.53 2.75 4.75 2.62C4.97 2.5 5.23 2.5 5.75 2.5L8.25 2.5C8.77 2.5 9.03 2.5 9.25 2.62C9.47 2.75 9.6 2.97 9.86 3.42L11.11 5.58ZM21.11 11.58C21.37 12.03 21.5 12.25 21.5 12.5C21.5 12.75 21.37 12.97 21.11 13.42L19.86 15.58C19.6 16.03 19.47 16.25 19.25 16.38C19.03 16.5 18.77 16.5 18.25 16.5H15.75C15.23 16.5 14.97 16.5 14.75 16.38C14.53 16.25 14.4 16.03 14.14 15.58L12.89 13.42C12.63 12.97 12.5 12.75 12.5 12.5C12.5 12.25 12.63 12.03 12.89 11.58L14.14 9.42C14.4 8.97 14.53 8.75 14.75 8.62C14.97 8.5 15.23 8.5 15.75 8.5L18.25 8.5C18.77 8.5 19.03 8.5 19.25 8.62C19.47 8.75 19.6 8.97 19.86 9.42L21.11 11.58ZM11.11 16.58C11.37 17.03 11.5 17.25 11.5 17.5C11.5 17.75 11.37 17.97 11.11 18.42L9.86 20.58C9.6 21.03 9.47 21.25 9.25 21.38C9.03 21.5 8.77 21.5 8.25 21.5H5.75C5.23 21.5 4.97 21.5 4.75 21.38C4.53 21.25 4.4 21.03 4.14 20.58L2.89 18.42C2.63 17.97 2.5 17.75 2.5 17.5C2.5 17.25 2.63 17.03 2.89 16.58L4.14 14.42C4.4 13.97 4.53 13.75 4.75 13.62C4.97 13.5 5.23 13.5 5.75 13.5L8.25 13.5C8.77 13.5 9.03 13.5 9.25 13.62C9.47 13.75 9.6 13.97 9.86 14.42L11.11 16.58Z"],
+  ["molecules","Chemical Molecule",2,0,"M12 9V6M18.5 18.5L15 16M5.5 18.5L9 16",0,[["c",12,13,4],["c",12,4,2],["c",4,20,2],["c",20,20,2]]],
+  ["test-tube","Laboratory Test Tube",2,0,"M10.22 6V7.99C10.22 9.39 10.22 10.09 10.41 10.76C10.6 11.43 10.96 12.04 11.7 13.28L12.69 14.95C14.56 18.09 15.5 19.66 14.73 20.82L14.72 20.84C13.94 22 11.96 22 8 22C4.04 22 2.06 22 1.28 20.84L1.27 20.82C0.5 19.66 1.44 18.09 3.31 14.95L4.3 13.28C5.04 12.04 5.4 11.43 5.59 10.76C5.78 10.09 5.78 9.39 5.78 7.99V6M5 6H11M4.5 13.28C5.17 12.7 6.73 13.12 8 13.66C9.67 14.38 11.17 13.8 11.5 13.28M10.5 7C10.5 9 12.86 11.21 14.47 11C14.47 12.66 15.93 14 17.74 14C19.54 14 21 12.66 21 11C21 9.34 20 8 18 8C18 6 16.5 4 14.38 4C14.38 2.46 13.5 2 12.5 2C11.5 2 11 3 11 3C11 3 8 3 8 6"],
+  ["flask","Conical Flask",2,0,"M10 2v7.31L4.15 19.1A2 2 0 0 0 5.86 22h12.28a2 2 0 0 0 1.71-2.9L14 9.31V2M8.5 2L15.5 2M6.5 16L17.5 16"],
+  ["beaker","Beaker",2,0,"M4 3h16l-2 16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L4 3ZM4 3L20 3M7 8L11 8M7 12L12 12M7 16L11 16"],
+  ["microscope","Microscope",2,0,"M6 18h8M3 22h18M14 22a7 7 0 1 0 0-14h-1M9 14h2M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2ZM12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"],
+  ["leaf","Biology Leaf",2,0,"M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10ZM2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"],
+  ["plant","Sprout / Botany",2,0,"M12 10a4 4 0 0 0-4-4H4v4a4 4 0 0 0 4 4M12 10a4 4 0 0 1 4-4h4v4a4 4 0 0 1-4 4M12 4v16M4 20h16"],
+  ["droplet","Solution Droplet",2,0,"M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"],
+  ["flame","Bunsen Flame",2,0,"M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-0.5-2-1-3-1.07-2.14-0.22-4.05 2-6 0.5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15 0.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"],
+  ["book","Textbook",3,0,"M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5ZM6 6h10M6 10h10"],
+  ["notebook","Notebook",3,0,"M2 6h4M2 10h4M2 14h4M2 18h4M9.5 8h5M9.5 12h5M9.5 16h3",0,[["r",4,2,16,20,2]]],
+  ["file-text","Document",3,0,"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7ZM14 2v4a2 2 0 0 0 2 2h4M10 9H8M16 13H8M16 17H8"],
+  ["graduation-cap","Graduation Cap",3,0,"M22 10v6M2 10l10-5 10 5-10 5zM6 12v5c3 3 9 3 12 0v-5"],
+  ["diploma","Diploma / Scroll",3,0,"M15 12h-5M15 8h-5M19 17V5a2 2 0 0 0-2-2H4M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1ZM4 17a2 2 0 0 1 2-2h4v6H6a2 2 0 0 1-2-2v-2Z"],
+  ["lightbulb","Idea / Lightbulb",3,0,"M9 18h6M10 22h4M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.5 3 5.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3c1.8-1.2 3-3.3 3-5.7a7 7 0 0 0-7-7z"],
+  ["pencil","Pencil",3,0,"M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5ZM15 5L19 9"],
+  ["target","Target / Goal",3,2,"",0,[["c",12,12,6],["c",12,12,2]]],
+  ["star","Star Rating",3,0,"M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"],
+  ["trophy","Trophy Award",3,0,"M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2M4 3h16v6a6 6 0 0 1-12 0V3ZM12 15v3M8 21h8"],
+  ["globe","World Globe",3,2,"M2 12L22 12M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"],
+  ["clock","Timer / Clock",3,2,"M12 6L12 12L16 14"],
+  ["bookmark","Bookmark",3,0,"M19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"],
+];
+
+export const STUDY_ICONS_LIST: IconDefinition[] = ICONS_DATA.map(([id, label, catIdx]) => ({
+  id,
+  label,
+  category: CATEGORIES[catIdx],
+}));
+
+const ICON_BY_ID = new Map<string, IconTuple>(ICONS_DATA.map((entry) => [entry[0], entry]));
+const DEFAULT_ICON = ICON_BY_ID.get('book')!;
+
+/** Renders a normalized 24x24 study category icon by ID, falling back to 'book'. */
+export const StudyIcon: FunctionComponent<StudyIconProps> = ({
   name,
-  size = 18,
+  size = 16,
   color = 'currentColor',
   strokeWidth = 2.3,
   class: className = '',
-}: StudyIconProps) => {
-  const commonProps = {
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: color,
-    strokeWidth,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
-    width: size,
-    height: size,
-    class: className,
-    style: { display: 'block', flexShrink: 0 },
-  };
-
-  switch (name) {
-    case 'equal-sign':
-      return (
-        <svg {...commonProps} viewBox="48.0 202.0 24 24">
-          <path d="M52 210H68" />
-          <path d="M52 218H68" />
-        </svg>
-      );
-
-    case 'not-equal-sign':
-      return (
-        <svg {...commonProps} viewBox="48.0 246.0 24 24">
-          <path d="M52 254H68" />
-          <path d="M52 262H68" />
-          <path d="M54 266L66 250" />
-        </svg>
-      );
-
-    case 'less-than':
-      return (
-        <svg {...commonProps} viewBox="48.0 290.0 24 24">
-          <path d="M65 294L56.6694 300.041C54.4435 301.655 54.4435 302.345 56.6694 303.959L65 310" />
-        </svg>
-      );
-
-    case 'greater-than':
-      return (
-        <svg {...commonProps} viewBox="48.0 334.0 24 24">
-          <path d="M55 338L63.3306 344.041C65.5565 345.655 65.5565 346.345 63.3306 347.959L55 354" />
-        </svg>
-      );
-
-    case 'inequality-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 378.0 24 24">
-          <path d="M51 398H69" />
-          <path d="M69 394H54.8378C52.4571 394 51.2668 394 51.0348 393.373C50.8029 392.746 51.7372 392.053 53.6057 390.668L65.3015 382" />
-        </svg>
-      );
-
-    case 'inequality-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 422.0 24 24">
-          <path d="M69 442H51" />
-          <path d="M51 438H65.1622C67.5429 438 68.7332 438 68.9652 437.373C69.1971 436.746 68.2628 436.053 66.3943 434.668L54.6985 426" />
-        </svg>
-      );
-
-    case '1st-brecket':
-      return (
-        <svg {...commonProps} viewBox="48.0 466.0 24 24">
-          <path d="M54 469C51.589 470.935 50 474.243 50 478C50 481.757 51.589 485.065 54 487" />
-          <path d="M66 469C68.411 470.935 70 474.243 70 478C70 481.757 68.411 485.065 66 487" />
-        </svg>
-      );
-
-    case '2nd-brecket':
-      return (
-        <svg {...commonProps} viewBox="48.0 510.0 24 24">
-          <path d="M65.225 513C66.6145 513.154 67.5498 513.501 68.2479 514.287C69.5 515.696 69.5 517.964 69.5 522.5C69.5 527.036 69.5 529.304 68.2479 530.713C67.5498 531.499 66.6145 531.846 65.225 532M54.775 532C53.3855 531.846 52.4502 531.499 51.7521 530.713C50.5 529.304 50.5 527.036 50.5 522.5C50.5 517.964 50.5 515.696 51.7521 514.287C52.4502 513.501 53.3855 513.154 54.775 513" />
-        </svg>
-      );
-
-    case '3rd-brecket':
-      return (
-        <svg {...commonProps} viewBox="48.0 554.0 24 24">
-          <path d="M66 575C67.2322 575 68.231 573.849 68.231 572.429C68.231 570.181 68.1312 568.686 69.6733 566.909C70.1089 566.407 70.1089 565.593 69.6733 565.091C68.1312 563.314 68.231 561.819 68.231 559.571C68.231 558.151 67.2322 557 66 557" />
-          <path d="M54 575C52.7678 575 51.769 573.849 51.769 572.429C51.769 570.181 51.8688 568.686 50.3267 566.909C49.8911 566.407 49.8911 565.593 50.3267 565.091C51.835 563.353 51.769 561.84 51.769 559.571C51.769 558.151 52.7678 557 54 557" />
-        </svg>
-      );
-
-    case 'plus-minus-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 598.0 24 24">
-          <path d="M60 601V615M67 608H53" />
-          <path d="M67 619H53" />
-        </svg>
-      );
-
-    case 'minus-plus-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 642.0 24 24">
-          <path d="M60 649V663M67 656H53" />
-          <path d="M67 645H53" />
-        </svg>
-      );
-
-    case 'plus-minus-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 686.0 24 24">
-          <path d="M51 707L69 689" />
-          <path d="M55 689V697M59 693L51 693" />
-          <path d="M69 704L61 704" />
-        </svg>
-      );
-
-    case 'minus-plus-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 730.0 24 24">
-          <path d="M51 751L69 733" />
-          <path d="M65 743V751M69 747L61 747" />
-          <path d="M59 737L51 737" />
-        </svg>
-      );
-
-    case 'plus-sign':
-      return (
-        <svg {...commonProps} viewBox="48.0 774.0 24 24">
-          <path d="M60 778V794M68 786H52" />
-        </svg>
-      );
-
-    case 'minus-sign':
-      return (
-        <svg {...commonProps} viewBox="48.0 818.0 24 24">
-          <path d="M68 830H52" />
-        </svg>
-      );
-
-    case 'multiplication-sign':
-      return (
-        <svg {...commonProps} viewBox="48.0 862.0 24 24">
-          <path d="M66 868L60 874M60 874L54 880M60 874L66 880M60 874L54 868" />
-        </svg>
-      );
-
-    case 'divide-sign':
-      return (
-        <svg {...commonProps} viewBox="48.0 906.0 24 24">
-          <path d="M51 918H69" />
-          <path d="M62.5 911.5C62.5 912.881 61.3807 914 60 914C58.6193 914 57.5 912.881 57.5 911.5C57.5 910.119 58.6193 909 60 909C61.3807 909 62.5 910.119 62.5 911.5Z" />
-          <path d="M62.5 924.5C62.5 925.881 61.3807 927 60 927C58.6193 927 57.5 925.881 57.5 924.5C57.5 923.119 58.6193 922 60 922C61.3807 922 62.5 923.119 62.5 924.5Z" />
-        </svg>
-      );
-
-    case 'percent':
-      return (
-        <svg {...commonProps} viewBox="48.0 950.0 24 24">
-          <path d="M52 970L68 954" />
-          <path d="M56.2678 954.732C57.2441 955.709 57.2441 957.291 56.2678 958.268C55.2915 959.244 53.7085 959.244 52.7322 958.268C51.7559 957.291 51.7559 955.709 52.7322 954.732C53.7085 953.756 55.2915 953.756 56.2678 954.732Z" />
-          <path d="M67.2678 965.732C68.2441 966.709 68.2441 968.291 67.2678 969.268C66.2915 970.244 64.7085 970.244 63.7322 969.268C62.7559 968.291 62.7559 966.709 63.7322 965.732C64.7085 964.756 66.2915 964.756 67.2678 965.732Z" />
-        </svg>
-      );
-
-    case 'triangle-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 994.0 24 24">
-          <path d="M55.8975 1000.73C57.712 997.578 58.6193 996 60 996C61.3807 996 62.288 997.578 64.1025 1000.73L67.8592 1007.26C69.5848 1010.27 70.4476 1011.77 69.7671 1012.88C69.0866 1014 67.3099 1014 63.7567 1014H56.2433C52.6901 1014 50.9134 1014 50.2329 1012.88C49.5524 1011.77 50.4152 1010.27 52.1408 1007.26L55.8975 1000.73Z" />
-          <path d="M60 1014V1016" />
-          <path d="M68 1003L66 1004" />
-          <path d="M52 1003L54 1004" />
-          <path d="M52 1008.41C53.8895 1009.05 55.2524 1010.88 55.2524 1013.03C55.2524 1013.36 55.2199 1013.69 55.158 1014M64.842 1014C64.7801 1013.69 64.7476 1013.36 64.7476 1013.03C64.7476 1010.88 66.1105 1009.05 68 1008.41M63.2815 1000C62.429 1000.84 61.273 1001.35 60 1001.35C58.727 1001.35 57.571 1000.84 56.7185 1000" />
-        </svg>
-      );
-
-    case 'triangle-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 1038.0 24 24">
-          <path d="M67.4955 1050.63L67.8592 1051.26C69.5848 1054.27 70.4476 1055.77 69.7671 1056.88C69.0866 1058 67.3099 1058 63.7567 1058H63M52.5045 1050.63L52.1408 1051.26C50.4152 1054.27 49.5524 1055.77 50.2329 1056.88C50.9134 1058 52.6901 1058 56.2433 1058H57M55.5331 1045.37L55.8975 1044.73C57.712 1041.58 58.6193 1040 60 1040C61.3807 1040 62.288 1041.58 64.1025 1044.73L64.4669 1045.37" />
-          <path d="M60 1056V1060" />
-          <path d="M67.6602 1047L64.1961 1049" />
-          <path d="M52.3398 1047L55.8039 1049" />
-        </svg>
-      );
-
-    case 'left-triangle':
-      return (
-        <svg {...commonProps} viewBox="48.0 1082.0 24 24">
-          <path d="M59 1102V1104" />
-          <path d="M68 1090V1088.48C68 1085.78 68 1084.42 67.2091 1084.07C66.4182 1083.72 65.4766 1084.66 63.5934 1086.53L52.7165 1097.34C50.7279 1099.31 49.7336 1100.3 50.0617 1101.15C50.3898 1102 51.7657 1102 54.5175 1102H56M59 1102H65.3944C66.6227 1102 67.2368 1102 67.6184 1101.6C68 1101.21 68 1100.57 68 1099.29V1095C68 1094.06 68 1093.59 68.2929 1093.29C68.5858 1093 69.0572 1093 70 1093" />
-          <path d="M68 1097H67C65.1144 1097 64.1716 1097 63.5858 1097.59C63 1098.17 63 1099.11 63 1101V1102" />
-        </svg>
-      );
-
-    case 'right-triangle':
-      return (
-        <svg {...commonProps} viewBox="48.0 1126.0 24 24">
-          <path d="M52 1134V1132.48C52 1129.78 52 1128.42 52.7909 1128.07C53.5818 1127.72 54.5234 1128.66 56.4066 1130.53L67.2835 1141.34C69.2721 1143.31 70.2664 1144.3 69.9383 1145.15C69.6102 1146 68.2343 1146 65.4825 1146H64M61 1148C61 1147.06 61 1146.59 60.7071 1146.29C60.4142 1146 59.9428 1146 59 1146H54.6056C53.3773 1146 52.7632 1146 52.3816 1145.6C52 1145.21 52 1144.57 52 1143.29V1139C52 1138.06 52 1137.59 51.7071 1137.29C51.4142 1137 50.9428 1137 50 1137" />
-          <path d="M52 1141H53C54.8856 1141 55.8284 1141 56.4142 1141.59C57 1142.17 57 1143.11 57 1145V1146" />
-        </svg>
-      );
-
-    case 'parabola-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 1170.0 24 24">
-          <path d="M69 1173C69 1181.28 64.9706 1188 60 1188C55.0294 1188 51 1181.28 51 1173" />
-          <path d="M51 1191H52.0588M63.7059 1191H64.7647M67.9412 1191H69M55.2353 1191H56.2941M59.4706 1191H60.5294" />
-        </svg>
-      );
-
-    case 'parabola-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 1214.0 24 24">
-          <path d="M68.9531 1216C68.9531 1224.28 64.9237 1231 59.9531 1231C54.9826 1231 50.9531 1224.28 50.9531 1216" />
-          <path d="M50.9531 1234H52.0119M63.659 1234H64.7178M67.8943 1234H68.9531M55.1884 1234H56.2472" />
-          <path d="M57.4531 1218.5C59.0531 1216.69 59.4031 1216 59.9531 1216M62.4531 1218.5C60.8531 1216.69 60.5031 1216 59.9531 1216M59.9531 1216V1236" />
-        </svg>
-      );
-
-    case 'parabola-03':
-      return (
-        <svg {...commonProps} viewBox="48.0 1258.0 24 24">
-          <path d="M69 1260C69 1268.28 64.9706 1275 60 1275C55.0294 1275 51 1268.28 51 1260" />
-          <path d="M50 1278H70" />
-          <path d="M57.5 1262.5C59.1 1260.69 59.45 1260 60 1260M62.5 1262.5C60.9 1260.69 60.55 1260 60 1260M60 1260V1280" />
-        </svg>
-      );
-
-    case 'compass':
-      return (
-        <svg {...commonProps} viewBox="48.0 1302.0 24 24">
-          <path d="M58 1312L53 1324M62 1312L67 1324" />
-          <path d="M60 1306L60 1304" />
-          <circle cx="60" cy="1309" r="3" />
-          <path d="M51 1315C52.9907 1318.02 56.2797 1320 60 1320C63.7203 1320 67.0093 1318.02 69 1315" />
-          <path d="M60 1319V1321" />
-        </svg>
-      );
-
-    case 'angle':
-      return (
-        <svg {...commonProps} viewBox="48.0 1346.0 24 24">
-          <path d="M60 1368V1348M50 1363L60 1348L70 1363" />
-          <path d="M64 1354C62.8554 1355.26 61.4798 1356 60 1356C58.5202 1356 57.1446 1355.26 56 1354" />
-          <path d="M60 1360C57.7804 1360 55.7169 1359.26 54 1358" />
-        </svg>
-      );
-
-    case 'acute':
-      return (
-        <svg {...commonProps} viewBox="48.0 1390.0 24 24">
-          <path d="M62.5553 1394.87C62.4051 1394.15 62.3051 1392.4 61.7799 1392.07C61.2797 1391.82 59.404 1392.3 58.6036 1392.52M61.7799 1392.07L51.8255 1408.17C51.8255 1408.17 51.3003 1409.02 51.6005 1409.5C51.8256 1410.02 53.1261 1410 53.1261 1410H68.5078M68.5078 1410C68.5078 1409.4 66.707 1408.2 66.5319 1408M68.5078 1410C68.5078 1410.6 67.0572 1411.45 66.5319 1412" />
-          <path d="M55.5 1402.5C57.3758 1402.83 58.8108 1403.72 59.6612 1405.05C60.6116 1406.4 60.7273 1408.28 60.152 1409.8" />
-        </svg>
-      );
-
-    case 'left-angle':
-      return (
-        <svg {...commonProps} viewBox="48.0 1434.0 24 24">
-          <path d="M69 1439C68.6068 1438.6 67.5602 1437 67 1437C66.4398 1437 65.3932 1438.6 65 1439" />
-          <path d="M53 1451C52.5954 1451.39 51 1452.44 51 1453C51 1453.56 52.5954 1454.61 53 1455" />
-          <path d="M67 1446H66C63.1716 1446 61.7574 1446 60.8787 1446.88C60 1447.76 60 1449.17 60 1452V1453" />
-          <path d="M51 1453H61C63.8284 1453 65.2426 1453 66.1213 1452.15C67 1451.3 67 1449.92 67 1447.18V1437" />
-        </svg>
-      );
-
-    case 'right-angle':
-      return (
-        <svg {...commonProps} viewBox="48.0 1478.0 24 24">
-          <path d="M51 1483C51.3932 1482.6 52.4398 1481 53 1481C53.5602 1481 54.6068 1482.6 55 1483" />
-          <path d="M67 1495C67.4046 1495.39 69 1496.44 69 1497C69 1497.56 67.4046 1498.61 67 1499" />
-          <path d="M53 1490H54C56.8284 1490 58.2426 1490 59.1213 1490.88C60 1491.76 60 1493.17 60 1496V1497" />
-          <path d="M69 1497H59C56.1716 1497 54.7574 1497 53.8787 1496.12C53 1495.24 53 1493.83 53 1491L53 1481" />
-        </svg>
-      );
-
-    case 'hyperbole':
-      return (
-        <svg {...commonProps} viewBox="48.0 1522.0 24 24">
-          <path d="M50 1534H70" />
-          <path d="M60 1544L60 1524" />
-          <path d="M69 1530C66.2386 1530 64 1527.76 64 1525" />
-          <path d="M51 1538C53.7614 1538 56 1540.24 56 1543" />
-        </svg>
-      );
-
-    case 'coordinate-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 1566.0 24 24">
-          <path
-            d="M54.25 1588C54.25 1588.41 54.5858 1588.75 55 1588.75C55.4142 1588.75 55.75 1588.41 55.75 1588L55 1588L54.25 1588ZM55.75 1568C55.75 1567.59 55.4142 1567.25 55 1567.25C54.5858 1567.25 54.25 1567.59 54.25 1568L55 1568L55.75 1568ZM55 1588L55.75 1588L55.75 1568L55 1568L54.25 1568L54.25 1588L55 1588Z"
-            fill={color}
-          />
-          <path d="M52 1571C52.5898 1570.39 54.1597 1568 55 1568C55.8403 1568 57.4102 1570.39 58 1571" />
-          <path
-            d="M50 1582.25C49.5858 1582.25 49.25 1582.59 49.25 1583C49.25 1583.41 49.5858 1583.75 50 1583.75L50 1583L50 1582.25ZM70 1583.75C70.4142 1583.75 70.75 1583.41 70.75 1583C70.75 1582.59 70.4142 1582.25 70 1582.25L70 1583L70 1583.75ZM50 1583L50 1583.75L70 1583.75L70 1583L70 1582.25L50 1582.25L50 1583Z"
-            fill={color}
-          />
-          <path d="M67 1580C67.6068 1580.59 70 1582.16 70 1583C70 1583.84 67.6068 1585.41 67 1586" />
-        </svg>
-      );
-
-    case 'reflex':
-      return (
-        <svg {...commonProps} viewBox="48.0 1610.0 24 24">
-          <path d="M70.0007 1620.5H59.8276C58.692 1620.5 58.1242 1620.5 57.6578 1620.77C57.1915 1621.04 56.9109 1621.54 56.3499 1622.52L51.7081 1631.45M70.0007 1620.5C70.0007 1619.94 67.9999 1618.5 67.9999 1618.5M70.0007 1620.5C70.0007 1621.06 67.9999 1622.5 67.9999 1622.5M54.353 1630.74C54.353 1630.74 52.1777 1631.72 51.7081 1631.45C51.2386 1631.18 51 1628.79 51 1628.79" />
-          <path d="M63.9368 1620.5C63.9785 1620.19 64 1619.87 64 1619.55C64 1615.66 60.866 1612.5 57 1612.5C53.134 1612.5 50 1615.66 50 1619.55C50 1622.36 51.6351 1624.87 54 1626" />
-        </svg>
-      );
-
-    case 'angle-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 1654.0 24 24">
-          <path d="M69 1674H54.4735C52.3671 1674 51.3139 1674 51.0518 1673.38C50.7897 1672.77 51.5344 1672.04 53.0238 1670.59L65.9249 1658" />
-          <path d="M59 1674C59 1671.35 57.7737 1669.07 56 1668" />
-        </svg>
-      );
-
-    case 'obtuse':
-      return (
-        <svg {...commonProps} viewBox="48.0 1698.0 24 24">
-          <path d="M70.0007 1715C70.0007 1715.56 67.9999 1717 67.9999 1717M70.0007 1715C70.0007 1714.44 67.9999 1713 67.9999 1713M70.0007 1715H59.5039C58.2864 1715 57.6776 1715 57.1908 1714.7C56.7039 1714.39 56.4379 1713.84 55.9059 1712.75L50.7081 1702.05M50.7081 1702.05C50.2386 1702.32 50 1704.71 50 1704.71M50.7081 1702.05C51.1777 1701.78 53.353 1702.76 53.353 1702.76" />
-          <path d="M54 1708.8C54.8825 1708.29 55.9071 1708 57 1708C60.3137 1708 63 1710.69 63 1714C63 1714.34 62.9716 1714.67 62.917 1715" />
-        </svg>
-      );
-
-    case 'calculator':
-      return (
-        <svg {...commonProps} viewBox="48.0 1742.0 24 24">
-          <path d="M53.5 1745V1750M56 1747.5L51 1747.5" />
-          <path d="M56 1758L54 1760M54 1760L52 1762M54 1760L56 1762M54 1760L52 1758" />
-          <path d="M68 1748L64 1748" />
-          <path d="M68 1760.5L64 1760.5M68 1757.5L64 1757.5" />
-          <path d="M70 1754L50 1754" />
-          <path d="M60 1764L60 1744" />
-        </svg>
-      );
-
-    case 'cordinate-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 1786.0 24 24">
-          <path d="M61.5 1788L60 1789.5M60 1789.5V1791M60 1789.5L58.5 1788" />
-          <path d="M50 1800H53L50 1803H53" />
-          <path d="M67 1800L70 1803M70 1800L67 1803" />
-          <path d="M60 1794V1802M60 1802L51 1808M60 1802L69 1808" />
-        </svg>
-      );
-
-    case 'tan':
-      return (
-        <svg {...commonProps} viewBox="293.0 202.0 24 24">
-          <path d="M302.5 219L303.7 215M303.7 215L305.5 209L307.3 215L308.5 219M303.7 215H307.3" />
-          <path d="M316 209V219L311 209V219" />
-          <path d="M296 209H298.5M301 209H298.5M298.5 219V209" />
-        </svg>
-      );
-
-    case 'sin':
-      return (
-        <svg {...commonProps} viewBox="293.0 246.0 24 24">
-          <path d="M304 253H306M308 253H306M308 263H306M304 263H306M306 253V263" />
-          <path d="M316 253V263L311 253V263" />
-          <path d="M300.69 254.616C300.264 253.652 299.443 253 298.5 253H298C296.895 253 296 254.119 296 255.5C296 256.881 296.895 258 298 258H299C300.105 258 301 259.119 301 260.5C301 261.881 300.105 263 299 263H298.5C297.475 263 296.594 262.229 296.208 261.125" />
-        </svg>
-      );
-
-    case 'cos':
-      return (
-        <svg {...commonProps} viewBox="293.0 290.0 24 24">
-          <path d="M303.5 299.5C303.5 298.119 304.619 297 306 297C307.381 297 308.5 298.119 308.5 299.5V304.5C308.5 305.881 307.381 307 306 307C304.619 307 303.5 305.881 303.5 304.5V299.5Z" />
-          <path d="M315.69 298.616C315.264 297.652 314.443 297 313.5 297H313C311.895 297 311 298.119 311 299.5C311 300.881 311.895 302 313 302H314C315.105 302 316 303.119 316 304.5C316 305.881 315.105 307 314 307H313.5C312.475 307 311.594 306.229 311.208 305.125" />
-          <path d="M301 298.314C300.551 297.532 299.671 297 298.659 297C297.19 297 296 298.119 296 299.5V304.5C296 305.881 297.19 307 298.659 307C299.671 307 300.551 306.468 301 305.686" />
-        </svg>
-      );
-
-    case 'beta':
-      return (
-        <svg {...commonProps} viewBox="293.0 334.0 24 24">
-          <path d="M306.883 344.2C309.135 344.2 310.961 342.588 310.961 340.6C310.961 338.612 309.135 337 306.883 337C304.631 337 302.805 338.612 302.805 340.6V353.2C302.805 354.194 301.892 355 300.766 355C300.011 355 299.353 354.638 299 354.1M302.805 348.7C302.805 351.185 305.087 353.2 307.903 353.2C310.718 353.2 313 351.185 313 348.7C313 346.215 310.718 344.087 307.903 344.087" />
-        </svg>
-      );
-
-    case 'pi':
-      return (
-        <svg {...commonProps} viewBox="293.0 378.0 24 24">
-          <path d="M297 387.3C297 385.5 299.061 383.7 301.685 383.7L310.957 383.7C313.2 383.7 315 382.35 315 381" />
-          <path d="M310.502 384L309.607 396.314C309.518 397.765 310.51 399 311.765 399C312.697 399 313.524 398.309 313.818 397.285L314.102 396.3" />
-          <path d="M304 384C303.867 387.062 303.6 392.75 303.2 394.5C302.8 396.25 302 398 300 398" />
-        </svg>
-      );
-
-    case 'insert-pi':
-      return (
-        <svg {...commonProps} viewBox="293.0 422.0 24 24">
-          <path d="M297 430.8C297 429 299.061 427.2 301.685 427.2L310.957 427.2C313.2 427.2 315 425.85 315 424.5" />
-          <path d="M310.5 427.5L310 433" />
-          <path d="M304 427.5C303.867 430.562 303.6 436.25 303.2 438C302.8 439.75 302 441.5 300 441.5" />
-          <path d="M311 438.167V439.5M311 439.5V440.833M311 439.5H312.333M311 439.5H309.667M315 439.5C315 441.709 313.209 443.5 311 443.5C308.791 443.5 307 441.709 307 439.5C307 437.291 308.791 435.5 311 435.5C313.209 435.5 315 437.291 315 439.5Z" />
-        </svg>
-      );
-
-    case 'remove-pi':
-      return (
-        <svg {...commonProps} viewBox="293.0 466.0 24 24">
-          <path d="M297 474.8C297 473 299.061 471.2 301.685 471.2L310.957 471.2C313.2 471.2 315 469.85 315 468.5" />
-          <path d="M310.5 471.5L310 477" />
-          <path d="M304 471.5C303.867 474.562 303.6 480.25 303.2 482C302.8 483.75 302 485.5 300 485.5" />
-          <path d="M312.333 483.5H309.667M315 483.5C315 485.709 313.209 487.5 311 487.5C308.791 487.5 307 485.709 307 483.5C307 481.291 308.791 479.5 311 479.5C313.209 479.5 315 481.291 315 483.5Z" />
-        </svg>
-      );
-
-    case 'alpha':
-      return (
-        <svg {...commonProps} viewBox="293.0 510.0 24 24">
-          <path d="M311.394 514C311.594 515.85 311.344 520 310.171 523.275C308.772 527.5 306.674 529.35 305.001 529.8C301.755 530.673 299.032 528.45 297.884 525.975C296.41 522.8 296.81 519.125 298.858 516.475C300.905 513.825 304.776 512.675 307.648 516.25C308.747 517.925 309.222 519.725 309.446 521.175C309.896 522.775 310.121 526.775 311.294 528.725C312.218 530.175 313.642 530.1 314.166 529.875C314.516 529.7 315 529.32 315 528.22" />
-        </svg>
-      );
-
-    case 'infinity-01':
-      return (
-        <svg {...commonProps} viewBox="293.0 554.0 24 24">
-          <path d="M306 566C306 566 303.261 571 300.5 571C297.739 571 296 568.761 296 566C296 563.239 297.739 561 300.5 561C303.261 561 306 566 306 566ZM306 566C306 566 308.739 571 311.5 571C314.261 571 316 568.761 316 566C316 563.239 314.261 561 311.5 561C308.739 561 306 566 306 566Z" />
-        </svg>
-      );
-
-    case 'approximately-equal':
-      return (
-        <svg {...commonProps} viewBox="293.0 598.0 24 24">
-          <path d="M298 605.927C300.667 602.928 303.333 603.806 306 606C308.667 608.194 311.333 609.072 314 606.073" />
-          <path d="M298 613.927C300.667 610.928 303.333 611.806 306 614C308.667 616.194 311.333 617.072 314 614.073" />
-        </svg>
-      );
-
-    case 'congruent-to':
-      return (
-        <svg {...commonProps} viewBox="293.0 642.0 24 24">
-          <path d="M298 655H314" />
-          <path d="M298 661H314" />
-          <path d="M298 648.927C300.667 645.928 303.333 646.806 306 649C308.667 651.194 311.333 652.072 314 649.073" />
-        </svg>
-      );
-
-    case 'function-of-x':
-      return (
-        <svg {...commonProps} viewBox="293.0 686.0 24 24">
-          <path d="M296 704.222C296.189 705.072 296.569 706 297.562 706C299.281 706 299.711 704.222 301 698C302.289 691.778 302.719 690 304.438 690C305.431 690 305.811 690.928 306 691.778M298.917 695.778H304.438" />
-          <path d="M315 698C316.38 701.253 316.285 702.981 315 706" />
-          <path d="M306 698C304.62 701.253 304.715 702.981 306 706" />
-          <path d="M308.289 699.999C309.093 699.969 309.551 700.064 309.823 700.546C310.151 701.216 310.978 703.068 311.183 703.472C311.307 703.649 311.471 703.904 311.999 703.988L312.71 704" />
-          <path d="M313.002 700C311.879 700 311.087 701.288 310.559 701.936C309.791 702.944 308.927 704.05 307.996 704" />
-        </svg>
-      );
-
-    case 'function':
-      return (
-        <svg {...commonProps} viewBox="293.0 730.0 24 24">
-          <path d="M299 749C299.264 749.956 299.797 751 301.187 751C303.594 751 304.195 749 306 742C307.805 735 308.406 733 310.813 733C312.203 733 312.736 734.044 313 735" />
-          <path d="M303 740H311" />
-        </svg>
-      );
-
-    case 'x-variable':
-      return (
-        <svg {...commonProps} viewBox="293.0 774.0 24 24">
-          <path d="M314 777.5C307.633 777.5 304.367 794.5 298 794.5" />
-          <path d="M313 794.5C311.382 794.5 310.574 794.5 309.892 794.158C309.504 793.964 309.152 793.693 308.851 793.357C308.322 792.767 308.032 791.92 307.451 790.228L304.549 781.772C303.968 780.08 303.678 779.233 303.149 778.643C302.848 778.307 302.496 778.036 302.108 777.842C301.426 777.5 300.618 777.5 299 777.5" />
-        </svg>
-      );
-
-    case 'square-01':
-      return (
-        <svg {...commonProps} viewBox="293.0 818.0 24 24">
-          <path d="M296.715 825.025C298.706 824.92 299.955 825.077 300.736 826.911C301.556 829.111 303.586 835.24 304.093 836.655C304.64 838.174 305.342 839.222 308.231 838.96" />
-          <path d="M309 825.007C306.137 824.982 303.795 829.722 302.493 831.992C301.062 834.611 298.603 839.152 296 838.977" />
-          <path d="M316 827H312L315.2 824.6C315.704 824.222 316 823.629 316 823C316 821.895 315.105 821 314 821C312.896 821 312 821.895 312 823" />
-        </svg>
-      );
-
-    case 'root-01':
-      return (
-        <svg {...commonProps} viewBox="293.0 862.0 24 24">
-          <path d="M316 867H307.614C306.38 867 305.965 867.14 305.659 868.364L303.339 877.642C302.789 879.84 302.515 880.939 301.785 880.998C301.055 881.056 300.55 880.02 299.541 877.947L298.97 876.775C298.535 875.882 298.318 875.436 297.879 875.315C297.217 875.133 296.508 875.67 296 876" />
-          <path d="M308.398 873.004C309.178 872.92 310.132 873.038 310.438 873.64C311.05 874.84 312.058 877.36 312.418 878.14C312.598 878.44 312.778 878.8 313.498 878.98C313.978 879.04 314.602 878.995 314.602 878.995" />
-          <path d="M315 872.998C313.5 872.998 312.54 874.66 311.7 875.68C310.62 877.24 309.42 879.1 307.98 878.98" />
-        </svg>
-      );
-
-    case 'n-th-root':
-      return (
-        <svg {...commonProps} viewBox="293.0 906.0 24 24">
-          <path d="M316 913H307.614C306.38 913 305.965 913.14 305.659 914.364L303.339 923.642C302.789 925.84 302.515 926.939 301.785 926.998C301.055 927.056 300.55 926.02 299.541 923.947L298.97 922.775C298.535 921.882 298.318 921.436 297.879 921.315C297.217 921.133 296.508 921.67 296 922" />
-          <path d="M297 915V911.571M297 911.571C297 910.151 298.119 909 299.5 909C300.881 909 302 910.151 302 911.571V915M297 911.571V909" />
-        </svg>
-      );
-
-    case 'summation-01':
-      return (
-        <svg {...commonProps} viewBox="293.0 950.0 24 24">
-          <path d="M313 967.143C313 968.646 313 969.398 312.65 969.947C312.468 970.233 312.223 970.475 311.933 970.655C311.376 971 310.614 971 309.09 971H303.199C300.614 971 299.321 971 299.046 970.265C298.77 969.531 299.751 968.701 301.714 967.042L305.657 963.708C306.596 962.914 307.065 962.517 307.065 962C307.065 961.483 306.596 961.086 305.657 960.292L301.714 956.958C299.751 955.299 298.77 954.469 299.046 953.735C299.321 953 300.614 953 303.199 953H309.09C310.614 953 311.376 953 311.933 953.345C312.223 953.525 312.468 953.767 312.65 954.053C313 954.602 313 955.354 313 956.857" />
-        </svg>
-      );
-
-    case 'more-or-less':
-      return (
-        <svg {...commonProps} viewBox="293.0 994.0 24 24">
-          <path d="M298 1006H314" />
-          <path d="M314 1001L301.003 1001C299.182 1001 298.271 1001 298.045 1000.38C297.818 999.765 298.462 999.039 299.75 997.586L300.269 997" />
-          <path d="M298 1011L310.997 1011C312.818 1011 313.729 1011 313.955 1011.62C314.182 1012.23 313.538 1012.96 312.25 1014.41L311.731 1015" />
-        </svg>
-      );
-
-    case 'sine-01':
-      return (
-        <svg {...commonProps} viewBox="293.0 1038.0 24 24">
-          <path d="M299.001 1052C299.002 1049.78 298.816 1042 302.502 1042C304.434 1042 306.001 1045.58 306.001 1050C306.001 1054.42 307.567 1058 309.5 1058C313.186 1058 313 1050.22 313 1048" />
-          <path d="M296 1050H299" />
-          <path d="M313 1050H316" />
-          <path d="M302 1050H310" />
-          <path d="M314.915 1040.83C314.709 1040.35 314.153 1040 313.5 1040C312.672 1040 312 1040.56 312 1041.25C312 1041.94 312.672 1042.5 313.5 1042.5C314.328 1042.5 315 1043.06 315 1043.75C315 1044.44 314.328 1045 313.5 1045C312.847 1045 312.291 1044.65 312.085 1044.17" />
-          <path d="M299.544 1055C298.691 1055 298 1055.67 298 1056.5V1058.5C298 1059.33 298.691 1060 299.544 1060M299.544 1055C300.216 1055 300.788 1055.42 301 1056M299.544 1055C298.872 1055 298.3 1055.42 298.088 1056M299.544 1060C298.872 1060 298.3 1059.58 298.088 1059M299.544 1060C300.216 1060 300.788 1059.58 301 1059" />
-        </svg>
-      );
-
-    case 'sine-02':
-      return (
-        <svg {...commonProps} viewBox="293.0 1082.0 24 24">
-          <path d="M315 1091.01C315 1094 314.087 1103 310.177 1103C308.132 1103 306.834 1099.38 306 1094C305.166 1088.62 303.868 1085 301.823 1085C297.913 1085 297 1094 297 1096.99" />
-          <path d="M296 1094H299" />
-          <path d="M302 1094H304" />
-          <path d="M308 1094H310" />
-          <path d="M313 1094H316" />
-        </svg>
-      );
-
-    case 'cosine-01':
-      return (
-        <svg {...commonProps} viewBox="293.0 1126.0 24 24">
-          <path d="M316 1146.73C312 1148.67 310.588 1139.65 310.331 1138.05C309.467 1132.64 308.12 1129 306 1129C303.88 1129 302.533 1132.64 301.669 1138.05C301.412 1139.65 300 1148.67 296 1146.73" />
-          <path d="M296 1138H298.5" />
-          <path d="M313.5 1138H316" />
-          <path d="M304.5 1138H307.5" />
-        </svg>
-      );
-
-    case 'cosine-02':
-      return (
-        <svg {...commonProps} viewBox="293.0 1170.0 24 24">
-          <path d="M316 1173.27C312 1171.33 310.588 1180.35 310.331 1181.95C309.467 1187.36 308.12 1191 306 1191C303.88 1191 302.533 1187.36 301.669 1181.95C301.412 1180.35 300 1171.33 296 1173.27" />
-          <path d="M296 1182H299" />
-          <path d="M313 1182H316" />
-          <path d="M304 1182H308" />
-        </svg>
-      );
-
-    case 'prism':
-      return (
-        <svg {...commonProps} viewBox="293.0 1214.0 24 24">
-          <path d="M306 1229C306.323 1229 306.607 1229.2 307.175 1229.6L310.919 1232.24C313.104 1233.78 314.197 1234.56 313.971 1235.28M306 1229C305.677 1229 305.393 1229.2 304.825 1229.6L301.081 1232.24C298.896 1233.78 297.803 1234.56 298.029 1235.28M306 1229V1225.5M313.971 1235.28C313.745 1236 312.411 1236 309.744 1236H302.256C299.589 1236 298.255 1236 298.029 1235.28M313.971 1235.28V1222M298.029 1235.28V1222" />
-          <path d="M306 1216C306.323 1216 306.607 1216.2 307.175 1216.6L310.919 1219.24C313.104 1220.78 314.197 1221.56 313.971 1222.28C313.745 1223 312.411 1223 309.744 1223H302.256C299.589 1223 298.255 1223 298.029 1222.28C297.803 1221.56 298.896 1220.78 301.081 1219.24L304.825 1216.6C305.393 1216.2 305.677 1216 306 1216ZM306 1216V1220.5" />
-        </svg>
-      );
-
-    case 'cube':
-      return (
-        <svg {...commonProps} viewBox="293.0 1258.0 24 24">
-          <path d="M296.793 1279.21C297.086 1279.5 297.557 1279.5 298.5 1279.5H308.5C309.443 1279.5 309.914 1279.5 310.207 1279.21M296.793 1279.21C296.5 1278.91 296.5 1278.44 296.5 1277.5V1267.5C296.5 1266.56 296.5 1266.09 296.793 1265.79M296.793 1279.21L302.793 1273.21M310.207 1279.21C310.5 1278.91 310.5 1278.44 310.5 1277.5V1267.5C310.5 1266.56 310.5 1266.09 310.207 1265.79M310.207 1279.21L315.207 1274.21C315.5 1273.91 315.5 1273.44 315.5 1272.5V1262.5C315.5 1261.56 315.5 1261.09 315.207 1260.79M310.207 1265.79C309.914 1265.5 309.443 1265.5 308.5 1265.5H298.5C297.557 1265.5 297.086 1265.5 296.793 1265.79M310.207 1265.79L315.207 1260.79M296.793 1265.79L301.793 1260.79C302.086 1260.5 302.557 1260.5 303.5 1260.5H313.5C314.443 1260.5 314.914 1260.5 315.207 1260.79M302.793 1273.21C303.086 1273.5 303.557 1273.5 304.5 1273.5H308M302.793 1273.21C302.5 1272.91 302.5 1272.44 302.5 1271.5V1268.5" />
-        </svg>
-      );
-
-    case 'rectangular':
-      return (
-        <svg {...commonProps} viewBox="293.0 1302.0 24 24">
-          <path d="M301.689 1304.44L299.354 1306.22C298.382 1306.96 297.896 1307.33 298.019 1307.67C298.142 1308 298.764 1308 300.009 1308H310C310.364 1308 310.547 1308 310.715 1307.94C310.884 1307.89 311.026 1307.78 311.311 1307.56L313.646 1305.78C314.618 1305.04 315.104 1304.67 314.981 1304.33C314.858 1304 314.236 1304 312.991 1304H303C302.636 1304 302.453 1304 302.285 1304.06C302.116 1304.11 301.974 1304.22 301.689 1304.44Z" />
-          <path d="M298.019 1323.67C298.142 1324 298.764 1324 300.009 1324H310C310.364 1324 310.547 1324 310.715 1323.94M298.019 1323.67C297.896 1323.33 298.382 1322.96 299.354 1322.22L301.689 1320.44C301.974 1320.22 302.116 1320.11 302.285 1320.06M298.019 1323.67V1307.67M302.285 1320.06C302.453 1320 302.636 1320 303 1320H308M302.285 1320.06V1311M310.715 1323.94C310.884 1323.89 311.026 1323.78 311.311 1323.56L313.646 1321.78C314.618 1321.04 315.104 1320.67 314.981 1320.33V1304.33M310.715 1323.94V1307.94" />
-        </svg>
-      );
-
-    case 'pyramid':
-      return (
-        <svg {...commonProps} viewBox="293.0 1346.0 24 24">
-          <path d="M306 1348V1368" />
-          <path d="M308.869 1359.68L315.989 1363.59M315.989 1363.59L315.994 1363.59M315.989 1363.59C316.064 1363.15 315.757 1362.66 315.187 1361.75L307.784 1349.92C306.983 1348.64 306.583 1348 306 1348C305.417 1348 305.017 1348.64 304.216 1349.92L296.813 1361.75C296.243 1362.66 295.936 1363.15 296.011 1363.59M315.989 1363.59C315.982 1363.62 315.973 1363.66 315.961 1363.7C315.809 1364.16 315.267 1364.38 314.184 1364.81L306.781 1367.77C306.396 1367.92 306.203 1368 306 1368C305.797 1368 305.604 1367.92 305.219 1367.77L297.816 1364.81C296.733 1364.38 296.191 1364.16 296.039 1363.7C296.027 1363.66 296.018 1363.62 296.011 1363.59M296.006 1363.59L296.011 1363.59M296.011 1363.59L303.131 1359.68" />
-        </svg>
-      );
-
-    case 'sphere':
-      return (
-        <svg {...commonProps} viewBox="293.0 1390.0 24 24">
-          <path d="M306 1400.5C305.172 1400.5 304.5 1401.17 304.5 1402C304.5 1402.83 305.172 1403.5 306 1403.5C306.828 1403.5 307.5 1402.83 307.5 1402C307.5 1401.17 306.828 1400.5 306 1400.5ZM306 1400.5V1392" />
-          <circle cx="306" cy="1402" r="10" />
-          <path d="M309 1398C313.057 1398.52 316 1400.07 316 1401.91C316 1404.17 311.523 1406 306 1406C300.477 1406 296 1404.17 296 1401.91C296 1400.07 298.943 1398.52 303 1398" />
-        </svg>
-      );
-
-    case 'cylinder-01':
-      return (
-        <svg {...commonProps} viewBox="293.0 1434.0 24 24">
-          <path d="M314 1439.5C314 1441.43 310.418 1443 306 1443C301.582 1443 298 1441.43 298 1439.5C298 1437.57 301.582 1436 306 1436C310.418 1436 314 1437.57 314 1439.5Z" />
-          <path d="M314 1452.5C314 1454.43 310.418 1456 306 1456C301.582 1456 298 1454.43 298 1452.5C298 1450.57 301.582 1449 306 1449C310.418 1449 314 1450.57 314 1452.5Z" />
-          <path d="M314 1452.5V1439.5M298 1452.5V1439.5" />
-        </svg>
-      );
-
-    case 'cylinder-02':
-      return (
-        <svg {...commonProps} viewBox="293.0 1478.0 24 24">
-          <path d="M311 1482C311 1483.1 308.761 1484 306 1484C303.239 1484 301 1483.1 301 1482C301 1480.9 303.239 1480 306 1480C308.761 1480 311 1480.9 311 1482Z" />
-          <path d="M315 1496C315 1498.21 310.971 1500 306 1500C301.029 1500 297 1498.21 297 1496C297 1493.79 301.029 1492 306 1492C310.971 1492 315 1493.79 315 1496Z" />
-          <path d="M297.5 1494.5L301 1482M314.5 1494.5L311 1482" />
-        </svg>
-      );
-
-    case 'cylinder-03':
-      return (
-        <svg {...commonProps} viewBox="293.0 1522.0 24 24">
-          <path d="M316 1541C316 1542.66 311.523 1544 306 1544C300.477 1544 296 1542.66 296 1541C296 1539.34 300.477 1538 306 1538C311.523 1538 316 1539.34 316 1541Z" />
-          <path d="M316 1527C316 1528.66 311.523 1530 306 1530C300.477 1530 296 1528.66 296 1527C296 1525.34 300.477 1524 306 1524C311.523 1524 316 1525.34 316 1527Z" />
-          <path d="M316 1527V1541M296 1527V1541" />
-        </svg>
-      );
-
-    case 'cone-01':
-      return (
-        <svg {...commonProps} viewBox="293.0 1566.0 24 24">
-          <path d="M315 1584C315 1581.79 310.971 1580 306 1580C301.029 1580 297 1581.79 297 1584C297 1586.21 301.029 1588 306 1588C310.971 1588 315 1586.21 315 1584Z" />
-          <path d="M314.5 1582.5L310.156 1573.39C308.343 1569.8 307.436 1568 306 1568C304.564 1568 303.657 1569.8 301.844 1573.39L297.5 1582.5" />
-        </svg>
-      );
-
-    case 'cylinder-04':
-      return (
-        <svg {...commonProps} viewBox="293.0 1610.0 24 24">
-          <path d="M306 1629L303.879 1631.12M303.879 1631.12C304.422 1631.66 305.172 1632 306 1632C307.657 1632 309 1630.66 309 1629C309 1627.34 307.657 1626 306 1626C304.343 1626 303 1627.34 303 1629C303 1629.83 303.336 1630.58 303.879 1631.12Z" />
-          <path d="M304 1626H308C310.809 1626 312.213 1626 313.222 1625.33C313.659 1625.03 314.034 1624.66 314.326 1624.22C315 1623.21 315 1621.81 315 1619C315 1616.19 315 1614.79 314.326 1613.78C314.034 1613.34 313.659 1612.97 313.222 1612.67C312.213 1612 310.809 1612 308 1612H304C301.191 1612 299.787 1612 298.778 1612.67C298.341 1612.97 297.966 1613.34 297.674 1613.78C297 1614.79 297 1616.19 297 1619C297 1621.81 297 1623.21 297.674 1624.22C297.966 1624.66 298.341 1625.03 298.778 1625.33C299.787 1626 301.191 1626 304 1626Z" />
-        </svg>
-      );
-
-    case 'cone-02':
-      return (
-        <svg {...commonProps} viewBox="293.0 1654.0 24 24">
-          <path d="M306 1673H309M309 1673C309 1672.23 308.707 1671.46 308.121 1670.88C306.95 1669.71 305.05 1669.71 303.879 1670.88C302.707 1672.05 302.707 1673.95 303.879 1675.12C305.05 1676.29 306.95 1676.29 308.121 1675.12C308.707 1674.54 309 1673.77 309 1673Z" />
-          <path d="M306 1657L306 1660" />
-          <path d="M306 1666H306.009" />
-          <path d="M306 1663H306.009" />
-          <path d="M296.949 1665.5C298.922 1668.22 302.24 1670 306 1670C309.76 1670 313.078 1668.22 315.051 1665.5C315.76 1664.52 316.114 1664.03 315.967 1663.18C315.82 1662.33 315.184 1661.89 313.91 1661.01L308.399 1657.2C307.239 1656.4 306.659 1656 306 1656C305.341 1656 304.761 1656.4 303.601 1657.2L298.09 1661.01C296.816 1661.89 296.18 1662.33 296.033 1663.18C295.886 1664.03 296.24 1664.52 296.949 1665.5Z" />
-        </svg>
-      );
-
-    case 'infinity-02':
-      return (
-        <svg {...commonProps} viewBox="293.0 1698.0 24 24">
-          <path d="M306 1710C306 1710 304.357 1713 302.7 1713C301.043 1713 300 1711.66 300 1710C300 1708.34 301.043 1707 302.7 1707C304.357 1707 306 1710 306 1710ZM306 1710C306 1710 307.643 1713 309.3 1713C310.957 1713 312 1711.66 312 1710C312 1708.34 310.957 1707 309.3 1707C307.643 1707 306 1710 306 1710Z" />
-          <path d="M311.725 1700.5C313.114 1700.65 314.05 1701 314.748 1701.79C316 1703.2 316 1705.46 316 1710C316 1714.54 316 1716.8 314.748 1718.21C314.05 1719 313.114 1719.35 311.725 1719.5M300.275 1719.5C298.886 1719.35 297.95 1719 297.252 1718.21C296 1716.8 296 1714.54 296 1710C296 1705.46 296 1703.2 297.252 1701.79C297.95 1701 298.886 1700.65 300.275 1700.5" />
-        </svg>
-      );
-
-    case 'absolute':
-      return (
-        <svg {...commonProps} viewBox="293.0 1742.0 24 24">
-          <path d="M311.725 1744.5C313.114 1744.65 314.05 1745 314.748 1745.79C316 1747.2 316 1749.46 316 1754C316 1758.54 316 1760.8 314.748 1762.21C314.05 1763 313.114 1763.35 311.725 1763.5M300.275 1763.5C298.886 1763.35 297.95 1763 297.252 1762.21C296 1760.8 296 1758.54 296 1754C296 1749.46 296 1747.2 297.252 1745.79C297.95 1745 298.886 1744.65 300.275 1744.5" />
-          <path
-            d="M301 1757.25C300.586 1757.25 300.25 1757.59 300.25 1758C300.25 1758.41 300.586 1758.75 301 1758.75V1758V1757.25ZM311 1750.75C311.414 1750.75 311.75 1750.41 311.75 1750C311.75 1749.59 311.414 1749.25 311 1749.25V1750V1750.75ZM305.086 1752.01L305.767 1751.7V1751.7L305.086 1752.01ZM306.914 1755.99L307.596 1755.68V1755.68L306.914 1755.99ZM307.797 1757.46L308.277 1756.89L308.277 1756.89L307.797 1757.46ZM310.412 1758.75C310.826 1758.75 311.162 1758.41 311.162 1758C311.162 1757.59 310.826 1757.25 310.412 1757.25V1758V1758.75ZM308.453 1757.84L308.19 1758.54H308.19L308.453 1757.84ZM301.588 1749.25C301.174 1749.25 300.838 1749.59 300.838 1750C300.838 1750.41 301.174 1750.75 301.588 1750.75V1750V1749.25ZM303.547 1750.16L303.284 1750.86V1750.86L303.547 1750.16ZM304.203 1750.54L303.723 1751.11L303.723 1751.11L304.203 1750.54ZM301 1758V1758.75C302.264 1758.75 303.313 1758.11 304.19 1757.3C305.063 1756.5 305.857 1755.44 306.599 1754.45C307.363 1753.44 308.073 1752.5 308.827 1751.8C309.576 1751.11 310.275 1750.75 311 1750.75V1750V1749.25C309.736 1749.25 308.687 1749.89 307.81 1750.7C306.937 1751.5 306.143 1752.56 305.401 1753.55C304.637 1754.56 303.927 1755.5 303.173 1756.2C302.424 1756.89 301.725 1757.25 301 1757.25V1758ZM305.086 1752.01L304.404 1752.32L306.233 1756.3L306.914 1755.99L307.596 1755.68L305.767 1751.7L305.086 1752.01ZM306.914 1755.99L306.233 1756.3C306.57 1757.04 306.823 1757.63 307.317 1758.04L307.797 1757.46L308.277 1756.89C308.104 1756.74 307.99 1756.54 307.596 1755.68L306.914 1755.99ZM310.412 1758V1757.25C309.33 1757.25 308.987 1757.24 308.716 1757.14L308.453 1757.84L308.19 1758.54C308.778 1758.76 309.455 1758.75 310.412 1758.75V1758ZM307.797 1757.46L307.317 1758.04C307.575 1758.25 307.871 1758.42 308.19 1758.54L308.453 1757.84L308.716 1757.14C308.546 1757.07 308.398 1756.99 308.277 1756.89L307.797 1757.46ZM301.588 1750V1750.75C302.67 1750.75 303.013 1750.76 303.284 1750.86L303.547 1750.16L303.81 1749.46C303.222 1749.24 302.545 1749.25 301.588 1749.25V1750ZM305.086 1752.01L305.767 1751.7C305.43 1750.96 305.177 1750.37 304.683 1749.96L304.203 1750.54L303.723 1751.11C303.896 1751.26 304.01 1751.46 304.404 1752.32L305.086 1752.01ZM303.547 1750.16L303.284 1750.86C303.454 1750.93 303.602 1751.01 303.723 1751.11L304.203 1750.54L304.683 1749.96C304.425 1749.75 304.129 1749.58 303.81 1749.46L303.547 1750.16Z"
-            fill={color}
-          />
-        </svg>
-      );
-
-    case 'matrix':
-      return (
-        <svg {...commonProps} viewBox="293.0 1786.0 24 24">
-          <path d="M311.725 1788.5C313.114 1788.65 314.05 1789 314.748 1789.79C316 1791.2 316 1793.46 316 1798C316 1802.54 316 1804.8 314.748 1806.21C314.05 1807 313.114 1807.35 311.725 1807.5M300.275 1807.5C298.886 1807.35 297.95 1807 297.252 1806.21C296 1804.8 296 1802.54 296 1798C296 1793.46 296 1791.2 297.252 1789.79C297.95 1789 298.886 1788.65 300.275 1788.5" />
-          <path d="M301 1794H301.009M305.996 1794H306.004M310.991 1794H311M301 1798H301.009M301 1802H301.009M305.996 1798H306.004M305.996 1802H306.004M310.991 1798H311M310.991 1802H311" />
-        </svg>
-      );
-
-    case 'root-02':
-      return (
-        <svg {...commonProps} viewBox="552.0 202.0 24 24">
-          <path d="M569.725 204.5C571.114 204.654 572.05 205.001 572.748 205.787C574 207.196 574 209.464 574 214C574 218.536 574 220.804 572.748 222.213C572.05 222.999 571.114 223.346 569.725 223.5M558.275 223.5C556.886 223.346 555.95 222.999 555.252 222.213C554 220.804 554 218.536 554 214C554 209.464 554 207.196 555.252 205.787C555.95 205.001 556.886 204.654 558.275 204.5" />
-          <path
-            d="M559.634 215.586L558.954 215.904L558.954 215.904L559.634 215.586ZM559.948 216.256L559.268 216.574L559.948 216.256ZM562.037 216.081L561.307 215.905V215.905L562.037 216.081ZM563.312 210.779L564.042 210.955V210.955L563.312 210.779ZM564.388 210V210.75V210ZM570 210.75C570.414 210.75 570.75 210.414 570.75 210C570.75 209.586 570.414 209.25 570 209.25V210V210.75ZM561.182 217.999L561.119 217.251L561.119 217.251L561.182 217.999ZM559.033 214.751L558.827 215.472L558.827 215.472L559.033 214.751ZM557.581 214.521C557.237 214.752 557.147 215.218 557.378 215.562C557.609 215.905 558.076 215.996 558.419 215.765L558 215.143L557.581 214.521ZM564.876 216.107C564.462 216.107 564.126 216.443 564.126 216.857C564.126 217.271 564.462 217.607 564.876 217.607V216.857V216.107ZM568.726 214.179C569.141 214.179 569.476 213.843 569.476 213.429C569.476 213.014 569.141 212.679 568.726 212.679V213.429V214.179ZM566.449 214.29L565.756 214.576V214.576L566.449 214.29ZM567.154 215.996L567.847 215.709V215.709L567.154 215.996ZM567.493 216.627L568.003 216.077L568.003 216.077L567.493 216.627ZM568.5 217.607C568.914 217.607 569.25 217.271 569.25 216.857C569.25 216.443 568.914 216.107 568.5 216.107V216.857V217.607ZM567.746 216.788L568.034 216.096V216.096L567.746 216.788ZM565.103 212.679C564.689 212.679 564.353 213.014 564.353 213.429C564.353 213.843 564.689 214.179 565.103 214.179V213.429V212.679ZM565.857 213.497L565.569 214.19V214.19L565.857 213.497ZM566.11 213.659L566.62 213.109H566.62L566.11 213.659ZM559.634 215.586L558.954 215.904L559.268 216.574L559.948 216.256L560.627 215.937L560.313 215.267L559.634 215.586ZM562.037 216.081L562.766 216.256L564.042 210.955L563.312 210.779L562.583 210.604L561.307 215.905L562.037 216.081ZM564.388 210V210.75H570V210V209.25H564.388V210ZM559.948 216.256L559.268 216.574C559.536 217.144 559.769 217.646 559.993 217.991C560.19 218.297 560.58 218.802 561.244 218.746L561.182 217.999L561.119 217.251C561.382 217.229 561.432 217.455 561.252 217.176C561.098 216.938 560.915 216.552 560.627 215.937L559.948 216.256ZM562.037 216.081L561.307 215.905C561.15 216.558 561.05 216.966 560.949 217.223C560.83 217.523 560.843 217.274 561.119 217.251L561.182 217.999L561.244 218.746C561.921 218.689 562.211 218.11 562.344 217.774C562.494 217.394 562.621 216.86 562.766 216.256L562.037 216.081ZM559.634 215.586L560.313 215.267C560.203 215.033 560.087 214.782 559.96 214.59C559.818 214.374 559.599 214.133 559.239 214.03L559.033 214.751L558.827 215.472C558.779 215.459 558.738 215.434 558.71 215.41C558.687 215.392 558.688 215.385 558.709 215.416C558.73 215.449 558.759 215.5 558.803 215.586C558.846 215.672 558.893 215.774 558.954 215.904L559.634 215.586ZM563.312 210.779L564.042 210.955C564.077 210.807 564.105 210.739 564.12 210.712C564.129 210.695 564.115 210.725 564.071 210.754C564.034 210.778 564.017 210.773 564.071 210.765C564.131 210.755 564.224 210.75 564.388 210.75V210V209.25C564.079 209.25 563.624 209.252 563.246 209.501C562.828 209.777 562.675 210.224 562.583 210.604L563.312 210.779ZM558 215.143L558.419 215.765C558.458 215.739 558.5 215.71 558.535 215.686C558.572 215.66 558.606 215.636 558.641 215.614C558.71 215.568 558.767 215.535 558.816 215.511C558.929 215.455 558.909 215.496 558.827 215.472L559.033 214.751L559.239 214.03C558.793 213.903 558.397 214.045 558.154 214.164C557.916 214.281 557.681 214.453 557.581 214.521L558 215.143ZM564.876 216.857V217.607C565.559 217.607 566.078 217.222 566.446 216.845C566.815 216.466 567.143 215.976 567.423 215.563L566.801 215.143L566.18 214.723C565.88 215.167 565.629 215.534 565.372 215.798C565.113 216.063 564.96 216.107 564.876 216.107V216.857ZM566.801 215.143L567.423 215.563C567.723 215.119 567.974 214.752 568.231 214.488C568.49 214.222 568.643 214.179 568.726 214.179V213.429V212.679C568.044 212.679 567.525 213.063 567.157 213.441C566.788 213.82 566.46 214.309 566.18 214.723L566.801 215.143ZM566.449 214.29L565.756 214.576L566.108 215.429L566.801 215.143L567.495 214.857L567.143 214.004L566.449 214.29ZM566.801 215.143L566.108 215.429L566.46 216.282L567.154 215.996L567.847 215.709L567.495 214.857L566.801 215.143ZM567.154 215.996L566.46 216.282C566.574 216.558 566.706 216.919 566.983 217.177L567.493 216.627L568.003 216.077C568.026 216.098 568.024 216.108 567.996 216.053C567.962 215.986 567.922 215.891 567.847 215.709L567.154 215.996ZM568.5 216.857V216.107C568.293 216.107 568.177 216.107 568.092 216.1C568.016 216.095 568.014 216.088 568.034 216.096L567.746 216.788L567.457 217.481C567.795 217.621 568.175 217.607 568.5 217.607V216.857ZM567.493 216.627L566.983 217.177C567.123 217.306 567.284 217.408 567.457 217.481L567.746 216.788L568.034 216.096C568.02 216.09 568.01 216.083 568.003 216.077L567.493 216.627ZM565.103 213.429V214.179C565.31 214.179 565.426 214.179 565.511 214.185C565.587 214.191 565.589 214.198 565.569 214.19L565.857 213.497L566.146 212.805C565.808 212.665 565.428 212.679 565.103 212.679V213.429ZM566.449 214.29L567.143 214.004C567.029 213.728 566.897 213.367 566.62 213.109L566.11 213.659L565.6 214.209C565.577 214.188 565.579 214.178 565.607 214.233C565.641 214.3 565.681 214.395 565.756 214.576L566.449 214.29ZM565.857 213.497L565.569 214.19C565.583 214.196 565.593 214.203 565.6 214.209L566.11 213.659L566.62 213.109C566.48 212.98 566.319 212.878 566.146 212.805L565.857 213.497Z"
-            fill={color}
-          />
-        </svg>
-      );
-
-    case 'summation-02':
-      return (
-        <svg {...commonProps} viewBox="552.0 246.0 24 24">
-          <path d="M569.725 248.5C571.114 248.654 572.05 249.001 572.748 249.787C574 251.196 574 253.464 574 258C574 262.536 574 264.804 572.748 266.213C572.05 266.999 571.114 267.346 569.725 267.5M558.275 267.5C556.886 267.346 555.95 266.999 555.252 266.213C554 264.804 554 262.536 554 258C554 253.464 554 251.196 555.252 249.787C555.95 249.001 556.886 248.654 558.275 248.5" />
-          <path d="M567 260.499C566.998 261.027 566.983 261.314 566.85 261.53C566.524 262.061 565.874 261.998 565.324 261.998H562.799C561.692 261.998 561.138 261.998 561.02 261.671C560.901 261.345 561.322 260.976 562.163 260.239L563.853 258.759C564.255 258.406 564.457 258.23 564.457 258C564.457 257.77 564.255 257.594 563.853 257.241L562.163 255.761C561.322 255.024 560.901 254.655 561.02 254.329C561.138 254.002 561.692 254.002 562.799 254.002H565.324C565.874 254.002 566.524 253.939 566.85 254.47C566.983 254.686 566.998 254.973 567 255.501" />
-        </svg>
-      );
-
-    case 'abacus':
-      return (
-        <svg {...commonProps} viewBox="552.0 290.0 24 24">
-          <path d="M554.5 302C554.5 297.522 554.5 295.282 555.891 293.891C557.282 292.5 559.522 292.5 564 292.5C568.478 292.5 570.718 292.5 572.109 293.891C573.5 295.282 573.5 297.522 573.5 302C573.5 306.478 573.5 308.718 572.109 310.109C570.718 311.5 568.478 311.5 564 311.5C559.522 311.5 557.282 311.5 555.891 310.109C554.5 308.718 554.5 306.478 554.5 302Z" />
-          <path d="M558 299H561.5M569 299H570M564 298V300M566.5 298V300" />
-          <path d="M570 305H564M559 305H558M561.5 304V306" />
-        </svg>
-      );
-
-    case 'equal-sign-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 334.0 24 24">
-          <path d="M560 343H568M560 349H568" />
-          <path d="M554.5 346C554.5 341.522 554.5 339.282 555.891 337.891C557.282 336.5 559.522 336.5 564 336.5C568.478 336.5 570.718 336.5 572.109 337.891C573.5 339.282 573.5 341.522 573.5 346C573.5 350.478 573.5 352.718 572.109 354.109C570.718 355.5 568.478 355.5 564 355.5C559.522 355.5 557.282 355.5 555.891 354.109C554.5 352.718 554.5 350.478 554.5 346Z" />
-        </svg>
-      );
-
-    case 'not-equal-sign-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 378.0 24 24">
-          <path d="M554.5 390C554.5 385.522 554.5 383.282 555.891 381.891C557.282 380.5 559.522 380.5 564 380.5C568.478 380.5 570.718 380.5 572.109 381.891C573.5 383.282 573.5 385.522 573.5 390C573.5 394.478 573.5 396.718 572.109 398.109C570.718 399.5 568.478 399.5 564 399.5C559.522 399.5 557.282 399.5 555.891 398.109C554.5 396.718 554.5 394.478 554.5 390Z" />
-          <path d="M559 387.778H569M559 392.222H569M560.667 395L567.333 385" />
-        </svg>
-      );
-
-    case 'less-than-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 422.0 24 24">
-          <path d="M554.5 434C554.5 429.522 554.5 427.282 555.891 425.891C557.282 424.5 559.522 424.5 564 424.5C568.478 424.5 570.718 424.5 572.109 425.891C573.5 427.282 573.5 429.522 573.5 434C573.5 438.478 573.5 440.718 572.109 442.109C570.718 443.5 568.478 443.5 564 443.5C559.522 443.5 557.282 443.5 555.891 442.109C554.5 440.718 554.5 438.478 554.5 434Z" />
-          <path d="M566 430L562.668 433.02C561.777 433.827 561.777 434.173 562.668 434.98L566 438" />
-        </svg>
-      );
-
-    case 'greater-than-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 466.0 24 24">
-          <path d="M573.5 478C573.5 473.522 573.5 471.282 572.109 469.891C570.718 468.5 568.478 468.5 564 468.5C559.522 468.5 557.282 468.5 555.891 469.891C554.5 471.282 554.5 473.522 554.5 478C554.5 482.478 554.5 484.718 555.891 486.109C557.282 487.5 559.522 487.5 564 487.5C568.478 487.5 570.718 487.5 572.109 486.109C573.5 484.718 573.5 482.478 573.5 478Z" />
-          <path d="M562 474L565.332 477.02C566.223 477.827 566.223 478.173 565.332 478.98L562 482" />
-        </svg>
-      );
-
-    case 'inequality-square-01':
-      return (
-        <svg {...commonProps} viewBox="552.0 510.0 24 24">
-          <path d="M554.5 522C554.5 517.522 554.5 515.282 555.891 513.891C557.282 512.5 559.522 512.5 564 512.5C568.478 512.5 570.718 512.5 572.109 513.891C573.5 515.282 573.5 517.522 573.5 522C573.5 526.478 573.5 528.718 572.109 530.109C570.718 531.5 568.478 531.5 564 531.5C559.522 531.5 557.282 531.5 555.891 530.109C554.5 528.718 554.5 526.478 554.5 522Z" />
-          <path d="M565.998 517.5L560.138 522.671C559.801 523.08 560.131 523.5 560.583 523.5H568.02" />
-          <path d="M560 526.5H568.02" />
-        </svg>
-      );
-
-    case 'inequality-square-02':
-      return (
-        <svg {...commonProps} viewBox="552.0 554.0 24 24">
-          <path d="M554.5 566C554.5 561.522 554.5 559.282 555.891 557.891C557.282 556.5 559.522 556.5 564 556.5C568.478 556.5 570.718 556.5 572.109 557.891C573.5 559.282 573.5 561.522 573.5 566C573.5 570.478 573.5 572.718 572.109 574.109C570.718 575.5 568.478 575.5 564 575.5C559.522 575.5 557.282 575.5 555.891 574.109C554.5 572.718 554.5 570.478 554.5 566Z" />
-          <path d="M562.022 561.5L567.866 566.671C568.202 567.08 567.873 567.5 567.422 567.5H560.006" />
-          <path d="M568.023 570.5H560.002" />
-        </svg>
-      );
-
-    case '1st-brecket-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 598.0 24 24">
-          <path d="M554.5 610C554.5 605.522 554.5 603.282 555.891 601.891C557.282 600.5 559.522 600.5 564 600.5C568.478 600.5 570.718 600.5 572.109 601.891C573.5 603.282 573.5 605.522 573.5 610C573.5 614.478 573.5 616.718 572.109 618.109C570.718 619.5 568.478 619.5 564 619.5C559.522 619.5 557.282 619.5 555.891 618.109C554.5 616.718 554.5 614.478 554.5 610Z" />
-          <path d="M561 606C559.795 606.86 559 608.33 559 610C559 611.67 559.795 613.14 561 614M567 606C568.205 606.86 569 608.33 569 610C569 611.67 568.205 613.14 567 614" />
-        </svg>
-      );
-
-    case '2nd-brecket-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 642.0 24 24">
-          <path d="M567 650C567.65 650.065 568.088 650.211 568.414 650.542C569 651.135 569 652.09 569 654C569 655.91 569 656.865 568.414 657.458C568.088 657.789 567.65 657.935 567 658M561 658C560.35 657.935 559.912 657.789 559.586 657.458C559 656.865 559 655.91 559 654C559 652.09 559 651.135 559.586 650.542C559.912 650.211 560.35 650.065 561 650" />
-          <path d="M554.5 654C554.5 649.522 554.5 647.282 555.891 645.891C557.282 644.5 559.522 644.5 564 644.5C568.478 644.5 570.718 644.5 572.109 645.891C573.5 647.282 573.5 649.522 573.5 654C573.5 658.478 573.5 660.718 572.109 662.109C570.718 663.5 568.478 663.5 564 663.5C559.522 663.5 557.282 663.5 555.891 662.109C554.5 660.718 554.5 658.478 554.5 654Z" />
-        </svg>
-      );
-
-    case '3rd-brecket-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 686.0 24 24">
-          <path d="M566 702C566.924 702 567.673 701.488 567.673 700.857C567.673 699.636 567.687 699.134 568.755 698.404C569.082 698.181 569.082 697.819 568.755 697.596C567.687 696.866 567.673 696.364 567.673 695.143C567.673 694.512 566.924 694 566 694M562 702C561.076 702 560.327 701.488 560.327 700.857C560.327 699.636 560.313 699.134 559.245 698.404C558.918 698.181 558.918 697.819 559.245 697.596C560.313 696.866 560.327 696.364 560.327 695.143C560.327 694.512 561.076 694 562 694" />
-          <path d="M554.5 698C554.5 693.522 554.5 691.282 555.891 689.891C557.282 688.5 559.522 688.5 564 688.5C568.478 688.5 570.718 688.5 572.109 689.891C573.5 691.282 573.5 693.522 573.5 698C573.5 702.478 573.5 704.718 572.109 706.109C570.718 707.5 568.478 707.5 564 707.5C559.522 707.5 557.282 707.5 555.891 706.109C554.5 704.718 554.5 702.478 554.5 698Z" />
-        </svg>
-      );
-
-    case 'plus-minus-square-01':
-      return (
-        <svg {...commonProps} viewBox="552.0 730.0 24 24">
-          <path d="M564 737.5V743.864M567.5 740.682H560.5M567.5 746.5H560.5" />
-          <path d="M554.5 742C554.5 737.522 554.5 735.282 555.891 733.891C557.282 732.5 559.522 732.5 564 732.5C568.478 732.5 570.718 732.5 572.109 733.891C573.5 735.282 573.5 737.522 573.5 742C573.5 746.478 573.5 748.718 572.109 750.109C570.718 751.5 568.478 751.5 564 751.5C559.522 751.5 557.282 751.5 555.891 750.109C554.5 748.718 554.5 746.478 554.5 742Z" />
-        </svg>
-      );
-
-    case 'minus-plus-square-01':
-      return (
-        <svg {...commonProps} viewBox="552.0 774.0 24 24">
-          <path d="M564 790.5V784.136M567.5 787.318H560.5M567.5 781.5H560.5" />
-          <path d="M554.5 786C554.5 781.522 554.5 779.282 555.891 777.891C557.282 776.5 559.522 776.5 564 776.5C568.478 776.5 570.718 776.5 572.109 777.891C573.5 779.282 573.5 781.522 573.5 786C573.5 790.478 573.5 792.718 572.109 794.109C570.718 795.5 568.478 795.5 564 795.5C559.522 795.5 557.282 795.5 555.891 794.109C554.5 792.718 554.5 790.478 554.5 786Z" />
-        </svg>
-      );
-
-    case 'plus-minus-square-02':
-      return (
-        <svg {...commonProps} viewBox="552.0 818.0 24 24">
-          <path d="M554.5 830C554.5 825.522 554.5 823.282 555.891 821.891C557.282 820.5 559.522 820.5 564 820.5C568.478 820.5 570.718 820.5 572.109 821.891C573.5 823.282 573.5 825.522 573.5 830C573.5 834.478 573.5 836.718 572.109 838.109C570.718 839.5 568.478 839.5 564 839.5C559.522 839.5 557.282 839.5 555.891 838.109C554.5 836.718 554.5 834.478 554.5 830Z" />
-          <path d="M559 835L569 825M561 825V827M561 827V829M561 827L563 827M561 827L559 827M569 833L565 833" />
-        </svg>
-      );
-
-    case 'minus-plus-square-02':
-      return (
-        <svg {...commonProps} viewBox="552.0 862.0 24 24">
-          <path d="M554.5 874C554.5 869.522 554.5 867.282 555.891 865.891C557.282 864.5 559.522 864.5 564 864.5C568.478 864.5 570.718 864.5 572.109 865.891C573.5 867.282 573.5 869.522 573.5 874C573.5 878.478 573.5 880.718 572.109 882.109C570.718 883.5 568.478 883.5 564 883.5C559.522 883.5 557.282 883.5 555.891 882.109C554.5 880.718 554.5 878.478 554.5 874Z" />
-          <path d="M569 869L559 879M567 879V877M567 877V875M567 877L565 877M567 877H569M559 871L563 871" />
-        </svg>
-      );
-
-    case 'plus-sign-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 906.0 24 24">
-          <path d="M554.5 918C554.5 913.522 554.5 911.282 555.891 909.891C557.282 908.5 559.522 908.5 564 908.5C568.478 908.5 570.718 908.5 572.109 909.891C573.5 911.282 573.5 913.522 573.5 918C573.5 922.478 573.5 924.718 572.109 926.109C570.718 927.5 568.478 927.5 564 927.5C559.522 927.5 557.282 927.5 555.891 926.109C554.5 924.718 554.5 922.478 554.5 918Z" />
-          <path d="M564 914V922M568 918H560" />
-        </svg>
-      );
-
-    case 'minus-sign-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 950.0 24 24">
-          <path d="M554.5 962C554.5 957.522 554.5 955.282 555.891 953.891C557.282 952.5 559.522 952.5 564 952.5C568.478 952.5 570.718 952.5 572.109 953.891C573.5 955.282 573.5 957.522 573.5 962C573.5 966.478 573.5 968.718 572.109 970.109C570.718 971.5 568.478 971.5 564 971.5C559.522 971.5 557.282 971.5 555.891 970.109C554.5 968.718 554.5 966.478 554.5 962Z" />
-          <path d="M568 962H560" />
-        </svg>
-      );
-
-    case 'multiplication-sign-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 994.0 24 24">
-          <path d="M554.5 1006C554.5 1001.52 554.5 999.282 555.891 997.891C557.282 996.5 559.522 996.5 564 996.5C568.478 996.5 570.718 996.5 572.109 997.891C573.5 999.282 573.5 1001.52 573.5 1006C573.5 1010.48 573.5 1012.72 572.109 1014.11C570.718 1015.5 568.478 1015.5 564 1015.5C559.522 1015.5 557.282 1015.5 555.891 1014.11C554.5 1012.72 554.5 1010.48 554.5 1006Z" />
-          <path d="M568 1002L564 1006M564 1006L560 1010M564 1006L568 1010M564 1006L560 1002" />
-        </svg>
-      );
-
-    case 'divide-sign-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1038.0 24 24">
-          <path d="M559 1050H569M565 1046C565 1046.55 564.552 1047 564 1047C563.448 1047 563 1046.55 563 1046C563 1045.45 563.448 1045 564 1045C564.552 1045 565 1045.45 565 1046ZM565 1054C565 1054.55 564.552 1055 564 1055C563.448 1055 563 1054.55 563 1054C563 1053.45 563.448 1053 564 1053C564.552 1053 565 1053.45 565 1054Z" />
-          <path d="M554.5 1050C554.5 1045.52 554.5 1043.28 555.891 1041.89C557.282 1040.5 559.522 1040.5 564 1040.5C568.478 1040.5 570.718 1040.5 572.109 1041.89C573.5 1043.28 573.5 1045.52 573.5 1050C573.5 1054.48 573.5 1056.72 572.109 1058.11C570.718 1059.5 568.478 1059.5 564 1059.5C559.522 1059.5 557.282 1059.5 555.891 1058.11C554.5 1056.72 554.5 1054.48 554.5 1050Z" />
-        </svg>
-      );
-
-    case 'percent-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1082.0 24 24">
-          <path d="M554.5 1094C554.5 1089.52 554.5 1087.28 555.891 1085.89C557.282 1084.5 559.522 1084.5 564 1084.5C568.478 1084.5 570.718 1084.5 572.109 1085.89C573.5 1087.28 573.5 1089.52 573.5 1094C573.5 1098.48 573.5 1100.72 572.109 1102.11C570.718 1103.5 568.478 1103.5 564 1103.5C559.522 1103.5 557.282 1103.5 555.891 1102.11C554.5 1100.72 554.5 1098.48 554.5 1094Z" />
-          <path d="M560 1098L568 1090M562 1091C562 1091.55 561.552 1092 561 1092C560.448 1092 560 1091.55 560 1091C560 1090.45 560.448 1090 561 1090C561.552 1090 562 1090.45 562 1091ZM568 1096.83C568 1097.38 567.552 1097.83 567 1097.83C566.448 1097.83 566 1097.38 566 1096.83C566 1096.28 566.448 1095.83 567 1095.83C567.552 1095.83 568 1096.28 568 1096.83Z" />
-        </svg>
-      );
-
-    case 'pi-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1126.0 24 24">
-          <path d="M569 1134H561.222C559.995 1134 559 1134.9 559 1136M562.333 1134L561.374 1140.91C561.291 1141.51 560.677 1141.93 560.012 1141.84C559.562 1141.79 559.187 1141.5 559.043 1141.12L559 1141M565.667 1142L566.778 1134" />
-          <path d="M554.5 1138C554.5 1133.52 554.5 1131.28 555.891 1129.89C557.282 1128.5 559.522 1128.5 564 1128.5C568.478 1128.5 570.718 1128.5 572.109 1129.89C573.5 1131.28 573.5 1133.52 573.5 1138C573.5 1142.48 573.5 1144.72 572.109 1146.11C570.718 1147.5 568.478 1147.5 564 1147.5C559.522 1147.5 557.282 1147.5 555.891 1146.11C554.5 1144.72 554.5 1142.48 554.5 1138Z" />
-        </svg>
-      );
-
-    case 'alpha-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1170.0 24 24">
-          <path d="M567.001 1178C567.108 1178.86 567.001 1180.23 566.601 1181.83C566.255 1182.97 565.162 1186.26 562.324 1185.98C559.872 1185.66 558.845 1183.26 559.019 1181.68C559.085 1180.36 560.071 1178.04 562.697 1178C565.055 1178.2 565.655 1180.21 565.988 1181.9C566.348 1183.46 566.308 1184.23 566.908 1185.3C567.268 1185.88 567.947 1186.1 568.494 1185.96C568.933 1185.78 569 1185.39 569 1185.1" />
-          <path d="M554.5 1182C554.5 1177.52 554.5 1175.28 555.891 1173.89C557.282 1172.5 559.522 1172.5 564 1172.5C568.478 1172.5 570.718 1172.5 572.109 1173.89C573.5 1175.28 573.5 1177.52 573.5 1182C573.5 1186.48 573.5 1188.72 572.109 1190.11C570.718 1191.5 568.478 1191.5 564 1191.5C559.522 1191.5 557.282 1191.5 555.891 1190.11C554.5 1188.72 554.5 1186.48 554.5 1182Z" />
-        </svg>
-      );
-
-    case 'infinity-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1214.0 24 24">
-          <path d="M564 1226C564 1226 562.357 1228.5 560.7 1228.5C559.043 1228.5 558 1227.38 558 1226C558 1224.62 559.043 1223.5 560.7 1223.5C562.357 1223.5 564 1226 564 1226ZM564 1226C564 1226 565.643 1228.5 567.3 1228.5C568.957 1228.5 570 1227.38 570 1226C570 1224.62 568.957 1223.5 567.3 1223.5C565.643 1223.5 564 1226 564 1226Z" />
-          <path d="M554.5 1226C554.5 1221.52 554.5 1219.28 555.891 1217.89C557.282 1216.5 559.522 1216.5 564 1216.5C568.478 1216.5 570.718 1216.5 572.109 1217.89C573.5 1219.28 573.5 1221.52 573.5 1226C573.5 1230.48 573.5 1232.72 572.109 1234.11C570.718 1235.5 568.478 1235.5 564 1235.5C559.522 1235.5 557.282 1235.5 555.891 1234.11C554.5 1232.72 554.5 1230.48 554.5 1226Z" />
-        </svg>
-      );
-
-    case 'approximately-equal-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1258.0 24 24">
-          <path d="M559 1267.28C560.667 1265.29 562.333 1265.87 564 1267.33C565.667 1268.8 567.333 1269.38 569 1267.38M559 1272.62C560.667 1270.62 562.333 1271.2 564 1272.67C565.667 1274.13 567.333 1274.71 569 1272.72" />
-          <path d="M554.5 1270C554.5 1265.52 554.5 1263.28 555.891 1261.89C557.282 1260.5 559.522 1260.5 564 1260.5C568.478 1260.5 570.718 1260.5 572.109 1261.89C573.5 1263.28 573.5 1265.52 573.5 1270C573.5 1274.48 573.5 1276.72 572.109 1278.11C570.718 1279.5 568.478 1279.5 564 1279.5C559.522 1279.5 557.282 1279.5 555.891 1278.11C554.5 1276.72 554.5 1274.48 554.5 1270Z" />
-        </svg>
-      );
-
-    case 'congruent-to-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1302.0 24 24">
-          <path d="M559 1314.5H569M559 1318H569M559 1311.5C560 1309.64 562.333 1309.54 564 1311M569 1310.5C568 1312.36 565.667 1312.45 564 1311" />
-          <path d="M554.5 1314C554.5 1309.52 554.5 1307.28 555.891 1305.89C557.282 1304.5 559.522 1304.5 564 1304.5C568.478 1304.5 570.718 1304.5 572.109 1305.89C573.5 1307.28 573.5 1309.52 573.5 1314C573.5 1318.48 573.5 1320.72 572.109 1322.11C570.718 1323.5 568.478 1323.5 564 1323.5C559.522 1323.5 557.282 1323.5 555.891 1322.11C554.5 1320.72 554.5 1318.48 554.5 1314Z" />
-        </svg>
-      );
-
-    case 'function-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1346.0 24 24">
-          <path d="M560 1361.89C560.151 1362.42 560.455 1363 561.25 1363C562.625 1363 562.969 1361.89 564 1358C565.031 1354.11 565.375 1353 566.75 1353C567.545 1353 567.849 1353.58 568 1354.11M562.333 1356.61H566.75" />
-          <path d="M554.5 1358C554.5 1353.52 554.5 1351.28 555.891 1349.89C557.282 1348.5 559.522 1348.5 564 1348.5C568.478 1348.5 570.718 1348.5 572.109 1349.89C573.5 1351.28 573.5 1353.52 573.5 1358C573.5 1362.48 573.5 1364.72 572.109 1366.11C570.718 1367.5 568.478 1367.5 564 1367.5C559.522 1367.5 557.282 1367.5 555.891 1366.11C554.5 1364.72 554.5 1362.48 554.5 1358Z" />
-        </svg>
-      );
-
-    case 'x-variable-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1390.0 24 24">
-          <path d="M554.5 1402C554.5 1397.52 554.5 1395.28 555.891 1393.89C557.282 1392.5 559.522 1392.5 564 1392.5C568.478 1392.5 570.718 1392.5 572.109 1393.89C573.5 1395.28 573.5 1397.52 573.5 1402C573.5 1406.48 573.5 1408.72 572.109 1410.11C570.718 1411.5 568.478 1411.5 564 1411.5C559.522 1411.5 557.282 1411.5 555.891 1410.11C554.5 1408.72 554.5 1406.48 554.5 1402Z" />
-          <path d="M568 1399C564.816 1399 563.184 1405.02 560 1405.02" />
-          <path d="M567.541 1405.02C566.732 1405.02 566.288 1405.02 565.947 1404.9C565.753 1404.83 565.577 1404.73 565.427 1404.62C565.162 1404.41 565.017 1404.11 564.726 1403.51L563.276 1400.51C562.985 1399.91 562.84 1399.61 562.575 1399.4C562.425 1399.29 562.249 1399.19 562.055 1399.12C561.714 1399 561.27 1399 560.461 1399" />
-        </svg>
-      );
-
-    case 'square-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1434.0 24 24">
-          <path d="M554.5 1446C554.5 1441.52 554.5 1439.28 555.891 1437.89C557.282 1436.5 559.522 1436.5 564 1436.5C568.478 1436.5 570.718 1436.5 572.109 1437.89C573.5 1439.28 573.5 1441.52 573.5 1446C573.5 1450.48 573.5 1452.72 572.109 1454.11C570.718 1455.5 568.478 1455.5 564 1455.5C559.522 1455.5 557.282 1455.5 555.891 1454.11C554.5 1452.72 554.5 1450.48 554.5 1446Z" />
-          <path d="M558.359 1445C558.719 1445 559.712 1444.85 560.073 1445.61C560.488 1446.49 561.53 1449.47 561.779 1450.07C562.067 1450.76 562.511 1451.1 563.651 1450.98" />
-          <path d="M564.006 1444.98C562.62 1444.98 561.6 1447.07 561.047 1447.91C560.387 1448.96 559.32 1451.03 558 1450.98" />
-          <path d="M570 1445H567C567 1445 569.005 1443.68 569.224 1443.53C569.444 1443.38 570 1443.05 570 1442.33C570 1441.6 569.275 1441 568.507 1441C567.74 1441 567 1441.53 567 1442.34" />
-        </svg>
-      );
-
-    case 'square-root-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1478.0 24 24">
-          <path d="M554.5 1490C554.5 1485.52 554.5 1483.28 555.891 1481.89C557.282 1480.5 559.522 1480.5 564 1480.5C568.478 1480.5 570.718 1480.5 572.109 1481.89C573.5 1483.28 573.5 1485.52 573.5 1490C573.5 1494.48 573.5 1496.72 572.109 1498.11C570.718 1499.5 568.478 1499.5 564 1499.5C559.522 1499.5 557.282 1499.5 555.891 1498.11C554.5 1496.72 554.5 1494.48 554.5 1490Z" />
-          <path d="M570 1485.99H564.517C563.7 1485.99 563.46 1486.03 563.299 1486.85L561.954 1492.46C561.622 1493.79 561.451 1493.98 561.12 1494.01C560.76 1493.89 560.59 1493.58 559.98 1492.33L559.635 1491.57C559.372 1491.03 559.286 1490.8 559.02 1490.73C558.62 1490.62 558.307 1490.93 558 1491.13M565.104 1489.42C565.524 1489.41 565.98 1489.39 566.229 1489.81C566.572 1490.5 567.116 1491.92 567.318 1492.37C567.419 1492.54 567.48 1492.69 567.84 1492.81C568.109 1492.84 568.5 1492.85 568.5 1492.85M568.741 1489.41C567.894 1489.41 567.39 1490.36 566.917 1490.95C566.307 1491.86 565.681 1492.87 564.889 1492.84" />
-        </svg>
-      );
-
-    case 'n-th-root-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1522.0 24 24">
-          <path d="M559 1532.52V1530.55M559 1530.55C559.061 1529.73 559.676 1529 560.51 1529C561.494 1529 561.939 1529.93 562.006 1530.55V1532.52M559 1530.55V1529" />
-          <path d="M558.988 1536.51C559.452 1536.26 559.858 1536.17 560.059 1536.34C560.26 1536.51 560.687 1537.31 560.862 1537.61C561.13 1538.08 561.438 1539.02 561.973 1539.02C562.334 1539.02 562.625 1538.04 563.097 1536.88C563.817 1535.1 564.622 1532.86 564.744 1532.66C564.944 1532.32 565.145 1531.99 565.681 1531.99C566.283 1531.99 569.027 1531.99 569.027 1531.99" />
-          <path d="M554.5 1534C554.5 1529.52 554.5 1527.28 555.891 1525.89C557.282 1524.5 559.522 1524.5 564 1524.5C568.478 1524.5 570.718 1524.5 572.109 1525.89C573.5 1527.28 573.5 1529.52 573.5 1534C573.5 1538.48 573.5 1540.72 572.109 1542.11C570.718 1543.5 568.478 1543.5 564 1543.5C559.522 1543.5 557.282 1543.5 555.891 1542.11C554.5 1540.72 554.5 1538.48 554.5 1534Z" />
-        </svg>
-      );
-
-    case 'summation-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1566.0 24 24">
-          <path d="M554.5 1578C554.5 1573.52 554.5 1571.28 555.891 1569.89C557.282 1568.5 559.522 1568.5 564 1568.5C568.478 1568.5 570.718 1568.5 572.109 1569.89C573.5 1571.28 573.5 1573.52 573.5 1578C573.5 1582.48 573.5 1584.72 572.109 1586.11C570.718 1587.5 568.478 1587.5 564 1587.5C559.522 1587.5 557.282 1587.5 555.891 1586.11C554.5 1584.72 554.5 1582.48 554.5 1578Z" />
-          <path d="M567 1580.5C566.998 1581.03 566.983 1581.31 566.85 1581.53C566.524 1582.06 565.874 1582 565.324 1582H562.799C561.692 1582 561.138 1582 561.02 1581.67C560.901 1581.34 561.322 1580.98 562.163 1580.24L563.853 1578.76C564.255 1578.41 564.457 1578.23 564.457 1578C564.457 1577.77 564.255 1577.59 563.853 1577.24L562.163 1575.76C561.322 1575.02 560.901 1574.66 561.02 1574.33C561.138 1574 561.692 1574 562.799 1574H565.324C565.874 1574 566.524 1573.94 566.85 1574.47C566.983 1574.69 566.998 1574.97 567 1575.5" />
-        </svg>
-      );
-
-    case 'more-or-less-square':
-      return (
-        <svg {...commonProps} viewBox="552.0 1610.0 24 24">
-          <path d="M554.5 1622C554.5 1617.52 554.5 1615.28 555.891 1613.89C557.282 1612.5 559.522 1612.5 564 1612.5C568.478 1612.5 570.718 1612.5 572.109 1613.89C573.5 1615.28 573.5 1617.52 573.5 1622C573.5 1626.48 573.5 1628.72 572.109 1630.11C570.718 1631.5 568.478 1631.5 564 1631.5C559.522 1631.5 557.282 1631.5 555.891 1630.11C554.5 1628.72 554.5 1626.48 554.5 1622Z" />
-          <path d="M558.996 1622H569.004" />
-          <path d="M569.006 1619H561.002C560.015 1619 559.145 1619.01 559.022 1618.68C558.926 1618.42 559.526 1617.6 560.006 1617" />
-          <path d="M559.01 1625L567.014 1625C568 1625 568.871 1624.99 568.994 1625.32C569.09 1625.58 568.49 1626.4 568.01 1627" />
-        </svg>
-      );
-
-    case 'equal-sign-circle':
-      return (
-        <svg {...commonProps} viewBox="552.0 1654.0 24 24">
-          <circle cx="564" cy="1666" r="10" />
-          <path d="M560 1663H568M560 1669H568" />
-        </svg>
-      );
-
-    case 'not-equal-sign-circle':
-      return (
-        <svg {...commonProps} viewBox="552.0 1698.0 24 24">
-          <circle cx="564" cy="1710" r="10" />
-          <path d="M559 1707.78H569M559 1712.22H569M560.667 1715L567.333 1705" />
-        </svg>
-      );
-
-    case 'less-than-circle':
-      return (
-        <svg {...commonProps} viewBox="552.0 1742.0 24 24">
-          <path d="M566 1750L562.668 1753.02C561.777 1753.83 561.777 1754.17 562.668 1754.98L566 1758" />
-          <circle cx="564" cy="1754" r="10" />
-        </svg>
-      );
-
-    case 'greater-than-circle':
-      return (
-        <svg {...commonProps} viewBox="552.0 1786.0 24 24">
-          <path d="M562 1794L565.332 1797.02C566.223 1797.83 566.223 1798.17 565.332 1798.98L562 1802" />
-          <circle cx="564" cy="1798" r="10" />
-        </svg>
-      );
-
-    case 'inequality-circle-01':
-      return (
-        <svg {...commonProps} viewBox="864.0 202.0 24 24">
-          <path d="M876 224C881.523 224 886 219.523 886 214C886 208.477 881.523 204 876 204C870.477 204 866 208.477 866 214C866 219.523 870.477 224 876 224Z" />
-          <path d="M877.982 209.5L872.138 214.671C871.802 215.08 872.131 215.5 872.582 215.5H879.998" />
-          <path d="M871.98 218.5H880.002" />
-        </svg>
-      );
-
-    case 'inequality-circle-02':
-      return (
-        <svg {...commonProps} viewBox="864.0 246.0 24 24">
-          <path d="M876 268C870.477 268 866 263.523 866 258C866 252.477 870.477 248 876 248C881.523 248 886 252.477 886 258C886 263.523 881.523 268 876 268Z" />
-          <path d="M874.018 253.5L879.862 258.671C880.198 259.08 879.869 259.5 879.418 259.5H872.002" />
-          <path d="M880.02 262.5H871.998" />
-        </svg>
-      );
-
-    case '1st-brecket-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 290.0 24 24">
-          <path d="M873 298C871.795 298.86 871 300.33 871 302C871 303.67 871.795 305.14 873 306M879 298C880.205 298.86 881 300.33 881 302C881 303.67 880.205 305.14 879 306" />
-          <circle cx="876" cy="302" r="10" />
-        </svg>
-      );
-
-    case '2nd-brecket-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 334.0 24 24">
-          <path d="M879 342C879.65 342.065 880.088 342.211 880.414 342.542C881 343.135 881 344.09 881 346C881 347.91 881 348.865 880.414 349.458C880.088 349.789 879.65 349.935 879 350M873 350C872.35 349.935 871.912 349.789 871.586 349.458C871 348.865 871 347.91 871 346C871 344.09 871 343.135 871.586 342.542C871.912 342.211 872.35 342.065 873 342" />
-          <circle cx="876" cy="346" r="10" />
-        </svg>
-      );
-
-    case '3rd-brecket-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 378.0 24 24">
-          <path d="M878 394C878.924 394 879.673 393.488 879.673 392.857C879.673 391.636 879.687 391.134 880.755 390.404C881.082 390.181 881.082 389.819 880.755 389.596C879.687 388.866 879.673 388.364 879.673 387.143C879.673 386.512 878.924 386 878 386M874 394C873.076 394 872.327 393.488 872.327 392.857C872.327 391.636 872.313 391.134 871.245 390.404C870.918 390.181 870.918 389.819 871.245 389.596C872.313 388.866 872.327 388.364 872.327 387.143C872.327 386.512 873.076 386 874 386" />
-          <circle cx="876" cy="390" r="10" />
-        </svg>
-      );
-
-    case 'plus-minus-circle-01':
-      return (
-        <svg {...commonProps} viewBox="864.0 422.0 24 24">
-          <path d="M876 429.5V435.864M879.5 432.682H872.5M879.5 438.5H872.5" />
-          <circle cx="876" cy="434" r="10" />
-        </svg>
-      );
-
-    case 'minus-plus-circle-01':
-      return (
-        <svg {...commonProps} viewBox="864.0 466.0 24 24">
-          <path d="M876 482.5V476.136M879.5 479.318H872.5M879.5 473.5H872.5" />
-          <circle cx="876" cy="478" r="10" />
-        </svg>
-      );
-
-    case 'plus-minus-circle-02':
-      return (
-        <svg {...commonProps} viewBox="864.0 510.0 24 24">
-          <circle cx="876" cy="522" r="10" />
-          <path d="M872 526L880 518M873.5 518L873.5 519.5M873.5 519.5L873.5 521M873.5 519.5L875 519.5M873.5 519.5L872 519.5M880 524.5L877 524.5" />
-        </svg>
-      );
-
-    case 'minus-plus-circle-02':
-      return (
-        <svg {...commonProps} viewBox="864.0 554.0 24 24">
-          <path d="M880 562L872 570M878.5 570V568.5M878.5 568.5V567M878.5 568.5H877M878.5 568.5H880M872 563.5H875" />
-          <circle cx="876" cy="566" r="10" />
-        </svg>
-      );
-
-    case 'plus-sign-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 598.0 24 24">
-          <path d="M876 606V614M880 610H872" />
-          <circle cx="876" cy="610" r="10" />
-        </svg>
-      );
-
-    case 'minus-sign-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 642.0 24 24">
-          <path d="M880 654H872" />
-          <circle cx="876" cy="654" r="10" />
-        </svg>
-      );
-
-    case 'multiplication-sign-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 686.0 24 24">
-          <path d="M879.5 694.5L876 698M876 698L872.5 701.5M876 698L879.5 701.5M876 698L872.5 694.5" />
-          <circle cx="876" cy="698" r="10" />
-        </svg>
-      );
-
-    case 'divide-sign-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 730.0 24 24">
-          <path d="M871 742H881M877 738C877 738.552 876.552 739 876 739C875.448 739 875 738.552 875 738C875 737.448 875.448 737 876 737C876.552 737 877 737.448 877 738ZM877 746C877 746.552 876.552 747 876 747C875.448 747 875 746.552 875 746C875 745.448 875.448 745 876 745C876.552 745 877 745.448 877 746Z" />
-          <circle cx="876" cy="742" r="10" />
-        </svg>
-      );
-
-    case 'percent-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 774.0 24 24">
-          <path d="M872 790L880 782M874 783C874 783.552 873.552 784 873 784C872.448 784 872 783.552 872 783C872 782.448 872.448 782 873 782C873.552 782 874 782.448 874 783ZM880 788.828C880 789.381 879.552 789.828 879 789.828C878.448 789.828 878 789.381 878 788.828C878 788.276 878.448 787.828 879 787.828C879.552 787.828 880 788.276 880 788.828Z" />
-          <circle cx="876" cy="786" r="10" />
-        </svg>
-      );
-
-    case 'pi-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 818.0 24 24">
-          <path d="M881 826H873.222C871.995 826 871 826.895 871 828M874.333 826L873.374 832.909C873.291 833.508 872.677 833.93 872.012 833.844C871.562 833.787 871.187 833.505 871.043 833.116L871 833M877.667 834L878.778 826" />
-          <circle cx="876" cy="830" r="10" />
-        </svg>
-      );
-
-    case 'alpha-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 862.0 24 24">
-          <path d="M876 884C881.523 884 886 879.523 886 874C886 868.477 881.523 864 876 864C870.477 864 866 868.477 866 874C866 879.523 870.477 884 876 884Z" />
-          <path d="M880.993 876.111C880.993 876.696 880.822 877.274 880.697 877.532C880.282 878.555 878.913 877.794 878.608 876.694C878.528 876.404 878.369 875.721 878.2 874.975M878.2 874.975C877.993 874.067 877.772 873.066 877.658 872.565C877.148 870.822 875.771 869.954 874.422 870.018C873.227 870.074 871.975 870.844 871.335 872.316C870.978 873.138 870.946 873.95 871.056 874.668C871.204 875.637 871.644 876.446 872.208 876.982C873.275 877.997 874.708 878.196 875.779 877.775C876.626 877.442 877.22 876.777 877.658 876.049C877.866 875.703 878.046 875.342 878.2 874.975ZM878.2 874.975C878.975 873.128 879.105 871.125 879.002 870.018" />
-        </svg>
-      );
-
-    case 'infinity-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 906.0 24 24">
-          <path d="M876 918C876 918 874.357 920.5 872.7 920.5C871.043 920.5 870 919.381 870 918C870 916.619 871.043 915.5 872.7 915.5C874.357 915.5 876 918 876 918ZM876 918C876 918 877.643 920.5 879.3 920.5C880.957 920.5 882 919.381 882 918C882 916.619 880.957 915.5 879.3 915.5C877.643 915.5 876 918 876 918Z" />
-          <circle cx="876" cy="918" r="10" />
-        </svg>
-      );
-
-    case 'approximately-equal-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 950.0 24 24">
-          <path d="M871 959.285C872.667 957.285 874.333 957.871 876 959.333C877.667 960.796 879.333 961.381 881 959.382M871 964.618C872.667 962.619 874.333 963.204 876 964.667C877.667 966.129 879.333 966.715 881 964.715" />
-          <circle cx="876" cy="962" r="10" />
-        </svg>
-      );
-
-    case 'congruent-to-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 994.0 24 24">
-          <path d="M871.5 1006.5H880.5M871.5 1010H880.5M871.5 1003.5C872.4 1001.64 874.5 1001.55 876 1003M880.5 1002.5C879.6 1004.36 877.5 1004.45 876 1003" />
-          <circle cx="876" cy="1006" r="10" />
-        </svg>
-      );
-
-    case 'function-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 1038.0 24 24">
-          <path d="M872.5 1053.5C872.632 1053.98 872.898 1054.5 873.594 1054.5C874.797 1054.5 875.098 1053.5 876 1050C876.902 1046.5 877.203 1045.5 878.406 1045.5C879.102 1045.5 879.368 1046.02 879.5 1046.5M874.542 1048.75H878.406" />
-          <circle cx="876" cy="1050" r="10" />
-        </svg>
-      );
-
-    case 'x-variable-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 1082.0 24 24">
-          <path d="M880 1090.99C876.816 1090.99 875.184 1097.01 872 1097.01" />
-          <path d="M879.541 1097.01C878.732 1097.01 878.288 1097.01 877.947 1096.89C877.753 1096.82 877.577 1096.72 877.427 1096.61C877.162 1096.4 877.017 1096.1 876.726 1095.5L875.276 1092.5C874.985 1091.9 874.84 1091.6 874.575 1091.39C874.425 1091.28 874.249 1091.18 874.055 1091.11C873.714 1090.99 873.27 1090.99 872.461 1090.99" />
-          <path d="M876 1104C881.523 1104 886 1099.52 886 1094C886 1088.48 881.523 1084 876 1084C870.477 1084 866 1088.48 866 1094C866 1099.52 870.477 1104 876 1104Z" />
-        </svg>
-      );
-
-    case 'square-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 1126.0 24 24">
-          <path d="M876 1148C881.523 1148 886 1143.52 886 1138C886 1132.48 881.523 1128 876 1128C870.477 1128 866 1132.48 866 1138C866 1143.52 870.477 1148 876 1148Z" />
-          <path d="M871.293 1137.21C871.957 1137.17 872.501 1137.21 872.761 1137.82C873.061 1138.52 873.901 1140.76 874.081 1141.24C874.288 1141.79 874.621 1142.08 875.625 1142" />
-          <path d="M875.912 1137.21C874.832 1137.15 873.898 1138.86 873.464 1139.62C872.924 1140.46 872.04 1142.02 871.004 1142" />
-          <path d="M881.5 1137H878.5C878.5 1137 880.505 1135.68 880.724 1135.53C880.944 1135.38 881.5 1135.05 881.5 1134.33C881.5 1133.6 880.775 1133 880.007 1133C879.24 1133 878.5 1133.53 878.5 1134.34" />
-        </svg>
-      );
-
-    case 'root-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 1170.0 24 24">
-          <path d="M876 1192C881.523 1192 886 1187.52 886 1182C886 1176.48 881.523 1172 876 1172C870.477 1172 866 1176.48 866 1182C866 1187.52 870.477 1192 876 1192Z" />
-          <path d="M881.52 1178.5H876.558C875.741 1178.5 875.501 1178.54 875.34 1179.36L874.179 1183.97C873.847 1185.3 873.676 1185.49 873.345 1185.52C872.985 1185.4 872.815 1185.09 872.205 1183.84L872.055 1183.5C871.792 1182.96 871.706 1182.73 871.44 1182.66C871.101 1182.57 870.807 1182.8 870.5 1183" />
-          <path d="M876.973 1181.5C877.393 1181.48 877.849 1181.46 878.098 1181.88C878.338 1182.54 878.814 1183.58 879.016 1184.03C879.117 1184.21 879.238 1184.43 879.538 1184.48C879.838 1184.52 880.138 1184.5 880.138 1184.5" />
-          <path d="M880.333 1181.51C879.487 1181.51 879.001 1182.48 878.521 1183.02C878.353 1183.29 877.621 1184.52 876.781 1184.5" />
-        </svg>
-      );
-
-    case 'n-th-root-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 1214.0 24 24">
-          <path d="M876 1236C881.523 1236 886 1231.52 886 1226C886 1220.48 881.523 1216 876 1216C870.477 1216 866 1220.48 866 1226C866 1231.52 870.477 1236 876 1236Z" />
-          <path d="M882.999 1223.99H878C877.996 1223.99 877.992 1223.99 877.991 1223.99L874.502 1231C874.498 1231.01 874.488 1231.01 874.484 1231L872.508 1227.01C872.505 1227.01 872.497 1227.01 872.492 1227.01L871 1228.5M875.002 1224.5V1222.65C875.002 1221.73 874.314 1221 873.485 1221C872.815 1221.01 872.158 1221.58 872.002 1222.46M872.002 1224.49V1222.46M872.002 1222.46V1220.26" />
-        </svg>
-      );
-
-    case 'summation-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 1258.0 24 24">
-          <path d="M879 1272.5C878.998 1273.03 878.983 1273.31 878.85 1273.53C878.524 1274.06 877.874 1274 877.324 1274H874.799C873.692 1274 873.138 1274 873.02 1273.67C872.901 1273.34 873.322 1272.98 874.163 1272.24L875.853 1270.76C876.255 1270.41 876.457 1270.23 876.457 1270C876.457 1269.77 876.255 1269.59 875.853 1269.24L874.163 1267.76C873.322 1267.02 872.901 1266.66 873.02 1266.33C873.138 1266 873.692 1266 874.799 1266H877.324C877.874 1266 878.524 1265.94 878.85 1266.47C878.983 1266.69 878.998 1266.97 879 1267.5" />
-          <circle cx="876" cy="1270" r="10" />
-        </svg>
-      );
-
-    case 'more-or-less-circle':
-      return (
-        <svg {...commonProps} viewBox="864.0 1302.0 24 24">
-          <path d="M876 1324C881.523 1324 886 1319.52 886 1314C886 1308.48 881.523 1304 876 1304C870.477 1304 866 1308.48 866 1314C866 1319.52 870.477 1324 876 1324Z" />
-          <path d="M871.5 1314H880.5" />
-          <path d="M880.503 1311.3L873.463 1311.3C872.477 1311.3 871.643 1311.35 871.52 1311.01C871.424 1310.75 871.92 1310.1 872.4 1309.5" />
-          <path d="M871.505 1316.7L878.545 1316.7C879.531 1316.7 880.365 1316.65 880.488 1316.99C880.584 1317.25 880.088 1317.9 879.608 1318.5" />
-        </svg>
-      );
-
-    case 'root-1st-brecket':
-      return (
-        <svg {...commonProps} viewBox="864.0 1346.0 24 24">
-          <path d="M882 1354H876.517C875.7 1354 875.46 1354.04 875.299 1354.86L873.954 1360.47C873.622 1361.8 873.451 1361.99 873.12 1362.02C872.76 1361.9 872.59 1361.59 871.98 1360.34L871.635 1359.58C871.372 1359.04 871.286 1358.81 871.02 1358.74C870.62 1358.63 870.307 1358.94 870 1359.14" />
-          <path d="M877.105 1357.43C877.525 1357.42 877.981 1357.4 878.231 1357.82C878.574 1358.51 879.118 1359.93 879.319 1360.38C879.42 1360.55 879.481 1360.7 879.841 1360.82C880.111 1360.85 880.501 1360.86 880.501 1360.86" />
-          <path d="M880.739 1357.42C879.893 1357.42 879.389 1358.37 878.915 1358.96C878.305 1359.87 877.679 1360.88 876.887 1360.85" />
-          <path d="M870 1349C867.589 1350.93 866 1354.24 866 1358C866 1361.76 867.589 1365.07 870 1367" />
-          <path d="M882 1349C884.411 1350.93 886 1354.24 886 1358C886 1361.76 884.411 1365.07 882 1367" />
-        </svg>
-      );
-
-    case 'root-2nd-brecket':
-      return (
-        <svg {...commonProps} viewBox="864.0 1390.0 24 24">
-          <path d="M881.725 1392.5C883.115 1392.65 884.05 1393 884.748 1393.79C886 1395.2 886 1397.46 886 1402C886 1406.54 886 1408.8 884.748 1410.21C884.05 1411 883.115 1411.35 881.725 1411.5M870.275 1411.5C868.886 1411.35 867.95 1411 867.252 1410.21C866 1408.8 866 1406.54 866 1402C866 1397.46 866 1395.2 867.252 1393.79C867.95 1393 868.886 1392.65 870.275 1392.5" />
-          <path d="M882 1398H876.517C875.7 1398 875.46 1398.04 875.299 1398.86L873.954 1404.47C873.622 1405.8 873.451 1405.99 873.12 1406.02C872.76 1405.9 872.59 1405.59 871.98 1404.34L871.635 1403.58C871.372 1403.04 871.286 1402.81 871.02 1402.74C870.62 1402.63 870.307 1402.94 870 1403.14" />
-          <path d="M877.105 1401.43C877.525 1401.42 877.981 1401.4 878.231 1401.82C878.574 1402.51 879.118 1403.93 879.319 1404.38C879.42 1404.55 879.481 1404.7 879.841 1404.82C880.111 1404.85 880.501 1404.86 880.501 1404.86" />
-          <path d="M880.739 1401.42C879.893 1401.42 879.389 1402.37 878.915 1402.96C878.305 1403.87 877.679 1404.88 876.887 1404.85" />
-        </svg>
-      );
-
-    case 'root-3rd-brecket':
-      return (
-        <svg {...commonProps} viewBox="864.0 1434.0 24 24">
-          <path d="M882 1442H876.517C875.7 1442 875.46 1442.04 875.299 1442.86L873.954 1448.47C873.622 1449.8 873.451 1449.99 873.12 1450.02C872.76 1449.9 872.59 1449.59 871.98 1448.34L871.635 1447.58C871.372 1447.04 871.286 1446.81 871.02 1446.74C870.62 1446.63 870.307 1446.94 870 1447.14" />
-          <path d="M877.105 1445.43C877.525 1445.42 877.981 1445.4 878.231 1445.82C878.574 1446.51 879.118 1447.93 879.319 1448.38C879.42 1448.55 879.481 1448.7 879.841 1448.82C880.111 1448.85 880.501 1448.86 880.501 1448.86" />
-          <path d="M880.739 1445.42C879.893 1445.42 879.389 1446.37 878.915 1446.96C878.305 1447.87 877.679 1448.88 876.887 1448.85" />
-          <path d="M882 1455C883.232 1455 884.231 1453.85 884.231 1452.43C884.231 1450.18 884.131 1448.69 885.673 1446.91C886.109 1446.41 886.109 1445.59 885.673 1445.09C884.131 1443.31 884.231 1441.82 884.231 1439.57C884.231 1438.15 883.232 1437 882 1437" />
-          <path d="M870 1455C868.768 1455 867.769 1453.85 867.769 1452.43C867.769 1450.18 867.869 1448.69 866.327 1446.91C865.891 1446.41 865.891 1445.59 866.327 1445.09C867.835 1443.35 867.769 1441.84 867.769 1439.57C867.769 1438.15 868.768 1437 870 1437" />
-        </svg>
-      );
-
-    case 'rhombus':
-      return (
-        <svg {...commonProps} viewBox="864.0 1478.0 24 24">
-          <path d="M872.056 1482.79C873.915 1480.93 874.845 1480 876 1480C877.155 1480 878.085 1480.93 879.944 1482.79L883.211 1486.06C885.07 1487.92 886 1488.84 886 1490C886 1491.16 885.07 1492.08 883.211 1493.94L879.944 1497.21C878.085 1499.07 877.155 1500 876 1500C874.845 1500 873.915 1499.07 872.056 1497.21L868.789 1493.94C866.93 1492.08 866 1491.16 866 1490C866 1488.84 866.93 1487.92 868.789 1486.06L872.056 1482.79Z" />
-        </svg>
-      );
-
-    case 'pentagon':
-      return (
-        <svg {...commonProps} viewBox="864.0 1522.0 24 24">
-          <path d="M872.438 1525.93C874.156 1524.64 875.016 1524 876 1524C876.984 1524 877.844 1524.64 879.562 1525.93L883.004 1528.51C884.722 1529.8 885.581 1530.45 885.886 1531.41C886.19 1532.38 885.862 1533.42 885.205 1535.5L883.891 1539.68C883.234 1541.76 882.906 1542.81 882.11 1543.4C881.313 1544 880.251 1544 878.127 1544H873.873C871.749 1544 870.687 1544 869.89 1543.4C869.094 1542.81 868.766 1541.76 868.109 1539.68L866.795 1535.5C866.138 1533.42 865.81 1532.38 866.114 1531.41C866.419 1530.45 867.278 1529.8 868.996 1528.51L872.438 1525.93Z" />
-        </svg>
-      );
-
-    case 'hexagon':
-      return (
-        <svg {...commonProps} viewBox="864.0 1566.0 24 24">
-          <path d="M872.882 1569.33C874.404 1568.44 875.165 1568 876 1568C876.835 1568 877.596 1568.44 879.118 1569.33L881.882 1570.94C883.404 1571.83 884.165 1572.27 884.582 1573C885 1573.73 885 1574.62 885 1576.39V1579.61C885 1581.38 885 1582.27 884.582 1583C884.165 1583.73 883.404 1584.17 881.882 1585.06L879.118 1586.67C877.596 1587.56 876.835 1588 876 1588C875.165 1588 874.404 1587.56 872.882 1586.67L870.118 1585.06C868.596 1584.17 867.835 1583.73 867.418 1583C867 1582.27 867 1581.38 867 1579.61V1576.39C867 1574.62 867 1573.73 867.418 1573C867.835 1572.27 868.596 1571.83 870.118 1570.94L872.882 1569.33Z" />
-        </svg>
-      );
-
-    case 'octagon':
-      return (
-        <svg {...commonProps} viewBox="864.0 1610.0 24 24">
-          <path d="M877.515 1612C878.741 1612 879.354 1612 879.905 1612.23C880.457 1612.46 880.89 1612.89 881.757 1613.76L884.242 1616.24C885.11 1617.11 885.543 1617.54 885.771 1618.09C886 1618.65 886 1619.26 886 1620.49V1623.51C886 1624.74 886 1625.35 885.771 1625.91C885.543 1626.46 885.11 1626.89 884.242 1627.76L881.757 1630.24C880.89 1631.11 880.457 1631.54 879.905 1631.77C879.354 1632 878.741 1632 877.515 1632H874.485C873.259 1632 872.646 1632 872.094 1631.77C871.543 1631.54 871.11 1631.11 870.242 1630.24L867.757 1627.76C866.89 1626.89 866.457 1626.46 866.228 1625.91C866 1625.35 866 1624.74 866 1623.51V1620.49C866 1619.26 866 1618.65 866.228 1618.09C866.457 1617.54 866.89 1617.11 867.757 1616.24L870.242 1613.76C871.11 1612.89 871.543 1612.46 872.094 1612.23C872.646 1612 873.259 1612 874.485 1612H877.515Z" />
-        </svg>
-      );
-
-    case 'parallelogram':
-      return (
-        <svg {...commonProps} viewBox="864.0 1654.0 24 24">
-          <path d="M868.091 1662.54C868.696 1660.36 868.998 1659.27 869.9 1658.64C870.802 1658 872.049 1658 874.542 1658H878.566C882.487 1658 884.447 1658 885.445 1659.15C886.444 1660.31 885.968 1662.02 885.017 1665.46L883.909 1669.46C883.304 1671.64 883.002 1672.73 882.1 1673.36C881.198 1674 879.951 1674 877.458 1674H873.434C869.513 1674 867.553 1674 866.555 1672.85C865.556 1671.69 866.032 1669.98 866.983 1666.54L868.091 1662.54Z" />
-        </svg>
-      );
-
-    case 'segment':
-      return (
-        <svg {...commonProps} viewBox="864.0 1698.0 24 24">
-          <path d="M875 1712L873.071 1706.5M873.071 1706.5L871.379 1701.67C871.332 1701.54 871.309 1701.47 871.279 1701.42C871.165 1701.2 870.971 1701.05 870.749 1701.01C870.692 1701 870.628 1701 870.5 1701C870.372 1701 870.308 1701 870.251 1701.01C870.029 1701.05 869.835 1701.2 869.721 1701.42C869.691 1701.47 869.668 1701.54 869.621 1701.67L867.929 1706.5M873.071 1706.5L867.929 1706.5M867.929 1706.5L866 1712" />
-          <path d="M884 1717C884 1718.1 883.105 1719 882 1719C880.895 1719 880 1718.1 880 1717M884 1717C884 1715.9 883.105 1715 882 1715C880.895 1715 880 1715.9 880 1717M884 1717H886M880 1717H872M872 1717C872 1718.1 871.105 1719 870 1719C868.895 1719 868 1718.1 868 1717M872 1717C872 1715.9 871.105 1715 870 1715C868.895 1715 868 1715.9 868 1717M868 1717H866" />
-          <path d="M879 1706.5V1703C879 1702.06 879 1701.59 879.293 1701.29C879.586 1701 880.057 1701 881 1701H882.25C883.769 1701 885 1702.23 885 1703.75C885 1705.27 883.769 1706.5 882.25 1706.5H879ZM879 1706.5H883.25C884.769 1706.5 886 1707.73 886 1709.25C886 1710.77 884.769 1712 883.25 1712H881C880.057 1712 879.586 1712 879.293 1711.71C879 1711.41 879 1710.94 879 1710V1706.5Z" />
-        </svg>
-      );
-
-    case 'radius':
-      return (
-        <svg {...commonProps} viewBox="864.0 1742.0 24 24">
-          <path d="M876 1755.5C875.172 1755.5 874.5 1754.83 874.5 1754C874.5 1753.17 875.172 1752.5 876 1752.5C876.828 1752.5 877.5 1753.17 877.5 1754C877.5 1754.83 876.828 1755.5 876 1755.5Z" />
-          <path d="M876 1764C870.477 1764 866 1759.52 866 1754C866 1748.48 870.477 1744 876 1744C881.523 1744 886 1748.48 886 1754C886 1759.52 881.523 1764 876 1764Z" />
-          <path d="M883.001 1754H878M883.001 1754C883.001 1753.44 881 1752 881 1752M883.001 1754C883.001 1754.56 881 1756 881 1756" />
-        </svg>
-      );
-
-    case 'diameter':
-      return (
-        <svg {...commonProps} viewBox="864.0 1786.0 24 24">
-          <path d="M877.5 1798H883" />
-          <path d="M874.5 1798H869" />
-          <path d="M876 1799.5C875.172 1799.5 874.5 1798.83 874.5 1798C874.5 1797.17 875.172 1796.5 876 1796.5C876.828 1796.5 877.5 1797.17 877.5 1798C877.5 1798.83 876.828 1799.5 876 1799.5Z" />
-          <path d="M876 1808C870.477 1808 866 1803.52 866 1798C866 1792.48 870.477 1788 876 1788C881.523 1788 886 1792.48 886 1798C886 1803.52 881.523 1808 876 1808Z" />
-          <path d="M871.012 1800C870.492 1799.48 869.002 1798.5 869.002 1798C869.002 1797.5 870.512 1796.5 871.012 1796" />
-          <path d="M881 1796C881.52 1796.52 883.01 1797.5 883.01 1798C883.01 1798.5 881.5 1799.5 881 1800" />
-        </svg>
-      );
-
-    case 'aids':
-      return (
-        <svg {...commonProps} viewBox="48.0 202.0 24 24">
-          <path d="M60 204C57.9271 204 54.8825 204.567 54.29 206.892C53.7657 208.949 53.8876 210.42 55.1936 212.167L62.8875 222.458C63.6615 223.494 64.0486 224.011 64.5727 224C65.0969 223.988 65.4599 223.454 66.186 222.386L66.7147 221.608C67.6223 220.272 68.0762 219.605 67.9895 218.883C67.9029 218.161 67.3034 217.615 66.1043 216.523L54.7991 206" />
-          <path d="M60 204C62.0729 204 65.1175 204.567 65.71 206.892C66.2343 208.949 66.1124 210.42 64.8064 212.167L63.4358 214M65.2009 206L60 210.841M60 218.596L57.1125 222.458C56.3385 223.494 55.9514 224.011 55.4273 224C54.9031 223.988 54.5401 223.454 53.814 222.386L53.2853 221.608C52.3777 220.272 51.9238 219.605 52.0105 218.883C52.0971 218.161 52.6966 217.615 53.8957 216.523L56.6062 214" />
-        </svg>
-      );
-
-    case 'ampoule':
-      return (
-        <svg {...commonProps} viewBox="48.0 246.0 24 24">
-          <path d="M53.4457 248.999C53.1298 251.879 51.5799 253.069 52.9375 255.605C53.0245 255.768 53.068 255.849 53.0841 255.886C53.2697 256.312 53.1909 256.695 52.8527 257.014C52.8234 257.041 52.774 257.081 52.675 257.16C52.5051 257.296 52.4202 257.364 52.3427 257.433C51.5425 258.144 51.0609 259.146 51.0054 260.215C51 260.319 51 260.428 51 260.645V264.5C51 265.904 51 266.607 51.3371 267.111C51.483 267.33 51.6705 267.517 51.8889 267.663C52.3933 268 53.0955 268 54.5 268C55.9045 268 56.6067 268 57.1111 267.663C57.3295 267.517 57.517 267.33 57.6629 267.111C58 266.607 58 265.904 58 264.5V260.645C58 260.428 58 260.319 57.9946 260.215C57.9391 259.146 57.4574 258.144 56.6573 257.433C56.5798 257.364 56.4949 257.296 56.325 257.16C56.226 257.081 56.1765 257.041 56.1473 257.014C55.8091 256.695 55.7303 256.312 55.9159 255.886C55.932 255.849 55.9755 255.768 56.0625 255.605C57.42 253.069 55.8698 251.879 55.5537 248.999C55.4934 248.45 55.052 248 54.4997 248C53.9474 248 53.5059 248.45 53.4457 248.999Z" />
-          <path d="M58 262H51" />
-          <path d="M64.4457 248.999C64.1298 251.879 62.5799 253.069 63.9375 255.605C64.0245 255.768 64.068 255.849 64.0841 255.886C64.2697 256.312 64.1909 256.695 63.8527 257.014C63.8234 257.041 63.774 257.081 63.675 257.16C63.5051 257.296 63.4202 257.364 63.3427 257.433C62.5425 258.144 62.0609 259.146 62.0054 260.215C62 260.319 62 260.428 62 260.645V264.5C62 265.904 62 266.607 62.3371 267.111C62.483 267.33 62.6705 267.517 62.8889 267.663C63.3933 268 64.0955 268 65.5 268C66.9045 268 67.6067 268 68.1111 267.663C68.3295 267.517 68.517 267.33 68.6629 267.111C69 266.607 69 265.904 69 264.5V260.645C69 260.428 69 260.319 68.9946 260.215C68.9391 259.146 68.4574 258.144 67.6573 257.433C67.5798 257.364 67.4949 257.296 67.325 257.16C67.226 257.081 67.1765 257.041 67.1473 257.014C66.8091 256.695 66.7303 256.312 66.9159 255.886C66.932 255.849 66.9755 255.768 67.0625 255.605C68.42 253.069 66.8698 251.879 66.5537 248.999C66.4934 248.45 66.052 248 65.4997 248C64.9474 248 64.5059 248.45 64.4457 248.999Z" />
-          <path d="M69 262H62" />
-        </svg>
-      );
-
-    case 'bandage':
-      return (
-        <svg {...commonProps} viewBox="48.0 290.0 24 24">
-          <path d="M61.9525 294.841C63.1797 293.614 63.7933 293 64.5558 293C65.3183 293 65.9319 293.614 67.1592 294.841C68.3864 296.068 69 296.682 69 297.444C69 298.207 68.3864 298.82 67.1592 300.048M58.0475 309.159C56.8203 310.386 56.2067 311 55.4442 311C54.6817 311 54.0681 310.386 52.8408 309.159C51.6136 307.932 51 307.318 51 306.556C51 305.793 51.6136 305.18 52.8408 303.952" />
-          <path d="M65.2067 302L67.1592 303.952C68.3864 305.18 69 305.793 69 306.556C69 307.318 68.3864 307.932 67.1592 309.159C65.9319 310.386 65.3183 311 64.5558 311C63.7933 311 63.1797 310.386 61.9525 309.159L60 307.207L54.7933 302L52.8408 300.048C51.6136 298.82 51 298.207 51 297.444C51 296.682 51.6136 296.068 52.8408 294.841C54.0681 293.614 54.6817 293 55.4442 293C56.2067 293 56.8203 293.614 58.0475 294.841L60 296.793M54.7933 302L60 296.793M60 296.793L65.2067 302M65.2067 302L60 307.207" />
-        </svg>
-      );
-
-    case 'blood':
-      return (
-        <svg {...commonProps} viewBox="48.0 334.0 24 24">
-          <path d="M53.5 349.5C51.2879 348.617 50 346.433 50 344.175C50 341.246 52.317 338.351 53.9433 336.681C54.8265 335.773 56.1735 335.773 57.0567 336.681C57.5487 337.186 57.9648 337.803 58.5 338.5" />
-          <path d="M56 348.926C56 345.37 58.9489 341.855 61.0187 339.826C62.1428 338.725 63.8572 338.725 64.9813 339.826C67.0511 341.855 70 345.37 70 348.926C70 352.413 67.3492 356 63 356C58.6508 356 56 352.413 56 348.926Z" />
-          <path d="M66.5 349.5C66.5 351.709 65 352.5 63.5 352.5" />
-        </svg>
-      );
-
-    case 'blood-type':
-      return (
-        <svg {...commonProps} viewBox="48.0 378.0 24 24">
-          <path d="M51.5 391.678C51.5 387.494 55.0808 383.359 57.5941 380.972C58.9591 379.676 61.0409 379.676 62.4059 380.972C64.9192 383.359 68.5 387.494 68.5 391.678C68.5 395.78 65.2812 400 60 400C54.7188 400 51.5 395.78 51.5 391.678Z" />
-          <path d="M57 393C57 393 57.3648 392.262 57.84 391.303M57.84 391.303C58.7194 389.529 59.9768 387 60 387C60.0232 387 61.2806 389.529 62.16 391.303C62.6352 392.262 63 393 63 393M57.84 391.303H62.16" />
-        </svg>
-      );
-
-    case 'blood-pressure':
-      return (
-        <svg {...commonProps} viewBox="48.0 422.0 24 24">
-          <path d="M57 435H57.8003C58.4304 435 58.7454 435 58.9985 435.149C59.2517 435.299 59.3926 435.568 59.6743 436.106L61.1905 439L63.2857 433L64.8018 435.894C65.0836 436.432 65.2245 436.701 65.4777 436.851C65.7308 437 66.0458 437 66.6759 437H68" />
-          <path d="M68.5 434C67.732 430.415 64.7237 427.039 62.5241 424.972C61.1443 423.676 59.04 423.676 57.6602 424.972C55.1196 427.359 51.5 431.494 51.5 435.678C51.5 439.78 54.7537 444 60.0921 444C63.4851 444 66.0359 442.296 67.4444 440" />
-        </svg>
-      );
-
-    case 'blood-bag':
-      return (
-        <svg {...commonProps} viewBox="48.0 466.0 24 24">
-          <path d="M53 473.372C61 469.243 59.5 476.005 67 473.372" />
-          <path d="M53 475C53 472.191 53 470.787 53.6741 469.778C53.966 469.341 54.341 468.966 54.7777 468.674C55.7866 468 57.1911 468 60 468C62.8089 468 64.2134 468 65.2223 468.674C65.659 468.966 66.034 469.341 66.3259 469.778C67 470.787 67 472.191 67 475V477C67 479.809 67 481.213 66.3259 482.222C66.034 482.659 65.659 483.034 65.2223 483.326C64.2134 484 62.8089 484 60 484C57.1911 484 55.7866 484 54.7777 483.326C54.341 483.034 53.966 482.659 53.6741 482.222C53 481.213 53 479.809 53 477V475Z" />
-          <path d="M60.0142 476L58.5736 477.488C57.8 478.3 57.8133 479.609 58.587 480.408C59.3739 481.207 60.6411 481.193 61.4148 480.394C62.2017 479.581 62.1884 478.273 61.4148 477.474L60.0142 476Z" />
-          <path d="M56 488C58.2091 488 60 486.209 60 484" />
-        </svg>
-      );
-
-    case 'blood-bottle':
-      return (
-        <svg {...commonProps} viewBox="48.0 510.0 24 24">
-          <path d="M62 515V512" />
-          <path d="M65 512H57C54.643 512 53.4645 512 52.7322 512.732C52 513.464 52 514.643 52 517V532" />
-          <path d="M56 521.125C56 518.667 56 517.438 56.5778 516.556C56.828 516.173 57.1494 515.845 57.5238 515.59C58.3885 515 59.5924 515 62 515C64.4076 515 65.6115 515 66.4762 515.59C66.8506 515.845 67.172 516.173 67.4222 516.556C68 517.438 68 518.667 68 521.125V522.875C68 525.333 68 526.562 67.4222 527.444C67.172 527.827 66.8506 528.155 66.4762 528.41C65.6115 529 64.4076 529 62 529C59.5924 529 58.3885 529 57.5238 528.41C57.1494 528.155 56.828 527.827 56.5778 527.444C56 526.562 56 525.333 56 522.875V521.125Z" />
-          <path d="M56 520.372C62.8571 516.243 61.5714 523.005 68 520.372" />
-          <path d="M59 532C60.6569 532 62 530.657 62 529" />
-        </svg>
-      );
-
-    case 'brain-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 554.0 24 24">
-          <path d="M63.1449 559.208C62.5031 558.468 61.5562 558 60.5 558C59.0033 558 57.7259 558.94 57.2256 560.261C56.8514 560.093 56.4366 560 56 560C54.3431 560 53 561.343 53 563C53 563.017 53.0001 563.033 53.0004 563.05M63.1449 559.208C63.5725 559.073 64.0278 559 64.5 559C66.9853 559 69 561.015 69 563.5C69 564.13 68.8707 564.729 68.6372 565.273M63.1449 559.208C61.7981 559.632 60.7249 560.673 60.2561 562C60.1435 562.318 60.0658 562.653 60.0275 563M57.9998 565.5C57.3927 565.956 57 566.682 57 567.5C57 567.671 57.0172 567.838 57.05 568C57.2816 569.141 58.2905 570 59.5 570C59.7548 570 59.8823 570 59.9998 570.014C60.5855 570.084 61.1107 570.408 61.4348 570.901C61.4999 571 61.5569 571.114 61.6708 571.342L63 574M57.05 568H52.5C51.1193 568 50 566.881 50 565.5C50 564.119 51.1193 563 52.5 563C52.6714 563 52.8387 563.017 53.0004 563.05M66.5 574L65.8778 572.341C65.4531 571.208 66.2904 570 67.5 570C68.8807 570 70 568.881 70 567.5C70 566.529 69.4462 565.687 68.6372 565.273C68.2961 565.098 67.9095 565 67.5 565C66.2905 565 65.2816 565.859 65.05 567M53.0004 563.05C53.0127 563.799 53.2992 564.481 53.7639 565" />
-        </svg>
-      );
-
-    case 'brain-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 598.0 24 24">
-          <path d="M52.2222 619.995V616.445C52.2222 615.174 51.8893 614.513 51.2348 613.408C50.4503 612.083 50 610.538 50 608.887C50 603.979 53.9797 600 58.8889 600C63.7981 600 67.7778 603.979 67.7778 608.887C67.7778 609.466 67.7778 609.756 67.802 609.919C67.8598 610.307 68.0411 610.641 68.2194 610.987L70 614.441L68.6006 615.14C68.195 615.343 67.9923 615.444 67.851 615.631C67.7097 615.818 67.67 616.03 67.5904 616.452L67.5826 616.493C67.4004 617.461 67.1993 618.529 66.6329 619.202C66.4329 619.44 66.1853 619.634 65.9059 619.77C65.4447 619.995 64.8777 619.995 63.7437 619.995C63.219 619.995 62.6928 620.007 62.1682 619.994C60.9247 619.964 60 618.918 60 617.704" />
-          <path d="M62.388 608.532C61.9617 608.532 61.5729 608.37 61.2784 608.105M62.388 608.532C62.388 609.677 61.7241 610.766 60.4461 610.766C59.1681 610.766 58.5043 611.854 58.5043 613M62.388 608.532C64.5373 608.532 64.5373 605.18 62.388 605.18C62.1927 605.18 62.0053 605.214 61.8312 605.276C61.9362 602.778 58.3349 602.1 57.5192 604.44M55.9823 610.054C55.6811 610.484 55.1834 610.766 54.6205 610.766C52.613 610.766 52.4023 607.728 54.3732 607.433C53.1988 605.433 55.6674 603.19 57.5192 604.44C58.1133 604.841 58.5043 605.523 58.5043 606.297" />
-        </svg>
-      );
-
-    case 'bone-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 642.0 24 24">
-          <path d="M65.3997 647.838C65.8288 647.409 66.3665 647.155 66.9243 647.076M66.9243 647.076C67.7347 646.961 68.5874 647.215 69.2107 647.838C70.2631 648.89 70.2631 650.597 69.2107 651.649C68.3628 652.497 67.0904 652.662 66.0775 652.143C65.6635 651.931 65.1331 651.916 64.8043 652.245L58.2445 658.804C57.9156 659.133 57.9313 659.664 58.1432 660.078C58.6617 661.09 58.497 662.363 57.649 663.211C56.5967 664.263 54.8904 664.263 53.8381 663.211C53.2147 662.587 52.9606 661.735 53.0757 660.924M54.6003 660.162C54.1712 660.591 53.6335 660.845 53.0757 660.924C52.2653 661.039 51.4126 660.785 50.7893 660.162C49.7369 659.11 49.7369 657.403 50.7893 656.351C51.6372 655.503 52.9096 655.338 53.9225 655.857C54.3365 656.069 54.8669 656.084 55.1957 655.755L61.7555 649.196C62.0844 648.867 62.0687 648.336 61.8568 647.922C61.3383 646.91 61.503 645.637 62.351 644.789C63.4033 643.737 65.1096 643.737 66.1619 644.789C66.7853 645.413 67.0394 646.265 66.9243 647.076" />
-        </svg>
-      );
-
-    case 'bone-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 686.0 24 24">
-          <path d="M52.7439 708L56.2941 704.45C56.6065 704.137 57.1107 704.153 57.5075 704.348C58.4127 704.791 59.537 704.637 60.2896 703.884C61.2368 702.937 61.2368 701.401 60.2896 700.454C59.7287 699.893 58.9612 699.665 58.2319 699.768C57.7299 699.839 57.2459 700.068 56.8598 700.454M58.2319 699.768C58.2319 699.768 58.2319 699.768 58.2319 699.768ZM58.2319 699.768C58.3354 699.039 58.1067 698.271 57.5457 697.71C56.5986 696.763 55.063 696.763 54.1159 697.71C53.3632 698.463 53.2087 699.587 53.6522 700.493C53.8466 700.889 53.8626 701.394 53.5502 701.706L50 705.256" />
-          <path d="M67.2561 688L63.7059 691.55C63.3935 691.863 62.8893 691.847 62.4925 691.652C61.5873 691.209 60.463 691.363 59.7104 692.116C58.7632 693.063 58.7632 694.599 59.7104 695.546C60.2713 696.107 61.0388 696.335 61.7681 696.232C62.2701 696.161 62.7541 695.932 63.1402 695.546M61.7681 696.232C61.6646 696.961 61.8933 697.729 62.4543 698.29C63.4014 699.237 64.937 699.237 65.8841 698.29C66.6368 697.537 66.7913 696.413 66.3478 695.507C66.1534 695.111 66.1374 694.607 66.4498 694.294L70 690.744" />
-          <path d="M64 704V706M66 702H68" />
-          <path d="M56 692V690M54 694H52" />
-        </svg>
-      );
-
-    case 'broken-bone':
-      return (
-        <svg {...commonProps} viewBox="48.0 730.0 24 24">
-          <path d="M54.2827 749.233C54.1191 749.729 53.8134 750.133 53.4309 750.409M53.4309 750.409C52.8751 750.81 52.1571 750.942 51.4769 750.701C50.3284 750.295 49.7227 748.978 50.1238 747.76C50.432 746.825 51.2446 746.22 52.1254 746.174C52.5735 746.151 53.0451 745.941 53.1855 745.515L54.6729 741L56 743L58 742L56.492 746.732C56.3609 747.143 56.5953 747.575 56.9247 747.854C57.6211 748.445 57.9236 749.458 57.6097 750.411C57.2086 751.629 55.9524 752.286 54.8039 751.88C54.1237 751.639 53.6339 751.079 53.4309 750.409Z" />
-          <path d="M66.5436 735.324C66.9979 735.073 67.5019 734.982 67.9822 735.033M67.9822 735.033C68.68 735.107 69.3277 735.48 69.7003 736.097C70.3294 737.139 69.936 738.483 68.8216 739.099C67.9517 739.579 66.8996 739.473 66.1806 738.908C65.8388 738.639 65.3635 738.498 64.9863 738.715L61 741V739L59 737.981L63.1147 735.708C63.512 735.489 63.628 734.978 63.5636 734.529C63.4401 733.668 63.8707 732.774 64.7211 732.305C65.8355 731.689 67.2488 732.035 67.8778 733.078C68.2504 733.695 68.2643 734.418 67.9822 735.033Z" />
-          <path d="M55 738L53 738M57 736L57 734" />
-          <path d="M61 746L61 748M63 744L65 744" />
-        </svg>
-      );
-
-    case 'caduceus':
-      return (
-        <svg {...commonProps} viewBox="48.0 774.0 24 24">
-          <path d="M61.5 777.5C61.5 778.328 60.8284 779 60 779C59.1716 779 58.5 778.328 58.5 777.5C58.5 776.672 59.1716 776 60 776C60.8284 776 61.5 776.672 61.5 777.5Z" />
-          <path d="M64 791.5C64 790.672 62.2091 790 60 790C57.7909 790 56 790.672 56 791.5C56 792.328 57.7909 793 60 793C61.6569 793 63 793.672 63 794.5C63 795.328 61.6569 796 60 796C58.7151 796 57.6189 795.596 57.1915 795.028" />
-          <path d="M60 779V790" />
-          <path d="M54.7961 785.949C52.7806 787.654 50.8339 784.742 50 782.726C50.8829 782.726 52.7205 782.172 54.429 780.227C55.175 779.377 55.548 778.952 55.7582 779.004C55.9685 779.056 56.2571 779.692 56.8344 780.963C57.7269 782.929 59.0673 783.962 60 784.338C57.6 788.205 55.5307 787.023 54.7961 785.949ZM54.7961 785.949C55.0911 785.699 55.3876 785.351 55.6823 784.886" />
-          <path d="M65.2039 785.949C67.2194 787.654 69.1661 784.742 70 782.726C69.1171 782.726 67.2795 782.172 65.571 780.227C64.825 779.377 64.452 778.952 64.2418 779.004C64.0315 779.056 63.7429 779.692 63.1656 780.963C62.2731 782.929 60.9327 783.962 60 784.338C62.4 788.205 64.4693 787.023 65.2039 785.949ZM65.2039 785.949C64.9089 785.699 64.6124 785.351 64.3177 784.886" />
-        </svg>
-      );
-
-    case 'cardiogram-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 818.0 24 24">
-          <path d="M59 839.5C55.2503 839.5 53.3754 839.5 52.0611 838.492C51.6366 838.167 51.2633 837.772 50.9549 837.324C50 835.937 50 833.958 50 830C50 826.042 50 824.063 50.9549 822.676C51.2633 822.228 51.6366 821.833 52.0611 821.508C53.3754 820.5 55.2503 820.5 59 820.5L61 820.5C64.7497 820.5 66.6246 820.5 67.9389 821.508C68.3634 821.833 68.7367 822.228 69.0451 822.676C70 824.063 70 826.042 70 830C70 833.958 70 835.937 69.0451 837.324C68.7367 837.772 68.3634 838.167 67.9389 838.492C66.6246 839.5 64.7497 839.5 61 839.5H59Z" />
-          <path d="M50.5 833H69.5" />
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M55.009 836H55H55.009Z" fill={color} />
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M59 836H58.991H59Z" fill={color} />
-          <path d="M55.009 836H55M59 836H58.991" />
-          <path d="M65 828.2C64.5447 828.2 64.0655 828.228 63.6569 827.977C63.5011 827.881 63.3977 827.749 63.191 827.484L61.25 825L58.75 829L56.9434 827.266C56.6872 827.02 56.4375 826.77 56.0985 826.672C55.8519 826.6 55.5679 826.6 55 826.6" />
-        </svg>
-      );
-
-    case 'cardiogram-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 862.0 24 24">
-          <path d="M67.4626 865.994C64.7809 864.349 62.4404 865.011 61.0344 866.067C60.4578 866.5 60.1696 866.717 60 866.717C59.8304 866.717 59.5422 866.5 58.9656 866.067C57.5596 865.011 55.2191 864.349 52.5374 865.994C49.0181 868.152 48.2217 875.274 56.3395 881.283C57.8857 882.427 58.6588 882.999 60 882.999C61.3412 882.999 62.1143 882.427 63.6605 881.283C71.7783 875.274 70.9819 868.152 67.4626 865.994Z" />
-          <path d="M64 875H63C62.5447 875 62.0655 875.035 61.6569 874.721C61.5011 874.602 61.3977 874.436 61.191 874.106L59.5 871L56.5 876L54.9434 873.832C54.6872 873.525 54.4375 873.213 54.0985 873.09C53.8519 873 53.5679 873 53 873H51" />
-        </svg>
-      );
-
-    case 'covid-info':
-      return (
-        <svg {...commonProps} viewBox="48.0 906.0 24 24">
-          <circle cx="60" cy="918" r="10" />
-          <path d="M62.5269 921.082C66.5281 918.014 65.8948 914.613 64.0422 913.519C62.5897 912.66 61.3219 913.006 60.5603 913.557C60.248 913.783 60.0919 913.896 60 913.896C59.9081 913.896 59.752 913.783 59.4397 913.557C58.6781 913.006 57.4103 912.66 55.9578 913.519C54.1119 914.609 53.649 918.114 57.6132 921.181C58.37 921.767 59.1711 922.294 60 922.771C61.7788 923.797 64.4168 925 67 925M53 925C54.5487 925 56.1172 924.567 57.5084 924" />
-        </svg>
-      );
-
-    case 'patient':
-      return (
-        <svg {...commonProps} viewBox="48.0 950.0 24 24">
-          <path d="M68 972V969C68 966.172 68 964.757 67.1213 963.879C66.2426 963 64.8284 963 62 963H58C55.1716 963 53.7574 963 52.8787 963.879C52 964.757 52 966.172 52 969C52 969.932 52 970.398 52.1522 970.765C52.3552 971.255 52.7446 971.645 53.2346 971.848C53.6022 972 54.0681 972 55 972" />
-          <path d="M57.5 963L60.5 972M55 963.5V972" />
-          <path d="M60 969H62.5C63.3284 969 64 969.672 64 970.5C64 971.328 63.3284 972 62.5 972H60.5" />
-          <path d="M63.5 956.5V955.5C63.5 953.567 61.933 952 60 952C58.067 952 56.5 953.567 56.5 955.5V956.5C56.5 958.433 58.067 960 60 960C61.933 960 63.5 958.433 63.5 956.5Z" />
-        </svg>
-      );
-
-    case 'pulse-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 994.0 24 24">
-          <path d="M50 1006H54L55.5 1002L57.5 1009L61 1000L63.5 1012L66 1006H70" />
-        </svg>
-      );
-
-    case 'pulse-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 1038.0 24 24">
-          <path d="M50 1050H53L54.5 1046L57 1053L58.5 1050H60.5L62.5 1045L64.5 1055L67 1050H70" />
-        </svg>
-      );
-
-    case 'pulse-rectangle-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 1082.0 24 24">
-          <path d="M52.318 1101.68C51 1100.36 51 1098.24 51 1094C51 1089.76 51 1087.64 52.318 1086.32C53.636 1085 55.7574 1085 60 1085C64.2426 1085 66.364 1085 67.682 1086.32C69 1087.64 69 1089.76 69 1094C69 1098.24 69 1100.36 67.682 1101.68C66.364 1103 64.2426 1103 60 1103C55.7574 1103 53.636 1103 52.318 1101.68Z" />
-          <path d="M53.5 1094H55.5L57 1091.5L58.5 1096L60.5 1090L62.5 1098L64.5 1094H66.5" />
-        </svg>
-      );
-
-    case 'pulse-rectangle-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 1126.0 24 24">
-          <path d="M52.318 1145.68C51 1144.36 51 1142.24 51 1138C51 1133.76 51 1131.64 52.318 1130.32C53.636 1129 55.7574 1129 60 1129C64.2426 1129 66.364 1129 67.682 1130.32C69 1131.64 69 1133.76 69 1138C69 1142.24 69 1144.36 67.682 1145.68C66.364 1147 64.2426 1147 60 1147C55.7574 1147 53.636 1147 52.318 1145.68Z" />
-          <path d="M54 1139H55.5L57 1135L58.5 1142L60 1139H61.5L63 1134L64.5 1139H66" />
-        </svg>
-      );
-
-    case 'clinic':
-      return (
-        <svg {...commonProps} viewBox="318.0 202.0 24 24">
-          <path d="M316.351 215.213C315.998 212.916 315.822 211.768 316.256 210.749C316.69 209.731 317.654 209.034 319.581 207.641L321.021 206.6C323.418 204.867 324.617 204 326 204C327.383 204 328.582 204.867 330.979 206.6L332.419 207.641C334.346 209.034 335.31 209.731 335.744 210.749C336.178 211.768 336.002 212.916 335.649 215.213L335.348 217.172C334.847 220.429 334.597 222.057 333.429 223.029C332.261 224 330.554 224 327.139 224H324.861C321.446 224 319.739 224 318.571 223.029C317.403 222.057 317.153 220.429 316.652 217.172L316.351 215.213Z" />
-          <path d="M326 212V218M323 215L329 215" />
-        </svg>
-      );
-
-    case 'dental-tooth':
-      return (
-        <svg {...commonProps} viewBox="318.0 246.0 24 24">
-          <path d="M323 252C323.5 252.5 324.503 252.412 326 251.176M326 251.176C325.779 250.994 325.549 250.786 325.311 250.55C323.005 248.266 319.865 248.713 318.394 250.55C317.378 251.819 314.778 254.979 321.142 266.24C321.406 266.706 321.931 267 322.496 267C323.398 267 324.103 266.28 324.132 265.44C324.194 263.658 324.54 261.603 326 261.603C327.46 261.603 327.806 263.658 327.868 265.44C327.897 266.28 328.602 267 329.504 267C330.069 267 330.594 266.706 330.858 266.24C337.222 254.979 334.622 251.819 333.606 250.55C332.135 248.713 328.995 248.266 326.689 250.55C326.451 250.786 326.221 250.994 326 251.176Z" />
-        </svg>
-      );
-
-    case 'dental-braces':
-      return (
-        <svg {...commonProps} viewBox="318.0 290.0 24 24">
-          <path d="M323 296C323.5 296.5 324.503 296.412 326 295.176M326 295.176C325.779 294.994 325.549 294.786 325.311 294.55C323.005 292.266 319.865 292.713 318.394 294.55C317.378 295.819 314.778 298.979 321.142 310.24C321.406 310.706 321.931 311 322.496 311C323.398 311 324.103 310.28 324.132 309.44C324.194 307.658 324.54 305.603 326 305.603C327.46 305.603 327.806 307.658 327.868 309.44C327.897 310.28 328.602 311 329.504 311C330.069 311 330.594 310.706 330.858 310.24C337.222 298.979 334.622 295.819 333.606 294.55C332.135 292.713 328.995 292.266 326.689 294.55C326.451 294.786 326.221 294.994 326 295.176Z" />
-          <path d="M324.387 299.387C323.871 299.903 323.871 302.097 324.387 302.613C324.903 303.129 327.097 303.129 327.613 302.613C328.129 302.097 328.129 299.903 327.613 299.387C327.097 298.871 324.903 298.871 324.387 299.387Z" />
-          <path d="M324 301H318" />
-          <path d="M334 301H328" />
-        </svg>
-      );
-
-    case 'dental-care':
-      return (
-        <svg {...commonProps} viewBox="318.0 334.0 24 24">
-          <path d="M328 339C327.5 339.5 326.497 339.412 325 338.176M325 338.176C325.221 337.994 325.451 337.786 325.689 337.55C327.995 335.266 331.135 335.713 332.606 337.55C333.232 338.332 334.459 339.831 333.821 343.5M325 338.176C324.779 337.994 324.549 337.786 324.311 337.55C322.005 335.266 318.865 335.713 317.394 337.55C316.378 338.819 313.778 341.979 320.142 353.24C320.406 353.706 320.931 354 321.496 354C322.398 354 323.103 353.28 323.132 352.44C323.178 351.136 323.43 349.685 324.133 349" />
-          <path d="M330 351L330.684 351.684C330.831 351.831 330.905 351.905 330.994 351.9C331.084 351.895 331.149 351.814 331.279 351.651L333 349.5M327 349.454V349.84C327 351.042 327 351.643 327.148 352.193C327.332 352.872 327.679 353.499 328.162 354.02C328.552 354.442 329.068 354.77 330.099 355.427C330.56 355.721 330.791 355.868 331.037 355.937C331.339 356.021 331.661 356.021 331.963 355.937C332.209 355.868 332.44 355.721 332.901 355.427C333.932 354.77 334.448 354.442 334.838 354.02C335.321 353.499 335.668 352.872 335.852 352.193C336 351.643 336 351.042 336 349.84V349.454C336 348.706 336 348.332 335.858 348.016C335.771 347.821 335.645 347.644 335.489 347.496C335.236 347.255 334.877 347.124 334.159 346.861L332.685 346.322C332.099 346.107 331.806 346 331.5 346C331.194 346 330.901 346.107 330.315 346.322L328.841 346.861C328.123 347.124 327.764 347.255 327.511 347.496C327.355 347.644 327.229 347.821 327.142 348.016C327 348.332 327 348.706 327 349.454Z" />
-        </svg>
-      );
-
-    case 'dental-broken-tooth':
-      return (
-        <svg {...commonProps} viewBox="318.0 378.0 24 24">
-          <path d="M325.977 383.176C326.197 382.994 326.427 382.786 326.664 382.55C328.964 380.266 332.095 380.713 333.563 382.55C337.168 387.064 333.131 394.144 330.822 398.24C330.559 398.706 330.035 399 329.472 399C328.572 399 327.869 398.28 327.839 397.44C327.779 395.701 327.375 393.595 326 393.5C324.625 393.595 324.174 395.701 324.114 397.44C324.085 398.28 323.381 399 322.482 399C321.918 399 321.394 398.706 321.131 398.24C317.844 392.408 316.954 388.749 317.002 386.4C319 386.5 319.992 385.5 319.992 383.7C322 384 323 382.829 323 381C324 381 324.574 381.84 325.289 382.55C325.526 382.786 325.756 382.994 325.977 383.176ZM325.977 383.176C327.469 384.412 328.5 384.5 329 384" />
-        </svg>
-      );
-
-    case 'digestion':
-      return (
-        <svg {...commonProps} viewBox="318.0 422.0 24 24">
-          <path d="M323.485 424C323.728 425.49 324.441 426.574 326.475 425.872C330.677 424.421 333.999 428.849 333.999 432.8C333.999 436.776 331.353 440 328.089 440H327.025C324.492 440 322.276 441.632 321.453 444" />
-          <path d="M320.006 424V424.776C320.006 428.578 325.428 431.387 323.637 435.2C322.926 436.715 318.895 439.293 318 444" />
-          <path d="M328 429C328.958 429.297 329.711 430.049 330 431" />
-        </svg>
-      );
-
-    case 'dna':
-      return (
-        <svg {...commonProps} viewBox="318.0 466.0 24 24">
-          <path d="M322.667 488C323.201 487.466 323.735 486.932 323.241 484M322.667 481.334C321.334 476 322.334 475 322.667 474.667C323 474.334 324 473.334 329.334 474.667M322.667 481.334C317.334 480 316.667 480.666 316 481.333M322.667 481.334C328 482.667 329 481.666 329.333 481.333C329.666 481 330.667 480 329.334 474.667M336 474.667C335.333 475.334 334.667 476 329.334 474.667M329.333 468C328.799 468.534 328.265 469.068 328.759 472" />
-        </svg>
-      );
-
-    case 'disability-01':
-      return (
-        <svg {...commonProps} viewBox="318.0 510.0 24 24">
-          <path d="M333.5 528H332.177C331.849 528 331.685 528 331.558 527.914C331.431 527.828 331.37 527.676 331.249 527.371L330.751 526.129C330.63 525.824 330.569 525.672 330.442 525.586C330.315 525.5 330.151 525.5 329.823 525.5H327.5C327.029 525.5 326.793 525.5 326.646 525.354C326.5 525.207 326.5 524.971 326.5 524.5V520.5M326.5 518V520.5M326.5 520.5H330.389" />
-          <path d="M326.5 516C325.395 516 324.5 515.105 324.5 514C324.5 512.895 325.395 512 326.5 512C327.605 512 328.5 512.895 328.5 514C328.5 515.105 327.605 516 326.5 516Z" />
-          <path d="M323.558 520C320.687 520.479 318.5 522.965 318.5 525.958C318.5 529.295 321.217 532 324.57 532C326.6 532 328.398 531.007 329.5 529.483" />
-        </svg>
-      );
-
-    case 'disability-02':
-      return (
-        <svg {...commonProps} viewBox="318.0 554.0 24 24">
-          <path d="M325.5 564L323.5 563L321 566" />
-          <path d="M328 560C326.895 560 326 559.105 326 558C326 556.895 326.895 556 328 556C329.105 556 330 556.895 330 558C330 559.105 329.105 560 328 560Z" />
-          <path d="M329.5 573.483C328.398 575.007 326.6 576 324.57 576C321.217 576 318.5 573.295 318.5 569.958C318.5 569.083 318.664 568.251 319 567.5" />
-          <path d="M326.649 562L325.896 563.846C325.13 565.725 324.747 566.664 325.183 567.332C325.619 568 326.615 568 328.607 568C329.301 568 329.971 567.819 330.358 568.496L333.5 574" />
-        </svg>
-      );
-
-    case 'dropper':
-      return (
-        <svg {...commonProps} viewBox="318.0 598.0 24 24">
-          <path d="M325.287 606L318.682 612.605C318.053 613.234 317.728 614.052 317.707 614.876C317.678 615.986 317.664 616.541 317.58 616.737C317.496 616.933 317.304 617.125 316.919 617.51L316.325 618.104C315.892 618.538 315.892 619.241 316.325 619.675C316.759 620.108 317.462 620.108 317.896 619.675L318.49 619.081C318.875 618.696 319.067 618.504 319.263 618.42C319.459 618.336 320.014 618.322 321.124 618.293C321.948 618.272 322.766 617.947 323.395 617.318L325.323 615.39M325.323 615.39L328.429 612.284L330 610.713M328.429 612.284L326.858 610.713M325.323 615.39L323.752 613.819" />
-          <path d="M335.068 605.432L333.5 607C332.672 607.828 332.672 609.172 333.5 610L326 602.5C326.828 603.328 328.172 603.328 329 602.5L330.568 600.932C331.811 599.689 333.825 599.689 335.068 600.932C336.311 602.175 336.311 604.189 335.068 605.432Z" />
-        </svg>
-      );
-
-    case 'ear':
-      return (
-        <svg {...commonProps} viewBox="318.0 642.0 24 24">
-          <path d="M320.077 660C320.077 662.209 321.226 664 323.308 664C325.389 664 327.077 662.5 327.615 660C327.874 658.801 328.403 658.077 329.231 657.5C331.385 656 333 653.692 333 651C333 647.134 329.866 644 326 644C322.134 644 319 647.134 319 651" />
-          <path d="M323 657C324.385 657 325.508 655.993 325.508 654.75C325.508 653.507 324.385 652.5 323 652.5C323 650.483 323.464 648 326.009 648C327.8 648 328.85 649.374 329 651.15" />
-        </svg>
-      );
-
-    case 'eye':
-      return (
-        <svg {...commonProps} viewBox="318.0 686.0 24 24">
-          <path d="M316 694C316 694 320.477 689 326 689C331.523 689 336 694 336 694" />
-          <path d="M335.544 699.045C335.848 699.471 336 699.684 336 700C336 700.316 335.848 700.529 335.544 700.955C334.178 702.871 330.689 707 326 707C321.311 707 317.822 702.871 316.456 700.955C316.152 700.529 316 700.316 316 700C316 699.684 316.152 699.471 316.456 699.045C317.822 697.129 321.311 693 326 693C330.689 693 334.178 697.129 335.544 699.045Z" />
-          <path d="M329 700C329 698.343 327.657 697 326 697C324.343 697 323 698.343 323 700C323 701.657 324.343 703 326 703C327.657 703 329 701.657 329 700Z" />
-        </svg>
-      );
-
-    case 'first-aid-kit':
-      return (
-        <svg {...commonProps} viewBox="318.0 730.0 24 24">
-          <path d="M316 742.562C316 739.469 316 737.922 317.025 736.961C318.05 736 319.7 736 323 736H329C332.3 736 333.95 736 334.975 736.961C336 737.922 336 739.469 336 742.562V744.438C336 747.531 336 749.078 334.975 750.039C333.95 751 332.3 751 329 751H323C319.7 751 318.05 751 317.025 750.039C316 749.078 316 747.531 316 744.438V742.562Z" />
-          <path d="M323 743.5H329M326 740.5L326 746.5" />
-          <path d="M331 736C331 733.518 330.482 733 328 733H324C321.518 733 321 733.518 321 736" />
-        </svg>
-      );
-
-    case 'give-pill':
-      return (
-        <svg {...commonProps} viewBox="318.0 774.0 24 24">
-          <path d="M325 781H331M325 779V783C325 784.657 326.343 786 328 786C329.657 786 331 784.657 331 783V779C331 777.343 329.657 776 328 776C326.343 776 325 777.343 325 779Z" />
-          <path d="M318 788H320.395C320.689 788 320.979 788.066 321.242 788.194L323.284 789.182C323.547 789.309 323.837 789.375 324.131 789.375H325.174C326.183 789.375 327 790.166 327 791.142C327 791.181 326.973 791.216 326.934 791.227L324.393 791.929C323.937 792.055 323.449 792.012 323.025 791.806L320.842 790.75" />
-          <path d="M327 790.5L331.593 789.089C332.407 788.835 333.287 789.136 333.797 789.842C334.166 790.353 334.016 791.084 333.478 791.394L325.963 795.731C325.485 796.006 324.921 796.074 324.395 795.918L318 794.02" />
-        </svg>
-      );
-
-    case 'give-blood':
-      return (
-        <svg {...commonProps} viewBox="318.0 818.0 24 24">
-          <path d="M323 825.547C323 823.56 324.685 821.596 325.868 820.462C326.51 819.846 327.49 819.846 328.132 820.462C329.315 821.596 331 823.56 331 825.547C331 827.496 329.485 829.5 327 829.5C324.515 829.5 323 827.496 323 825.547Z" />
-          <path d="M318 832H320.395C320.689 832 320.979 832.066 321.242 832.194L323.284 833.182C323.547 833.309 323.837 833.375 324.131 833.375H325.174C326.183 833.375 327 834.166 327 835.142C327 835.181 326.973 835.216 326.934 835.227L324.393 835.929C323.937 836.055 323.449 836.012 323.025 835.806L320.842 834.75" />
-          <path d="M327 834.5L331.593 833.089C332.407 832.835 333.287 833.136 333.797 833.842C334.166 834.353 334.016 835.084 333.478 835.394L325.963 839.731C325.485 840.006 324.921 840.074 324.395 839.918L318 838.02" />
-        </svg>
-      );
-
-    case 'hand-sanitizer':
-      return (
-        <svg {...commonProps} viewBox="318.0 862.0 24 24">
-          <path d="M329.656 878.162L329.312 875.942C329.209 875.28 329.158 874.949 329.079 874.666C328.532 872.708 326.844 871.272 324.808 871.034C324.513 871 324.176 871 323.5 871C322.824 871 322.487 871 322.192 871.034C320.156 871.272 318.468 872.708 317.921 874.666C317.842 874.949 317.791 875.28 317.688 875.942L317.344 878.162C317.003 880.355 316.833 881.451 317.229 882.281C317.461 882.768 317.821 883.185 318.272 883.486C319.039 884 320.159 884 322.397 884H324.603C326.841 884 327.961 884 328.728 883.486C329.179 883.185 329.539 882.768 329.771 882.281C330.167 881.451 329.997 880.355 329.656 878.162Z" />
-          <path d="M323.5 875.5V879.5M325.5 877.5L321.5 877.5" />
-          <path d="M326.5 871.5V871C326.5 869.586 326.5 868.879 326.061 868.439C325.621 868 324.914 868 323.5 868C322.086 868 321.379 868 320.939 868.439C320.5 868.879 320.5 869.586 320.5 871V871.5" />
-          <path d="M325 868V865.5C325 864.672 324.328 864 323.5 864C322.672 864 322 864.672 322 865.5V868" />
-          <path d="M325 866.219L327.717 865.495C329.229 865.093 329.985 864.891 330.686 865.06C331.387 865.228 331.833 865.718 332.726 866.698L333 867" />
-          <path d="M335 872.5C335 873.605 334.25 874 333.5 874C332.75 874 332 873.605 332 872.5C332 871.395 333.5 870 333.5 870C333.5 870 335 871.395 335 872.5Z" />
-        </svg>
-      );
-
-    case 'health':
-      return (
-        <svg {...commonProps} viewBox="318.0 906.0 24 24">
-          <path d="M333.463 909.994C330.781 908.349 328.44 909.011 327.034 910.067C326.458 910.5 326.17 910.717 326 910.717C325.83 910.717 325.542 910.5 324.966 910.067C323.56 909.011 321.219 908.349 318.537 909.994C315.018 912.152 314.222 919.274 322.34 925.283C323.886 926.427 324.659 926.999 326 926.999C327.341 926.999 328.114 926.427 329.66 925.283C337.778 919.274 336.982 912.152 333.463 909.994Z" />
-          <path d="M326 915V921M323 918L329 918" />
-        </svg>
-      );
-
-    case 'doctor-01':
-      return (
-        <svg {...commonProps} viewBox="318.0 950.0 24 24">
-          <path d="M334 972V969C334 966.172 334 964.757 333.121 963.879C332.243 963 330.828 963 328 963L326 965L324 963C321.172 963 319.757 963 318.879 963.879C318 964.757 318 966.172 318 969V972" />
-          <path d="M330 963V968.5" />
-          <path d="M322.5 963V967M322.5 967C323.605 967 324.5 967.895 324.5 969V970M322.5 967C321.395 967 320.5 967.895 320.5 969V970" />
-          <path d="M329.5 956.5V955.5C329.5 953.567 327.933 952 326 952C324.067 952 322.5 953.567 322.5 955.5V956.5C322.5 958.433 324.067 960 326 960C327.933 960 329.5 958.433 329.5 956.5Z" />
-          <path d="M330.75 969.25C330.75 969.664 330.414 970 330 970C329.586 970 329.25 969.664 329.25 969.25C329.25 968.836 329.586 968.5 330 968.5C330.414 968.5 330.75 968.836 330.75 969.25Z" />
-        </svg>
-      );
-
-    case 'doctor-02':
-      return (
-        <svg {...commonProps} viewBox="318.0 994.0 24 24">
-          <path d="M318 1016V1015C318 1013.13 318 1012.2 318.402 1011.5C318.665 1011.04 319.044 1010.67 319.5 1010.4C320.196 1010 321.131 1010 323 1010L326 1014L329 1010C330.869 1010 331.804 1010 332.5 1010.4C332.956 1010.67 333.335 1011.04 333.598 1011.5C334 1012.2 334 1013.13 334 1015V1016" />
-          <path d="M329.937 1002L330.955 997.864C331.188 996.917 330.483 996 329.523 996H322.477C321.517 996 320.812 996.917 321.045 997.864L322.063 1002M329.937 1002V1004C329.937 1006.21 328.175 1008 326 1008C323.825 1008 322.063 1006.21 322.063 1004V1002M329.937 1002H322.063" />
-          <path d="M326 998V1000M327 999L325 999" />
-        </svg>
-      );
-
-    case 'doctor-03':
-      return (
-        <svg {...commonProps} viewBox="318.0 1038.0 24 24">
-          <path d="M334 1060V1057C334 1054.17 334 1052.76 333.121 1051.88C332.243 1051 330.828 1051 328 1051L326 1053L324 1051C321.172 1051 319.757 1051 318.879 1051.88C318 1052.76 318 1054.17 318 1057V1060" />
-          <path d="M329.5 1044.5V1043.5C329.5 1041.57 327.933 1040 326 1040C324.067 1040 322.5 1041.57 322.5 1043.5V1044.5C322.5 1046.43 324.067 1048 326 1048C327.933 1048 329.5 1046.43 329.5 1044.5Z" />
-          <path d="M330 1054V1057M331.5 1055.5L328.5 1055.5" />
-        </svg>
-      );
-
-    case 'stethoscope-02':
-      return (
-        <svg {...commonProps} viewBox="318.0 1082.0 24 24">
-          <path d="M320.5 1085.5H318.5C317.948 1085.5 317.5 1085.95 317.5 1086.5V1090C317.5 1093.04 319.962 1095.5 323 1095.5C326.038 1095.5 328.5 1093.04 328.5 1090V1086.5C328.5 1085.95 328.052 1085.5 327.5 1085.5H325.5" />
-          <path d="M332.5 1097.5V1098.75C332.5 1101.37 330.373 1103.5 327.75 1103.5C325.127 1103.5 323 1101.37 323 1098.75V1095.5" />
-          <path d="M325.5 1084.5V1086.5" />
-          <path d="M320.5 1084.5V1086.5" />
-          <path d="M334.5 1095.5C334.5 1096.6 333.605 1097.5 332.5 1097.5C331.395 1097.5 330.5 1096.6 330.5 1095.5C330.5 1094.4 331.395 1093.5 332.5 1093.5C333.605 1093.5 334.5 1094.4 334.5 1095.5Z" />
-        </svg>
-      );
-
-    case 'thread':
-      return (
-        <svg {...commonProps} viewBox="318.0 1126.0 24 24">
-          <path d="M318.5 1133.5H330.5C332.386 1133.5 333.328 1133.5 333.914 1134.09C334.5 1134.67 334.5 1135.61 334.5 1137.5V1138.5M330.5 1136.5H318.5M330.5 1139.5H318.5M330.5 1142.5H318.5" />
-          <path d="M329.5 1145.5H319.5C318.395 1145.5 317.5 1146.4 317.5 1147.5H331.5C331.5 1146.4 330.605 1145.5 329.5 1145.5Z" />
-          <path d="M319.5 1130.5L329.5 1130.5C330.605 1130.5 331.5 1129.6 331.5 1128.5L317.5 1128.5C317.5 1129.6 318.395 1130.5 319.5 1130.5Z" />
-        </svg>
-      );
-
-    case 'healthcare':
-      return (
-        <svg {...commonProps} viewBox="617.0 202.0 24 24">
-          <path d="M625.396 204.552C626.87 203.638 628.158 204.006 628.931 204.593C629.248 204.834 629.407 204.954 629.5 204.954C629.593 204.954 629.752 204.834 630.069 204.593C630.842 204.006 632.13 203.638 633.604 204.552C635.54 205.751 635.978 209.708 631.513 213.046C630.663 213.682 630.238 214 629.5 214C628.762 214 628.337 213.682 627.487 213.046C623.022 209.708 623.46 205.751 625.396 204.552Z" />
-          <path d="M621 216H623.395C623.689 216 623.979 216.066 624.242 216.194L626.284 217.182C626.547 217.309 626.837 217.375 627.131 217.375H628.174C629.183 217.375 630 218.166 630 219.142C630 219.181 629.973 219.216 629.934 219.227L627.393 219.929C626.937 220.055 626.449 220.012 626.025 219.806L623.842 218.75" />
-          <path d="M630 218.5L634.593 217.089C635.407 216.835 636.287 217.136 636.797 217.842C637.166 218.353 637.016 219.084 636.478 219.394L628.963 223.731C628.485 224.006 627.921 224.074 627.395 223.918L621 222.02" />
-        </svg>
-      );
-
-    case 'hospital-01':
-      return (
-        <svg {...commonProps} viewBox="617.0 246.0 24 24">
-          <path d="M631 248V250M631 250V252M631 250H627M627 248V250M627 250V252" />
-          <path d="M620 268V257.381C620 253.877 620 252.125 621.153 251.036C621.886 250.344 622.903 250.092 624.5 250M638 268V257.381C638 253.877 638 252.125 636.847 251.036C636.114 250.344 635.097 250.092 633.5 250" />
-          <path d="M631 256H633" />
-          <path d="M631 260H633" />
-          <path d="M624 260H626" />
-          <path d="M624 256H626" />
-          <path d="M619 268H626.5M639 268H631.5" />
-          <path d="M626.5 268V265.5C626.5 264.565 626.5 264.098 626.701 263.75C626.833 263.522 627.022 263.333 627.25 263.201C627.598 263 628.065 263 629 263C629.935 263 630.402 263 630.75 263.201C630.978 263.333 631.167 263.522 631.299 263.75C631.5 264.098 631.5 264.565 631.5 265.5V268" />
-        </svg>
-      );
-
-    case 'hospital-02':
-      return (
-        <svg {...commonProps} viewBox="617.0 290.0 24 24">
-          <path d="M629 294.5V296M629 296V297.5M629 296H630.5M629 296H627.5" />
-          <path d="M625.586 292.586C625 293.172 625 294.114 625 296C625 297.886 625 298.828 625.586 299.414C626.172 300 627.114 300 629 300C630.886 300 631.828 300 632.414 299.414C633 298.828 633 297.886 633 296C633 294.114 633 293.172 632.414 292.586C631.828 292 630.886 292 629 292C627.114 292 626.172 292 625.586 292.586Z" />
-          <path d="M621 312V301.971C621 298.661 621 297.006 622.025 295.978C622.677 295.325 623.581 295.087 625 295M637 312V301.971C637 298.661 637 297.006 635.975 295.978C635.323 295.325 634.419 295.087 633 295" />
-          <path d="M620 312H638" />
-          <path d="M626.5 312V309.5C626.5 308.565 626.5 308.098 626.701 307.75C626.833 307.522 627.022 307.333 627.25 307.201C627.598 307 628.065 307 629 307C629.935 307 630.402 307 630.75 307.201C630.978 307.333 631.167 307.522 631.299 307.75C631.5 308.098 631.5 308.565 631.5 309.5V312" />
-          <path d="M625.009 303H625M629 303H628.991M633.001 303H632.992" />
-        </svg>
-      );
-
-    case 'hospital-bed-01':
-      return (
-        <svg {...commonProps} viewBox="617.0 334.0 24 24">
-          <path d="M636.59 340H621.41C621.177 340 621.06 340 620.951 340.017C620.449 340.093 619.988 340.427 619.662 340.95C619.591 341.064 619.527 341.195 619.398 341.457C619.198 341.861 619.099 342.064 619.058 342.218C618.862 342.96 619.182 343.769 619.747 343.96C619.865 344 620.044 344 620.404 344H637.596C637.956 344 638.135 344 638.253 343.96C638.818 343.769 639.138 342.96 638.942 342.218C638.901 342.064 638.802 341.861 638.602 341.457C638.473 341.195 638.409 341.064 638.338 340.95C638.012 340.427 637.551 340.093 637.049 340.017C636.94 340 636.823 340 636.59 340Z" />
-          <path d="M623 348H635" />
-          <path d="M621 344L622.252 345.588C622.952 346.475 623.177 347.639 622.858 348.717L622.183 351" />
-          <path d="M637 344L635.748 345.588C635.048 346.475 634.823 347.639 635.142 348.717L635.817 351" />
-          <path d="M624 353C624 354.105 623.105 355 622 355C620.895 355 620 354.105 620 353C620 351.895 620.895 351 622 351C623.105 351 624 351.895 624 353Z" />
-          <path d="M638 353C638 354.105 637.105 355 636 355C634.895 355 634 354.105 634 353C634 351.895 634.895 351 636 351C637.105 351 638 351.895 638 353Z" />
-          <path d="M623 340V338.104C623 337.386 623.611 336.859 624.243 337.033L626.243 337.585C626.688 337.708 627 338.149 627 338.655V340" />
-        </svg>
-      );
-
-    case 'hospital-bed-02':
-      return (
-        <svg {...commonProps} viewBox="617.0 378.0 24 24">
-          <path d="M636.59 384H621.41C621.177 384 621.06 384 620.951 384.017C620.449 384.093 619.988 384.427 619.662 384.95C619.591 385.064 619.527 385.195 619.398 385.457C619.198 385.861 619.099 386.064 619.058 386.218C618.862 386.96 619.182 387.769 619.747 387.96C619.865 388 620.044 388 620.404 388H637.596C637.956 388 638.135 388 638.253 387.96C638.818 387.769 639.138 386.96 638.942 386.218C638.901 386.064 638.802 385.861 638.602 385.457C638.473 385.195 638.409 385.064 638.338 384.95C638.012 384.427 637.551 384.093 637.049 384.017C636.94 384 636.823 384 636.59 384Z" />
-          <path d="M624.5 395.5L636 388" />
-          <path d="M633.5 395.5L622 388" />
-          <path d="M625 397C625 398.105 624.105 399 623 399C621.895 399 621 398.105 621 397C621 395.895 621.895 395 623 395C624.105 395 625 395.895 625 397Z" />
-          <path d="M637 397C637 398.105 636.105 399 635 399C633.895 399 633 398.105 633 397C633 395.895 633.895 395 635 395C636.105 395 637 395.895 637 397Z" />
-          <path d="M623 384V382.104C623 381.386 623.611 380.859 624.243 381.033L626.243 381.585C626.688 381.708 627 382.149 627 382.655V384" />
-        </svg>
-      );
-
-    case 'hospital-location':
-      return (
-        <svg {...commonProps} viewBox="617.0 422.0 24 24">
-          <path d="M629.5 424C624.806 424 621 427.618 621 432.081C621 434.633 622.062 436.617 624.188 438.389C625.685 439.638 627.5 441.713 628.589 443.395C629.112 444.202 629.851 444.202 630.411 443.395C631.555 441.747 633.315 439.638 634.812 438.389C636.938 436.617 638 434.633 638 432.081C638 427.618 634.194 424 629.5 424Z" />
-          <path d="M627.5 429V432M627.5 435V432M631.5 429V432M631.5 435V432M631.5 432H627.5" />
-        </svg>
-      );
-
-    case 'injection':
-      return (
-        <svg {...commonProps} viewBox="617.0 466.0 24 24">
-          <path d="M634 468C634 468.51 634 468.765 634.068 469.002C634.105 469.133 634.157 469.259 634.223 469.377C634.343 469.593 634.523 469.773 634.884 470.134L636.866 472.116C637.227 472.477 637.407 472.657 637.623 472.777C637.741 472.843 637.867 472.895 637.998 472.932C638.235 473 638.49 473 639 473" />
-          <path d="M628.693 473L623.765 477.928C622.7 478.993 622.168 479.525 622.041 480.163C621.986 480.439 621.986 480.723 622.041 481C622.168 481.638 622.7 482.17 623.765 483.235C624.83 484.3 625.362 484.832 626 484.959C626.277 485.014 626.561 485.014 626.837 484.959C627.475 484.832 628.007 484.3 629.072 483.235L634 478.307" />
-          <path d="M628 472L635 479" />
-          <path d="M625 484.637L623.831 485.473C623.36 485.809 623.125 485.977 622.866 485.997C622.766 486.005 622.666 485.997 622.568 485.972C622.317 485.91 622.113 485.705 621.704 485.296C621.295 484.887 621.09 484.683 621.028 484.432C621.003 484.334 620.995 484.234 621.003 484.134C621.023 483.875 621.191 483.64 621.527 483.169L622.363 482" />
-          <path d="M630.5 474L635.5 470M633 476.5L637 471.5" />
-          <path d="M621.5 485.5L619 488" />
-        </svg>
-      );
-
-    case 'kidneys':
-      return (
-        <svg {...commonProps} viewBox="617.0 510.0 24 24">
-          <path d="M626.986 516C627.143 514.594 626.005 513 623.571 513C621.047 513 619 515.462 619 518.5C619 521.538 620.539 524 623.064 524C624.68 524 625.536 522.746 625.356 521.659" />
-          <path d="M624 518C625.5 518 627.5 518.496 627.5 521.64C627.5 525.8 625.499 527.36 627 531M634 518C632.5 518 630.5 518.496 630.5 521.64C630.5 525.8 632.501 527.36 631 531" />
-          <path d="M623.61 516C623.814 516.571 624.16 517.943 623.916 518.857C623.814 519.238 623.488 520 623 520" />
-          <path d="M631.014 516C630.857 514.594 631.995 513 634.429 513C636.953 513 639 515.462 639 518.5C639 521.538 637.461 524 634.936 524C633.24 524 632.382 522.62 632.678 521.5" />
-          <path d="M634.39 516C634.186 516.571 633.84 517.943 634.084 518.857C634.186 519.238 634.512 520 635 520" />
-        </svg>
-      );
-
-    case 'labs':
-      return (
-        <svg {...commonProps} viewBox="617.0 554.0 24 24">
-          <path d="M634.5 575C632.567 575 631 573.433 631 571.5L631 557L638 557L638 571.5C638 573.433 636.433 575 634.5 575Z" />
-          <path d="M639 557H630" />
-          <path d="M634 561H631" />
-          <path d="M627 570.875C627 573.913 625 575 623 575C621 575 619 573.913 619 570.875C619 567.837 623 564 623 564C623 564 627 567.837 627 570.875Z" />
-          <path d="M631 566C632.083 565.134 633.297 563.878 634.771 564.763C636.001 565.501 637.034 564.724 638 564" />
-        </svg>
-      );
-
-    case 'liver':
-      return (
-        <svg {...commonProps} viewBox="617.0 598.0 24 24">
-          <path d="M635 606.034C632.12 606.034 630.127 603.011 627 603.011C622.582 603.011 619 606.621 619 611.073C619 612.507 619.171 614.212 619.868 615.609C620.414 616.706 621.681 617.164 622.881 616.948C627.43 616.131 631 613.003 632 611.005M631 604.467C634 603.011 639 601.844 639 605.027C639 608.209 634.831 610.834 632 611.005C630.231 611.111 628 610.505 626 609.058" />
-        </svg>
-      );
-
-    case 'lungs':
-      return (
-        <svg {...commonProps} viewBox="617.0 642.0 24 24">
-          <path d="M624.978 653C625.389 653.206 625.715 653.561 625.974 653.995M625.974 653.995C626.97 655.665 626.97 658.5 626.97 658.5C626.97 662 625.186 663 622.985 663C621.989 663 619 662.5 619 658C619 651.5 622.487 647 625.476 647C627.867 647 626.972 652 625.974 653.995Z" />
-          <path d="M633.022 653C632.61 653.206 632.284 653.561 632.025 653.995M632.025 653.995C631.029 655.665 631.029 658.5 631.029 658.5C631.029 662 632.813 663 635.014 663C636.011 663 639 662.5 639 658C639 651.5 635.513 647 632.523 647C630.132 647 631.03 652 632.025 653.995Z" />
-          <path d="M631 649L629 647.667M629 647.667L627 649M629 647.667V645" />
-        </svg>
-      );
-
-    case 'mask':
-      return (
-        <svg {...commonProps} viewBox="617.0 686.0 24 24">
-          <path d="M623 695C624.466 694.387 626.611 694 629 694C631.389 694 633.534 694.387 635 695" />
-          <path d="M626 697.5C626.94 697.176 627.949 697 629 697C630.051 697 631.06 697.176 632 697.5" />
-          <path d="M625 701C626.177 701.636 627.543 702 629 702C630.457 702 631.823 701.636 633 701" />
-          <path d="M623 696C623 699.257 621.169 700.942 620.057 700.999C620.022 701 619.989 700.981 619.971 700.95C619.157 699.497 619 697.788 619 696C619 692.686 619.895 690 621 690C622.105 690 623 692.686 623 696Z" />
-          <path d="M635 696C635 699.257 636.831 700.942 637.943 700.999C637.978 701 638.011 700.981 638.029 700.95C638.843 699.497 639 697.788 639 696C639 692.686 638.105 690 637 690C635.895 690 635 692.686 635 696Z" />
-          <path d="M638 701C636.204 703.989 632.846 706 629 706C625.154 706 621.796 703.989 620 701" />
-        </svg>
-      );
-
-    case 'mask-love':
-      return (
-        <svg {...commonProps} viewBox="617.0 730.0 24 24">
-          <path d="M631.142 743.442C632.349 742.711 633.402 743.005 634.035 743.475C634.294 743.667 634.424 743.763 634.5 743.763C634.576 743.763 634.706 743.667 634.966 743.475C635.598 743.005 636.651 742.711 637.858 743.442C639.442 744.401 639.8 747.567 636.147 750.237C635.451 750.746 635.104 751 634.5 751C633.897 751 633.549 750.746 632.853 750.237C629.2 747.567 629.558 744.401 631.142 743.442Z" />
-          <path d="M623 738C624.466 737.387 626.611 737 629 737C631.389 737 633.534 737.387 635 738" />
-          <path d="M623 739C623 742.257 621.169 743.942 620.057 743.998C620.022 744 619.989 743.981 619.971 743.95C619.157 742.497 619 740.788 619 739C619 735.686 619.895 733 621 733C622.105 733 623 735.686 623 739Z" />
-          <path d="M635.06 740.02C635.009 739.667 635 739.401 635 739C635 735.686 635.895 733 637 733C638.105 733 639 735.686 639 739C639 739.381 639 740.14 638.948 740.52" />
-          <path d="M628 749C625.04 748.78 621.74 747.04 620 744" />
-        </svg>
-      );
-
-    case 'medicine-01':
-      return (
-        <svg {...commonProps} viewBox="617.0 774.0 24 24">
-          <path d="M621 788H623.395C623.689 788 623.979 788.066 624.242 788.194L626.284 789.182C626.547 789.309 626.837 789.375 627.131 789.375H628.174C629.183 789.375 630 790.166 630 791.142C630 791.181 629.973 791.216 629.934 791.227L627.393 791.929C626.937 792.055 626.449 792.012 626.025 791.806L623.842 790.75" />
-          <path d="M630 790.5L634.593 789.089C635.407 788.835 636.287 789.136 636.797 789.842C637.166 790.353 637.016 791.084 636.478 791.394L628.963 795.731C628.485 796.006 627.921 796.074 627.395 795.918L621 794.02" />
-          <path d="M634.329 778.5C635.71 780.891 634.891 783.949 632.5 785.329C630.109 786.71 627.051 785.891 625.671 783.5M634.329 778.5C632.949 776.109 629.891 775.29 627.5 776.671C625.109 778.051 624.29 781.109 625.671 783.5M634.329 778.5L625.671 783.5" />
-        </svg>
-      );
-
-    case 'medicine-02':
-      return (
-        <svg {...commonProps} viewBox="617.0 818.0 24 24">
-          <path d="M637.193 830.999C638.85 833.869 637.867 837.538 634.997 839.195C632.127 840.852 628.458 839.869 626.801 836.999M637.193 830.999C635.536 828.129 631.867 827.146 628.997 828.803C626.127 830.46 625.144 834.129 626.801 836.999M637.193 830.999L626.801 836.999" />
-          <path d="M623.5 834C622.3 833.868 621.175 833.171 620.525 832.019C619.444 830.103 620.086 827.653 621.958 826.547L627.043 823.542L632.128 820.537C634 819.431 636.394 820.088 637.475 822.004C638.343 823.543 638.1 825.427 637 826.682M627.043 823.542L628.5 826" />
-        </svg>
-      );
-
-    case 'medicine-syrup':
-      return (
-        <svg {...commonProps} viewBox="617.0 862.0 24 24">
-          <path d="M626.5 877.75C626.5 879.407 627.75 880 629 880C630.25 880 631.5 879.407 631.5 877.75C631.5 876.093 629 874 629 874C629 874 626.5 876.093 626.5 877.75Z" />
-          <path d="M626.068 864H631.932C632.853 864 633.314 864 633.6 864.293C634.133 864.839 634.133 867.161 633.6 867.707C633.314 868 632.853 868 631.932 868H626.068C625.147 868 624.686 868 624.4 867.707C623.867 867.161 623.867 864.839 624.4 864.293C624.686 864 625.147 864 626.068 864Z" />
-          <path d="M625 868C625.165 868.33 625.247 868.495 625.306 868.656C625.612 869.495 625.528 870.427 625.077 871.198C624.99 871.346 624.88 871.494 624.658 871.789L624.255 872.327C623.805 872.927 623.58 873.227 623.417 873.556C623.252 873.888 623.134 874.241 623.067 874.606C623 874.966 623 875.341 623 876.092V878C623 880.828 623 882.243 623.879 883.121C624.757 884 626.172 884 629 884C631.828 884 633.243 884 634.121 883.121C635 882.243 635 880.828 635 878V876.092C635 875.341 635 874.966 634.933 874.606C634.866 874.241 634.748 873.888 634.583 873.556C634.42 873.227 634.195 872.927 633.745 872.327L633.342 871.789C633.12 871.494 633.01 871.346 632.923 871.198C632.472 870.427 632.388 869.495 632.694 868.656C632.753 868.495 632.835 868.33 633 868" />
-        </svg>
-      );
-
-    case 'medicine-bottle-01':
-      return (
-        <svg {...commonProps} viewBox="617.0 906.0 24 24">
-          <path d="M626.068 908H631.932C632.853 908 633.314 908 633.6 908.293C634.133 908.839 634.133 911.161 633.6 911.707C633.314 912 632.853 912 631.932 912H626.068C625.147 912 624.686 912 624.4 911.707C623.867 911.161 623.867 908.839 624.4 908.293C624.686 908 625.147 908 626.068 908Z" />
-          <path d="M625 912C625.165 912.33 625.247 912.495 625.306 912.656C625.612 913.495 625.528 914.427 625.077 915.198C624.99 915.346 624.88 915.494 624.658 915.789L624.255 916.327C623.805 916.927 623.58 917.227 623.417 917.556C623.252 917.888 623.134 918.241 623.067 918.606C623 918.966 623 919.341 623 920.092V922C623 924.828 623 926.243 623.879 927.121C624.757 928 626.172 928 629 928C631.828 928 633.243 928 634.121 927.121C635 926.243 635 924.828 635 922V920.092C635 919.341 635 918.966 634.933 918.606C634.866 918.241 634.748 917.888 634.583 917.556C634.42 917.227 634.195 916.927 633.745 916.327L633.342 915.789C633.12 915.494 633.01 915.346 632.923 915.198C632.472 914.427 632.388 913.495 632.694 912.656C632.753 912.495 632.835 912.33 633 912" />
-          <path d="M629 919V924M626.5 921.5L631.5 921.5" />
-        </svg>
-      );
-
-    case 'medicine-bottle-02':
-      return (
-        <svg {...commonProps} viewBox="914.0 202.0 24 24">
-          <path d="M924 224C921.117 224 919.792 224 918.896 223.121C918 222.243 918 220.828 918 218V216.092C918 215.341 918 214.966 918.068 214.606C918.137 214.241 918.257 213.888 918.425 213.556C918.591 213.227 918.821 212.927 919.279 212.327L919.691 211.789C919.916 211.494 920.029 211.346 920.117 211.198C920.577 210.427 920.663 209.495 920.351 208.656C920.291 208.495 920.207 208.33 920.039 208M928.194 208C928.026 208.33 927.942 208.495 927.882 208.656C927.57 209.495 927.656 210.427 928.116 211.198C928.204 211.346 928.317 211.494 928.543 211.789C928.987 212.37 929.654 212.869 930 213.5" />
-          <path d="M921.068 204H926.932C927.853 204 928.314 204 928.6 204.293C929.133 204.839 929.133 207.161 928.6 207.707C928.314 208 927.853 208 926.932 208H921.068C920.147 208 919.686 208 919.4 207.707C918.867 207.161 918.867 204.839 919.4 204.293C919.686 204 920.147 204 921.068 204Z" />
-          <path d="M932.537 216.906C934.246 218.306 934.496 220.826 933.096 222.535C931.696 224.244 929.176 224.494 927.467 223.094M932.537 216.906C930.828 215.506 928.308 215.756 926.908 217.465C925.508 219.174 925.758 221.694 927.467 223.094M932.537 216.906L927.467 223.094" />
-        </svg>
-      );
-
-    case 'medical-file':
-      return (
-        <svg {...commonProps} viewBox="914.0 246.0 24 24">
-          <path d="M933 255V253.818C933 252.125 933 251.278 932.748 250.602C932.342 249.515 931.485 248.658 930.398 248.252C929.722 248 928.875 248 927.182 248C924.219 248 922.737 248 921.554 248.441C919.651 249.151 918.151 250.651 917.441 252.554C917 253.737 917 255.219 917 258.182L917 260.727C917 263.797 917 265.331 917.798 266.397C918.026 266.702 918.298 266.974 918.603 267.202C919.669 268 921.203 268 924.273 268H925C926.17 268 928.5 268 928.5 268" />
-          <path d="M925 260.333H925.84C926.502 260.333 926.833 260.333 927.098 260.508C927.364 260.682 927.512 260.996 927.808 261.623L929.4 265L931.6 258L933.192 261.377C933.488 262.004 933.636 262.318 933.902 262.492C934.167 262.667 934.498 262.667 935.16 262.667H936" />
-          <path d="M917 258C917 256.159 918.492 254.667 920.333 254.667H921.444C921.961 254.667 922.219 254.667 922.431 254.61C923.007 254.456 923.456 254.007 923.61 253.431C923.667 253.219 923.667 252.961 923.667 252.444L923.667 251.333C923.667 249.492 925.159 248 927 248" />
-        </svg>
-      );
-
-    case 'mortar':
-      return (
-        <svg {...commonProps} viewBox="914.0 290.0 24 24">
-          <path d="M918.963 302H933.037C934.014 302 934.503 302 934.805 302.375C935.107 302.751 935.014 303.162 934.828 303.984C934.286 306.376 932.788 308.408 930.753 309.66C930.361 309.901 930.194 310.398 930.406 310.804C930.689 311.35 930.291 312 929.674 312H922.326C921.709 312 921.311 311.35 921.594 310.804C921.806 310.398 921.639 309.901 921.247 309.66C919.212 308.408 917.714 306.376 917.172 303.984C916.986 303.162 916.893 302.751 917.195 302.375C917.497 302 917.986 302 918.963 302Z" />
-          <path d="M931.459 302L933.009 298.281C933.184 297.862 933.615 297.652 934.047 297.58C934.421 297.518 934.719 297.341 934.878 297.053C935.275 296.335 934.668 295.194 933.523 294.504C932.377 293.813 931.126 293.835 930.729 294.553C930.57 294.841 930.573 295.199 930.708 295.568C930.864 295.995 930.905 296.489 930.645 296.856L927 302" />
-          <path d="M920.502 295.502L924 299M922.601 293.403C924.146 294.949 923.76 296.442 922.601 297.601C921.442 298.76 919.949 299.146 918.403 297.601C916.857 296.055 917.004 292.004 917.004 292.004C917.004 292.004 921.055 291.857 922.601 293.403Z" />
-        </svg>
-      );
-
-    case 'nose':
-      return (
-        <svg {...commonProps} viewBox="914.0 334.0 24 24">
-          <path d="M921 351C923 351 923.5 355 926 355C928.5 355 929 351 931 351" />
-          <path d="M922.5 337C922.5 339.279 921.132 344.018 919.736 346.112C918.163 348.472 916.78 352.377 919.738 353.804C921.198 354.509 923 353.087 923 353.087" />
-          <path d="M929.5 337C929.5 339.278 930.868 344.018 932.264 346.112C933.837 348.472 935.22 352.377 932.262 353.804C930.802 354.509 929 353.087 929 353.087" />
-        </svg>
-      );
-
-    case 'prescription':
-      return (
-        <svg {...commonProps} viewBox="914.0 378.0 24 24">
-          <path d="M933 399L924 390" />
-          <path d="M919 397V383C919 381.345 919.345 381 921 381H923.5C925.985 381 928 383.015 928 385.5C928 387.985 925.985 390 923.5 390H919" />
-          <path d="M933 393L927 399" />
-        </svg>
-      );
-
-    case 'protection-mask':
-      return (
-        <svg {...commonProps} viewBox="914.0 422.0 24 24">
-          <path d="M918.276 444V440.449C918.276 439.172 917.935 438.517 917.265 437.411C916.461 436.086 916 434.54 916 432.889C916 427.98 920.076 424 925.103 424C929.467 424 933.113 426.998 934 431" />
-          <path d="M929.075 436.845L932.991 434.414C933.083 434.357 933.129 434.328 933.175 434.306C933.221 434.283 933.275 434.264 933.382 434.225C933.933 434.023 934.543 433.805 935.04 434.224C935.301 434.446 935.425 434.835 935.671 435.614C935.865 436.228 936.081 436.835 935.97 437.487C935.912 437.828 935.76 438.148 935.457 438.788L934.027 441.802C933.474 442.97 933.197 443.554 932.276 443.861C931.355 444.168 930.948 443.936 930.135 443.472C926.449 441.372 919.31 435.26 921.364 432.488C922.14 431.441 924.123 431.735 929.075 436.845ZM929.075 436.845L928.01 442.079" />
-        </svg>
-      );
-
-    case 'safe':
-      return (
-        <svg {...commonProps} viewBox="914.0 466.0 24 24">
-          <path d="M930 483L930.21 483.21C930.579 483.579 930.763 483.763 930.986 483.751C931.209 483.738 931.372 483.535 931.698 483.127L933 481.5M927 481.454V481.84C927 483.042 927 483.643 927.148 484.193C927.332 484.872 927.679 485.499 928.162 486.02C928.552 486.442 929.068 486.77 930.099 487.427C930.56 487.721 930.791 487.868 931.037 487.937C931.339 488.021 931.661 488.021 931.963 487.937C932.209 487.868 932.44 487.721 932.901 487.427C933.932 486.77 934.448 486.442 934.838 486.02C935.321 485.499 935.668 484.872 935.852 484.193C936 483.643 936 483.042 936 481.84V481.454C936 480.706 936 480.332 935.858 480.016C935.771 479.821 935.645 479.644 935.489 479.496C935.236 479.255 934.877 479.124 934.159 478.861L932.685 478.322C932.099 478.107 931.806 478 931.5 478C931.194 478 930.901 478.107 930.315 478.322L928.841 478.861C928.123 479.124 927.764 479.255 927.511 479.496C927.355 479.644 927.229 479.821 927.142 480.016C927 480.332 927 480.706 927 481.454Z" />
-          <path d="M930.171 473.909V475.5M930.171 473.909C930.171 473.156 930.804 472.545 931.586 472.545C932.367 472.545 933 473.156 933 473.909V475.5M930.171 473.909V471.182C930.171 470.429 929.538 469.818 928.757 469.818C927.976 469.818 927.342 470.429 927.342 471.182M927.342 471.182V475.5M927.342 471.182V469.364C927.342 468.611 926.709 468 925.928 468C925.147 468 924.514 468.611 924.514 469.364V472.091M924.514 472.091C924.514 471.338 923.88 470.727 923.099 470.727C922.318 470.727 921.685 471.338 921.685 472.091V478.638C921.685 479.054 921.152 479.251 920.862 478.943L918.571 476.504C918.182 476.044 917.523 475.888 916.957 476.122C915.949 476.539 915.712 478.01 916.367 478.858C917.489 480.31 918.638 482.291 919.565 484.039C920.824 486.41 923.309 488 926.072 488M924.514 472.091V475.5" />
-        </svg>
-      );
-
-    case 'skull':
-      return (
-        <svg {...commonProps} viewBox="914.0 510.0 24 24">
-          <path d="M925.591 524.536C925.139 524.704 924.736 525.027 924.332 525.284C923.489 525.822 922.631 526.413 921.585 526.36C918.468 526.2 916 522.321 916 519.567C916 515.388 920.101 512 925.16 512C929.719 512 933.5 514.751 934.203 518.352C934.423 519.476 933.921 520.161 933.303 521.08L935.369 523.129C935.797 523.553 936.011 523.765 936 523.986C935.988 524.207 935.72 524.423 935.183 524.857C934.714 525.236 934.321 525.69 934.321 526.125C934.533 527.596 935.42 530.025 934.446 531.284C933.268 532.805 930.988 531.51 929.613 530.98C928.178 530.427 927.461 530.151 926.979 529.63C925.845 528.401 925.591 524.536 925.591 524.536ZM925.591 524.536C927.085 523.982 928.311 525.771 929.838 525.104C930.36 524.876 930.813 524.444 931.267 524.107" />
-          <path d="M934.5 529C934.5 529 933 528.5 932.5 527.5" />
-          <path d="M928 519.019C928 519.019 926.138 519.019 925.307 520.329C925.057 520.721 924.675 521.069 924.223 520.988C923.018 520.772 921.653 519.998 921 518" />
-        </svg>
-      );
-
-    case 'sperm':
-      return (
-        <svg {...commonProps} viewBox="914.0 554.0 24 24">
-          <path d="M923.891 568.109C926.125 570.343 929.189 570.902 931.982 568.109C934.775 565.316 936.027 560.018 934.005 557.995C931.982 555.973 926.684 557.225 923.891 560.018C921.098 562.811 921.657 565.875 923.891 568.109Z" />
-          <path d="M917 575C917.413 574.452 918.055 573.882 919.178 573.608C920.072 573.389 920.52 573.28 920.686 573.167C921.021 572.939 921.125 572.756 921.145 572.364C921.154 572.17 921.049 571.869 920.839 571.267C920.629 570.665 920.524 570.365 920.533 570.17C920.553 569.778 920.657 569.595 920.992 569.368C921.158 569.254 921.605 569.145 922.5 568.926C923.299 568.731 923.785 568.379 924 568" />
-        </svg>
-      );
-
-    case 'stethoscope':
-      return (
-        <svg {...commonProps} viewBox="914.0 598.0 24 24">
-          <path d="M927.001 600C928.105 600 929 600.931 929 602.08C929 603.029 929.036 603.874 928.269 604.572C925.759 606.857 924.503 608 923 608C921.497 608 920.242 606.857 917.731 604.572C916.964 603.874 917 603.029 917 602.08C917 600.931 917.895 600 918.999 600" />
-          <path d="M923 612V615.5C923 617.985 925.015 620 927.5 620C929.986 620 932.001 617.985 932.001 615.5V614" />
-          <path d="M928 605L926.698 608.256C926.352 609.121 926.179 609.554 925.889 609.909C925.599 610.265 925.21 610.521 924.432 611.035L922.97 612L921.533 611.032C920.772 610.52 920.392 610.264 920.108 609.913C919.825 609.561 919.654 609.136 919.314 608.284L918 605" />
-          <path d="M935 611C935 612.657 933.657 614 932 614C930.343 614 929 612.657 929 611C929 609.343 930.343 608 932 608C933.657 608 935 609.343 935 611Z" />
-          <path d="M932.008 611L931.999 611" />
-        </svg>
-      );
-
-    case 'thermometer':
-      return (
-        <svg {...commonProps} viewBox="914.0 642.0 24 24">
-          <path d="M927.88 657.937L934.674 650.173C935.422 649.318 935.796 648.891 935.925 648.413C936.038 647.999 936.023 647.561 935.883 647.155C935.722 646.687 935.321 646.286 934.518 645.482C933.714 644.679 933.313 644.278 932.845 644.117C932.439 643.977 932.001 643.962 931.587 644.075C931.109 644.204 930.682 644.578 929.827 645.326L922.063 652.12C921.107 652.956 920.63 653.374 920.348 653.926C920.067 654.477 920.01 655.11 919.895 656.374L919.872 656.632C919.811 657.3 919.78 657.634 919.653 657.939C919.525 658.243 919.309 658.499 918.875 659.011L916.275 662.084C915.884 662.546 915.913 663.231 916.341 663.659C916.769 664.087 917.454 664.116 917.916 663.725L920.989 661.125C921.501 660.691 921.757 660.475 922.061 660.347C922.366 660.22 922.7 660.189 923.368 660.128L923.626 660.105C924.89 659.99 925.523 659.933 926.074 659.652C926.626 659.37 927.044 658.893 927.88 657.937Z" />
-          <path d="M921.789 651.895L923.37 652.843C923.743 653.067 923.863 653.55 923.64 653.923L923.348 654.409C922.962 655.052 923.063 655.876 923.594 656.406C924.124 656.936 924.947 657.037 925.59 656.652L926.077 656.36C926.449 656.136 926.933 656.257 927.156 656.63L928.105 658.21" />
-          <path d="M931.263 648.737L928.105 651.895" />
-        </svg>
-      );
-
-    case 'tissue-paper':
-      return (
-        <svg {...commonProps} viewBox="914.0 686.0 24 24">
-          <path d="M924 695.5C924 698.538 922.209 701 920 701C917.791 701 916 698.538 916 695.5C916 692.462 917.791 690 920 690C922.209 690 924 692.462 924 695.5Z" />
-          <path d="M935.813 696.694C935.934 696.165 936 695.595 936 695C936 692.239 934.575 690 932.818 690H920C923.155 690 924.57 693.955 924.023 696.567C923.456 699.267 921.179 702.369 921.389 705.131C921.426 705.622 921.799 706 922.247 706H932.36C932.852 706 933.238 705.538 933.197 705C932.993 702.308 935.212 699.313 935.813 696.694Z" />
-          <path d="M920.008 695.5L919.999 695.5" />
-        </svg>
-      );
-
-    case 'tongue':
-      return (
-        <svg {...commonProps} viewBox="914.0 730.0 24 24">
-          <path d="M918.349 742C917.178 740.886 916.425 739.473 916.09 738.756C916.023 738.612 916 738.453 916 738.294C916 738.136 916.023 737.977 916.09 737.833C916.691 736.545 918.646 733 921.956 733C922.996 733 923.865 733.538 924.528 734.171C925.092 734.71 925.374 734.98 925.436 735.024C925.967 735.397 926.033 735.397 926.564 735.024C926.626 734.98 926.908 734.71 927.472 734.171C928.135 733.538 929.004 733 930.044 733C933.354 733 935.309 736.545 935.91 737.833C935.977 737.977 936 738.136 936 738.294C936 738.453 935.977 738.612 935.91 738.756C935.575 739.473 934.822 740.886 933.651 742M936 738.294H933M916 738.294H919" />
-          <path d="M926 739L926.27 738.726C926.729 738.261 927.352 738 928.001 738C929.141 738 930.131 738.797 930.387 739.922L931.357 744.179C932.152 747.669 929.535 751 926 751C922.465 751 919.848 747.669 920.643 744.179L921.613 739.922C921.869 738.797 922.859 738 923.999 738C924.648 738 925.271 738.261 925.73 738.726L926 739ZM926 739V742" />
-        </svg>
-      );
-
-    case 'treatment':
-      return (
-        <svg {...commonProps} viewBox="914.0 774.0 24 24">
-          <path d="M922 781.839C922 779.747 923.896 777.68 925.226 776.486C925.949 775.838 927.051 775.838 927.774 776.486C929.104 777.68 931 779.747 931 781.839C931 783.89 929.296 786 926.5 786C923.704 786 922 783.89 922 781.839Z" />
-          <path d="M918 788H920.395C920.689 788 920.979 788.066 921.242 788.194L923.284 789.182C923.547 789.309 923.837 789.375 924.131 789.375H925.174C926.183 789.375 927 790.166 927 791.142C927 791.181 926.973 791.216 926.934 791.227L924.393 791.929C923.937 792.055 923.449 792.012 923.025 791.806L920.842 790.75" />
-          <path d="M927 790.5L931.593 789.089C932.407 788.835 933.287 789.136 933.797 789.842C934.166 790.353 934.016 791.084 933.478 791.394L925.963 795.731C925.485 796.006 924.921 796.074 924.395 795.918L918 794.02" />
-        </svg>
-      );
-
-    case 'vaccine':
-      return (
-        <svg {...commonProps} viewBox="914.0 818.0 24 24">
-          <path d="M931 820C931 820.51 931 820.765 931.068 821.002C931.105 821.133 931.157 821.259 931.223 821.377C931.343 821.593 931.523 821.773 931.884 822.134L933.866 824.116C934.227 824.477 934.407 824.657 934.623 824.777C934.741 824.843 934.867 824.895 934.998 824.932C935.235 825 935.49 825 936 825" />
-          <path d="M925.693 825L920.765 829.928C919.7 830.993 919.168 831.525 919.041 832.163C918.986 832.439 918.986 832.723 919.041 833C919.168 833.638 919.7 834.17 920.765 835.235C921.83 836.3 922.362 836.832 923 836.959" />
-          <path d="M925 824L931 830" />
-          <path d="M922 836.637L920.831 837.472C920.36 837.809 920.125 837.977 919.866 837.997C919.766 838.005 919.666 837.997 919.568 837.972C919.317 837.91 919.113 837.705 918.704 837.296C918.295 836.887 918.09 836.683 918.028 836.432C918.003 836.334 917.995 836.234 918.003 836.133C918.023 835.875 918.191 835.64 918.527 835.17L919.363 834" />
-          <path d="M927.5 826L932.5 822M930 828.5L934 823.5" />
-          <path d="M918.5 837.5L916 840" />
-          <path d="M927.4 836L927.981 836.581C928.27 836.87 928.415 837.015 928.591 837.007C928.767 836.999 928.899 836.842 929.161 836.527L930.6 834.8M933 836C933 838.209 931.209 840 929 840C926.791 840 925 838.209 925 836C925 833.791 926.791 832 929 832C931.209 832 933 833.791 933 836Z" />
-        </svg>
-      );
-
-    case 'wheelchair':
-      return (
-        <svg {...commonProps} viewBox="914.0 862.0 24 24">
-          <path d="M926 878C926 880.761 923.761 883 921 883C918.239 883 916 880.761 916 878C916 875.239 918.239 873 921 873C923.761 873 926 875.239 926 878Z" />
-          <path d="M932 881.5C932 882.328 931.328 883 930.5 883C929.672 883 929 882.328 929 881.5C929 880.672 929.672 880 930.5 880C931.328 880 932 880.672 932 881.5Z" />
-          <path d="M921.008 878L920.999 878" />
-          <path d="M920 873L919.372 867.977C919.227 866.818 919.155 866.239 918.85 865.822C918.679 865.586 918.458 865.391 918.203 865.25C917.751 865 917.167 865 916 865" />
-          <path d="M920 869H925.5C927.857 869 929.036 869 929.768 869.732C930.5 870.464 930.5 871.643 930.5 874V880" />
-          <path d="M926 876H930.024C930.909 876 931.351 876 931.737 876.189C931.83 876.234 931.919 876.287 932.004 876.347C932.36 876.598 932.605 877.006 933.096 877.821C933.489 878.475 933.686 878.801 933.98 878.928C934.049 878.958 934.121 878.979 934.195 878.991C934.507 879.043 934.824 878.867 935.458 878.516L936 878.216" />
-        </svg>
-      );
-
-    case 'x-ray':
-      return (
-        <svg {...commonProps} viewBox="914.0 906.0 24 24">
-          <rect
-            width="20"
-            height="18"
-            rx="5"
-            transform="matrix(4.37114e-08 -1 -1 -4.37114e-08 935 928)"
-          />
-          <path d="M926 911L926 920" />
-          <path d="M926 920.332C925.047 920.332 924.142 920.227 923.329 920.038C922.454 919.835 921.5 920.475 921.5 921.405C921.5 921.89 921.766 922.34 922.207 922.504C922.53 922.624 922.877 922.73 923.243 922.818C923.835 922.961 924.355 923.347 924.612 923.918L924.719 924.154C924.951 924.67 925.451 925 926 925C926.549 925 927.049 924.67 927.281 924.154L927.388 923.918C927.645 923.347 928.165 922.961 928.757 922.818C929.123 922.73 929.47 922.624 929.793 922.504C930.234 922.34 930.5 921.89 930.5 921.405C930.5 920.475 929.546 919.835 928.671 920.038C927.858 920.227 926.953 920.332 926 920.332Z" />
-          <path d="M929 913C928.613 913.619 928.084 914 927.5 914C926.916 914 926.387 913.619 926 913C925.613 913.619 925.084 914 924.5 914C923.916 914 923.387 913.619 923 913" />
-          <path d="M921 916C921.644 916.619 922.527 917 923.5 917C924.473 917 925.356 916.619 926 916C926.644 916.619 927.527 917 928.5 917C929.473 917 930.356 916.619 931 916" />
-        </svg>
-      );
-
-    case 'acceleration':
-      return (
-        <svg {...commonProps} viewBox="48.0 202.0 24 24">
-          <path d="M50.5 220.414V213.191C50.5 211.862 50.5 211.198 51.0987 211.033C51.6974 210.867 52.402 211.337 53.8112 212.277L66.5852 220.793C67.9944 221.732 68.699 222.202 68.451 222.601C68.203 223 67.2066 223 65.2137 223H54.3793C52.5506 223 51.6362 223 51.0681 222.621C50.5 222.243 50.5 221.633 50.5 220.414Z" />
-          <path d="M56.5 213C58.7091 213 60.5 211.209 60.5 209C60.5 206.791 58.7091 205 56.5 205C54.2909 205 52.5 206.791 52.5 209C52.5 211.209 54.2909 213 56.5 213Z" />
-          <path d="M63.5039 211.996L69.4074 215.38M69.4074 215.38C69.7274 215.041 69.1868 214.06 68.7302 212.728M69.4074 215.38C69.1868 215.62 68.4659 215.68 66.7658 215.998" />
-        </svg>
-      );
-
-    case 'atom-01':
-      return (
-        <svg {...commonProps} viewBox="48.0 246.0 24 24">
-          <circle cx="60" cy="258" r="4" />
-          <path d="M70 255H69.99M50.01 255H50M60.005 268H59.995" />
-          <path d="M55.5556 267C52.4736 265.5 50.3768 262.528 50 259.127M64.4444 267C67.5264 265.5 69.6232 262.528 70 259.127M53.5556 250.257C57.2396 247.248 62.5382 247.248 66.2222 250.257" />
-        </svg>
-      );
-
-    case 'atom-02':
-      return (
-        <svg {...commonProps} viewBox="48.0 290.0 24 24">
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M68.3541 293.646C66.5085 291.8 61.2722 294.045 56.6584 298.658C52.0445 303.272 49.8004 308.509 51.6459 310.354C53.4915 312.2 58.7278 309.955 63.3416 305.342C67.9555 300.728 70.1996 295.491 68.3541 293.646Z"
-          />
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M51.6459 293.646C49.8004 295.491 52.0445 300.728 56.6584 305.342C61.2722 309.955 66.5085 312.2 68.3541 310.354C70.1996 308.509 67.9555 303.272 63.3416 298.658C58.7278 294.045 53.4915 291.8 51.6459 293.646Z"
-          />
-          <path d="M60.009 302H60" />
-        </svg>
-      );
-
-    case 'bacteria':
-      return (
-        <svg {...commonProps} viewBox="48.0 334.0 24 24">
-          <circle cx="60" cy="346" r="10" />
-          <circle cx="63" cy="342" r="2" />
-          <path d="M54 346.5L54.2094 346.735C54.5984 347.171 55.254 347.052 55.5 346.5C55.746 345.948 56.4016 345.829 56.7906 346.265L57 346.5" />
-          <path d="M63.8413 352L63.9521 351.655C64.1579 351.014 63.6742 350.427 63 350.5C62.3258 350.573 61.8421 349.986 62.0479 349.345L62.1587 349" />
-          <path d="M67.009 347H67" />
-          <path d="M57.009 351H57" />
-          <path d="M56.009 342H56" />
-        </svg>
-      );
-
-    case 'bounding-box':
-      return (
-        <svg {...commonProps} viewBox="48.0 378.0 24 24">
-          <path d="M54 382H58M52 388V384M60 384V388M54 390H58M62 390H66M68 392V396M60 392V396M62 398H66" />
-          <circle cx="52" cy="382" r="2" />
-          <circle cx="52" cy="390" r="2" />
-          <circle cx="60" cy="382" r="2" />
-          <circle cx="60" cy="390" r="2" />
-          <circle cx="68" cy="390" r="2" />
-          <circle cx="60" cy="398" r="2" />
-          <circle cx="68" cy="398" r="2" />
-        </svg>
-      );
-
-    case 'black-hole':
-      return (
-        <svg {...commonProps} viewBox="354.0 202.0 24 24">
-          <path d="M372.602 214C371.641 215.165 369.048 216 366 216C362.952 216 360.359 215.165 359.398 214" />
-          <path d="M364.063 215.5C364.022 215.34 364 215.173 364 215C364 213.895 364.895 213 366 213C367.105 213 368 213.895 368 215C368 215.173 367.978 215.34 367.937 215.5" />
-          <path d="M360 206L363 215.5M361 222L363 220" />
-          <path d="M371 208L369 215.5M371 222L369 220" />
-          <path d="M366 204V213M366 224V220" />
-        </svg>
-      );
-
-    case 'cells':
-      return (
-        <svg {...commonProps} viewBox="354.0 246.0 24 24">
-          <path d="M365.107 251.576C365.369 252.027 365.5 252.252 365.5 252.5C365.5 252.748 365.369 252.973 365.107 253.424L363.858 255.576C363.596 256.027 363.466 256.252 363.25 256.376C363.034 256.5 362.773 256.5 362.249 256.5H359.751C359.227 256.5 358.966 256.5 358.75 256.376C358.534 256.252 358.404 256.027 358.142 255.576L356.893 253.424C356.631 252.973 356.5 252.748 356.5 252.5C356.5 252.252 356.631 252.027 356.893 251.576L358.142 249.424C358.404 248.973 358.534 248.748 358.75 248.624C358.966 248.5 359.227 248.5 359.751 248.5L362.249 248.5C362.773 248.5 363.034 248.5 363.25 248.624C363.466 248.748 363.596 248.973 363.858 249.424L365.107 251.576Z" />
-          <path d="M375.107 257.576C375.369 258.027 375.5 258.252 375.5 258.5C375.5 258.748 375.369 258.973 375.107 259.424L373.858 261.576C373.596 262.027 373.466 262.252 373.25 262.376C373.034 262.5 372.773 262.5 372.249 262.5H369.751C369.227 262.5 368.966 262.5 368.75 262.376C368.534 262.252 368.404 262.027 368.142 261.576L366.893 259.424C366.631 258.973 366.5 258.748 366.5 258.5C366.5 258.252 366.631 258.027 366.893 257.576L368.142 255.424C368.404 254.973 368.534 254.748 368.75 254.624C368.966 254.5 369.227 254.5 369.751 254.5L372.249 254.5C372.773 254.5 373.034 254.5 373.25 254.624C373.466 254.748 373.596 254.973 373.858 255.424L375.107 257.576Z" />
-          <path d="M365.107 262.576C365.369 263.027 365.5 263.252 365.5 263.5C365.5 263.748 365.369 263.973 365.107 264.424L363.858 266.576C363.596 267.027 363.466 267.252 363.25 267.376C363.034 267.5 362.773 267.5 362.249 267.5H359.751C359.227 267.5 358.966 267.5 358.75 267.376C358.534 267.252 358.404 267.027 358.142 266.576L356.893 264.424C356.631 263.973 356.5 263.748 356.5 263.5C356.5 263.252 356.631 263.027 356.893 262.576L358.142 260.424C358.404 259.973 358.534 259.748 358.75 259.624C358.966 259.5 359.227 259.5 359.751 259.5L362.249 259.5C362.773 259.5 363.034 259.5 363.25 259.624C363.466 259.748 363.596 259.973 363.858 260.424L365.107 262.576Z" />
-        </svg>
-      );
-
-    case 'gravity':
-      return (
-        <svg {...commonProps} viewBox="354.0 290.0 24 24">
-          <path d="M366 312C369.314 312 372 309.314 372 306C372 302.686 369.314 300 366 300C362.686 300 360 302.686 360 306C360 309.314 362.686 312 366 312Z" />
-          <path d="M361 292V294M371 292V294" />
-          <path d="M366.001 292V297.5M364.061 295.503C365.185 296.812 365.5 297.493 366.001 297.5C366.5 297.493 367.135 296.562 368.061 295.503" />
-        </svg>
-      );
-
-    case 'molecules':
-      return (
-        <svg {...commonProps} viewBox="354.0 334.0 24 24">
-          <circle cx="366" cy="347" r="4" />
-          <circle cx="366" cy="338" r="2" />
-          <circle cx="358" cy="354" r="2" />
-          <circle cx="374" cy="354" r="2" />
-          <path d="M366 343V340M372.5 352.5L369 350M359.5 352.5L363 350" />
-        </svg>
-      );
-
-    case 'magnet':
-      return (
-        <svg {...commonProps} viewBox="354.0 378.0 24 24">
-          <path d="M357.925 380.5H363.15C363.15 380.5 362.2 385.7 362.2 388.1C362.2 391.1 364.1 393.5 366 393.5C367.9 393.5 369.8 391.1 369.8 388.1C369.8 385.7 368.85 380.5 368.85 380.5H374.075C374.075 380.5 375.5 385.138 375.5 389.5C375.5 395 371.7 399.5 366 399.5C360.3 399.5 356.5 395 356.5 389.5C356.5 385.138 357.925 380.5 357.925 380.5Z" />
-          <path d="M356.973 385.25H362.198M369.798 385.25L375.023 385.25" />
-        </svg>
-      );
-
-    case 'pendulum':
-      return (
-        <svg {...commonProps} viewBox="634.0 202.0 24 24">
-          <path d="M636 205L654 205" />
-          <path d="M640.5 205V218" />
-          <path d="M645.5 205V218" />
-          <circle cx="640.5" cy="220.5" r="2.5" />
-          <circle cx="645.5" cy="220.5" r="2.5" />
-          <circle cx="653.5" cy="220.5" r="2.5" />
-          <path d="M653.5 218L651 205" />
-        </svg>
-      );
-
-    case 'optical-prism':
-      return (
-        <svg {...commonProps} viewBox="634.0 246.0 24 24">
-          <path d="M649.58 254L648.987 252.85C647.664 250.283 647.002 249 646 249C644.998 249 644.336 250.283 643.013 252.85L638.591 261.427C637.311 263.908 636.672 265.148 637.168 266.074C637.665 267 638.969 267 641.578 267H650.422C653.031 267 654.335 267 654.832 266.074C655.328 265.148 654.689 263.908 653.409 261.427L653.06 260.749" />
-          <path d="M656 262L642 256L656 253M642 256L655.462 257.5" />
-          <path d="M642 256L636 257" />
-        </svg>
-      );
-
-    case 'pulley':
-      return (
-        <svg {...commonProps} viewBox="634.0 290.0 24 24">
-          <path d="M637 293H655" />
-          <circle cx="649.5" cy="300.5" r="3.5" />
-          <circle cx="642.5" cy="307.5" r="3.5" />
-          <path d="M639 307.5V293" />
-          <path d="M646 307.5L646 300.5" />
-          <path d="M649.5 297L649.5 293" />
-          <path d="M653 307L653 300.5" />
-          <path d="M653 307C652.286 307 651.903 307.199 651.617 307.896C651.245 308.804 650.791 310.15 651.106 310.703C651.274 311 651.66 311 652.431 311H653.569C654.34 311 654.726 311 654.894 310.703C655.209 310.15 654.755 308.804 654.383 307.896C654.11 307.232 653.742 307 653 307Z" />
-        </svg>
-      );
-
-    case 'solar-system':
-      return (
-        <svg {...commonProps} viewBox="634.0 334.0 24 24">
-          <path d="M637.5 340.73C636.549 342.26 636 344.066 636 346C636 351.523 640.477 356 646 356C647.045 356 648.053 355.84 649 355.542M654.353 351.5C655.394 349.922 656 348.032 656 346C656 340.477 651.523 336 646 336C644.955 336 643.947 336.16 643 336.458" />
-          <circle cx="639" cy="339" r="2" />
-          <circle cx="653" cy="353" r="2" />
-          <circle cx="642" cy="349" r="2" />
-          <path d="M646 351C648.761 351 651 348.761 651 346C651 343.239 648.761 341 646 341C643.239 341 641 343.239 641 346C641 346.342 641.034 346.677 641.1 347" />
-          <path d="M646.009 346H646" />
-        </svg>
-      );
-
-    case 'submerge':
-      return (
-        <svg {...commonProps} viewBox="634.0 422.0 24 24">
-          <circle cx="646" cy="436" r="4" />
-          <path d="M641 424V425M641 427.5V428.5M641 431V432M651 424V425M651 427.5V428.5M651 431V432M646 424V425M646 427.5V428.5" />
-          <path d="M636 434V438C636 440.828 636 442.243 636.879 443.121C637.757 444 639.172 444 642 444H650C652.828 444 654.243 444 655.121 443.121C656 442.243 656 440.828 656 438V434" />
-          <path d="M636 436.872C638.264 438.786 640.174 437.729 642.022 436.833C643.597 436.069 645.126 435.422 646.79 436.833C650.047 439.546 652.909 436.753 656 436.198" />
-        </svg>
-      );
-
-    case 'test-tube':
-      return (
-        <svg {...commonProps} viewBox="912.0 202.0 24 24">
-          <path d="M922.223 208V209.989C922.223 211.387 922.223 212.087 922.41 212.758C922.597 213.429 922.964 214.045 923.698 215.278L924.693 216.948C926.563 220.089 927.498 221.66 926.731 222.824L926.719 222.842C925.941 224 923.961 224 920 224C916.039 224 914.059 224 913.281 222.842L913.269 222.824C912.502 221.66 913.437 220.089 915.307 216.948L916.302 215.278C917.036 214.045 917.403 213.429 917.59 212.758C917.777 212.087 917.777 211.387 917.777 209.989V208" />
-          <path d="M917 208H923" />
-          <path d="M916.5 215.28C917.167 214.699 918.734 215.118 920.002 215.664C921.668 216.383 923.167 215.802 923.5 215.28" />
-          <path d="M922.5 209C922.5 211 924.862 213.212 926.473 213C926.473 214.657 927.934 216 929.736 216C931.539 216 933 214.657 933 213C933 211.343 932 210 930 210C930 208 928.5 206 926.38 206C926.38 204.457 925.5 204 924.5 204C923.5 204 923 205 923 205C923 205 920 205 920 208" />
-        </svg>
-      );
-
-    case 'triangle':
-      return (
-        <svg {...commonProps} viewBox="912.0 246.0 24 24">
-          <path d="M914 267V249L932 267H914Z" />
-          <path d="M928.024 255.068L931.993 258.99M928.993 258.99L931.993 258.99L931.993 256.004M925.917 252.986L922.01 249.002M921.998 252.003L922.01 249.002L924.996 249.014M928.044 252.971L931.979 249.015M928.979 249.04L931.979 249.015L932.005 252.001" />
-          <path d="M928.367 254C928.367 254.756 927.754 255.369 926.998 255.369C926.242 255.369 925.629 254.756 925.629 254C925.629 253.244 926.242 252.631 926.998 252.631C927.754 252.631 928.367 253.244 928.367 254Z" />
-        </svg>
-      );
-
-    case 'ufo':
-      return (
-        <svg {...commonProps} viewBox="912.0 290.0 24 24">
-          <path d="M915.048 301.586L916.096 300.586C916.399 300.297 916.551 300.152 916.744 300.076C916.936 300 917.15 300 917.579 300H928.421C928.85 300 929.064 300 929.256 300.076C929.449 300.152 929.601 300.297 929.904 300.586L930.952 301.586C931.651 302.252 932 302.586 932 303C932 303.414 931.651 303.748 930.952 304.414L929.904 305.414C929.601 305.703 929.449 305.848 929.256 305.924C929.064 306 928.85 306 928.421 306H917.579C917.15 306 916.936 306 916.744 305.924C916.551 305.848 916.399 305.703 916.096 305.414L915.048 304.414C914.349 303.748 914 303.414 914 303C914 302.586 914.349 302.252 915.048 301.586Z" />
-          <path d="M919.012 303H919M923.006 303H922.994M927 303H926.988" />
-          <path d="M929 300C929 296.686 926.314 294 923 294C919.686 294 917 296.686 917 300" />
-          <path d="M917 306L916.316 308.051C916.232 308.305 916.189 308.432 916.125 308.534C915.987 308.753 915.77 308.909 915.519 308.971C915.401 309 915.267 309 915 309" />
-          <path d="M929 306L929.684 308.051C929.768 308.305 929.811 308.432 929.875 308.534C930.013 308.753 930.23 308.909 930.481 308.971C930.599 309 930.733 309 931 309" />
-        </svg>
-      );
-
-    case 'wind-turbine':
-      return (
-        <svg {...commonProps} viewBox="912.0 334.0 24 24">
-          <path d="M924.5 345C924.5 345.828 923.828 346.5 923 346.5C922.172 346.5 921.5 345.828 921.5 345C921.5 344.172 922.172 343.5 923 343.5C923.828 343.5 924.5 344.172 924.5 345Z" />
-          <path d="M932 344.5C931.988 344.308 931.971 344.117 931.948 343.928C931.62 341.258 930.16 338.945 928.072 337.5M917.928 337.5C915.84 338.945 914.38 341.258 914.052 343.928C914.029 344.117 914.012 344.308 914 344.5" />
-          <path d="M923 343.5V341" />
-          <path d="M921.199 337.99L921.351 339.507C921.407 340.066 921.434 340.345 921.57 340.551C921.663 340.692 921.791 340.807 921.94 340.885C922.158 341 922.439 341 923 341C923.561 341 923.842 341 924.06 340.885C924.209 340.807 924.337 340.692 924.43 340.551C924.566 340.345 924.593 340.066 924.649 339.507L924.801 337.99C924.884 337.163 924.925 336.749 924.733 336.455C924.675 336.366 924.604 336.287 924.521 336.22C924.247 336 923.831 336 923 336C922.169 336 921.753 336 921.479 336.22C921.396 336.287 921.325 336.366 921.267 336.455C921.075 336.749 921.116 337.163 921.199 337.99Z" />
-          <path d="M921.7 345.75L919.535 347" />
-          <path d="M917.831 350.065L919.069 349.175C919.525 348.847 919.753 348.683 919.863 348.463C919.938 348.312 919.975 348.144 919.968 347.975C919.958 347.729 919.818 347.486 919.537 347C919.257 346.514 919.116 346.271 918.908 346.139C918.765 346.049 918.602 345.997 918.433 345.987C918.187 345.972 917.931 346.087 917.42 346.318L916.03 346.945C915.272 347.287 914.894 347.458 914.734 347.772C914.686 347.866 914.653 347.968 914.637 348.073C914.584 348.42 914.791 348.78 915.207 349.5C915.623 350.22 915.83 350.58 916.158 350.707C916.257 350.746 916.361 350.768 916.467 350.774C916.819 350.793 917.156 350.55 917.831 350.065Z" />
-          <path d="M924.3 345.75L926.465 347" />
-          <path d="M929.97 346.944L928.58 346.317C928.069 346.086 927.813 345.971 927.567 345.986C927.398 345.996 927.235 346.048 927.092 346.138C926.884 346.27 926.743 346.513 926.463 346.999C926.182 347.485 926.042 347.728 926.032 347.974C926.025 348.143 926.061 348.311 926.137 348.462C926.247 348.682 926.475 348.846 926.931 349.174L928.169 350.064C928.844 350.549 929.181 350.792 929.533 350.773C929.638 350.767 929.743 350.745 929.842 350.706C930.169 350.579 930.377 350.219 930.793 349.499C931.208 348.779 931.416 348.419 931.363 348.072C931.347 347.967 931.314 347.865 931.266 347.771C931.106 347.457 930.728 347.286 929.97 346.944Z" />
-          <path d="M923 346.5V356" />
-          <path d="M929 356H917" />
-        </svg>
-      );
-
-    case 'notebook':
-      return (
-        <svg {...commonProps}>
-          <path d="M2 6h4" />
-          <path d="M2 10h4" />
-          <path d="M2 14h4" />
-          <path d="M2 18h4" />
-          <rect width="16" height="20" x="4" y="2" rx="2" />
-          <path d="M9.5 8h5" />
-          <path d="M9.5 12h5" />
-          <path d="M9.5 16h3" />
-        </svg>
-      );
-
-    case 'file-text':
-      return (
-        <svg {...commonProps}>
-          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-          <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-          <path d="M10 9H8" />
-          <path d="M16 13H8" />
-          <path d="M16 17H8" />
-        </svg>
-      );
-
-    case 'graduation-cap':
-      return (
-        <svg {...commonProps}>
-          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-          <path d="M6 12v5c3 3 9 3 12 0v-5" />
-        </svg>
-      );
-
-    case 'diploma':
-      return (
-        <svg {...commonProps}>
-          <path d="M15 12h-5" />
-          <path d="M15 8h-5" />
-          <path d="M19 17V5a2 2 0 0 0-2-2H4" />
-          <path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1Z" />
-          <path d="M4 17a2 2 0 0 1 2-2h4v6H6a2 2 0 0 1-2-2v-2Z" />
-        </svg>
-      );
-
-    case 'lightbulb':
-      return (
-        <svg {...commonProps}>
-          <path d="M9 18h6" />
-          <path d="M10 22h4" />
-          <path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.5 3 5.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3c1.8-1.2 3-3.3 3-5.7a7 7 0 0 0-7-7z" />
-        </svg>
-      );
-
-    case 'pencil':
-      return (
-        <svg {...commonProps}>
-          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-          <line x1="15" x2="19" y1="5" y2="9" />
-        </svg>
-      );
-
-    case 'target':
-      return (
-        <svg {...commonProps}>
-          <circle cx="12" cy="12" r="10" />
-          <circle cx="12" cy="12" r="6" />
-          <circle cx="12" cy="12" r="2" />
-        </svg>
-      );
-
-    case 'star':
-      return (
-        <svg {...commonProps}>
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </svg>
-      );
-
-    case 'trophy':
-      return (
-        <svg {...commonProps}>
-          <path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2" />
-          <path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2" />
-          <path d="M4 3h16v6a6 6 0 0 1-12 0V3Z" />
-          <path d="M12 15v3" />
-          <path d="M8 21h8" />
-        </svg>
-      );
-
-    case 'globe':
-      return (
-        <svg {...commonProps}>
-          <circle cx="12" cy="12" r="10" />
-          <line x1="2" x2="22" y1="12" y2="12" />
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-        </svg>
-      );
-
-    case 'clock':
-      return (
-        <svg {...commonProps}>
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12 6 12 12 16 14" />
-        </svg>
-      );
-
-    case 'bookmark':
-      return (
-        <svg {...commonProps}>
-          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-        </svg>
-      );
-
-    case 'lightning':
-      return (
-        <svg {...commonProps}>
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-        </svg>
-      );
-
-    case 'rocket':
-      return (
-        <svg {...commonProps}>
-          <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
-          <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-          <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
-          <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
-        </svg>
-      );
-
-    case 'telescope':
-      return (
-        <svg {...commonProps}>
-          <path d="m10 11 11-6a1 1 0 0 1 1.4.9v2.2a1 1 0 0 1-.5.9l-11 6" />
-          <path d="m2 15 8-4.5v5L2 20Z" />
-          <line x1="8" y1="17.5" x2="6" y2="22" />
-          <line x1="12" y1="15" x2="14" y2="22" />
-        </svg>
-      );
-
-    case 'satellite':
-      return (
-        <svg {...commonProps}>
-          <path d="M13 7 9 3 5 7l4 4" />
-          <path d="m17 11 4 4-4 4-4-4" />
-          <path d="m8 12 4 4 6-6-4-4Z" />
-          <path d="m16 8 3-3" />
-          <path d="M9 21a6 6 0 0 0-6-6" />
-        </svg>
-      );
-
-    case 'battery':
-      return (
-        <svg {...commonProps}>
-          <rect width="16" height="10" x="2" y="7" rx="2" ry="2" />
-          <line x1="22" x2="22" y1="11" y2="13" />
-          <line x1="6" x2="6" y1="10" y2="14" />
-          <line x1="10" x2="10" y1="10" y2="14" />
-        </svg>
-      );
-
-    case 'sparkles':
-      return (
-        <svg {...commonProps}>
-          <path d="m12 3 2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5Z" />
-          <path d="M19 3v4M21 5h-4" />
-        </svg>
-      );
-
-    case 'wave':
-      return (
-        <svg {...commonProps}>
-          <path d="M2 12c2.5-6 4.5-6 7 0s4.5 6 7 0 4.5-6 6 0" />
-        </svg>
-      );
-
-    case 'flask':
-      return (
-        <svg {...commonProps}>
-          <path d="M10 2v7.31L4.15 19.1A2 2 0 0 0 5.86 22h12.28a2 2 0 0 0 1.71-2.9L14 9.31V2" />
-          <line x1="8.5" x2="15.5" y1="2" y2="2" />
-          <line x1="6.5" x2="17.5" y1="16" y2="16" />
-        </svg>
-      );
-
-    case 'beaker':
-      return (
-        <svg {...commonProps}>
-          <path d="M4 3h16l-2 16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L4 3Z" />
-          <line x1="4" x2="20" y1="3" y2="3" />
-          <line x1="7" x2="11" y1="8" y2="8" />
-          <line x1="7" x2="12" y1="12" y2="12" />
-          <line x1="7" x2="11" y1="16" y2="16" />
-        </svg>
-      );
-
-    case 'microscope':
-      return (
-        <svg {...commonProps}>
-          <path d="M6 18h8" />
-          <path d="M3 22h18" />
-          <path d="M14 22a7 7 0 1 0 0-14h-1" />
-          <path d="M9 14h2" />
-          <path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z" />
-          <path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3" />
-        </svg>
-      );
-
-    case 'leaf':
-      return (
-        <svg {...commonProps}>
-          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
-          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
-        </svg>
-      );
-
-    case 'plant':
-      return (
-        <svg {...commonProps}>
-          <path d="M12 10a4 4 0 0 0-4-4H4v4a4 4 0 0 0 4 4" />
-          <path d="M12 10a4 4 0 0 1 4-4h4v4a4 4 0 0 1-4 4" />
-          <path d="M12 4v16" />
-          <path d="M4 20h16" />
-        </svg>
-      );
-
-    case 'droplet':
-      return (
-        <svg {...commonProps}>
-          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-        </svg>
-      );
-
-    case 'flame':
-      return (
-        <svg {...commonProps}>
-          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-        </svg>
-      );
-
-    case 'book':
-    default:
-      return (
-        <svg {...commonProps}>
-          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
-          <path d="M6 6h10" />
-          <path d="M6 10h10" />
-        </svg>
-      );
-  }
+}) => {
+  const [, , , frame, d, fills, shapes] = ICON_BY_ID.get(name) ?? DEFAULT_ICON;
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      class={className}
+      style={{ flexShrink: 0 }}
+    >
+      {frame === 1 && <path d={SQUARE_FRAME_D} />}
+      {frame === 2 && <circle cx={12} cy={12} r={10} />}
+      {d && <path d={d} />}
+      {fills !== 0 && fills?.map((fd, i) => <path key={i} d={fd} fill={color} />)}
+      {shapes?.map((s, i) =>
+        s[0] === 'c' ? (
+          <circle key={i} cx={s[1]} cy={s[2]} r={s[3]} />
+        ) : (
+          <rect key={i} x={s[1]} y={s[2]} width={s[3]} height={s[4]} rx={s[5]} ry={s[6]} />
+        ),
+      )}
+    </svg>
+  );
 };

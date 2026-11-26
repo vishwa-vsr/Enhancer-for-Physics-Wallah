@@ -46,17 +46,41 @@ if (pwcFilterIdx === -1 || timelineDrawerIdx === -1 || pwcFilterIdx > timelineDr
   process.exit(1);
 }
 
-// Guard 3: Ensure every key in DEFAULT_HIDE_SETTINGS is requested in safeGetSettings()
-const statePath = path.join(rootDir, 'src/content/state.ts');
-const stateCode = fs.readFileSync(statePath, 'utf8');
-const hideMatch = stateCode.match(/export const DEFAULT_HIDE_SETTINGS[\s\S]*?=\s*\{([\s\S]*?)\};/);
-const getMatch = stateCode.match(/chrome\.storage\.local\.get\(\s*\[([\s\S]*?)\]/);
-if (!hideMatch || !getMatch) {
-  console.error('FAIL: Could not locate DEFAULT_HIDE_SETTINGS or safeGetSettings() in state.ts.');
+// Guard 3: Ensure every key in DEFAULT_HIDE_SETTINGS is requested by safeGetSettings()
+const sharedTypesPath = path.join(rootDir, 'src/shared/types.ts');
+const sharedTypesCode = fs.readFileSync(sharedTypesPath, 'utf8');
+const hideMatch = sharedTypesCode.match(/export const DEFAULT_HIDE_SETTINGS[\s\S]*?=\s*\{([\s\S]*?)\};/);
+if (!hideMatch) {
+  console.error('FAIL: Could not locate DEFAULT_HIDE_SETTINGS in src/shared/types.ts.');
   process.exit(1);
 }
 const defaultHideKeys = [...hideMatch[1].matchAll(/^\s*([a-zA-Z0-9_]+)\s*:/gm)].map((m) => m[1]);
-const safeGetKeys = new Set([...getMatch[1].matchAll(/'([^']+)'/g)].map((m) => m[1]));
+let requestedStorageKeys = [];
+const stateBuild = esbuild.buildSync({
+  entryPoints: [path.join(rootDir, 'src/content/state.ts')],
+  bundle: true,
+  write: false,
+  target: 'chrome90',
+  format: 'cjs',
+});
+const stateModule = { exports: {} };
+new Function('exports', 'module', stateBuild.outputFiles[0].text)(
+  stateModule.exports,
+  stateModule,
+);
+globalThis.chrome = {
+  runtime: { id: 'safety-test' },
+  storage: {
+    local: {
+      get: (keys) => {
+        requestedStorageKeys = Array.isArray(keys) ? keys : [];
+      },
+    },
+  },
+};
+stateModule.exports.safeGetSettings(() => {});
+delete globalThis.chrome;
+const safeGetKeys = new Set(requestedStorageKeys);
 const missingHideKeys = defaultHideKeys.filter((k) => !safeGetKeys.has(k));
 if (missingHideKeys.length > 0) {
   console.error(

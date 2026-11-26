@@ -1,10 +1,10 @@
 import { signal } from '@preact/signals';
 import {
+  DEFAULT_SETTINGS,
   FinishTimeFormat,
   PopupSettings,
   ReviewPromptStatus,
   VideoQuality,
-  VolumeBalancerMode,
 } from '@shared/types';
 import { loadSettings, onSettingsChanged, saveSettings } from '@shared/storage';
 import {
@@ -16,64 +16,64 @@ import {
 export { getReservedShortcutWarning, sanitizeSpeedShortcut };
 
 // ===== Speed & Quality signals =====
-export const preferredSpeed = signal(1.0);
-export const constantVideoQuality = signal(false);
-export const preferredQuality = signal<VideoQuality>('720p');
-export const snapPoints = signal<number[]>([1.0, 1.5, 2.0, 2.5]);
+export const preferredSpeed = signal(DEFAULT_SETTINGS.preferredSpeed);
+export const constantVideoQuality = signal(DEFAULT_SETTINGS.constantVideoQuality);
+export const preferredQuality = signal<VideoQuality>(DEFAULT_SETTINGS.preferredQuality);
+export const snapPoints = signal<number[]>([...DEFAULT_SETTINGS.snapPoints]);
 
 // ===== Focus toggle signals (match chrome.storage keys exactly) =====
-export const hideAskAI = signal(false);
-export const hideDoubt = signal(false);
-export const hideChat = signal(false);
-export const hideNotes = signal(false);
-export const hideNoteTimeline = signal(false);
-export const hideTimeLine = signal(false);
-export const hideTimeText = signal(false);
-export const hideSpeed = signal(false);
-export const hideQuality = signal(true);
-export const hideSetting = signal(false);
-export const enableInstantHide = signal(false);
-export const autoSkipPromoAds = signal(false);
-export const blockRecordedPolls = signal(false);
-export const enableSlideViewer = signal(true);
-export const keySlideViewer = signal('t');
-export const autoPauseOnHide = signal(false);
+export const hideAskAI = signal(DEFAULT_SETTINGS.hideAskAI);
+export const hideDoubt = signal(DEFAULT_SETTINGS.hideDoubt);
+export const hideChat = signal(DEFAULT_SETTINGS.hideChat);
+export const hideNotes = signal(DEFAULT_SETTINGS.hideNotes);
+export const hideNoteTimeline = signal(DEFAULT_SETTINGS.hideNoteTimeline);
+export const hideTimeLine = signal(DEFAULT_SETTINGS.hideTimeLine);
+export const hideTimeText = signal(DEFAULT_SETTINGS.hideTimeText);
+export const hideSpeed = signal(DEFAULT_SETTINGS.hideSpeed);
+export const hideQuality = signal(DEFAULT_SETTINGS.hideQuality);
+export const hideSetting = signal(DEFAULT_SETTINGS.hideSetting);
+export const enableInstantHide = signal(DEFAULT_SETTINGS.enableInstantHide);
+export const autoSkipPromoAds = signal(DEFAULT_SETTINGS.autoSkipPromoAds);
+export const blockRecordedPolls = signal(DEFAULT_SETTINGS.blockRecordedPolls);
+export const enableSlideViewer = signal(DEFAULT_SETTINGS.enableSlideViewer);
+export const keySlideViewer = signal(DEFAULT_SETTINGS.keySlideViewer);
+export const autoPauseOnHide = signal(DEFAULT_SETTINGS.autoPauseOnHide);
 
 // ===== Shortcut signals =====
-export const enableHotkeys = signal(false);
-export const speedScrollEnabled = signal(true);
-export const volumeScrollEnabled = signal(false);
-export const volumeScrollMouseStep = signal(5);
-export const volumeScrollTrackpadStep = signal(2);
-export const showVolumeBubble = signal(true);
-export const volumeBubbleDelay = signal(0.4);
-export const holdSpaceSpeedUp = signal(false);
-export const holdSpaceSpeed = signal(2.0);
-export const keySpeedUp = signal('h');
-export const keySlowDown = signal('j');
-export const keyReset = signal('l');
-export const alwaysExpandWidget = signal(false);
-export const lectureTimeEnabled = signal(true);
-export const showFinishTime = signal(true);
-export const finishTimeFormat = signal<FinishTimeFormat>('clock');
-export const showLiveCatchUp = signal(true);
+export const enableHotkeys = signal(DEFAULT_SETTINGS.enableHotkeys);
+export const speedScrollEnabled = signal(DEFAULT_SETTINGS.speedScrollEnabled);
+export const volumeScrollEnabled = signal(DEFAULT_SETTINGS.volumeScrollEnabled);
+export const volumeScrollMouseStep = signal(DEFAULT_SETTINGS.volumeScrollMouseStep);
+export const volumeScrollTrackpadStep = signal(DEFAULT_SETTINGS.volumeScrollTrackpadStep);
+export const showVolumeBubble = signal(DEFAULT_SETTINGS.showVolumeBubble);
+export const volumeBubbleDelay = signal(DEFAULT_SETTINGS.volumeBubbleDelay);
+export const holdSpaceSpeedUp = signal(DEFAULT_SETTINGS.holdSpaceSpeedUp);
+export const holdSpaceSpeed = signal(DEFAULT_SETTINGS.holdSpaceSpeed);
+export const keySpeedUp = signal(DEFAULT_SETTINGS.keySpeedUp);
+export const keySlowDown = signal(DEFAULT_SETTINGS.keySlowDown);
+export const keyReset = signal(DEFAULT_SETTINGS.keyReset);
+export const alwaysExpandWidget = signal(DEFAULT_SETTINGS.alwaysExpandWidget);
+export const lectureTimeEnabled = signal(DEFAULT_SETTINGS.lectureTimeEnabled);
+export const showFinishTime = signal(DEFAULT_SETTINGS.showFinishTime);
+export const finishTimeFormat = signal<FinishTimeFormat>(DEFAULT_SETTINGS.finishTimeFormat);
+export const showLiveCatchUp = signal(DEFAULT_SETTINGS.showLiveCatchUp);
 
 // ===== Focus shortcuts signals (Issue #14) =====
-export const enableFocusShortcuts = signal(false);
-export const enableKeyChat = signal(true);
-export const enableKeyTimeline = signal(true);
-export const enableKeyNotes = signal(true);
-export const enableKeyDoubt = signal(true);
-export const enableKeyFullscreen = signal(true);
-export const enableKeyExit = signal(true);
-export const keyChat = signal('c');
-export const keyTimeline = signal('t');
-export const keyNotes = signal('n');
-export const keyDoubt = signal('d');
-export const keyFullscreen = signal('f');
-export const keyExit = signal('e');
-export const allowShortcutsWhenHidden = signal(false);
-export const showShortcutAlerts = signal(true);
+export const enableFocusShortcuts = signal(DEFAULT_SETTINGS.enableFocusShortcuts);
+export const enableKeyChat = signal(DEFAULT_SETTINGS.enableKeyChat);
+export const enableKeyTimeline = signal(DEFAULT_SETTINGS.enableKeyTimeline);
+export const enableKeyNotes = signal(DEFAULT_SETTINGS.enableKeyNotes);
+export const enableKeyDoubt = signal(DEFAULT_SETTINGS.enableKeyDoubt);
+export const enableKeyFullscreen = signal(DEFAULT_SETTINGS.enableKeyFullscreen);
+export const enableKeyExit = signal(DEFAULT_SETTINGS.enableKeyExit);
+export const keyChat = signal(DEFAULT_SETTINGS.keyChat);
+export const keyTimeline = signal(DEFAULT_SETTINGS.keyTimeline);
+export const keyNotes = signal(DEFAULT_SETTINGS.keyNotes);
+export const keyDoubt = signal(DEFAULT_SETTINGS.keyDoubt);
+export const keyFullscreen = signal(DEFAULT_SETTINGS.keyFullscreen);
+export const keyExit = signal(DEFAULT_SETTINGS.keyExit);
+export const allowShortcutsWhenHidden = signal(DEFAULT_SETTINGS.allowShortcutsWhenHidden);
+export const showShortcutAlerts = signal(DEFAULT_SETTINGS.showShortcutAlerts);
 
 export type ShortcutKeyId =
   | 'keySpeedUp'
@@ -118,100 +118,145 @@ export function findConflictingShortcut(
   return null;
 }
 
-// ===== Auto-hide controls & cursor signals (Issue #14) =====
-export const autoHideControls = signal(false);
-export const autoHideDelay = signal(0.8);
-export const autoHideWhenPaused = signal(false);
+// ===== Auto-hide signals =====
+export const autoHideControls = signal(DEFAULT_SETTINGS.autoHideControls);
+export const autoHideDelay = signal(DEFAULT_SETTINGS.autoHideDelay);
+export const autoHideWhenPaused = signal(DEFAULT_SETTINGS.autoHideWhenPaused);
 
 // ===== Skip Silence signals =====
-export const skipSilenceEnabled = signal(false);
-export const skipSilenceActive = signal(false);
-export const skipSilenceSilenceSpeed = signal(6.0);
-export const skipSilenceThreshold = signal(-40);
-export const skipSilenceDynamicThreshold = signal(true);
-export const skipSilenceMute = signal(false);
-export const skipSilenceTimeSaved = signal(0);
-export const skipSilenceMinDuration = signal(0.5);
-export const skipSilenceLowCpu = signal(false);
+export const skipSilenceEnabled = signal(DEFAULT_SETTINGS.skipSilenceEnabled);
+export const skipSilenceActive = signal(DEFAULT_SETTINGS.skipSilenceActive);
+export const skipSilenceSilenceSpeed = signal(DEFAULT_SETTINGS.skipSilenceSilenceSpeed);
+export const skipSilenceThreshold = signal(DEFAULT_SETTINGS.skipSilenceThreshold);
+export const skipSilenceDynamicThreshold = signal(DEFAULT_SETTINGS.skipSilenceDynamicThreshold);
+export const skipSilenceMute = signal(DEFAULT_SETTINGS.skipSilenceMute);
+export const skipSilenceTimeSaved = signal(DEFAULT_SETTINGS.skipSilenceTimeSaved);
+export const skipSilenceMinDuration = signal(DEFAULT_SETTINGS.skipSilenceMinDuration);
+export const skipSilenceLowCpu = signal(DEFAULT_SETTINGS.skipSilenceLowCpu);
 
-// ===== Auto Volume Balancer & Ear Protection signals (Issue #6) =====
-export const volumeBalancerEnabled = signal(false);
-export const volumeBalancerMode = signal<VolumeBalancerMode>('balanced');
+// ===== Ear Protection signal (Issue #6) =====
+export const volumeBalancerEnabled = signal(DEFAULT_SETTINGS.volumeBalancerEnabled);
 
-// ===== Review & Refresh prompt signals =====
-export const installDate = signal(0);
-export const reviewPromptStatus = signal<ReviewPromptStatus>('pending');
-export const reviewPromptNextShowTime = signal(0);
-export const hasSeenRefreshPrompt = signal(false);
+// ===== Review prompt & onboarding signals =====
+export const installDate = signal(DEFAULT_SETTINGS.installDate);
+export const reviewPromptStatus = signal<ReviewPromptStatus>(DEFAULT_SETTINGS.reviewPromptStatus);
+export const reviewPromptNextShowTime = signal(DEFAULT_SETTINGS.reviewPromptNextShowTime);
+export const hasSeenRefreshPrompt = signal(DEFAULT_SETTINGS.hasSeenRefreshPrompt);
 
-// ===== UI state (not persisted to storage) =====
+// ===== UI state signals =====
 export const activeTab = signal('speed-tab');
 export const isLoading = signal(true);
 
-// Focus toggle signals that map 1:1 to boolean PopupSettings keys (except hideQuality which defaults to true)
-const BOOLEAN_HIDE_SIGNALS: Array<[keyof PopupSettings, { value: boolean }]> = [
-  ['hideAskAI', hideAskAI],
-  ['hideDoubt', hideDoubt],
-  ['hideChat', hideChat],
-  ['hideNotes', hideNotes],
-  ['hideNoteTimeline', hideNoteTimeline],
-  ['hideTimeLine', hideTimeLine],
-  ['hideTimeText', hideTimeText],
-  ['hideSpeed', hideSpeed],
-  ['hideSetting', hideSetting],
+const BOOLEAN_SIGNALS: Array<[keyof PopupSettings, { value: boolean }, boolean]> = [
+  ['constantVideoQuality', constantVideoQuality, false],
+  ['hideAskAI', hideAskAI, false],
+  ['hideDoubt', hideDoubt, false],
+  ['hideChat', hideChat, false],
+  ['hideNotes', hideNotes, false],
+  ['hideNoteTimeline', hideNoteTimeline, false],
+  ['hideTimeLine', hideTimeLine, false],
+  ['hideTimeText', hideTimeText, false],
+  ['hideSpeed', hideSpeed, false],
+  ['hideQuality', hideQuality, true],
+  ['hideSetting', hideSetting, false],
+  ['enableInstantHide', enableInstantHide, false],
+  ['autoSkipPromoAds', autoSkipPromoAds, false],
+  ['blockRecordedPolls', blockRecordedPolls, false],
+  ['enableSlideViewer', enableSlideViewer, true],
+  ['autoPauseOnHide', autoPauseOnHide, false],
+  ['enableHotkeys', enableHotkeys, false],
+  ['speedScrollEnabled', speedScrollEnabled, true],
+  ['volumeScrollEnabled', volumeScrollEnabled, false],
+  ['showVolumeBubble', showVolumeBubble, true],
+  ['holdSpaceSpeedUp', holdSpaceSpeedUp, false],
+  ['alwaysExpandWidget', alwaysExpandWidget, false],
+  ['lectureTimeEnabled', lectureTimeEnabled, true],
+  ['showFinishTime', showFinishTime, true],
+  ['showLiveCatchUp', showLiveCatchUp, true],
+  ['enableFocusShortcuts', enableFocusShortcuts, false],
+  ['enableKeyChat', enableKeyChat, true],
+  ['enableKeyTimeline', enableKeyTimeline, true],
+  ['enableKeyNotes', enableKeyNotes, true],
+  ['enableKeyDoubt', enableKeyDoubt, true],
+  ['enableKeyFullscreen', enableKeyFullscreen, true],
+  ['enableKeyExit', enableKeyExit, true],
+  ['allowShortcutsWhenHidden', allowShortcutsWhenHidden, false],
+  ['showShortcutAlerts', showShortcutAlerts, true],
+  ['autoHideControls', autoHideControls, false],
+  ['autoHideWhenPaused', autoHideWhenPaused, false],
+  ['skipSilenceEnabled', skipSilenceEnabled, false],
+  ['skipSilenceActive', skipSilenceActive, false],
+  ['skipSilenceDynamicThreshold', skipSilenceDynamicThreshold, true],
+  ['skipSilenceMute', skipSilenceMute, false],
+  ['skipSilenceLowCpu', skipSilenceLowCpu, false],
+  ['volumeBalancerEnabled', volumeBalancerEnabled, false],
+  ['hasSeenRefreshPrompt', hasSeenRefreshPrompt, false],
 ];
+
+const NULLISH_SIGNALS: Array<[keyof PopupSettings, { value: unknown }, unknown]> = [
+  ['volumeScrollMouseStep', volumeScrollMouseStep, 5],
+  ['volumeScrollTrackpadStep', volumeScrollTrackpadStep, 2],
+  ['volumeBubbleDelay', volumeBubbleDelay, 0.4],
+  ['holdSpaceSpeed', holdSpaceSpeed, 2.0],
+  ['autoHideDelay', autoHideDelay, 0.8],
+  ['skipSilenceSilenceSpeed', skipSilenceSilenceSpeed, 6.0],
+  ['skipSilenceThreshold', skipSilenceThreshold, -40],
+  ['skipSilenceTimeSaved', skipSilenceTimeSaved, 0],
+  ['skipSilenceMinDuration', skipSilenceMinDuration, 0.5],
+  ['keyChat', keyChat, 'c'],
+  ['keyTimeline', keyTimeline, 't'],
+  ['keyNotes', keyNotes, 'n'],
+  ['keyDoubt', keyDoubt, 'd'],
+  ['keyFullscreen', keyFullscreen, 'f'],
+  ['keyExit', keyExit, 'e'],
+];
+
+const SHORTCUT_SANITIZE_DEFAULTS: Record<'keySpeedUp' | 'keySlowDown' | 'keyReset', [typeof keySpeedUp, string]> = {
+  keySpeedUp: [keySpeedUp, 'h'],
+  keySlowDown: [keySlowDown, 'j'],
+  keyReset: [keyReset, 'l'],
+};
+
+function applyCustomPopupChange(key: keyof PopupSettings, val: unknown): void {
+  if (key === 'preferredSpeed' && val !== undefined) preferredSpeed.value = val as number;
+  else if (key === 'preferredQuality') preferredQuality.value = (val as VideoQuality) || '720p';
+  else if (key === 'snapPoints')
+    snapPoints.value = Array.isArray(val) ? (val as number[]) : [1.0, 1.5, 2.0, 2.5];
+  else if (key === 'keySlideViewer') keySlideViewer.value = (val as string) || 't';
+  else if (key === 'finishTimeFormat')
+    finishTimeFormat.value = val === 'full' ? 'full' : 'clock';
+  else if (key === 'installDate') installDate.value = (val as number) || 0;
+  else if (key === 'reviewPromptStatus')
+    reviewPromptStatus.value = (val as ReviewPromptStatus) || 'pending';
+  else if (key === 'reviewPromptNextShowTime') reviewPromptNextShowTime.value = (val as number) || 0;
+  else if (key in SHORTCUT_SANITIZE_DEFAULTS) {
+    const [sig, fallback] = SHORTCUT_SANITIZE_DEFAULTS[key as keyof typeof SHORTCUT_SANITIZE_DEFAULTS];
+    sig.value = sanitizeSpeedShortcut(val, fallback);
+  }
+}
 
 // Load all settings from chrome.storage into signals
 export async function initStore() {
   const s = await loadSettings();
 
-  preferredSpeed.value = s.preferredSpeed;
-  constantVideoQuality.value = !!s.constantVideoQuality;
-  preferredQuality.value = s.preferredQuality || '720p';
-  snapPoints.value = Array.isArray(s.snapPoints) ? s.snapPoints : [1.0, 1.5, 2.0, 2.5];
-
-  for (const [key, sig] of BOOLEAN_HIDE_SIGNALS) {
-    sig.value = !!s[key];
+  for (const [key, sig, defaultTrue] of BOOLEAN_SIGNALS) {
+    sig.value = defaultTrue ? s[key] !== false : !!s[key];
   }
-  hideQuality.value = s.hideQuality !== undefined ? !!s.hideQuality : true;
-  enableInstantHide.value = !!s.enableInstantHide;
-  autoSkipPromoAds.value = !!s.autoSkipPromoAds;
-  blockRecordedPolls.value = !!s.blockRecordedPolls;
-  enableSlideViewer.value = s.enableSlideViewer !== false;
-  keySlideViewer.value = s.keySlideViewer || 't';
-  autoPauseOnHide.value = !!s.autoPauseOnHide;
-
-  enableHotkeys.value = !!s.enableHotkeys;
-  speedScrollEnabled.value = s.speedScrollEnabled !== false;
-  volumeScrollEnabled.value = !!s.volumeScrollEnabled;
-  volumeScrollMouseStep.value = s.volumeScrollMouseStep ?? 5;
-  volumeScrollTrackpadStep.value = s.volumeScrollTrackpadStep ?? 2;
-  showVolumeBubble.value = s.showVolumeBubble !== false;
-  volumeBubbleDelay.value = s.volumeBubbleDelay ?? 0.4;
-  holdSpaceSpeedUp.value = !!s.holdSpaceSpeedUp;
-  holdSpaceSpeed.value = s.holdSpaceSpeed ?? 2.0;
-
-  alwaysExpandWidget.value = !!s.alwaysExpandWidget;
-  lectureTimeEnabled.value = s.lectureTimeEnabled !== false;
-  showFinishTime.value = s.showFinishTime !== false; // defaults to true
-  finishTimeFormat.value = s.finishTimeFormat === 'full' ? 'full' : 'clock';
-  showLiveCatchUp.value = s.showLiveCatchUp !== false;
-
-  enableFocusShortcuts.value = !!s.enableFocusShortcuts;
-  enableKeyChat.value = s.enableKeyChat !== false;
-  enableKeyTimeline.value = s.enableKeyTimeline !== false;
-  enableKeyNotes.value = s.enableKeyNotes !== false;
-  enableKeyDoubt.value = s.enableKeyDoubt !== false;
-  enableKeyFullscreen.value = s.enableKeyFullscreen !== false;
-  enableKeyExit.value = s.enableKeyExit !== false;
-  keyChat.value = s.keyChat ?? 'c';
-  keyTimeline.value = s.keyTimeline ?? 't';
-  keyNotes.value = s.keyNotes ?? 'n';
-  keyDoubt.value = s.keyDoubt ?? 'd';
-  keyFullscreen.value = s.keyFullscreen ?? 'f';
-  keyExit.value = s.keyExit ?? 'e';
-  allowShortcutsWhenHidden.value = !!s.allowShortcutsWhenHidden;
-  showShortcutAlerts.value = s.showShortcutAlerts !== false;
+  for (const [key, sig, fallback] of NULLISH_SIGNALS) {
+    sig.value = s[key] ?? fallback;
+  }
+  for (const key of [
+    'preferredSpeed',
+    'preferredQuality',
+    'snapPoints',
+    'keySlideViewer',
+    'finishTimeFormat',
+    'installDate',
+    'reviewPromptStatus',
+    'reviewPromptNextShowTime',
+  ] as const) {
+    applyCustomPopupChange(key, s[key]);
+  }
 
   const resolvedSpeedKeys = resolveSafeSpeedShortcuts(s, [
     keyChat.value,
@@ -221,173 +266,32 @@ export async function initStore() {
     keyFullscreen.value,
     keyExit.value,
   ]);
-  keySpeedUp.value = resolvedSpeedKeys.keySpeedUp;
-  keySlowDown.value = resolvedSpeedKeys.keySlowDown;
-  keyReset.value = resolvedSpeedKeys.keyReset;
-
   const shortcutCleanup: Partial<PopupSettings> = {};
-  if (s.keySpeedUp !== keySpeedUp.value) {
-    shortcutCleanup.keySpeedUp = keySpeedUp.value;
-  }
-  if (s.keySlowDown !== keySlowDown.value) {
-    shortcutCleanup.keySlowDown = keySlowDown.value;
-  }
-  if (s.keyReset !== keyReset.value) {
-    shortcutCleanup.keyReset = keyReset.value;
+  for (const k of ['keySpeedUp', 'keySlowDown', 'keyReset'] as const) {
+    const sig = SHORTCUT_SANITIZE_DEFAULTS[k][0];
+    sig.value = resolvedSpeedKeys[k];
+    if (s[k] !== sig.value) shortcutCleanup[k] = sig.value;
   }
   if (Object.keys(shortcutCleanup).length > 0) {
     saveSettings(shortcutCleanup);
   }
 
-  autoHideControls.value = !!s.autoHideControls;
-  autoHideDelay.value = s.autoHideDelay ?? 0.8;
-  autoHideWhenPaused.value = !!s.autoHideWhenPaused;
-
-  skipSilenceEnabled.value = !!s.skipSilenceEnabled;
-  skipSilenceActive.value = !!s.skipSilenceActive;
-  skipSilenceSilenceSpeed.value = s.skipSilenceSilenceSpeed ?? 6.0;
-  skipSilenceThreshold.value = s.skipSilenceThreshold ?? -40;
-  skipSilenceDynamicThreshold.value = s.skipSilenceDynamicThreshold !== false; // defaults to true
-  skipSilenceMute.value = !!s.skipSilenceMute;
-  skipSilenceTimeSaved.value = s.skipSilenceTimeSaved ?? 0;
-  skipSilenceMinDuration.value = s.skipSilenceMinDuration ?? 0.5;
-  skipSilenceLowCpu.value = !!s.skipSilenceLowCpu;
-
-  volumeBalancerEnabled.value = !!s.volumeBalancerEnabled;
-  volumeBalancerMode.value = s.volumeBalancerMode || 'balanced';
-
-  installDate.value = s.installDate || 0;
-  reviewPromptStatus.value = s.reviewPromptStatus || 'pending';
-  reviewPromptNextShowTime.value = s.reviewPromptNextShowTime || 0;
-  hasSeenRefreshPrompt.value = !!s.hasSeenRefreshPrompt;
-
   // Listen for real-time updates from content script (e.g., time saved or quality)
   onSettingsChanged((changes) => {
-    if (changes.finishTimeFormat !== undefined) {
-      finishTimeFormat.value = (changes.finishTimeFormat as FinishTimeFormat) || 'clock';
-    }
-    if (changes.lectureTimeEnabled !== undefined) {
-      lectureTimeEnabled.value = changes.lectureTimeEnabled !== false;
-    }
-    if (changes.showFinishTime !== undefined) {
-      showFinishTime.value = changes.showFinishTime !== false;
-    }
-    if (changes.showLiveCatchUp !== undefined) {
-      showLiveCatchUp.value = changes.showLiveCatchUp !== false;
-    }
-    if (changes.keySpeedUp !== undefined) {
-      keySpeedUp.value = sanitizeSpeedShortcut(changes.keySpeedUp, 'h');
-    }
-    if (changes.keySlowDown !== undefined) {
-      keySlowDown.value = sanitizeSpeedShortcut(changes.keySlowDown, 'j');
-    }
-    if (changes.keyReset !== undefined) {
-      keyReset.value = sanitizeSpeedShortcut(changes.keyReset, 'l');
-    }
-    if (changes.enableFocusShortcuts !== undefined) {
-      enableFocusShortcuts.value = !!changes.enableFocusShortcuts;
-    }
-    if (changes.enableKeyChat !== undefined) {
-      enableKeyChat.value = changes.enableKeyChat !== false;
-    }
-    if (changes.enableKeyTimeline !== undefined) {
-      enableKeyTimeline.value = changes.enableKeyTimeline !== false;
-    }
-    if (changes.enableKeyNotes !== undefined) {
-      enableKeyNotes.value = changes.enableKeyNotes !== false;
-    }
-    if (changes.enableKeyDoubt !== undefined) {
-      enableKeyDoubt.value = changes.enableKeyDoubt !== false;
-    }
-    if (changes.enableKeyFullscreen !== undefined) {
-      enableKeyFullscreen.value = changes.enableKeyFullscreen !== false;
-    }
-    if (changes.enableKeyExit !== undefined) {
-      enableKeyExit.value = changes.enableKeyExit !== false;
-    }
-    if (changes.keyChat !== undefined) keyChat.value = changes.keyChat;
-    if (changes.keyTimeline !== undefined) keyTimeline.value = changes.keyTimeline;
-    if (changes.keyNotes !== undefined) keyNotes.value = changes.keyNotes;
-    if (changes.keyDoubt !== undefined) keyDoubt.value = changes.keyDoubt;
-    if (changes.keyFullscreen !== undefined) keyFullscreen.value = changes.keyFullscreen;
-    if (changes.keyExit !== undefined) keyExit.value = changes.keyExit;
-    if (changes.autoSkipPromoAds !== undefined) autoSkipPromoAds.value = !!changes.autoSkipPromoAds;
-    if (changes.blockRecordedPolls !== undefined)
-      blockRecordedPolls.value = !!changes.blockRecordedPolls;
-    if (changes.enableSlideViewer !== undefined) {
-      enableSlideViewer.value = changes.enableSlideViewer !== false;
-    }
-    if (changes.keySlideViewer !== undefined) {
-      keySlideViewer.value = changes.keySlideViewer || 't';
-    }
-    if (changes.allowShortcutsWhenHidden !== undefined) {
-      allowShortcutsWhenHidden.value = !!changes.allowShortcutsWhenHidden;
-    }
-    if (changes.showShortcutAlerts !== undefined) {
-      showShortcutAlerts.value = changes.showShortcutAlerts !== false;
-    }
-    if (changes.autoHideControls !== undefined) autoHideControls.value = !!changes.autoHideControls;
-    if (changes.speedScrollEnabled !== undefined) {
-      speedScrollEnabled.value = changes.speedScrollEnabled !== false;
-    }
-    if (changes.volumeScrollEnabled !== undefined) {
-      volumeScrollEnabled.value = !!changes.volumeScrollEnabled;
-    }
-    if (changes.volumeScrollMouseStep !== undefined) {
-      volumeScrollMouseStep.value = changes.volumeScrollMouseStep;
-    }
-    if (changes.volumeScrollTrackpadStep !== undefined) {
-      volumeScrollTrackpadStep.value = changes.volumeScrollTrackpadStep;
-    }
-    if (changes.showVolumeBubble !== undefined) {
-      showVolumeBubble.value = changes.showVolumeBubble !== false;
-    }
-    if (changes.volumeBubbleDelay !== undefined) {
-      volumeBubbleDelay.value = changes.volumeBubbleDelay;
-    }
-    if (changes.autoHideDelay !== undefined) autoHideDelay.value = changes.autoHideDelay;
-    if (changes.autoHideWhenPaused !== undefined)
-      autoHideWhenPaused.value = !!changes.autoHideWhenPaused;
-    if (changes.skipSilenceTimeSaved !== undefined) {
-      skipSilenceTimeSaved.value = changes.skipSilenceTimeSaved;
-    }
-    if (changes.volumeBalancerEnabled !== undefined) {
-      volumeBalancerEnabled.value = !!changes.volumeBalancerEnabled;
-    }
-    if (changes.volumeBalancerMode !== undefined) {
-      volumeBalancerMode.value = (changes.volumeBalancerMode as VolumeBalancerMode) || 'balanced';
-    }
-    if (changes.preferredQuality !== undefined) {
-      preferredQuality.value = changes.preferredQuality;
-    }
-    if (changes.constantVideoQuality !== undefined) {
-      constantVideoQuality.value = !!changes.constantVideoQuality;
-    }
-    for (const [key, sig] of BOOLEAN_HIDE_SIGNALS) {
+    for (const [key, sig, defaultTrue] of BOOLEAN_SIGNALS) {
       if (changes[key] !== undefined) {
-        sig.value = !!changes[key];
+        sig.value = defaultTrue && key !== 'hideQuality' ? changes[key] !== false : !!changes[key];
       }
     }
-    if (changes.hideQuality !== undefined) {
-      hideQuality.value = !!changes.hideQuality;
+    for (const [key, sig] of NULLISH_SIGNALS) {
+      if (changes[key] !== undefined) {
+        sig.value = changes[key];
+      }
     }
-    if (changes.skipSilenceEnabled !== undefined) {
-      skipSilenceEnabled.value = !!changes.skipSilenceEnabled;
-    }
-    if (changes.skipSilenceActive !== undefined) {
-      skipSilenceActive.value = !!changes.skipSilenceActive;
-    }
-    if (changes.installDate !== undefined) {
-      installDate.value = (changes.installDate as number) || 0;
-    }
-    if (changes.reviewPromptStatus !== undefined) {
-      reviewPromptStatus.value = (changes.reviewPromptStatus as ReviewPromptStatus) || 'pending';
-    }
-    if (changes.reviewPromptNextShowTime !== undefined) {
-      reviewPromptNextShowTime.value = (changes.reviewPromptNextShowTime as number) || 0;
-    }
-    if (changes.hasSeenRefreshPrompt !== undefined) {
-      hasSeenRefreshPrompt.value = !!changes.hasSeenRefreshPrompt;
+    for (const key of Object.keys(changes) as (keyof PopupSettings)[]) {
+      if (changes[key] !== undefined) {
+        applyCustomPopupChange(key, changes[key]);
+      }
     }
   });
 

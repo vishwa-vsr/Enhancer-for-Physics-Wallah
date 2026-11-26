@@ -39,32 +39,6 @@
   margin-left: 2px;
 }
 
-.settingsToggleBtn {
-  background: var(--bg-control);
-  border: none;
-  color: var(--text-muted);
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-  outline: none;
-  padding: 0;
-}
-
-.settingsToggleBtn:hover {
-  color: var(--text-primary);
-  background: var(--bg-control-hover);
-}
-
-.settingsToggleBtn:active {
-  background: var(--bg-control-hover);
-  color: var(--accent-primary);
-}
-
 .settingsIcon {
   width: 14px;
   height: 14px;
@@ -74,53 +48,9 @@
   display: block;
 }
 
-.settingsToggleBtn[aria-expanded='true'] .settingsIcon {
+.settingsToggleBtnActive .settingsIcon {
   transform: rotate(90deg);
   color: var(--accent-primary);
-}
-
-.resetSpeedBtn {
-  background: var(--bg-control);
-  border: none;
-  color: var(--text-muted);
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-  outline: none;
-  padding: 0;
-}
-
-.resetSpeedBtn:hover {
-  color: var(--text-primary);
-  background: var(--bg-control-hover);
-}
-
-.resetSpeedBtn:active {
-  background: var(--bg-control-hover);
-  color: var(--accent-primary);
-}
-
-.resetIcon {
-  width: 14px;
-  height: 14px;
-  transition:
-    transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
-    color 200ms ease;
-  display: block;
-}
-
-.resetSpeedBtn:hover .resetIcon {
-  transform: rotate(-90deg);
-  color: var(--accent-primary);
-}
-
-.resetSpeedBtn:active .resetIcon {
-  transform: rotate(-180deg);
 }
 
 /* Range Slider */
@@ -357,15 +287,6 @@
   background-color: var(--card-main-bg-hover, var(--bg-card-hover));
 }
 
-.disabledRow {
-  opacity: 0.42;
-  pointer-events: none;
-  filter: grayscale(0.5);
-  transition:
-    opacity 0.2s ease,
-    filter 0.2s ease;
-}
-
 .hudFooterTitle {
   font-size: var(--font-size-base);
   font-weight: 500;
@@ -398,39 +319,6 @@
   margin-top: 12px;
 }
 
-.sectionTitle {
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-  margin: 0 0 2px 2px;
-  display: flex;
-  align-items: center;
-}
-
-.settingsGroupCard {
-  background: var(--card-main-bg, var(--bg-card));
-  border-radius: var(--radius-lg);
-  box-shadow: var(--card-shadow);
-  border: var(--card-border, none);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.settingRowGroup {
-  overflow: hidden;
-  border-radius: inherit;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.settingRowGroup:not(:last-child) {
-  border-bottom: 1px solid var(--divider-color);
-}
-
 .hotkeysEditor {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -457,65 +345,11 @@
   text-align: center;
 }
 
-.hotkeyInput {
-  background: var(--card-sub-control-bg, var(--bg-card));
-  border: none;
-  color: var(--input-fg);
-  font-family: 'Inter', var(--font-sans);
-  font-size: var(--font-size-sm);
-  font-weight: 700;
-  text-transform: uppercase;
-  text-align: center;
-  border-radius: var(--radius-sm);
-  width: 100%;
-  padding: 5px 6px;
-  outline: none;
-  cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: all var(--transition-fast);
-  box-sizing: border-box;
-}
-
-.hotkeyInput:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
-.hotkeyInput:focus {
-  box-shadow: 0 0 0 2px var(--accent-primary);
-}
-
-.hotkeyNotice {
-  background: var(--card-sub-bg, var(--bg-control));
-  color: var(--warning-text);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.35;
-  text-align: center;
-  padding: 0 14px 10px 14px;
-}
-
-.featureConfigRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  background: var(--card-sub-bg, var(--bg-control));
-  border: none;
-  transition: opacity var(--transition-fast);
-  animation: subBoxFadeIn 180ms ease-out forwards;
-}
-
-.featureConfigRow + .featureConfigRow {
-  border-top: 1px solid var(--divider-color);
-}
-
-.configLabel {
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.stepperCard {
-  background: var(--card-sub-control-bg, var(--bg-card));
-  box-shadow: none;
+@keyframes subBoxFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

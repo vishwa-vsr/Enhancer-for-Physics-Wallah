@@ -34,9 +34,3 @@
   color: #10b981 !important;
   font-weight: 600;
 }
-
-.version {
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-}

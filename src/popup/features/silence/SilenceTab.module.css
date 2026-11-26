@@ -4,93 +4,15 @@
   gap: 12px;
 }
 
-.qualitySection {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
+.qualitySection,
 .silenceSection {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.sectionTitle {
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-  margin: 0 0 2px 2px;
-  display: flex;
-  align-items: center;
-}
-
-.settingsGroupCard {
-  background: var(--card-main-bg, var(--bg-card));
-  border-radius: var(--radius-lg);
-  box-shadow: var(--card-shadow);
-  border: var(--card-border, none);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.settingsGroupCard > :first-child {
-  border-top-left-radius: var(--radius-lg);
-  border-top-right-radius: var(--radius-lg);
-}
-
-.settingsGroupCard > :first-child:is(:last-child, :has(+ [aria-hidden='true']:last-child)) {
-  border-radius: var(--radius-lg);
-}
-
-.settingsGroupCard > :last-child {
-  border-bottom-left-radius: var(--radius-lg);
-  border-bottom-right-radius: var(--radius-lg);
-}
-
-.featureRow {
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  transition: background-color var(--transition-fast);
-  background: var(--card-main-bg, var(--bg-card));
-}
-
-.featureRow:hover {
-  background-color: var(--card-main-bg-hover, var(--bg-card-hover));
-}
-
-.featureInfo {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.featureTitle {
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  color: var(--text-primary);
-  cursor: pointer;
-  user-select: none;
-}
-
-.settingRowGroup {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
 .featureConfigRow + .settingRowGroup {
   border-top: 1px solid var(--divider-color);
-}
-
-.settingRowGroup:not(:last-child) {
-  border-bottom: 1px solid var(--divider-color);
 }
 
 .ssSensitivityRow {
@@ -182,56 +104,6 @@
   letter-spacing: -0.01em;
 }
 
-.settingsToggleBtn {
-  background: var(--bg-control);
-  border: none;
-  color: var(--text-muted);
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-  outline: none;
-  padding: 0;
-}
-
-.settingsToggleBtn:hover {
-  color: var(--text-primary);
-  background: var(--bg-control-hover);
-}
-
-.settingsToggleBtn:active {
-  background: var(--bg-control-hover);
-  color: var(--accent-primary);
-}
-
-.resetSpeedBtn {
-  background: var(--bg-control);
-  border: none;
-  color: var(--text-muted);
-}
-
-.resetIcon {
-  width: 14px;
-  height: 14px;
-  transition:
-    transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
-    color 200ms ease;
-  display: block;
-}
-
-.resetSpeedBtn:hover .resetIcon {
-  transform: rotate(-90deg);
-  color: var(--accent-primary);
-}
-
-.resetSpeedBtn:active .resetIcon {
-  transform: rotate(-180deg);
-}
-
 .ssConflictTip {
   font-size: var(--font-size-xs);
   color: var(--text-muted);
@@ -255,68 +127,8 @@
   flex: 1;
 }
 
-.qualitySelect {
-  background: var(--bg-control);
-  border: none;
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 6px;
-  outline: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.qualitySelect:hover {
-  background: var(--bg-control-hover);
-}
-
-.qualitySelect:focus {
-  box-shadow: 0 0 0 2px var(--accent-primary);
-}
-
 .qualitySection:has([role='listbox']),
-.silenceSection:has([role='listbox']),
-.settingsGroupCard:has([role='listbox']),
-.featureConfigRow:has([role='listbox']),
-.featureRow:has([role='listbox']) {
+.silenceSection:has([role='listbox']) {
   position: relative;
   z-index: 100;
-}
-
-.featureConfigRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  background: var(--card-sub-bg, var(--bg-control));
-  border: none;
-  transition: opacity var(--transition-fast);
-  animation: subBoxFadeIn 180ms ease-out forwards;
-}
-
-.featureConfigRow + .featureConfigRow {
-  border-top: 1px solid var(--divider-color);
-}
-
-.configLabel {
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.stepperCard {
-  background: var(--card-sub-control-bg, var(--bg-card));
-  box-shadow: none;
-}
-
-@keyframes subBoxFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }

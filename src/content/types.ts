@@ -1,100 +1,29 @@
-// ===== Theme & Format Types =====
-export type ThemeMode = 'light' | 'dark';
-export type FinishTimeFormat = 'clock' | 'full';
-export type SilenceState = 'idle' | 'speech' | 'silence';
-export type VideoQuality = 'auto' | '720p' | '480p' | '360p' | '240p';
-export type VolumeBalancerMode = 'gentle' | 'balanced' | 'max';
+import type {
+  FinishTimeFormat,
+  HideSettings,
+  PopupSettings,
+  ThemeMode,
+  VideoQuality,
+} from '../shared/types';
 
-// ===== Hide / Focus Settings =====
-export interface HideSettings {
-  hideAskAI: boolean;
-  hideDoubt: boolean;
-  hideChat: boolean;
-  hideNotes: boolean;
-  hideNoteTimeline: boolean;
-  hideTimeLine: boolean;
-  hideTimeText: boolean;
-  hideSpeed: boolean;
-  hideQuality: boolean;
-  hideSetting: boolean;
-}
+export type { FinishTimeFormat, HideSettings, ThemeMode, VideoQuality };
+
+export type SilenceState = 'idle' | 'speech' | 'silence';
+
+type PopupOnlyStateKey =
+  | 'preferredSpeed'
+  | keyof HideSettings
+  | 'showDashboardScrollbars'
+  | 'showPopupScrollbar'
+  | 'installDate'
+  | 'reviewPromptStatus'
+  | 'reviewPromptNextShowTime'
+  | 'hasSeenRefreshPrompt';
 
 // ===== Full Content Script State =====
-export interface ContentState {
-  // Speed & Quality controls
+export interface ContentState extends Omit<PopupSettings, PopupOnlyStateKey> {
   currentSpeed: number;
-  constantVideoQuality: boolean;
-  preferredQuality: VideoQuality;
-  snapPoints: number[];
-
-  // Focus & Distraction toggles
   hideSettings: HideSettings;
-  enableInstantHide: boolean;
-  autoSkipPromoAds: boolean;
-  blockRecordedPolls: boolean;
-  enableSlideViewer: boolean;
-  keySlideViewer: string;
-
-  // Shortcuts & UI settings
-  enableHotkeys: boolean;
-  speedScrollEnabled: boolean;
-  volumeScrollEnabled: boolean;
-  volumeScrollMouseStep: number;
-  volumeScrollTrackpadStep: number;
-  showVolumeBubble: boolean;
-  volumeBubbleDelay: number;
-  holdSpaceSpeedUp: boolean;
-  holdSpaceSpeed: number;
-  alwaysExpandWidget: boolean;
-  lectureTimeEnabled: boolean;
-  showFinishTime: boolean;
-  finishTimeFormat: FinishTimeFormat;
-  showLiveCatchUp: boolean;
-  keySpeedUp: string;
-  keySlowDown: string;
-  keyReset: string;
-  autoPauseOnHide: boolean;
-
-  // Focus shortcuts (Issue #14)
-  enableFocusShortcuts: boolean;
-  enableKeyChat: boolean;
-  enableKeyTimeline: boolean;
-  enableKeyNotes: boolean;
-  enableKeyDoubt: boolean;
-  enableKeyFullscreen: boolean;
-  enableKeyExit: boolean;
-  keyChat: string;
-  keyTimeline: string;
-  keyNotes: string;
-  keyDoubt: string;
-  keyFullscreen: string;
-  keyExit: string;
-  allowShortcutsWhenHidden: boolean;
-  showShortcutAlerts: boolean;
-
-  // Auto-hide controls & cursor (Issue #14)
-  autoHideControls: boolean;
-  autoHideDelay: number;
-  autoHideWhenPaused: boolean;
-
-  // Skip Silence settings
-  skipSilenceEnabled: boolean;
-  skipSilenceActive: boolean;
-  skipSilenceSilenceSpeed: number;
-  skipSilenceThreshold: number;
-  skipSilenceDynamicThreshold: boolean;
-  skipSilenceMute: boolean;
-  skipSilenceTimeSaved: number;
-  skipSilenceMinDuration: number;
-  skipSilenceLowCpu: boolean;
-
-  // Auto Volume Balancer & Ear Protection settings (Issue #6)
-  volumeBalancerEnabled: boolean;
-  volumeBalancerMode: VolumeBalancerMode;
-
-  // Extension status
-  extensionEnabled: boolean;
-  themeMode: ThemeMode;
 }
 
 // ===== Audio Graph Cache Interface =====

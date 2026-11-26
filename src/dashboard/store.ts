@@ -121,10 +121,6 @@ export async function loadPlannerData(): Promise<void> {
       if (hadGhostTags) {
         await persistData();
       }
-
-      if ((activeView.value as { type?: string })?.type === 'upcoming') {
-        activeView.value = { type: 'today' };
-      }
     }
 
     // Auto-update dashboard if synced from popup or another tab
@@ -422,7 +418,7 @@ export const filteredTasks = computed(() => {
   } else if (view.type === 'inbox') {
     // Inbox: all tasks that do not have both a subject and a chapter assigned
     list = list.filter((t) => !t.subjectId || !t.chapterId);
-  } else if (view.type === 'today' || (view.type as string) === 'upcoming') {
+  } else if (view.type === 'today') {
     const todayStr = getLocalDateStr();
     // Tasks: all tasks with a due date (overdue, today, tomorrow, and future dates).
     // Incomplete tasks are always included so you see all scheduled work.

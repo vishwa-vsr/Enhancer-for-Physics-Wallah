@@ -32,7 +32,7 @@ export interface Subject {
   createdAt: number;
 }
 
-export type ViewType = 'today' | 'upcoming' | 'inbox' | 'chapter' | 'settings';
+export type ViewType = 'today' | 'inbox' | 'chapter' | 'settings';
 
 export type LayoutMode = 'list' | 'board';
 export type GroupByMode = 'date' | 'label';

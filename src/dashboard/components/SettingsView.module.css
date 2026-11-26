@@ -165,14 +165,6 @@
   box-shadow: 0 0 0 2px var(--text-primary) !important;
 }
 
-.labelDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: block;
-}
-
 .labelChipText {
   white-space: nowrap;
 }

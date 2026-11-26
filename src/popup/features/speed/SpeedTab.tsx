@@ -5,6 +5,7 @@ import { Stepper } from '@shared/components/Stepper';
 import { ShortcutInput } from '@shared/components/ShortcutInput';
 import { CollapsibleSubOption } from '@shared/components/CollapsibleSubOption';
 import { saveSetting } from '@shared/storage';
+import { clamp, sanitizeSnapPoints } from '@shared/utils';
 import {
   preferredSpeed,
   snapPoints,
@@ -26,6 +27,7 @@ import {
   getReservedShortcutWarning,
   findConflictingShortcut,
 } from '@popup/store';
+import shared from '../../popupShared.module.css';
 import styles from './SpeedTab.module.css';
 
 // Segmented 4-point slider interpolation math (exact port from popup.js)
@@ -64,29 +66,6 @@ function sliderPercentToSpeed(pct: number, points: number[]): number {
   }
   const frac = (p - 200 / 3) / (100 / 3);
   return pts[2] + frac * (pts[3] - pts[2]);
-}
-
-function sanitizeAndSortSnapPoints(raw: number[]): number[] {
-  const vals = raw.map((v) => {
-    let n = isNaN(v) ? 1.0 : v;
-    if (n < 0.5) n = 0.5;
-    if (n > 4.0) n = 4.0;
-    return Math.round(n * 10) / 10;
-  });
-
-  vals.sort((a, b) => a - b);
-
-  for (let i = 1; i < vals.length; i++) {
-    if (vals[i] <= vals[i - 1]) {
-      vals[i] = Math.min(4.0, Math.round((vals[i - 1] + 0.1) * 10) / 10);
-    }
-  }
-  for (let i = vals.length - 2; i >= 0; i--) {
-    if (vals[i] >= vals[i + 1]) {
-      vals[i] = Math.max(0.5, Math.round((vals[i + 1] - 0.1) * 10) / 10);
-    }
-  }
-  return vals;
 }
 
 type SpeedKeyType = 'keySpeedUp' | 'keySlowDown' | 'keyReset';
@@ -195,7 +174,7 @@ export function SpeedTab() {
     if (isNaN(parsed)) return;
     const newPts = [...pts];
     newPts[index] = parsed;
-    const sanitized = sanitizeAndSortSnapPoints(newPts);
+    const sanitized = sanitizeSnapPoints(newPts);
     snapPoints.value = sanitized;
     saveSetting('snapPoints', sanitized);
   };
@@ -225,13 +204,13 @@ export function SpeedTab() {
           <div class={styles.hudControlsGroup}>
             <button
               type="button"
-              class={styles.resetSpeedBtn}
+              class={shared.resetSpeedBtn}
               onClick={resetSpeed}
               title="Reset speed to 1.0x"
               aria-label="Reset speed"
             >
               <svg
-                class={styles.resetIcon}
+                class={shared.resetIcon}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -245,7 +224,7 @@ export function SpeedTab() {
             </button>
             <button
               type="button"
-              class={styles.settingsToggleBtn}
+              class={`${shared.settingsToggleBtn} ${editorOpen ? styles.settingsToggleBtnActive : ''}`}
               onClick={toggleEditor}
               aria-expanded={editorOpen ? 'true' : 'false'}
               title="Customize Speed Snap Points"
@@ -379,7 +358,7 @@ export function SpeedTab() {
         <CollapsibleSubOption isOpen={!hideSpeed.value} variant="hudSub">
           <div class={styles.hudSubRow}>
             <label
-              class={styles.configLabel}
+              class={shared.configLabel}
               style={{ cursor: 'pointer', userSelect: 'none' }}
               onClick={() => {
                 alwaysExpandWidget.value = !alwaysExpandWidget.value;
@@ -399,7 +378,7 @@ export function SpeedTab() {
           </div>
           <div class={styles.hudSubRow}>
             <label
-              class={styles.configLabel}
+              class={shared.configLabel}
               style={{ cursor: 'pointer', userSelect: 'none' }}
               onClick={() => {
                 speedScrollEnabled.value = !speedScrollEnabled.value;
@@ -422,9 +401,9 @@ export function SpeedTab() {
 
       {/* === 2. Extra Controls Card === */}
       <section class={styles.shortcutsSection}>
-        <h2 class={styles.sectionTitle}>Extra Controls</h2>
-        <div class={styles.settingsGroupCard}>
-          <div class={styles.settingRowGroup}>
+        <h2 class={shared.sectionTitle}>Extra Controls</h2>
+        <div class={shared.settingsGroupCard}>
+          <div class={shared.settingRowGroup}>
             <FeatureRow label="Speed Keyboard Shortcuts">
               <Toggle
                 checked={enableHotkeys.value}
@@ -481,14 +460,14 @@ export function SpeedTab() {
                 </div>
               </div>
               {hotkeyNotice && (
-                <div class={styles.hotkeyNotice} role="status" aria-live="polite">
+                <div class={shared.hotkeyNotice} role="status" aria-live="polite">
                   {hotkeyNotice}
                 </div>
               )}
             </CollapsibleSubOption>
           </div>
 
-          <div class={styles.settingRowGroup}>
+          <div class={shared.settingRowGroup}>
             <FeatureRow label="Hold Space to Speed Up">
               <Toggle
                 checked={holdSpaceSpeedUp.value}
@@ -500,10 +479,10 @@ export function SpeedTab() {
               />
             </FeatureRow>
             <CollapsibleSubOption isOpen={holdSpaceSpeedUp.value}>
-              <div class={styles.featureConfigRow}>
-                <span class={styles.configLabel}>Speed Up Rate</span>
+              <div class={shared.featureConfigRow}>
+                <span class={shared.configLabel}>Speed Up Rate</span>
                 <Stepper
-                  className={styles.stepperCard}
+                  className={shared.stepperCard}
                   value={holdSpaceSpeed.value}
                   min={1.1}
                   max={4.0}
@@ -533,9 +512,9 @@ export function SpeedTab() {
 
       {/* === 3. Volume Scroll Card === */}
       <section class={styles.shortcutsSection}>
-        <h2 class={styles.sectionTitle}>Volume Scroll</h2>
-        <div class={styles.settingsGroupCard}>
-          <div class={styles.settingRowGroup}>
+        <h2 class={shared.sectionTitle}>Volume Scroll</h2>
+        <div class={shared.settingsGroupCard}>
+          <div class={shared.settingRowGroup}>
             <FeatureRow label="Scroll to Adjust Volume">
               <Toggle
                 checked={volumeScrollEnabled.value}
@@ -547,41 +526,41 @@ export function SpeedTab() {
               />
             </FeatureRow>
             <CollapsibleSubOption isOpen={volumeScrollEnabled.value}>
-              <div class={styles.featureConfigRow}>
-                <span class={styles.configLabel}>Mouse Sensy</span>
+              <div class={shared.featureConfigRow}>
+                <span class={shared.configLabel}>Mouse Sensy</span>
                 <Stepper
-                  className={styles.stepperCard}
+                  className={shared.stepperCard}
                   value={volumeScrollMouseStep.value}
                   min={1}
                   max={30}
                   step={1}
                   unit=""
                   onChange={(v) => {
-                    const clamped = Math.max(1, Math.min(30, Math.round(v)));
+                    const clamped = clamp(Math.round(v), 1, 30);
                     volumeScrollMouseStep.value = clamped;
                     saveSetting('volumeScrollMouseStep', clamped);
                   }}
                 />
               </div>
-              <div class={styles.featureConfigRow}>
-                <span class={styles.configLabel}>Trackpad Sensy</span>
+              <div class={shared.featureConfigRow}>
+                <span class={shared.configLabel}>Trackpad Sensy</span>
                 <Stepper
-                  className={styles.stepperCard}
+                  className={shared.stepperCard}
                   value={volumeScrollTrackpadStep.value}
                   min={1}
                   max={10}
                   step={1}
                   unit=""
                   onChange={(v) => {
-                    const clamped = Math.max(1, Math.min(10, Math.round(v)));
+                    const clamped = clamp(Math.round(v), 1, 10);
                     volumeScrollTrackpadStep.value = clamped;
                     saveSetting('volumeScrollTrackpadStep', clamped);
                   }}
                 />
               </div>
-              <div class={styles.featureConfigRow}>
+              <div class={shared.featureConfigRow}>
                 <label
-                  class={styles.configLabel}
+                  class={shared.configLabel}
                   style={{ cursor: 'pointer', userSelect: 'none' }}
                   onClick={() => {
                     showVolumeBubble.value = !showVolumeBubble.value;
@@ -600,10 +579,10 @@ export function SpeedTab() {
                 />
               </div>
               <CollapsibleSubOption isOpen={showVolumeBubble.value}>
-                <div class={styles.featureConfigRow}>
-                  <span class={styles.configLabel}>Disappear Delay</span>
+                <div class={shared.featureConfigRow}>
+                  <span class={shared.configLabel}>Disappear Delay</span>
                   <Stepper
-                    className={styles.stepperCard}
+                    className={shared.stepperCard}
                     value={volumeBubbleDelay.value}
                     min={0.2}
                     max={2.0}

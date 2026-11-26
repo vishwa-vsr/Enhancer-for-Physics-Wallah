@@ -212,10 +212,6 @@ function init(): void {
       syncVolumeBalancer();
     }
 
-    if (changedKeys.includes('volumeBalancerMode')) {
-      syncVolumeBalancer();
-    }
-
     if (changedKeys.includes('snapPoints')) {
       updatePlayerTicks(currentState.snapPoints);
     }

@@ -100,13 +100,6 @@ export function getOuterPlayerContainer(): HTMLElement | null {
   );
 }
 
-// Helper to check if an injected widget is currently connected inside PW's preferred toolbar (#footer-right-section when present)
-export function isInsidePreferredToolbar(el: Element | null): boolean {
-  if (!el || !el.isConnected) return false;
-  const fRight = document.getElementById('footer-right-section');
-  return !fRight || fRight.contains(el);
-}
-
 const previousDisplayMap = new WeakMap<Element, { value: string; priority: string }>();
 
 // Helper to hide or show an element with !important without stripping PW's own native display:none

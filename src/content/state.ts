@@ -1,99 +1,34 @@
 import {
-  ContentState,
-  HideSettings,
-  StateChangeListener,
-  ThemeMode,
-  VideoQuality,
-  VolumeBalancerMode,
-} from './types';
+  CONTENT_STORAGE_KEYS,
+  DEFAULT_HIDE_SETTINGS,
+  DEFAULT_SETTINGS,
+  HIDE_SETTING_KEYS,
+} from '../shared/types';
+import { ContentState, HideSettings, StateChangeListener, ThemeMode, VideoQuality } from './types';
 import { resolveSafeSpeedShortcuts, sanitizeSpeedShortcut } from '../shared/shortcuts';
+import { clamp, sanitizeSnapPoints } from '../shared/utils';
 
-export const DEFAULT_HIDE_SETTINGS: HideSettings = {
-  hideAskAI: false,
-  hideDoubt: false,
-  hideChat: false,
-  hideNotes: false,
-  hideNoteTimeline: false,
-  hideTimeLine: false,
-  hideTimeText: false,
-  hideSpeed: false,
-  hideQuality: true,
-  hideSetting: false,
-};
+export { DEFAULT_HIDE_SETTINGS, sanitizeSnapPoints };
 
-export const DEFAULT_CONTENT_STATE: ContentState = {
-  currentSpeed: 1.0,
-  constantVideoQuality: false,
-  preferredQuality: '720p',
-  snapPoints: [1.0, 1.5, 2.0, 2.5],
+const HIDE_KEY_SET = new Set<string>(HIDE_SETTING_KEYS);
 
-  hideSettings: { ...DEFAULT_HIDE_SETTINGS },
-  enableInstantHide: false,
-  autoSkipPromoAds: false,
-  blockRecordedPolls: false,
-  enableSlideViewer: true,
-  keySlideViewer: 't',
+function buildDefaultContentState(): ContentState {
+  const base: Record<string, unknown> = {};
+  for (const key of CONTENT_STORAGE_KEYS) {
+    if (key === 'preferredSpeed' || HIDE_KEY_SET.has(key)) continue;
+    const val = DEFAULT_SETTINGS[key as keyof typeof DEFAULT_SETTINGS];
+    base[key] = Array.isArray(val) ? [...val] : val;
+  }
+  return {
+    ...(base as Omit<ContentState, 'currentSpeed' | 'hideSettings'>),
+    currentSpeed: DEFAULT_SETTINGS.preferredSpeed,
+    hideSettings: { ...DEFAULT_HIDE_SETTINGS },
+  };
+}
 
-  enableHotkeys: false,
-  speedScrollEnabled: true,
-  volumeScrollEnabled: false,
-  volumeScrollMouseStep: 5,
-  volumeScrollTrackpadStep: 2,
-  showVolumeBubble: true,
-  volumeBubbleDelay: 0.4,
-  holdSpaceSpeedUp: false,
-  holdSpaceSpeed: 2.0,
-  alwaysExpandWidget: false,
-  lectureTimeEnabled: true,
-  showFinishTime: true,
-  finishTimeFormat: 'clock',
-  showLiveCatchUp: true,
-  keySpeedUp: 'h',
-  keySlowDown: 'j',
-  keyReset: 'l',
-  autoPauseOnHide: false,
+export const DEFAULT_CONTENT_STATE: ContentState = buildDefaultContentState();
 
-  enableFocusShortcuts: false,
-  enableKeyChat: true,
-  enableKeyTimeline: true,
-  enableKeyNotes: true,
-  enableKeyDoubt: true,
-  enableKeyFullscreen: true,
-  enableKeyExit: true,
-  keyChat: 'c',
-  keyTimeline: 't',
-  keyNotes: 'n',
-  keyDoubt: 'd',
-  keyFullscreen: 'f',
-  keyExit: 'e',
-  allowShortcutsWhenHidden: false,
-  showShortcutAlerts: true,
-
-  autoHideControls: false,
-  autoHideDelay: 0.8,
-  autoHideWhenPaused: false,
-
-  skipSilenceEnabled: false,
-  skipSilenceActive: false,
-  skipSilenceSilenceSpeed: 6.0,
-  skipSilenceThreshold: -40,
-  skipSilenceDynamicThreshold: true,
-  skipSilenceMute: false,
-  skipSilenceTimeSaved: 0,
-  skipSilenceMinDuration: 0.5,
-  skipSilenceLowCpu: false,
-
-  volumeBalancerEnabled: false,
-  volumeBalancerMode: 'balanced',
-
-  extensionEnabled: true,
-  themeMode: 'dark',
-};
-
-export const state: ContentState = {
-  ...DEFAULT_CONTENT_STATE,
-  hideSettings: { ...DEFAULT_HIDE_SETTINGS },
-};
+export const state: ContentState = buildDefaultContentState();
 
 const listeners: Set<StateChangeListener> = new Set();
 
@@ -114,125 +49,30 @@ function notifyListeners(changedKeys: string[]): void {
   });
 }
 
-// Sanitize 4 snap points array
-export function sanitizeSnapPoints(points: unknown): number[] {
-  if (!points || !Array.isArray(points) || points.length !== 4) {
-    return [1.0, 1.5, 2.0, 2.5];
-  }
-  const raw = points.map((v) => {
-    let n = parseFloat(String(v));
-    if (isNaN(n) || n < 0.5) n = 0.5;
-    if (n > 4.0) n = 4.0;
-    return Math.round(n * 10) / 10;
-  });
-  raw.sort((a, b) => a - b);
-  for (let i = 1; i < raw.length; i++) {
-    if (raw[i] <= raw[i - 1]) {
-      raw[i] = Math.min(4.0, Math.round((raw[i - 1] + 0.1) * 10) / 10);
-    }
-  }
-  for (let i = raw.length - 2; i >= 0; i--) {
-    if (raw[i] >= raw[i + 1]) {
-      raw[i] = Math.max(0.5, Math.round((raw[i + 1] - 0.1) * 10) / 10);
-    }
-  }
-  return raw;
+function hasChromeStorage(): boolean {
+  return (
+    typeof chrome !== 'undefined' &&
+    !!chrome.runtime &&
+    !!chrome.runtime.id &&
+    !!chrome.storage &&
+    !!chrome.storage.local
+  );
 }
 
 // Helper to safely access chrome storage without throwing context invalidated exceptions
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function safeGetSettings(callback: (result: Record<string, any>) => void): void {
-  if (
-    typeof chrome === 'undefined' ||
-    !chrome.runtime ||
-    !chrome.runtime.id ||
-    !chrome.storage ||
-    !chrome.storage.local
-  ) {
-    return;
-  }
+  if (!hasChromeStorage()) return;
   try {
-    chrome.storage.local.get(
-      [
-        'preferredSpeed',
-        'constantVideoQuality',
-        'preferredQuality',
-        'hideAskAI',
-        'hideDoubt',
-        'hideChat',
-        'hideNotes',
-        'hideNoteTimeline',
-        'hideTimeLine',
-        'hideTimeText',
-        'hideSpeed',
-        'hideQuality',
-        'hideSetting',
-        'enableInstantHide',
-        'autoSkipPromoAds',
-        'blockRecordedPolls',
-        'enableSlideViewer',
-        'keySlideViewer',
-        'enableHotkeys',
-        'speedScrollEnabled',
-        'volumeScrollEnabled',
-        'volumeScrollMouseStep',
-        'volumeScrollTrackpadStep',
-        'showVolumeBubble',
-        'volumeBubbleDelay',
-        'holdSpaceSpeedUp',
-        'holdSpaceSpeed',
-        'alwaysExpandWidget',
-        'lectureTimeEnabled',
-        'showFinishTime',
-        'finishTimeFormat',
-        'showLiveCatchUp',
-        'keySpeedUp',
-        'keySlowDown',
-        'keyReset',
-        'enableFocusShortcuts',
-        'enableKeyChat',
-        'enableKeyTimeline',
-        'enableKeyNotes',
-        'enableKeyDoubt',
-        'enableKeyFullscreen',
-        'enableKeyExit',
-        'keyChat',
-        'keyTimeline',
-        'keyNotes',
-        'keyDoubt',
-        'keyFullscreen',
-        'keyExit',
-        'allowShortcutsWhenHidden',
-        'showShortcutAlerts',
-        'autoHideControls',
-        'autoHideDelay',
-        'autoHideWhenPaused',
-        'snapPoints',
-        'extensionEnabled',
-        'skipSilenceEnabled',
-        'skipSilenceActive',
-        'skipSilenceSilenceSpeed',
-        'skipSilenceThreshold',
-        'skipSilenceDynamicThreshold',
-        'skipSilenceMute',
-        'skipSilenceTimeSaved',
-        'skipSilenceMinDuration',
-        'skipSilenceLowCpu',
-        'volumeBalancerEnabled',
-        'volumeBalancerMode',
-        'autoPauseOnHide',
-        'themeMode',
-      ],
-      function (result) {
-        try {
-          if (chrome.runtime && chrome.runtime.id) {
-            callback(result);
-          }
-        } catch (_e) {
-          // Ignored: extension context invalidated
+    chrome.storage.local.get(CONTENT_STORAGE_KEYS, function (result) {
+      try {
+        if (chrome.runtime && chrome.runtime.id) {
+          callback(result);
         }
-      },
-    );
+      } catch (_e) {
+        // Ignored: extension context invalidated
+      }
+    });
   } catch (_err) {
     // Ignored: chrome runtime unavailable
   }
@@ -241,15 +81,7 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
 // Helper to safely write chrome storage without throwing context invalidated exceptions
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function safeSetSettings(data: Record<string, any>): void {
-  if (
-    typeof chrome === 'undefined' ||
-    !chrome.runtime ||
-    !chrome.runtime.id ||
-    !chrome.storage ||
-    !chrome.storage.local
-  ) {
-    return;
-  }
+  if (!hasChromeStorage()) return;
   try {
     chrome.storage.local.set(data, function () {
       // Read lastError to suppress orphaned context developer warnings in console
@@ -261,11 +93,105 @@ export function safeSetSettings(data: Record<string, any>): void {
   }
 }
 
-let isInitialized = false;
+const DEFAULT_SPEED_SHORTCUTS: Record<'keySpeedUp' | 'keySlowDown' | 'keyReset', string> = {
+  keySpeedUp: 'h',
+  keySlowDown: 'j',
+  keyReset: 'l',
+};
 
-function readShortcutKey(value: unknown, fallback: string): string {
-  return value !== undefined ? String(value) : fallback;
+function parseFloatWithFallback(raw: unknown, fallback: number, allowZero = false): number {
+  if (raw === undefined) return fallback;
+  const n = parseFloat(String(raw));
+  if (isNaN(n)) return fallback;
+  return !allowZero && n === 0 ? fallback : n;
 }
+
+// Declarative normalizers for non-boolean content state keys (shared by initState and onChanged)
+const CUSTOM_KEY_APPLIERS: Record<string, (raw: unknown) => void> = {
+  preferredSpeed: (raw) => {
+    state.currentSpeed = parseFloat(String(raw)) || 1.0;
+  },
+  preferredQuality: (raw) => {
+    state.preferredQuality = (raw as VideoQuality) || '720p';
+  },
+  snapPoints: (raw) => {
+    state.snapPoints = sanitizeSnapPoints(raw);
+  },
+  volumeScrollMouseStep: (raw) => {
+    state.volumeScrollMouseStep =
+      raw !== undefined ? clamp(Math.round(Number(raw) || 5), 1, 30) : 5;
+  },
+  volumeScrollTrackpadStep: (raw) => {
+    state.volumeScrollTrackpadStep =
+      raw !== undefined ? clamp(Math.round(Number(raw) || 2), 1, 10) : 2;
+  },
+  volumeBubbleDelay: (raw) => {
+    state.volumeBubbleDelay = parseFloatWithFallback(raw, 0.4, true);
+  },
+  holdSpaceSpeed: (raw) => {
+    state.holdSpaceSpeed = parseFloatWithFallback(raw, 2.0, true);
+  },
+  autoHideDelay: (raw) => {
+    state.autoHideDelay = parseFloatWithFallback(raw, 0.8);
+  },
+  finishTimeFormat: (raw) => {
+    state.finishTimeFormat = raw === 'full' ? 'full' : 'clock';
+  },
+  skipSilenceSilenceSpeed: (raw) => {
+    state.skipSilenceSilenceSpeed = parseFloatWithFallback(raw, 6.0);
+  },
+  skipSilenceThreshold: (raw) => {
+    const n = raw !== undefined ? parseInt(String(raw), 10) : NaN;
+    state.skipSilenceThreshold = isNaN(n) || n === 0 ? -40 : n;
+  },
+  skipSilenceTimeSaved: (raw) => {
+    state.skipSilenceTimeSaved = Number(raw) || 0;
+  },
+  skipSilenceMinDuration: (raw) => {
+    state.skipSilenceMinDuration = parseFloatWithFallback(raw, 0.5);
+  },
+  themeMode: (raw) => {
+    state.themeMode = (raw as ThemeMode) || 'dark';
+    if (typeof document !== 'undefined' && document.documentElement) {
+      document.documentElement.classList.toggle('pwc-light-theme', state.themeMode === 'light');
+    }
+  },
+};
+
+function applySingleSetting(key: string, raw: unknown): boolean {
+  if (HIDE_KEY_SET.has(key)) {
+    state.hideSettings[key as keyof HideSettings] = !!raw;
+    return true;
+  }
+
+  const custom = CUSTOM_KEY_APPLIERS[key];
+  if (custom) {
+    custom(raw);
+    return true;
+  }
+
+  if (key in DEFAULT_SPEED_SHORTCUTS) {
+    const k = key as keyof typeof DEFAULT_SPEED_SHORTCUTS;
+    state[k] = sanitizeSpeedShortcut(raw, DEFAULT_SPEED_SHORTCUTS[k]);
+    return true;
+  }
+
+  if (key in DEFAULT_CONTENT_STATE) {
+    const defVal = DEFAULT_CONTENT_STATE[key as keyof ContentState];
+    if (typeof defVal === 'boolean') {
+      (state as unknown as Record<string, unknown>)[key] = defVal ? raw !== false : !!raw;
+      return true;
+    }
+    if (typeof defVal === 'string') {
+      (state as unknown as Record<string, unknown>)[key] = raw !== undefined ? String(raw) : defVal;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+let isInitialized = false;
 
 // Initialize state from storage and listen to onChanged
 export function initState(onLoaded?: () => void): void {
@@ -273,60 +199,32 @@ export function initState(onLoaded?: () => void): void {
   isInitialized = true;
 
   safeGetSettings(function (result) {
-    state.extensionEnabled = result.extensionEnabled !== false;
-    if (result.preferredSpeed) {
-      state.currentSpeed = parseFloat(result.preferredSpeed);
-    }
-    state.constantVideoQuality = !!result.constantVideoQuality;
-    if (result.preferredQuality) {
-      state.preferredQuality = result.preferredQuality;
-    }
-    const hideKeys = Object.keys(DEFAULT_HIDE_SETTINGS) as (keyof HideSettings)[];
-    for (const key of hideKeys) {
-      if (Object.prototype.hasOwnProperty.call(result, key)) {
-        state.hideSettings[key] = !!result[key];
+    for (const key of CONTENT_STORAGE_KEYS) {
+      if (key in DEFAULT_SPEED_SHORTCUTS) continue;
+      if (HIDE_KEY_SET.has(key)) {
+        if (Object.prototype.hasOwnProperty.call(result, key)) {
+          state.hideSettings[key as keyof HideSettings] = !!result[key];
+        }
+        continue;
       }
+      if (key === 'preferredSpeed') {
+        if (result.preferredSpeed) {
+          state.currentSpeed = parseFloat(result.preferredSpeed);
+        }
+        continue;
+      }
+      if (key === 'snapPoints') {
+        if (
+          result.snapPoints &&
+          Array.isArray(result.snapPoints) &&
+          result.snapPoints.length === 4
+        ) {
+          state.snapPoints = sanitizeSnapPoints(result.snapPoints);
+        }
+        continue;
+      }
+      applySingleSetting(key, result[key]);
     }
-
-    state.enableInstantHide = !!result.enableInstantHide;
-    state.autoSkipPromoAds = !!result.autoSkipPromoAds;
-    state.blockRecordedPolls = !!result.blockRecordedPolls;
-    state.enableSlideViewer = result.enableSlideViewer !== false;
-    state.keySlideViewer = readShortcutKey(result.keySlideViewer, 't');
-    state.enableHotkeys = !!result.enableHotkeys;
-    state.speedScrollEnabled = result.speedScrollEnabled !== false;
-    state.volumeScrollEnabled = !!result.volumeScrollEnabled;
-    state.volumeScrollMouseStep =
-      result.volumeScrollMouseStep !== undefined
-        ? Math.max(1, Math.min(30, Math.round(Number(result.volumeScrollMouseStep) || 5)))
-        : 5;
-    state.volumeScrollTrackpadStep =
-      result.volumeScrollTrackpadStep !== undefined
-        ? Math.max(1, Math.min(10, Math.round(Number(result.volumeScrollTrackpadStep) || 2)))
-        : 2;
-    state.showVolumeBubble = result.showVolumeBubble !== false;
-    state.volumeBubbleDelay =
-      result.volumeBubbleDelay !== undefined ? parseFloat(result.volumeBubbleDelay) : 0.4;
-    state.holdSpaceSpeedUp = !!result.holdSpaceSpeedUp;
-    state.holdSpaceSpeed =
-      result.holdSpaceSpeed !== undefined ? parseFloat(result.holdSpaceSpeed) : 2.0;
-    state.alwaysExpandWidget = !!result.alwaysExpandWidget;
-
-    state.enableFocusShortcuts = !!result.enableFocusShortcuts;
-    state.enableKeyChat = result.enableKeyChat !== false;
-    state.enableKeyTimeline = result.enableKeyTimeline !== false;
-    state.enableKeyNotes = result.enableKeyNotes !== false;
-    state.enableKeyDoubt = result.enableKeyDoubt !== false;
-    state.enableKeyFullscreen = result.enableKeyFullscreen !== false;
-    state.enableKeyExit = result.enableKeyExit !== false;
-    state.keyChat = readShortcutKey(result.keyChat, 'c');
-    state.keyTimeline = readShortcutKey(result.keyTimeline, 't');
-    state.keyNotes = readShortcutKey(result.keyNotes, 'n');
-    state.keyDoubt = readShortcutKey(result.keyDoubt, 'd');
-    state.keyFullscreen = readShortcutKey(result.keyFullscreen, 'f');
-    state.keyExit = readShortcutKey(result.keyExit, 'e');
-    state.allowShortcutsWhenHidden = !!result.allowShortcutsWhenHidden;
-    state.showShortcutAlerts = result.showShortcutAlerts !== false;
 
     const resolvedSpeedKeys = resolveSafeSpeedShortcuts(result, [
       state.keyChat,
@@ -336,60 +234,19 @@ export function initState(onLoaded?: () => void): void {
       state.keyFullscreen,
       state.keyExit,
     ]);
-    state.keySpeedUp = resolvedSpeedKeys.keySpeedUp;
-    state.keySlowDown = resolvedSpeedKeys.keySlowDown;
-    state.keyReset = resolvedSpeedKeys.keyReset;
-
     const shortcutFixes: Record<string, string> = {};
-    if (result.keySpeedUp !== undefined && result.keySpeedUp !== state.keySpeedUp) {
-      shortcutFixes.keySpeedUp = state.keySpeedUp;
-    }
-    if (result.keySlowDown !== undefined && result.keySlowDown !== state.keySlowDown) {
-      shortcutFixes.keySlowDown = state.keySlowDown;
-    }
-    if (result.keyReset !== undefined && result.keyReset !== state.keyReset) {
-      shortcutFixes.keyReset = state.keyReset;
+    for (const k of ['keySpeedUp', 'keySlowDown', 'keyReset'] as const) {
+      state[k] = resolvedSpeedKeys[k];
+      if (result[k] !== undefined && result[k] !== state[k]) {
+        shortcutFixes[k] = state[k];
+      }
     }
     if (Object.keys(shortcutFixes).length > 0) {
       safeSetSettings(shortcutFixes);
     }
 
-    state.autoHideControls = !!result.autoHideControls;
-    state.autoHideDelay =
-      result.autoHideDelay !== undefined ? parseFloat(result.autoHideDelay) : 0.8;
-    state.autoHideWhenPaused = !!result.autoHideWhenPaused;
-
-    if (result.snapPoints && Array.isArray(result.snapPoints) && result.snapPoints.length === 4) {
-      state.snapPoints = sanitizeSnapPoints(result.snapPoints);
-    }
-
-    state.skipSilenceEnabled = !!result.skipSilenceEnabled;
-    state.skipSilenceActive = !!result.skipSilenceActive;
-    state.skipSilenceSilenceSpeed =
-      result.skipSilenceSilenceSpeed !== undefined
-        ? parseFloat(result.skipSilenceSilenceSpeed)
-        : 6.0;
-    state.skipSilenceThreshold =
-      result.skipSilenceThreshold !== undefined ? parseInt(result.skipSilenceThreshold, 10) : -40;
-    state.skipSilenceDynamicThreshold = result.skipSilenceDynamicThreshold !== false;
-    state.skipSilenceMute = !!result.skipSilenceMute;
-    state.skipSilenceTimeSaved = result.skipSilenceTimeSaved || 0;
-    state.skipSilenceMinDuration =
-      result.skipSilenceMinDuration !== undefined ? parseFloat(result.skipSilenceMinDuration) : 0.5;
-    state.skipSilenceLowCpu = !!result.skipSilenceLowCpu;
-
-    state.volumeBalancerEnabled = !!result.volumeBalancerEnabled;
-    state.volumeBalancerMode = (result.volumeBalancerMode as VolumeBalancerMode) || 'balanced';
-
-    state.lectureTimeEnabled = result.lectureTimeEnabled !== false;
-    state.showFinishTime = result.showFinishTime !== false;
-    state.finishTimeFormat = result.finishTimeFormat === 'full' ? 'full' : 'clock';
-    state.showLiveCatchUp = result.showLiveCatchUp !== false;
-    state.autoPauseOnHide = !!result.autoPauseOnHide;
-    state.themeMode = result.themeMode || 'dark';
-    if (typeof document !== 'undefined' && document.documentElement) {
-      document.documentElement.classList.toggle('pwc-light-theme', state.themeMode === 'light');
-    }
+    // Always ensure initial theme class matches stored/default themeMode
+    CUSTOM_KEY_APPLIERS.themeMode(state.themeMode);
 
     if (onLoaded) {
       onLoaded();
@@ -398,301 +255,21 @@ export function initState(onLoaded?: () => void): void {
   });
 
   // Listen for storage changes from the settings popup
-  if (
-    typeof chrome !== 'undefined' &&
-    chrome.runtime &&
-    chrome.runtime.id &&
-    chrome.storage &&
-    chrome.storage.onChanged
-  ) {
+  if (hasChromeStorage() && chrome.storage.onChanged) {
     try {
       chrome.storage.onChanged.addListener(function (changes, area) {
         try {
           if (!chrome.runtime || !chrome.runtime.id) return;
-          if (area === 'local') {
-            const changedKeys: string[] = [];
+          if (area !== 'local') return;
 
-            if (Object.prototype.hasOwnProperty.call(changes, 'themeMode')) {
-              state.themeMode = (changes.themeMode.newValue as ThemeMode) || 'dark';
-              if (typeof document !== 'undefined' && document.documentElement) {
-                document.documentElement.classList.toggle(
-                  'pwc-light-theme',
-                  state.themeMode === 'light',
-                );
-              }
-              changedKeys.push('themeMode');
+          const changedKeys: string[] = [];
+          for (const key of Object.keys(changes)) {
+            if (applySingleSetting(key, changes[key].newValue)) {
+              changedKeys.push(key);
             }
-
-            if (Object.prototype.hasOwnProperty.call(changes, 'extensionEnabled')) {
-              state.extensionEnabled = changes.extensionEnabled.newValue !== false;
-              changedKeys.push('extensionEnabled');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'preferredQuality')) {
-              state.preferredQuality =
-                (changes.preferredQuality.newValue as VideoQuality) || '720p';
-              changedKeys.push('preferredQuality');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'constantVideoQuality')) {
-              state.constantVideoQuality = !!changes.constantVideoQuality.newValue;
-              changedKeys.push('constantVideoQuality');
-            }
-
-            const hideKeys = Object.keys(DEFAULT_HIDE_SETTINGS) as (keyof HideSettings)[];
-            for (const key of hideKeys) {
-              if (Object.prototype.hasOwnProperty.call(changes, key)) {
-                state.hideSettings[key] = !!changes[key].newValue;
-                changedKeys.push(key);
-              }
-            }
-
-            if (Object.prototype.hasOwnProperty.call(changes, 'autoSkipPromoAds')) {
-              state.autoSkipPromoAds = !!changes.autoSkipPromoAds.newValue;
-              changedKeys.push('autoSkipPromoAds');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'blockRecordedPolls')) {
-              state.blockRecordedPolls = !!changes.blockRecordedPolls.newValue;
-              changedKeys.push('blockRecordedPolls');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'enableSlideViewer')) {
-              state.enableSlideViewer = changes.enableSlideViewer.newValue !== false;
-              changedKeys.push('enableSlideViewer');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'keySlideViewer')) {
-              state.keySlideViewer = readShortcutKey(changes.keySlideViewer.newValue, 't');
-              changedKeys.push('keySlideViewer');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'enableInstantHide')) {
-              state.enableInstantHide = !!changes.enableInstantHide.newValue;
-              changedKeys.push('enableInstantHide');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'enableHotkeys')) {
-              state.enableHotkeys = !!changes.enableHotkeys.newValue;
-              changedKeys.push('enableHotkeys');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'speedScrollEnabled')) {
-              state.speedScrollEnabled = changes.speedScrollEnabled.newValue !== false;
-              changedKeys.push('speedScrollEnabled');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollEnabled')) {
-              state.volumeScrollEnabled = !!changes.volumeScrollEnabled.newValue;
-              changedKeys.push('volumeScrollEnabled');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollMouseStep')) {
-              state.volumeScrollMouseStep =
-                changes.volumeScrollMouseStep.newValue !== undefined
-                  ? Math.max(
-                      1,
-                      Math.min(30, Math.round(Number(changes.volumeScrollMouseStep.newValue) || 5)),
-                    )
-                  : 5;
-              changedKeys.push('volumeScrollMouseStep');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'volumeScrollTrackpadStep')) {
-              state.volumeScrollTrackpadStep =
-                changes.volumeScrollTrackpadStep.newValue !== undefined
-                  ? Math.max(
-                      1,
-                      Math.min(
-                        10,
-                        Math.round(Number(changes.volumeScrollTrackpadStep.newValue) || 2),
-                      ),
-                    )
-                  : 2;
-              changedKeys.push('volumeScrollTrackpadStep');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'showVolumeBubble')) {
-              state.showVolumeBubble = changes.showVolumeBubble.newValue !== false;
-              changedKeys.push('showVolumeBubble');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'volumeBubbleDelay')) {
-              state.volumeBubbleDelay =
-                changes.volumeBubbleDelay.newValue !== undefined
-                  ? parseFloat(String(changes.volumeBubbleDelay.newValue))
-                  : 0.4;
-              changedKeys.push('volumeBubbleDelay');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'holdSpaceSpeedUp')) {
-              state.holdSpaceSpeedUp = !!changes.holdSpaceSpeedUp.newValue;
-              changedKeys.push('holdSpaceSpeedUp');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'holdSpaceSpeed')) {
-              state.holdSpaceSpeed =
-                changes.holdSpaceSpeed.newValue !== undefined
-                  ? parseFloat(String(changes.holdSpaceSpeed.newValue))
-                  : 2.0;
-              changedKeys.push('holdSpaceSpeed');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'keySpeedUp')) {
-              state.keySpeedUp = sanitizeSpeedShortcut(changes.keySpeedUp.newValue, 'h');
-              changedKeys.push('keySpeedUp');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'keySlowDown')) {
-              state.keySlowDown = sanitizeSpeedShortcut(changes.keySlowDown.newValue, 'j');
-              changedKeys.push('keySlowDown');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'keyReset')) {
-              state.keyReset = sanitizeSpeedShortcut(changes.keyReset.newValue, 'l');
-              changedKeys.push('keyReset');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'alwaysExpandWidget')) {
-              state.alwaysExpandWidget = !!changes.alwaysExpandWidget.newValue;
-              changedKeys.push('alwaysExpandWidget');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'lectureTimeEnabled')) {
-              state.lectureTimeEnabled = changes.lectureTimeEnabled.newValue !== false;
-              changedKeys.push('lectureTimeEnabled');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'showFinishTime')) {
-              state.showFinishTime = changes.showFinishTime.newValue !== false;
-              changedKeys.push('showFinishTime');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'finishTimeFormat')) {
-              state.finishTimeFormat =
-                changes.finishTimeFormat.newValue === 'full' ? 'full' : 'clock';
-              changedKeys.push('finishTimeFormat');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'showLiveCatchUp')) {
-              state.showLiveCatchUp = changes.showLiveCatchUp.newValue !== false;
-              changedKeys.push('showLiveCatchUp');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceEnabled')) {
-              state.skipSilenceEnabled = !!changes.skipSilenceEnabled.newValue;
-              changedKeys.push('skipSilenceEnabled');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceActive')) {
-              state.skipSilenceActive = !!changes.skipSilenceActive.newValue;
-              changedKeys.push('skipSilenceActive');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceSilenceSpeed')) {
-              state.skipSilenceSilenceSpeed =
-                parseFloat(String(changes.skipSilenceSilenceSpeed.newValue)) || 6.0;
-              changedKeys.push('skipSilenceSilenceSpeed');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceThreshold')) {
-              state.skipSilenceThreshold =
-                parseInt(String(changes.skipSilenceThreshold.newValue), 10) || -40;
-              changedKeys.push('skipSilenceThreshold');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceDynamicThreshold')) {
-              state.skipSilenceDynamicThreshold =
-                changes.skipSilenceDynamicThreshold.newValue !== false;
-              changedKeys.push('skipSilenceDynamicThreshold');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceMute')) {
-              state.skipSilenceMute = !!changes.skipSilenceMute.newValue;
-              changedKeys.push('skipSilenceMute');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceTimeSaved')) {
-              state.skipSilenceTimeSaved = Number(changes.skipSilenceTimeSaved.newValue) || 0;
-              changedKeys.push('skipSilenceTimeSaved');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceMinDuration')) {
-              state.skipSilenceMinDuration =
-                parseFloat(String(changes.skipSilenceMinDuration.newValue)) || 0.5;
-              changedKeys.push('skipSilenceMinDuration');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'skipSilenceLowCpu')) {
-              state.skipSilenceLowCpu = !!changes.skipSilenceLowCpu.newValue;
-              changedKeys.push('skipSilenceLowCpu');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'volumeBalancerEnabled')) {
-              state.volumeBalancerEnabled = !!changes.volumeBalancerEnabled.newValue;
-              changedKeys.push('volumeBalancerEnabled');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'volumeBalancerMode')) {
-              state.volumeBalancerMode =
-                (changes.volumeBalancerMode as { newValue?: VolumeBalancerMode })?.newValue ||
-                'balanced';
-              changedKeys.push('volumeBalancerMode');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'snapPoints')) {
-              state.snapPoints = sanitizeSnapPoints(changes.snapPoints.newValue);
-              changedKeys.push('snapPoints');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'preferredSpeed')) {
-              state.currentSpeed = parseFloat(String(changes.preferredSpeed.newValue)) || 1.0;
-              changedKeys.push('preferredSpeed');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'autoPauseOnHide')) {
-              state.autoPauseOnHide = !!changes.autoPauseOnHide.newValue;
-              changedKeys.push('autoPauseOnHide');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'enableFocusShortcuts')) {
-              state.enableFocusShortcuts = !!changes.enableFocusShortcuts.newValue;
-              changedKeys.push('enableFocusShortcuts');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyChat')) {
-              state.enableKeyChat = changes.enableKeyChat.newValue !== false;
-              changedKeys.push('enableKeyChat');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyTimeline')) {
-              state.enableKeyTimeline = changes.enableKeyTimeline.newValue !== false;
-              changedKeys.push('enableKeyTimeline');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyNotes')) {
-              state.enableKeyNotes = changes.enableKeyNotes.newValue !== false;
-              changedKeys.push('enableKeyNotes');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyDoubt')) {
-              state.enableKeyDoubt = changes.enableKeyDoubt.newValue !== false;
-              changedKeys.push('enableKeyDoubt');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyFullscreen')) {
-              state.enableKeyFullscreen = changes.enableKeyFullscreen.newValue !== false;
-              changedKeys.push('enableKeyFullscreen');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'enableKeyExit')) {
-              state.enableKeyExit = changes.enableKeyExit.newValue !== false;
-              changedKeys.push('enableKeyExit');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'keyChat')) {
-              state.keyChat = readShortcutKey(changes.keyChat.newValue, 'c');
-              changedKeys.push('keyChat');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'keyTimeline')) {
-              state.keyTimeline = readShortcutKey(changes.keyTimeline.newValue, 't');
-              changedKeys.push('keyTimeline');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'keyNotes')) {
-              state.keyNotes = readShortcutKey(changes.keyNotes.newValue, 'n');
-              changedKeys.push('keyNotes');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'keyDoubt')) {
-              state.keyDoubt = readShortcutKey(changes.keyDoubt.newValue, 'd');
-              changedKeys.push('keyDoubt');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'keyFullscreen')) {
-              state.keyFullscreen = readShortcutKey(changes.keyFullscreen.newValue, 'f');
-              changedKeys.push('keyFullscreen');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'keyExit')) {
-              state.keyExit = readShortcutKey(changes.keyExit.newValue, 'e');
-              changedKeys.push('keyExit');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'allowShortcutsWhenHidden')) {
-              state.allowShortcutsWhenHidden = !!changes.allowShortcutsWhenHidden.newValue;
-              changedKeys.push('allowShortcutsWhenHidden');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'showShortcutAlerts')) {
-              state.showShortcutAlerts = changes.showShortcutAlerts.newValue !== false;
-              changedKeys.push('showShortcutAlerts');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'autoHideControls')) {
-              state.autoHideControls = !!changes.autoHideControls.newValue;
-              changedKeys.push('autoHideControls');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'autoHideDelay')) {
-              state.autoHideDelay = parseFloat(String(changes.autoHideDelay.newValue)) || 0.8;
-              changedKeys.push('autoHideDelay');
-            }
-            if (Object.prototype.hasOwnProperty.call(changes, 'autoHideWhenPaused')) {
-              state.autoHideWhenPaused = !!changes.autoHideWhenPaused.newValue;
-              changedKeys.push('autoHideWhenPaused');
-            }
-
-            if (changedKeys.length > 0) {
-              notifyListeners(changedKeys);
-            }
+          }
+          if (changedKeys.length > 0) {
+            notifyListeners(changedKeys);
           }
         } catch (_e) {
           // Ignored: extension context invalidated

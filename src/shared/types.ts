@@ -3,17 +3,9 @@ export type ThemeMode = 'light' | 'dark';
 export type FinishTimeFormat = 'clock' | 'full';
 export type ReviewPromptStatus = 'pending' | 'reviewed' | 'dismissed_permanently';
 export type VideoQuality = 'auto' | '720p' | '480p' | '360p' | '240p';
-export type VolumeBalancerMode = 'gentle' | 'balanced' | 'max';
 
-// ===== All chrome.storage keys used by the popup =====
-export interface PopupSettings {
-  // Speed controls
-  preferredSpeed: number;
-  constantVideoQuality: boolean;
-  preferredQuality: VideoQuality;
-  snapPoints: number[]; // Array of 4 snap point values, e.g. [1.0, 2.0, 3.0, 4.0]
-
-  // Focus toggles (hide UI elements on PW)
+// ===== Hide / Focus UI Settings =====
+export interface HideSettings {
   hideAskAI: boolean;
   hideDoubt: boolean;
   hideChat: boolean;
@@ -24,6 +16,32 @@ export interface PopupSettings {
   hideSpeed: boolean;
   hideQuality: boolean;
   hideSetting: boolean;
+}
+
+export const DEFAULT_HIDE_SETTINGS: HideSettings = {
+  hideAskAI: false,
+  hideDoubt: false,
+  hideChat: false,
+  hideNotes: false,
+  hideNoteTimeline: false,
+  hideTimeLine: false,
+  hideTimeText: false,
+  hideSpeed: false,
+  hideQuality: true,
+  hideSetting: false,
+};
+
+export const HIDE_SETTING_KEYS = Object.keys(DEFAULT_HIDE_SETTINGS) as (keyof HideSettings)[];
+
+// ===== All chrome.storage keys used by the popup =====
+export interface PopupSettings extends HideSettings {
+  // Speed controls
+  preferredSpeed: number;
+  constantVideoQuality: boolean;
+  preferredQuality: VideoQuality;
+  snapPoints: number[]; // Array of 4 snap point values, e.g. [1.0, 1.5, 2.0, 2.5]
+
+  // Focus toggles (hide UI & lecture tools on PW)
   enableInstantHide: boolean;
   autoSkipPromoAds: boolean;
   blockRecordedPolls: boolean;
@@ -83,9 +101,8 @@ export interface PopupSettings {
   skipSilenceMinDuration: number; // seconds, e.g. 0.5
   skipSilenceLowCpu: boolean;
 
-  // Auto Volume Balancer & Ear Protection settings (Issue #6)
+  // Ear Protection setting (Issue #6)
   volumeBalancerEnabled: boolean;
-  volumeBalancerMode: VolumeBalancerMode;
 
   // Extension state
   extensionEnabled: boolean;
@@ -99,26 +116,17 @@ export interface PopupSettings {
   reviewPromptNextShowTime: number; // Unix timestamp
 
   // First-time onboarding / refresh notice
-  hasSeenRefreshPrompt?: boolean;
+  hasSeenRefreshPrompt: boolean;
 }
 
-// ===== Defaults matching existing popup.js behavior =====
+// ===== Defaults matching existing popup behavior =====
 export const DEFAULT_SETTINGS: PopupSettings = {
+  ...DEFAULT_HIDE_SETTINGS,
   preferredSpeed: 1.0,
   constantVideoQuality: false,
   preferredQuality: '720p',
   snapPoints: [1.0, 1.5, 2.0, 2.5],
 
-  hideAskAI: false,
-  hideDoubt: false,
-  hideChat: false,
-  hideNotes: false,
-  hideNoteTimeline: false,
-  hideTimeLine: false,
-  hideTimeText: false,
-  hideSpeed: false,
-  hideQuality: true,
-  hideSetting: false,
   enableInstantHide: false,
   autoSkipPromoAds: false,
   blockRecordedPolls: false,
@@ -175,7 +183,6 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   skipSilenceLowCpu: false,
 
   volumeBalancerEnabled: false,
-  volumeBalancerMode: 'balanced',
 
   extensionEnabled: true,
   themeMode: 'dark',
@@ -187,3 +194,16 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   reviewPromptNextShowTime: 0,
   hasSeenRefreshPrompt: false,
 };
+
+export const POPUP_ONLY_STORAGE_KEYS = new Set<string>([
+  'showDashboardScrollbars',
+  'showPopupScrollbar',
+  'installDate',
+  'reviewPromptStatus',
+  'reviewPromptNextShowTime',
+  'hasSeenRefreshPrompt',
+]);
+
+export const CONTENT_STORAGE_KEYS = Object.keys(DEFAULT_SETTINGS).filter(
+  (k) => !POPUP_ONLY_STORAGE_KEYS.has(k),
+);

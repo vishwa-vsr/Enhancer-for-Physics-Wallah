@@ -23,10 +23,6 @@
   scrollbar-color: var(--border-subtle) transparent;
 }
 
-.scrollAreaSettings {
-  padding-top: 32px;
-}
-
 .scrollAreaBoard {
   overflow: hidden;
   display: flex;
@@ -82,16 +78,6 @@
   background-color: var(--bg-main);
   position: relative;
   z-index: 10;
-}
-
-.viewHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 22px;
-  gap: 16px;
-  flex-wrap: wrap;
-  flex-shrink: 0;
 }
 
 .chapterTitleBlock {

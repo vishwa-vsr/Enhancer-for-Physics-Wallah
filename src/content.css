@@ -1334,7 +1334,7 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   pointer-events: auto !important;
 }
 
-.pwc-autohide-inactive
+:is(.pwc-autohide-inactive, .pwc-collapsed-state)
   :is(
     [role='dialog'],
     [aria-modal='true'],
@@ -1345,30 +1345,7 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
     [class*='drawer' i],
     [class*='Drawer']
   ),
-.pwc-autohide-inactive
-  :is(
-    [role='dialog'],
-    [aria-modal='true'],
-    [class*='timeline-sidebar' i],
-    [id*='timeline-sidebar' i],
-    [class*='Timeline_sidebar'],
-    [class*='Timeline_container'],
-    [class*='drawer' i],
-    [class*='Drawer']
-  )
-  *,
-.pwc-collapsed-state
-  :is(
-    [role='dialog'],
-    [aria-modal='true'],
-    [class*='timeline-sidebar' i],
-    [id*='timeline-sidebar' i],
-    [class*='Timeline_sidebar'],
-    [class*='Timeline_container'],
-    [class*='drawer' i],
-    [class*='Drawer']
-  ),
-.pwc-collapsed-state
+:is(.pwc-autohide-inactive, .pwc-collapsed-state)
   :is(
     [role='dialog'],
     [aria-modal='true'],
@@ -1434,8 +1411,7 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 }
 
 #pwc-player-banner.pwc-player-banner.pwc-banner-visible,
-.pwc-autohide-inactive #pwc-player-banner.pwc-player-banner.pwc-banner-visible,
-.pwc-collapsed-state #pwc-player-banner.pwc-player-banner.pwc-banner-visible {
+:is(.pwc-autohide-inactive, .pwc-collapsed-state) #pwc-player-banner.pwc-player-banner.pwc-banner-visible {
   opacity: 1 !important;
   visibility: visible !important;
   transform: translate(-50%, 0) scale(1) !important;
@@ -1448,16 +1424,13 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 
 #pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
 #pwc-player-banner.pwc-player-banner.pwc-banner-dismissible,
-.pwc-autohide-inactive #pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
-.pwc-autohide-inactive #pwc-player-banner.pwc-player-banner.pwc-banner-dismissible,
-.pwc-collapsed-state #pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
-.pwc-collapsed-state #pwc-player-banner.pwc-player-banner.pwc-banner-dismissible {
+:is(.pwc-autohide-inactive, .pwc-collapsed-state)
+  #pwc-player-banner.pwc-player-banner:is(.pwc-banner-clickable, .pwc-banner-dismissible) {
   pointer-events: auto !important;
 }
 
 #pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
-.pwc-autohide-inactive #pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
-.pwc-collapsed-state #pwc-player-banner.pwc-player-banner.pwc-banner-clickable {
+:is(.pwc-autohide-inactive, .pwc-collapsed-state) #pwc-player-banner.pwc-player-banner.pwc-banner-clickable {
   cursor: pointer !important;
 }
 
@@ -1536,14 +1509,10 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
   box-shadow: 0 0 0 2px #a496ff !important;
 }
 
-.pwc-autohide-inactive .pwc-player-banner-btn,
-.pwc-collapsed-state .pwc-player-banner-btn,
-.pwc-autohide-inactive .pwc-player-banner-btn *,
-.pwc-collapsed-state .pwc-player-banner-btn *,
-.pwc-autohide-inactive .pwc-player-banner-close,
-.pwc-collapsed-state .pwc-player-banner-close,
-.pwc-autohide-inactive .pwc-player-banner-close *,
-.pwc-collapsed-state .pwc-player-banner-close * {
+:is(.pwc-autohide-inactive, .pwc-collapsed-state) .pwc-player-banner-btn,
+:is(.pwc-autohide-inactive, .pwc-collapsed-state) .pwc-player-banner-btn *,
+:is(.pwc-autohide-inactive, .pwc-collapsed-state) .pwc-player-banner-close,
+:is(.pwc-autohide-inactive, .pwc-collapsed-state) .pwc-player-banner-close * {
   cursor: pointer !important;
 }
 
@@ -1800,8 +1769,7 @@ video.vjs-tech:focus-visible {
 }
 
 /* Top Control Bar - Borderless with Centered Navigation */
-.pwc-slide-top-bar,
-.pwc-slide-bottom-bar {
+.pwc-slide-top-bar {
   position: relative !important;
   flex-shrink: 0 !important;
   width: 100% !important;
@@ -1987,8 +1955,7 @@ html.pwc-light-theme .pwc-slide-box {
   box-shadow: none !important;
 }
 
-html.pwc-light-theme .pwc-slide-top-bar,
-html.pwc-light-theme .pwc-slide-bottom-bar {
+html.pwc-light-theme .pwc-slide-top-bar {
   background: rgba(245, 246, 248, 0.96) !important;
   border: none !important;
 }

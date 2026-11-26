@@ -118,10 +118,7 @@ export function activateFocusLock(): boolean {
   pausedByGuard = false;
   intentionalFullscreenExit = false;
 
-  // 1. Mark the document so CSS hooks can react to the locked session.
-  document.documentElement.classList.add('pwc-focus-lock-active');
-
-  // 2. Clean fullscreen presentation (only shows the ON status banner if fullscreen succeeds;
+  // 1. Clean fullscreen presentation (only shows the ON status banner if fullscreen succeeds;
   //    otherwise the combined click-to-fullscreen banner is shown by requestPlayerFullscreen).
   requestPlayerFullscreen(true);
   return true;
@@ -132,7 +129,6 @@ export function deactivateFocusLock(): void {
   focusLockActive = false;
   pausedByGuard = false;
 
-  document.documentElement.classList.remove('pwc-focus-lock-active');
   removeModal();
   removeInterstitial();
 
