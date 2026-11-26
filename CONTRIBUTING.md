@@ -63,20 +63,22 @@ The codebase is organized into four clean areas under `src/`:
 Most contributions involve adding a new toggle to hide distracting elements on the player. Here is the complete, step-by-step recipe:
 
 ### 1. Define the Setting Keys
-* In `src/content/types.ts`: Add your new boolean key to `HideSettings` (e.g., `hideMyFeature: boolean;`).
-* In `src/content/state.ts`:
+* In `src/shared/types.ts`:
+  * Add your new boolean key to `HideSettings` (e.g., `hideMyFeature: boolean;`).
   * Add `hideMyFeature: false` to `DEFAULT_HIDE_SETTINGS`.
-  * Add `'hideMyFeature'` to the string list inside `safeGetSettings()` so Chrome loads it from storage on startup.
-* In `src/shared/types.ts`: Add `hideMyFeature: boolean;` to `PopupSettings` and `DEFAULT_SETTINGS`.
+  * *(Notice: `PopupSettings` and `DEFAULT_SETTINGS` automatically inherit it from `DEFAULT_HIDE_SETTINGS`!)*
 
 ### 2. Wire into the Popup Store
 * In `src/popup/store.ts`:
   * Create the reactive signal:
     ```typescript
-    export const hideMyFeature = signal(false);
+    export const hideMyFeature = signal(DEFAULT_SETTINGS.hideMyFeature);
     ```
-  * In `initStore()`: Add `hideMyFeature.value = !!s.hideMyFeature;`.
-  * In the storage change listener: Add `if (changes.hideMyFeature !== undefined) hideMyFeature.value = !!changes.hideMyFeature;`.
+  * Add your entry to `BOOLEAN_SIGNALS`:
+    ```typescript
+    ['hideMyFeature', hideMyFeature, false],
+    ```
+    *(Initialization and storage change synchronization are handled automatically!)*
 
 ### 3. Add CSS Hiding Logic
 * In `src/content/modules/distractions/focus-css.ts`: Add your mapping to `classMap`:

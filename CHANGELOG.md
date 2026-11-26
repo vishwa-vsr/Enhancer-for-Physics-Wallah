@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+- **Font Packaging**: Reverted font path in tokens to relative path (`../fonts/InterVariable.woff2`), eliminating Vite build packaging warnings.
+- **ResizeObserver Warning Shield**: Added an error listener filter to catch benign ResizeObserver loop notices and prevent Chrome extensions error badge alerts in the dashboard.
+- **Focus Lock Beacon**: Restored `pwc-focus-lock-active` class hook on the root element during active focus lock sessions.
+- **Popup Settings Store**: Replaced nested if-else chain with a clean dictionary handler map, centralized fallback defaults, and simplified toggle change synchronizer.
+- **Contributor Guidelines**: Updated the toggle creation recipe in `CONTRIBUTING.md` to reflect the unified shared settings structure.
+
 ## [1.1.0.13] - 2026-11-24
 
 ### Added

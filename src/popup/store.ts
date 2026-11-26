@@ -193,22 +193,22 @@ const BOOLEAN_SIGNALS: Array<[keyof PopupSettings, { value: boolean }, boolean]>
   ['hasSeenRefreshPrompt', hasSeenRefreshPrompt, false],
 ];
 
-const NULLISH_SIGNALS: Array<[keyof PopupSettings, { value: unknown }, unknown]> = [
-  ['volumeScrollMouseStep', volumeScrollMouseStep, 5],
-  ['volumeScrollTrackpadStep', volumeScrollTrackpadStep, 2],
-  ['volumeBubbleDelay', volumeBubbleDelay, 0.4],
-  ['holdSpaceSpeed', holdSpaceSpeed, 2.0],
-  ['autoHideDelay', autoHideDelay, 0.8],
-  ['skipSilenceSilenceSpeed', skipSilenceSilenceSpeed, 6.0],
-  ['skipSilenceThreshold', skipSilenceThreshold, -40],
-  ['skipSilenceTimeSaved', skipSilenceTimeSaved, 0],
-  ['skipSilenceMinDuration', skipSilenceMinDuration, 0.5],
-  ['keyChat', keyChat, 'c'],
-  ['keyTimeline', keyTimeline, 't'],
-  ['keyNotes', keyNotes, 'n'],
-  ['keyDoubt', keyDoubt, 'd'],
-  ['keyFullscreen', keyFullscreen, 'f'],
-  ['keyExit', keyExit, 'e'],
+const NULLISH_SIGNALS: Array<[keyof PopupSettings, { value: unknown }]> = [
+  ['volumeScrollMouseStep', volumeScrollMouseStep],
+  ['volumeScrollTrackpadStep', volumeScrollTrackpadStep],
+  ['volumeBubbleDelay', volumeBubbleDelay],
+  ['holdSpaceSpeed', holdSpaceSpeed],
+  ['autoHideDelay', autoHideDelay],
+  ['skipSilenceSilenceSpeed', skipSilenceSilenceSpeed],
+  ['skipSilenceThreshold', skipSilenceThreshold],
+  ['skipSilenceTimeSaved', skipSilenceTimeSaved],
+  ['skipSilenceMinDuration', skipSilenceMinDuration],
+  ['keyChat', keyChat],
+  ['keyTimeline', keyTimeline],
+  ['keyNotes', keyNotes],
+  ['keyDoubt', keyDoubt],
+  ['keyFullscreen', keyFullscreen],
+  ['keyExit', keyExit],
 ];
 
 const SHORTCUT_SANITIZE_DEFAULTS: Record<'keySpeedUp' | 'keySlowDown' | 'keyReset', [typeof keySpeedUp, string]> = {
@@ -217,19 +217,38 @@ const SHORTCUT_SANITIZE_DEFAULTS: Record<'keySpeedUp' | 'keySlowDown' | 'keyRese
   keyReset: [keyReset, 'l'],
 };
 
-function applyCustomPopupChange(key: keyof PopupSettings, val: unknown): void {
-  if (key === 'preferredSpeed' && val !== undefined) preferredSpeed.value = val as number;
-  else if (key === 'preferredQuality') preferredQuality.value = (val as VideoQuality) || '720p';
-  else if (key === 'snapPoints')
-    snapPoints.value = Array.isArray(val) ? (val as number[]) : [1.0, 1.5, 2.0, 2.5];
-  else if (key === 'keySlideViewer') keySlideViewer.value = (val as string) || 't';
-  else if (key === 'finishTimeFormat')
+const CUSTOM_HANDLERS: Partial<Record<keyof PopupSettings, (val: unknown) => void>> = {
+  preferredSpeed: (val) => {
+    if (val !== undefined) preferredSpeed.value = val as number;
+  },
+  preferredQuality: (val) => {
+    preferredQuality.value = (val as VideoQuality) || DEFAULT_SETTINGS.preferredQuality;
+  },
+  snapPoints: (val) => {
+    snapPoints.value = Array.isArray(val) ? (val as number[]) : [...DEFAULT_SETTINGS.snapPoints];
+  },
+  keySlideViewer: (val) => {
+    keySlideViewer.value = (val as string) || DEFAULT_SETTINGS.keySlideViewer;
+  },
+  finishTimeFormat: (val) => {
     finishTimeFormat.value = val === 'full' ? 'full' : 'clock';
-  else if (key === 'installDate') installDate.value = (val as number) || 0;
-  else if (key === 'reviewPromptStatus')
+  },
+  installDate: (val) => {
+    installDate.value = (val as number) || 0;
+  },
+  reviewPromptStatus: (val) => {
     reviewPromptStatus.value = (val as ReviewPromptStatus) || 'pending';
-  else if (key === 'reviewPromptNextShowTime') reviewPromptNextShowTime.value = (val as number) || 0;
-  else if (key in SHORTCUT_SANITIZE_DEFAULTS) {
+  },
+  reviewPromptNextShowTime: (val) => {
+    reviewPromptNextShowTime.value = (val as number) || 0;
+  },
+};
+
+function applyCustomPopupChange(key: keyof PopupSettings, val: unknown): void {
+  const handler = CUSTOM_HANDLERS[key];
+  if (handler) {
+    handler(val);
+  } else if (key in SHORTCUT_SANITIZE_DEFAULTS) {
     const [sig, fallback] = SHORTCUT_SANITIZE_DEFAULTS[key as keyof typeof SHORTCUT_SANITIZE_DEFAULTS];
     sig.value = sanitizeSpeedShortcut(val, fallback);
   }
@@ -242,8 +261,8 @@ export async function initStore() {
   for (const [key, sig, defaultTrue] of BOOLEAN_SIGNALS) {
     sig.value = defaultTrue ? s[key] !== false : !!s[key];
   }
-  for (const [key, sig, fallback] of NULLISH_SIGNALS) {
-    sig.value = s[key] ?? fallback;
+  for (const [key, sig] of NULLISH_SIGNALS) {
+    sig.value = s[key] ?? DEFAULT_SETTINGS[key];
   }
   for (const key of [
     'preferredSpeed',
@@ -278,14 +297,14 @@ export async function initStore() {
 
   // Listen for real-time updates from content script (e.g., time saved or quality)
   onSettingsChanged((changes) => {
-    for (const [key, sig, defaultTrue] of BOOLEAN_SIGNALS) {
+    for (const [key, sig] of BOOLEAN_SIGNALS) {
       if (changes[key] !== undefined) {
-        sig.value = defaultTrue && key !== 'hideQuality' ? changes[key] !== false : !!changes[key];
+        sig.value = !!changes[key];
       }
     }
     for (const [key, sig] of NULLISH_SIGNALS) {
       if (changes[key] !== undefined) {
-        sig.value = changes[key];
+        sig.value = changes[key] ?? DEFAULT_SETTINGS[key];
       }
     }
     for (const key of Object.keys(changes) as (keyof PopupSettings)[]) {
