@@ -12,6 +12,7 @@ import {
   resolveSafeSpeedShortcuts,
   sanitizeSpeedShortcut,
 } from '@shared/shortcuts';
+import { VOLUME_BOOSTER_DEFAULT, sanitizeVolumeBoosterLevel } from '@shared/audio';
 
 export { getReservedShortcutWarning, sanitizeSpeedShortcut };
 
@@ -138,6 +139,10 @@ export const skipSilenceLowCpu = signal(false);
 export const volumeBalancerEnabled = signal(false);
 export const volumeBalancerMode = signal<VolumeBalancerMode>('balanced');
 
+// ===== Volume Booster signals =====
+export const volumeBoosterEnabled = signal(false);
+export const volumeBoosterLevel = signal(VOLUME_BOOSTER_DEFAULT);
+
 // ===== Review & Refresh prompt signals =====
 export const installDate = signal(0);
 export const reviewPromptStatus = signal<ReviewPromptStatus>('pending');
@@ -256,6 +261,12 @@ export async function initStore() {
   volumeBalancerEnabled.value = !!s.volumeBalancerEnabled;
   volumeBalancerMode.value = s.volumeBalancerMode || 'balanced';
 
+  volumeBoosterEnabled.value = !!s.volumeBoosterEnabled;
+  volumeBoosterLevel.value = sanitizeVolumeBoosterLevel(
+    s.volumeBoosterLevel,
+    VOLUME_BOOSTER_DEFAULT,
+  );
+
   installDate.value = s.installDate || 0;
   reviewPromptStatus.value = s.reviewPromptStatus || 'pending';
   reviewPromptNextShowTime.value = s.reviewPromptNextShowTime || 0;
@@ -356,6 +367,15 @@ export async function initStore() {
     }
     if (changes.volumeBalancerMode !== undefined) {
       volumeBalancerMode.value = (changes.volumeBalancerMode as VolumeBalancerMode) || 'balanced';
+    }
+    if (changes.volumeBoosterEnabled !== undefined) {
+      volumeBoosterEnabled.value = !!changes.volumeBoosterEnabled;
+    }
+    if (changes.volumeBoosterLevel !== undefined) {
+      volumeBoosterLevel.value = sanitizeVolumeBoosterLevel(
+        changes.volumeBoosterLevel,
+        VOLUME_BOOSTER_DEFAULT,
+      );
     }
     if (changes.preferredQuality !== undefined) {
       preferredQuality.value = changes.preferredQuality;

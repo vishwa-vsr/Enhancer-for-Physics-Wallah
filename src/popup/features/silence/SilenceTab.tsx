@@ -4,6 +4,13 @@ import { Stepper } from '@shared/components/Stepper';
 import { SelectDropdown } from '@shared/components/SelectDropdown';
 import { CollapsibleSubOption } from '@shared/components/CollapsibleSubOption';
 import { saveSetting } from '@shared/storage';
+import {
+  VOLUME_BOOSTER_MAX,
+  VOLUME_BOOSTER_MIN,
+  VOLUME_BOOSTER_PRESETS,
+  VOLUME_BOOSTER_STEP,
+  sanitizeVolumeBoosterLevel,
+} from '@shared/audio';
 import type { VideoQuality } from '@shared/types';
 import {
   skipSilenceEnabled,
@@ -19,6 +26,8 @@ import {
   hideQuality,
   skipSilenceActive,
   volumeBalancerEnabled,
+  volumeBoosterEnabled,
+  volumeBoosterLevel,
 } from '@popup/store';
 import styles from './SilenceTab.module.css';
 
@@ -46,6 +55,22 @@ export function SilenceTab() {
     skipSilenceTimeSaved.value = 0;
     saveSetting('skipSilenceTimeSaved', 0);
   };
+
+  const handleVolumeBoostChange = (rawLevel: number) => {
+    const sanitized = sanitizeVolumeBoosterLevel(rawLevel, VOLUME_BOOSTER_MIN);
+    volumeBoosterLevel.value = sanitized;
+    saveSetting('volumeBoosterLevel', sanitized);
+  };
+
+  const boostPercentFill = Math.max(
+    0,
+    Math.min(
+      100,
+      ((volumeBoosterLevel.value - VOLUME_BOOSTER_MIN) /
+        (VOLUME_BOOSTER_MAX - VOLUME_BOOSTER_MIN)) *
+        100,
+    ),
+  );
 
   return (
     <div class={styles.mediaContainer}>
@@ -100,6 +125,110 @@ export function SilenceTab() {
                 }}
                 ariaLabel="Toggle Hide Quality Widget"
               />
+            </div>
+          </CollapsibleSubOption>
+        </div>
+      </section>
+
+      {/* Volume Booster Card */}
+      <section class={styles.qualitySection} aria-label="Volume Booster Settings">
+        <h2 class={styles.sectionTitle}>Volume Booster</h2>
+        <div class={styles.settingsGroupCard}>
+          <FeatureRow
+            label="Enable Volume Booster"
+            sublabel={
+              volumeBoosterEnabled.value
+                ? volumeBoosterLevel.value > VOLUME_BOOSTER_MIN
+                  ? `Boosting audio to ${volumeBoosterLevel.value}%`
+                  : 'Normal volume (100%)'
+                : 'Amplify quiet lectures up to 500%'
+            }
+          >
+            <Toggle
+              checked={volumeBoosterEnabled.value}
+              onChange={(val) => {
+                volumeBoosterEnabled.value = val;
+                saveSetting('volumeBoosterEnabled', val);
+              }}
+              ariaLabel="Toggle Volume Booster"
+            />
+          </FeatureRow>
+
+          <CollapsibleSubOption isOpen={volumeBoosterEnabled.value}>
+            <div class={styles.settingRowGroup} id="vb-controls-card">
+              <div class={styles.featureConfigRow}>
+                <span class={styles.configLabel}>Boost Level</span>
+                <div class={styles.vbValueGroup}>
+                  <button
+                    type="button"
+                    class={`${styles.settingsToggleBtn} ${styles.resetSpeedBtn} ${styles.vbResetBtn}`}
+                    id="vb-reset-btn"
+                    onClick={() => handleVolumeBoostChange(VOLUME_BOOSTER_MIN)}
+                    title="Reset boost to 100%"
+                    aria-label="Reset Volume Boost to 100%"
+                  >
+                    <svg
+                      class={styles.resetIcon}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                      <path d="M3 3v5h5" />
+                    </svg>
+                  </button>
+                  <span class={styles.ssSensitivityValue} id="vb-level-value">
+                    {volumeBoosterLevel.value}%
+                  </span>
+                </div>
+              </div>
+
+              <div class={styles.ssSensitivityRow}>
+                <span class={styles.ssRangeLabel}>{VOLUME_BOOSTER_MIN}%</span>
+                <input
+                  type="range"
+                  id="vb-level-slider"
+                  class={styles.ssThresholdSlider}
+                  min={VOLUME_BOOSTER_MIN}
+                  max={VOLUME_BOOSTER_MAX}
+                  step={VOLUME_BOOSTER_STEP}
+                  value={volumeBoosterLevel.value}
+                  style={{ '--percent': `${boostPercentFill}%` }}
+                  onInput={(e) => {
+                    const val = Number((e.target as HTMLInputElement).value);
+                    handleVolumeBoostChange(val);
+                  }}
+                  aria-label="Volume Boost Level Slider"
+                />
+                <span class={styles.ssRangeLabel}>{VOLUME_BOOSTER_MAX}%</span>
+              </div>
+
+              <div class={styles.vbPresetsRow} role="group" aria-label="Volume Boost Presets">
+                {VOLUME_BOOSTER_PRESETS.map((preset) => {
+                  const isActive = volumeBoosterLevel.value === preset;
+                  return (
+                    <button
+                      key={preset}
+                      type="button"
+                      class={`${styles.vbPresetBtn} ${isActive ? styles.vbPresetBtnActive : ''}`}
+                      aria-pressed={isActive}
+                      onClick={() => handleVolumeBoostChange(preset)}
+                    >
+                      {preset}%
+                    </button>
+                  );
+                })}
+              </div>
+
+              {volumeBoosterLevel.value > 300 && (
+                <div class={styles.vbWarningRow} role="status">
+                  High boost levels may distort speakers. Enable Ear Protection below to tame loud
+                  peaks.
+                </div>
+              )}
             </div>
           </CollapsibleSubOption>
         </div>

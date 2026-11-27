@@ -87,6 +87,10 @@ export interface PopupSettings {
   volumeBalancerEnabled: boolean;
   volumeBalancerMode: VolumeBalancerMode;
 
+  // Volume Booster settings
+  volumeBoosterEnabled: boolean;
+  volumeBoosterLevel: number; // Percentage: 100 to 500
+
   // Extension state
   extensionEnabled: boolean;
   themeMode: ThemeMode;
@@ -176,6 +180,9 @@ export const DEFAULT_SETTINGS: PopupSettings = {
 
   volumeBalancerEnabled: false,
   volumeBalancerMode: 'balanced',
+
+  volumeBoosterEnabled: false,
+  volumeBoosterLevel: 150,
 
   extensionEnabled: true,
   themeMode: 'dark',
