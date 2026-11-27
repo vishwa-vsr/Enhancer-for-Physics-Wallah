@@ -25,6 +25,7 @@ import {
   removeControlsTrayIfEmpty,
 } from '../ui/toast';
 import { ensureAudioPipelineRunning } from '../audio/skip-silence';
+import { redirectIfPwNotesPage } from '../pdf/native-pdf-viewer';
 import { isUserTyping } from '../shortcuts/keyboard';
 
 let isModifyingDOM = false;
@@ -120,6 +121,7 @@ export function checkUrlChange(): void {
 }
 
 export function onLectureChanged(): void {
+  redirectIfPwNotesPage();
   clearVideoCache();
   setActiveVideoElement(null);
   resetDistractionCaches();
