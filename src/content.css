@@ -7,7 +7,7 @@
   font-display: swap;
   src:
     local('Inter'),
-    url('chrome-extension://__MSG_@@extension_id__/fonts/InterVariable.woff2') format('woff2');
+    url('chrome-extension://__MSG_@@extension_id__/assets/InterVariable.woff2') format('woff2');
 }
 
 /* Main Container - row places button on left and expands slider to the right */
@@ -1411,7 +1411,8 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 }
 
 #pwc-player-banner.pwc-player-banner.pwc-banner-visible,
-:is(.pwc-autohide-inactive, .pwc-collapsed-state) #pwc-player-banner.pwc-player-banner.pwc-banner-visible {
+:is(.pwc-autohide-inactive, .pwc-collapsed-state)
+  #pwc-player-banner.pwc-player-banner.pwc-banner-visible {
   opacity: 1 !important;
   visibility: visible !important;
   transform: translate(-50%, 0) scale(1) !important;
@@ -1430,7 +1431,8 @@ html.pwc-light-theme .pwc-focus-lock-quit:hover {
 }
 
 #pwc-player-banner.pwc-player-banner.pwc-banner-clickable,
-:is(.pwc-autohide-inactive, .pwc-collapsed-state) #pwc-player-banner.pwc-player-banner.pwc-banner-clickable {
+:is(.pwc-autohide-inactive, .pwc-collapsed-state)
+  #pwc-player-banner.pwc-player-banner.pwc-banner-clickable {
   cursor: pointer !important;
 }
 

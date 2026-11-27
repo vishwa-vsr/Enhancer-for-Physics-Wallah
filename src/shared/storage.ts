@@ -91,7 +91,7 @@ export async function exportSettings(): Promise<ExportedSettingsPayload> {
 
   return {
     app: 'Enhancer for Physics Wallah',
-    version: '1.1.0.13',
+    version: '1.1.0.14',
     exportedAt: new Date().toISOString(),
     settings: filtered,
   };

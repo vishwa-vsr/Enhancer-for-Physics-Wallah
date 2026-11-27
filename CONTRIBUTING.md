@@ -93,19 +93,11 @@ Most contributions involve adding a new toggle to hide distracting elements on t
   ```
 
 ### 4. Add the Toggle in Popup UI
-* In `src/popup/features/focus/FocusTab.tsx`: Add a `<FeatureRow>` bound to your new signal:
+* In `src/popup/features/focus/FocusTab.tsx`: Add your toggle entry to `DISTRACTION_TOGGLES`:
   ```tsx
-  <FeatureRow label="Hide My Feature" sublabel="Hide distraction on PW lecture player">
-    <Toggle
-      checked={hideMyFeature.value}
-      onChange={(val) => {
-        hideMyFeature.value = val;
-        saveSetting('hideMyFeature', val);
-      }}
-      ariaLabel="Toggle Hide My Feature"
-    />
-  </FeatureRow>
+  { label: 'Hide My Feature', sig: hideMyFeature, settingKey: 'hideMyFeature' },
   ```
+  *(The `<FeatureRow>`, `<Toggle>`, and `saveSetting` wiring are rendered automatically via `BoolFeatureRow`!)*
 
 ---
 

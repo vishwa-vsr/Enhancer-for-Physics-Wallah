@@ -4,14 +4,17 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0.14] - 2026-11-27
+
+### Changed
+
+- **Smaller Extension Package**: Removed duplicate Inter font bundling (saving ~344 KB per browser build) and simplified all 272 Study Planner icons (saving ~107 KB in source without removing any icons).
+- **Shared Settings & Code Cleanup**: Unified popup styles, settings defaults, and sync logic across the extension, updated `CONTRIBUTING.md`, and cleaned up retired unused internal code.
 
 ### Fixed
-- **Font Packaging**: Reverted font path in tokens to relative path (`../fonts/InterVariable.woff2`), eliminating Vite build packaging warnings.
-- **ResizeObserver Warning Shield**: Added an error listener filter to catch benign ResizeObserver loop notices and prevent Chrome extensions error badge alerts in the dashboard.
-- **Focus Lock Beacon**: Restored `pwc-focus-lock-active` class hook on the root element during active focus lock sessions.
-- **Popup Settings Store**: Replaced nested if-else chain with a clean dictionary handler map, centralized fallback defaults, and simplified toggle change synchronizer.
-- **Contributor Guidelines**: Updated the toggle creation recipe in `CONTRIBUTING.md` to reflect the unified shared settings structure.
+
+- **Dashboard & Popup Error Notices**: Suppressed harmless browser layout-resize warnings so they no longer trigger Chrome extension error alerts.
+- **Popup Setting Dividers**: Restored missing separator lines on nested expandable controls (such as between `Show Volume Bubble` and `Disappear Delay` in Volume Scroll).
 
 ## [1.1.0.13] - 2026-11-24
 

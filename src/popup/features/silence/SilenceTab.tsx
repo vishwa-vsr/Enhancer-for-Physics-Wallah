@@ -177,10 +177,7 @@ export function SilenceTab() {
             />
 
             <CollapsibleSubOption isOpen={!skipSilenceDynamicThreshold.value}>
-              <div
-                class={`${shared.settingRowGroup} ${styles.settingRowGroup}`}
-                id="ss-manual-sensitivity-card"
-              >
+              <div class={shared.settingRowGroup} id="ss-manual-sensitivity-card">
                 <div class={shared.featureConfigRow}>
                   <span class={shared.configLabel}>Silence Threshold</span>
                   <span class={styles.ssSensitivityValue} id="ss-sensitivity-value">

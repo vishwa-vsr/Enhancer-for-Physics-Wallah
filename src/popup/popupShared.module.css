@@ -64,8 +64,16 @@
   animation: subBoxFadeIn 180ms ease-out forwards;
 }
 
-.featureConfigRow + .featureConfigRow {
+.featureConfigRow + .featureConfigRow,
+.featureConfigRow + [aria-hidden] .featureConfigRow:first-child,
+.featureConfigRow + [aria-hidden] .settingRowGroup:first-child,
+[aria-hidden] + .featureConfigRow {
   border-top: 1px solid var(--divider-color);
+}
+
+.featureConfigRow:has(+ :not(.featureConfigRow):not([aria-hidden])),
+.settingsGroupCard > [aria-hidden='false']:not(:last-child) {
+  border-bottom: 1px solid var(--divider-color);
 }
 
 .configLabel {

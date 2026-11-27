@@ -99,12 +99,7 @@ const DISTRACTION_TOGGLES: Array<{
 ];
 
 type FocusKeyType =
-  | 'keyChat'
-  | 'keyTimeline'
-  | 'keyNotes'
-  | 'keyDoubt'
-  | 'keyFullscreen'
-  | 'keyExit';
+  'keyChat' | 'keyTimeline' | 'keyNotes' | 'keyDoubt' | 'keyFullscreen' | 'keyExit';
 
 const FOCUS_SHORTCUT_ROWS: Array<{
   keyType: FocusKeyType;

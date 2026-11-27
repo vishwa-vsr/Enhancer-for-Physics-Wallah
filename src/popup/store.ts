@@ -211,7 +211,10 @@ const NULLISH_SIGNALS: Array<[keyof PopupSettings, { value: unknown }]> = [
   ['keyExit', keyExit],
 ];
 
-const SHORTCUT_SANITIZE_DEFAULTS: Record<'keySpeedUp' | 'keySlowDown' | 'keyReset', [typeof keySpeedUp, string]> = {
+const SHORTCUT_SANITIZE_DEFAULTS: Record<
+  'keySpeedUp' | 'keySlowDown' | 'keyReset',
+  [typeof keySpeedUp, string]
+> = {
   keySpeedUp: [keySpeedUp, 'h'],
   keySlowDown: [keySlowDown, 'j'],
   keyReset: [keyReset, 'l'],
@@ -249,7 +252,8 @@ function applyCustomPopupChange(key: keyof PopupSettings, val: unknown): void {
   if (handler) {
     handler(val);
   } else if (key in SHORTCUT_SANITIZE_DEFAULTS) {
-    const [sig, fallback] = SHORTCUT_SANITIZE_DEFAULTS[key as keyof typeof SHORTCUT_SANITIZE_DEFAULTS];
+    const [sig, fallback] =
+      SHORTCUT_SANITIZE_DEFAULTS[key as keyof typeof SHORTCUT_SANITIZE_DEFAULTS];
     sig.value = sanitizeSpeedShortcut(val, fallback);
   }
 }
