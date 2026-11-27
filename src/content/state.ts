@@ -7,6 +7,7 @@ import {
   VolumeBalancerMode,
 } from './types';
 import { resolveSafeSpeedShortcuts, sanitizeSpeedShortcut } from '../shared/shortcuts';
+import { VOLUME_BOOSTER_DEFAULT, sanitizeVolumeBoosterLevel } from '../shared/audio';
 
 export const DEFAULT_HIDE_SETTINGS: HideSettings = {
   hideAskAI: false,
@@ -85,6 +86,9 @@ export const DEFAULT_CONTENT_STATE: ContentState = {
 
   volumeBalancerEnabled: false,
   volumeBalancerMode: 'balanced',
+
+  volumeBoosterEnabled: false,
+  volumeBoosterLevel: VOLUME_BOOSTER_DEFAULT,
 
   extensionEnabled: true,
   themeMode: 'dark',
@@ -220,6 +224,8 @@ export function safeGetSettings(callback: (result: Record<string, any>) => void)
         'skipSilenceLowCpu',
         'volumeBalancerEnabled',
         'volumeBalancerMode',
+        'volumeBoosterEnabled',
+        'volumeBoosterLevel',
         'autoPauseOnHide',
         'themeMode',
       ],
@@ -380,6 +386,12 @@ export function initState(onLoaded?: () => void): void {
 
     state.volumeBalancerEnabled = !!result.volumeBalancerEnabled;
     state.volumeBalancerMode = (result.volumeBalancerMode as VolumeBalancerMode) || 'balanced';
+
+    state.volumeBoosterEnabled = !!result.volumeBoosterEnabled;
+    state.volumeBoosterLevel = sanitizeVolumeBoosterLevel(
+      result.volumeBoosterLevel,
+      VOLUME_BOOSTER_DEFAULT,
+    );
 
     state.lectureTimeEnabled = result.lectureTimeEnabled !== false;
     state.showFinishTime = result.showFinishTime !== false;
@@ -604,6 +616,17 @@ export function initState(onLoaded?: () => void): void {
                 (changes.volumeBalancerMode as { newValue?: VolumeBalancerMode })?.newValue ||
                 'balanced';
               changedKeys.push('volumeBalancerMode');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'volumeBoosterEnabled')) {
+              state.volumeBoosterEnabled = !!changes.volumeBoosterEnabled.newValue;
+              changedKeys.push('volumeBoosterEnabled');
+            }
+            if (Object.prototype.hasOwnProperty.call(changes, 'volumeBoosterLevel')) {
+              state.volumeBoosterLevel = sanitizeVolumeBoosterLevel(
+                changes.volumeBoosterLevel.newValue,
+                VOLUME_BOOSTER_DEFAULT,
+              );
+              changedKeys.push('volumeBoosterLevel');
             }
             if (Object.prototype.hasOwnProperty.call(changes, 'snapPoints')) {
               state.snapPoints = sanitizeSnapPoints(changes.snapPoints.newValue);

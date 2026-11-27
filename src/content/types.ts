@@ -92,6 +92,10 @@ export interface ContentState {
   volumeBalancerEnabled: boolean;
   volumeBalancerMode: VolumeBalancerMode;
 
+  // Volume Booster settings
+  volumeBoosterEnabled: boolean;
+  volumeBoosterLevel: number;
+
   // Extension status
   extensionEnabled: boolean;
   themeMode: ThemeMode;
@@ -104,6 +108,7 @@ export interface AudioGraph {
   delayNode?: DelayNode | null;
   compressorNode?: DynamicsCompressorNode | null;
   balancerGainNode?: GainNode | null;
+  boosterGainNode?: GainNode | null;
   gainNode?: GainNode | null;
   workletNode?: AudioWorkletNode | null;
   analyserNode?: AnalyserNode | null;

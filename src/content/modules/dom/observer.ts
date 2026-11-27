@@ -25,6 +25,7 @@ import {
   removeControlsTrayIfEmpty,
 } from '../ui/toast';
 import { ensureAudioPipelineRunning } from '../audio/skip-silence';
+import { isVolumeBoosterActive } from '../audio/volume-booster';
 import { isUserTyping } from '../shortcuts/keyboard';
 
 let isModifyingDOM = false;
@@ -238,7 +239,10 @@ export function monitor(): void {
       }
       if (
         video &&
-        ((state.skipSilenceEnabled && state.skipSilenceActive) || state.volumeBalancerEnabled) &&
+        state.extensionEnabled &&
+        ((state.skipSilenceEnabled && state.skipSilenceActive) ||
+          state.volumeBalancerEnabled ||
+          isVolumeBoosterActive()) &&
         !video.paused
       ) {
         ensureAudioPipelineRunning();
@@ -267,7 +271,10 @@ export function monitor(): void {
     }
     if (
       video &&
-      ((state.skipSilenceEnabled && state.skipSilenceActive) || state.volumeBalancerEnabled) &&
+      state.extensionEnabled &&
+      ((state.skipSilenceEnabled && state.skipSilenceActive) ||
+        state.volumeBalancerEnabled ||
+        isVolumeBoosterActive()) &&
       !video.paused
     ) {
       ensureAudioPipelineRunning();

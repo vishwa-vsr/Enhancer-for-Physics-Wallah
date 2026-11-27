@@ -11,7 +11,9 @@ import {
   ssDestroy,
   onSSVideoPause,
   resetSSSessionSaved,
+  ensureAudioPipelineRunning,
 } from '../audio/skip-silence';
+import { isVolumeBoosterActive } from '../audio/volume-booster';
 import {
   isUserHoldingSpace,
   isPointerHolding,
@@ -161,6 +163,14 @@ export function setupVideoListeners(video: HTMLVideoElement): void {
 
   // Auto-apply preferred quality when video is loaded/switched
   autoApplyPreferredQuality();
+
+  if (
+    !video.paused &&
+    state.extensionEnabled &&
+    (state.volumeBalancerEnabled || isVolumeBoosterActive())
+  ) {
+    ensureAudioPipelineRunning();
+  }
 }
 
 // Update speed UI when speed changes (syncs with native controls)
@@ -214,12 +224,16 @@ export function onRateChange(): void {
 export function onVideoPlay(): void {
   if (state.skipSilenceEnabled && state.skipSilenceActive && !isSSEngineRunning()) {
     ssInit();
+  } else if (state.extensionEnabled && (state.volumeBalancerEnabled || isVolumeBoosterActive())) {
+    ensureAudioPipelineRunning();
   }
   setTimeout(() => {
     applySpeedToActiveVideo();
     autoApplyPreferredQuality();
     if (state.skipSilenceEnabled && state.skipSilenceActive && !isSSEngineRunning()) {
       ssInit();
+    } else if (state.extensionEnabled && (state.volumeBalancerEnabled || isVolumeBoosterActive())) {
+      ensureAudioPipelineRunning();
     }
   }, 200);
 }

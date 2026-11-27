@@ -1,4 +1,5 @@
 import { PopupSettings, DEFAULT_SETTINGS } from './types';
+import { sanitizeVolumeBoosterLevel } from './audio';
 
 const isChromeStorageAvailable =
   typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
@@ -138,7 +139,16 @@ export function validateSettingsString(input: string): {
 
   for (const [key, val] of Object.entries(candidate)) {
     if (key in DEFAULT_SETTINGS && !EXCLUDED_BACKUP_KEYS.has(key)) {
-      (sanitized as Record<string, unknown>)[key] = val;
+      if (key === 'volumeBoosterLevel') {
+        sanitized.volumeBoosterLevel = sanitizeVolumeBoosterLevel(
+          val,
+          DEFAULT_SETTINGS.volumeBoosterLevel,
+        );
+      } else if (key === 'volumeBoosterEnabled') {
+        sanitized.volumeBoosterEnabled = typeof val === 'boolean' ? val : val === 'true';
+      } else {
+        (sanitized as Record<string, unknown>)[key] = val;
+      }
       count++;
     }
   }

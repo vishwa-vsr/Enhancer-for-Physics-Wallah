@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **Volume Booster**: Added an integrated Volume Booster (`100%`–`500%`) in the Media tab with preset buttons, reset control, and Web Audio amplification routed before Ear Protection peak limiting (@MAYANK-MAHAUR).
+
 ## [1.1.0.13] - 2026-11-24
 
 ### Added
