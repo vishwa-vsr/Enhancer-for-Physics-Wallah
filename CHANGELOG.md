@@ -4,6 +4,12 @@ All notable changes to the **Enhancer for Physics Wallah** extension project wil
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Native Browser PDF Viewer**: Added an opt-in toggle under Focus → Smart Lecture Tools to bypass PW's custom `react-pdf` viewer on `/study-v2/notes` and open Class Notes and DPP PDFs directly in the browser's built-in native PDF viewer (@MAYANK-MAHAUR).
+
 ## [1.1.0.14] - 2026-11-27
 
 ### Changed

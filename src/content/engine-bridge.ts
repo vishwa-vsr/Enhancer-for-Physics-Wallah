@@ -2,6 +2,14 @@
 // Runs in the webpage context (world: MAIN, run_at: document_start)
 // Directly interacts with Video.js, VHS, and stream quality levels
 
+import {
+  PW_NATIVE_PDF_EVENT,
+  PW_NATIVE_PDF_STORAGE_KEY,
+  extractPdfUrlFromNotesUrl,
+  isDirectPdfAssetUrl,
+  isPwNotesViewerPath,
+} from '../shared/pdf';
+
 (function initPwcEngineBridge() {
   interface VhsOptions {
     bandwidth?: number;
@@ -787,6 +795,157 @@
     },
     true,
   );
+
+  // ===== Native Browser PDF Viewer Bypass =====
+  let isNativePdfViewerEnabled = false;
+  try {
+    isNativePdfViewerEnabled = localStorage.getItem(PW_NATIVE_PDF_STORAGE_KEY) === 'true';
+  } catch {
+    // Ignored: localStorage unavailable
+  }
+
+  function redirectCurrentNotesUrl(): boolean {
+    if (!isNativePdfViewerEnabled) return false;
+    const targetPdfUrl = extractPdfUrlFromNotesUrl(window.location.href);
+    if (targetPdfUrl && targetPdfUrl !== window.location.href) {
+      window.location.replace(targetPdfUrl);
+      return true;
+    }
+    return false;
+  }
+
+  // Run immediately at document_start if PW notes viewer was opened directly
+  redirectCurrentNotesUrl();
+
+  window.addEventListener(PW_NATIVE_PDF_EVENT, (event: Event) => {
+    const customEvt = event as CustomEvent<{ enabled?: boolean }>;
+    if (customEvt && customEvt.detail !== undefined) {
+      isNativePdfViewerEnabled = !!customEvt.detail.enabled;
+      try {
+        localStorage.setItem(
+          PW_NATIVE_PDF_STORAGE_KEY,
+          isNativePdfViewerEnabled ? 'true' : 'false',
+        );
+      } catch {
+        // Ignored: localStorage not writable
+      }
+      redirectCurrentNotesUrl();
+    }
+  });
+
+  // Intercept PW opening /study-v2/notes?pdf=... in a new tab so it loads the raw PDF directly
+  try {
+    const origWindowOpen = window.open;
+    window.open = function (
+      this: Window,
+      url?: string | URL,
+      target?: string,
+      features?: string,
+    ): Window | null {
+      if (isNativePdfViewerEnabled && url !== undefined && url !== null) {
+        const directPdf = extractPdfUrlFromNotesUrl(String(url), window.location.origin);
+        if (directPdf) {
+          return origWindowOpen.call(this, directPdf, target, features);
+        }
+      }
+      return origWindowOpen.call(this, url, target, features);
+    };
+  } catch {
+    // Ignored: window.open non-configurable
+  }
+
+  // Intercept client-side SPA navigations to /study-v2/notes?pdf=...
+  try {
+    const origPushState = history.pushState;
+    history.pushState = function (
+      this: History,
+      data: unknown,
+      unused: string,
+      url?: string | URL | null,
+    ) {
+      const result = origPushState.apply(this, [data, unused, url]);
+      redirectCurrentNotesUrl();
+      return result;
+    };
+
+    const origReplaceState = history.replaceState;
+    history.replaceState = function (
+      this: History,
+      data: unknown,
+      unused: string,
+      url?: string | URL | null,
+    ) {
+      const result = origReplaceState.apply(this, [data, unused, url]);
+      redirectCurrentNotesUrl();
+      return result;
+    };
+
+    window.addEventListener('popstate', () => {
+      redirectCurrentNotesUrl();
+    });
+  } catch {
+    // Ignored: history API non-configurable
+  }
+
+  function isPlainUnauthenticatedGetFetch(input: RequestInfo | URL, init?: RequestInit): boolean {
+    const method = (
+      init?.method ||
+      (typeof Request !== 'undefined' && input instanceof Request ? input.method : 'GET')
+    ).toUpperCase();
+    if (method !== 'GET') return false;
+
+    const hasAuthHeader = (headers: HeadersInit | undefined): boolean => {
+      if (!headers) return false;
+      if (typeof Headers !== 'undefined' && headers instanceof Headers) {
+        return headers.has('authorization');
+      }
+      if (Array.isArray(headers)) {
+        return headers.some(([k]) => k.toLowerCase() === 'authorization');
+      }
+      return Object.keys(headers).some((k) => k.toLowerCase() === 'authorization');
+    };
+
+    if (hasAuthHeader(init?.headers)) return false;
+    if (
+      typeof Request !== 'undefined' &&
+      input instanceof Request &&
+      hasAuthHeader(input.headers)
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  // Fallback for ?contentId=... notes URLs where PW resolves the PDF via API and fetches it in react-pdf
+  try {
+    if (typeof window.fetch === 'function') {
+      const origFetch = window.fetch;
+      window.fetch = function (
+        this: Window,
+        input: RequestInfo | URL,
+        init?: RequestInit,
+      ): Promise<Response> {
+        if (
+          isNativePdfViewerEnabled &&
+          isPwNotesViewerPath(window.location.pathname) &&
+          !extractPdfUrlFromNotesUrl(window.location.href) &&
+          isPlainUnauthenticatedGetFetch(input, init)
+        ) {
+          const rawUrl =
+            typeof input === 'string' ? input : input instanceof URL ? input.href : input?.url;
+          if (rawUrl) {
+            const pdfAssetUrl = isDirectPdfAssetUrl(rawUrl, window.location.origin);
+            if (pdfAssetUrl) {
+              window.location.replace(pdfAssetUrl);
+            }
+          }
+        }
+        return origFetch.call(this, input, init);
+      };
+    }
+  } catch {
+    // Ignored: fetch non-configurable
+  }
 
   // ===== Quick Exit & beforeunload Silencing (Issue #14) =====
   function purgeBeforeUnload(): void {

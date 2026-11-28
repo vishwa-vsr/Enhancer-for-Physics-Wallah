@@ -46,12 +46,18 @@ import {
   syncPollSuppressionClass,
 } from './modules/distractions/poll-blocker';
 import { hideVolumeHudImmediately } from './modules/ui/volume-hud';
+import { isPwNotesViewerPath } from '../shared/pdf';
+import { syncNativePdfViewer } from './modules/pdf/native-pdf-viewer';
 import { HideSettings } from './types';
 
 // Entry point initialization
 function init(): void {
   // Guard against non-video subframes (e.g. payment, quizzes, chat frames)
-  if (window.top !== window.self && !document.querySelector('video')) {
+  if (
+    window.top !== window.self &&
+    !document.querySelector('video') &&
+    !isPwNotesViewerPath(window.location.pathname)
+  ) {
     return;
   }
 
@@ -63,6 +69,7 @@ function init(): void {
 
     if (changedKeys.includes('*')) {
       // Initial state loaded
+      syncNativePdfViewer();
       handlePromoAds();
 
       handleRecordedPolls();
@@ -100,6 +107,7 @@ function init(): void {
       }
       injectInstantHideButton();
       syncVolumeBalancer();
+      syncNativePdfViewer();
       focusChanged = true;
     }
 
@@ -150,6 +158,10 @@ function init(): void {
       changedKeys.includes('extensionEnabled')
     ) {
       syncTimelineSlideActions();
+    }
+
+    if (changedKeys.includes('nativePdfViewer')) {
+      syncNativePdfViewer();
     }
 
     if (changedKeys.includes('skipSilenceEnabled')) {

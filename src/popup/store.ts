@@ -37,6 +37,7 @@ export const autoSkipPromoAds = signal(DEFAULT_SETTINGS.autoSkipPromoAds);
 export const blockRecordedPolls = signal(DEFAULT_SETTINGS.blockRecordedPolls);
 export const enableSlideViewer = signal(DEFAULT_SETTINGS.enableSlideViewer);
 export const keySlideViewer = signal(DEFAULT_SETTINGS.keySlideViewer);
+export const nativePdfViewer = signal(DEFAULT_SETTINGS.nativePdfViewer);
 export const autoPauseOnHide = signal(DEFAULT_SETTINGS.autoPauseOnHide);
 
 // ===== Shortcut signals =====
@@ -163,6 +164,7 @@ const BOOLEAN_SIGNALS: Array<[keyof PopupSettings, { value: boolean }, boolean]>
   ['autoSkipPromoAds', autoSkipPromoAds, false],
   ['blockRecordedPolls', blockRecordedPolls, false],
   ['enableSlideViewer', enableSlideViewer, true],
+  ['nativePdfViewer', nativePdfViewer, false],
   ['autoPauseOnHide', autoPauseOnHide, false],
   ['enableHotkeys', enableHotkeys, false],
   ['speedScrollEnabled', speedScrollEnabled, true],

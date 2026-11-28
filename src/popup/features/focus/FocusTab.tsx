@@ -22,6 +22,7 @@ import {
   blockRecordedPolls,
   enableSlideViewer,
   keySlideViewer,
+  nativePdfViewer,
   lectureTimeEnabled,
   showFinishTime,
   finishTimeFormat,
@@ -59,17 +60,19 @@ const sectionTitleClass = `${shared.sectionTitle} ${styles.focusSectionTitle}`;
 
 function BoolFeatureRow({
   label,
+  sublabel,
   sig,
   settingKey,
   ariaLabel,
 }: {
   label: string;
+  sublabel?: string;
   sig: BoolSignal;
   settingKey: keyof PopupSettings;
   ariaLabel?: string;
 }) {
   return (
-    <FeatureRow label={label}>
+    <FeatureRow label={label} sublabel={sublabel}>
       <Toggle
         checked={sig.value}
         onChange={(v) => {
@@ -351,6 +354,12 @@ export function FocusTab() {
               </div>
             </div>
           </CollapsibleSubOption>
+          <BoolFeatureRow
+            label="Native Browser PDF Viewer"
+            sublabel="Bypass PW PDF viewer & open notes directly in browser"
+            sig={nativePdfViewer}
+            settingKey="nativePdfViewer"
+          />
           <FeatureRow label="Lecture Finish Time">
             <div class={styles.finishTimeControls}>
               <SelectDropdown

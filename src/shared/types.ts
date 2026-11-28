@@ -47,6 +47,7 @@ export interface PopupSettings extends HideSettings {
   blockRecordedPolls: boolean;
   enableSlideViewer: boolean;
   keySlideViewer: string;
+  nativePdfViewer: boolean;
 
   // Shortcut & control settings
   enableHotkeys: boolean;
@@ -132,6 +133,7 @@ export const DEFAULT_SETTINGS: PopupSettings = {
   blockRecordedPolls: false,
   enableSlideViewer: true,
   keySlideViewer: 't',
+  nativePdfViewer: false,
 
   enableHotkeys: false,
   speedScrollEnabled: true,
